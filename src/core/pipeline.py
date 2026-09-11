@@ -946,6 +946,10 @@ class StockAnalysisPipeline:
             if result:
                 self._append_daily_data_source(result, context, analysis_target)
 
+            if result and result.success and market == 'hk':
+                from src.services.market_data_integrity import enforce_daily_report
+                enforce_daily_report(result, enhanced_context)
+
             # Step 8: 保存分析历史记录
             if result and result.success:
                 try:
@@ -1770,6 +1774,10 @@ class StockAnalysisPipeline:
                         logger.info(f"[{code}] Agent 模式: 新闻情报已保存 {len(news_response.results)} 条")
                 except Exception as e:
                     logger.warning(f"[{code}] Agent 模式保存新闻情报失败: {e}")
+
+            if result and result.success and market == 'hk':
+                from src.services.market_data_integrity import enforce_daily_report
+                enforce_daily_report(result, analysis_context)
 
             # 保存分析历史记录
             if result and result.success:
@@ -2940,14 +2948,19 @@ class StockAnalysisPipeline:
             service = IntelligenceService(config=self.config)
             service.refresh_auto_sources()
             days = max(1, int(self.config.get_effective_news_window_days() or 1))
+            if market == 'hk' and getattr(self.config, 'news_intel_auto_fetch_enabled', False):
+                from src.services.hk_company_news import refresh_company_news
+                refresh = refresh_company_news(service, code, stock_name, days=days)
+                logger.info("[%s] 公开个股新闻接入: %s", code, refresh['diagnostics'])
             collected: list[Dict[str, Any]] = []
             seen_urls: set[str] = set()
+            seen_titles: set[str] = set()
             symbol_filters = [
                 {"scope_type": "symbol", "scope_value": scope_value, "market": market}
                 for scope_value in _symbol_scope_lookup_values(code, market)
             ]
             for filters in symbol_filters + [{"scope_type": "market", "market": market}]:
-                payload = service.list_items(published_days=days, page=1, page_size=limit, **filters)
+                payload = service.list_items(published_days=days, page=1, page_size=100, **filters)
                 for item in payload.get("items", []):
                     if not isinstance(item, dict):
                         continue
@@ -2956,9 +2969,11 @@ class StockAnalysisPipeline:
                         if not company_news_matches(item, code, stock_name):
                             continue
                     url = str(item.get("url") or "")
-                    if url in seen_urls:
+                    title_key = ''.join(str(item.get('title') or '').split()).casefold()
+                    if url in seen_urls or title_key in seen_titles:
                         continue
                     seen_urls.add(url)
+                    seen_titles.add(title_key)
                     collected.append(item)
                     if len(collected) >= limit:
                         break

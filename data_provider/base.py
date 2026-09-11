@@ -1942,6 +1942,10 @@ class DataFetcherManager:
         if market != "cn":
             fetchers = self._filter_daily_fetchers_for_market(fetchers, market)
         fetchers = self._filter_fetchers_by_capability(fetchers, capability="daily_data")
+        if is_hk:
+            # HK repair branch: Tencent, Eastmoney (Akshare), then optional backups.
+            order = {"TencentFetcher": 0, "AkshareFetcher": 1, "YfinanceFetcher": 2}
+            fetchers = sorted(fetchers, key=lambda f: order.get(f.name, 3))
         total_fetchers = len(fetchers)
 
         if total_fetchers == 0:
@@ -2081,6 +2085,16 @@ class DataFetcherManager:
                 )
                 
                 if df is not None and not df.empty:
+                    if is_hk and end_date:
+                        from src.core.trading_calendar import get_effective_trading_date
+                        from datetime import datetime as _datetime
+                        from zoneinfo import ZoneInfo as _ZoneInfo
+                        target_day = get_effective_trading_date(
+                            "hk", current_time=_datetime.fromisoformat(str(end_date)[:10]).replace(
+                                hour=23, minute=59, tzinfo=_ZoneInfo("Asia/Shanghai")))
+                        actual_day = str(df["date"].max())[:10]
+                        if actual_day != str(target_day)[:10]:
+                            raise DataFetchError(f"Incomplete HK daily history: {actual_day}, expected {target_day}")
                     duration_ms = int((time.time() - attempt_start) * 1000)
                     record_provider_run(
                         data_type="daily_data",

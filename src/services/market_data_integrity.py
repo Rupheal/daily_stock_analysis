@@ -23,6 +23,25 @@ class MarketDataIntegrityError(ValueError):
     """Input cannot support a dated trading report."""
 
 
+def enforce_daily_report(result, context):
+    """Reject unsafe HK outputs before history/signals/notifications are published."""
+    try:
+        audit = audit_daily_report(result.to_dict(), context)
+    except (KeyError, TypeError, ValueError, OverflowError) as exc:
+        audit = {'passed': False, 'findings': [{'code': 'unverifiable_report', 'reason': str(exc)}]}
+    result.report_quality_audit = audit
+    if not audit['passed']:
+        result.success = False
+        result.error_message = '报告复核未通过：' + ', '.join(x['code'] for x in audit['findings'])
+        # Failed results may still be serialized by callers. Remove execution fields.
+        result.dashboard = None
+        result.operation_advice = '数据或报告待复核，暂停交易结论'
+        result.decision_type = 'hold'
+        result.action = None
+        result.action_label = None
+    return audit
+
+
 def audit_daily_report(result, context):
     """Audit report claims against daily evidence without another model call.
 
