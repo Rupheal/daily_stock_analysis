@@ -1,0 +1,27 @@
+name: HK public media probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/06-hk-media-probe.yml]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install requests beautifulsoup4
+      - run: python scripts/probe_hk_media.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hk-media-probe
+          path: probe/media/
+          retention-days: 7
