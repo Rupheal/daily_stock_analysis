@@ -44,6 +44,26 @@ def canonical_url(url):
     return url
 
 
+def select_company_evidence(items, limit):
+    """Prioritize dated financial/risk coverage over consumer tutorials and PR.
+
+    Ranking is a transparent relevance heuristic, not verification or sentiment.
+    """
+    ranked = []
+    for item in items:
+        title = str(item.get('title') or '')
+        if re.search(r'如何.*(?:键盘|设置|安装)|使用教程|壁纸下载|铃声下载', title):
+            continue
+        priority = 0
+        if re.search(r'调查|监管|诉讼|印度|财报|业绩|盈利|回购|资金|净买入|公告|评级', title):
+            priority = 2
+        elif re.search(r'交付|订单|发布|开源|供应|ETF', title):
+            priority = 1
+        ranked.append((priority, str(item.get('published_at') or ''), item))
+    ranked.sort(key=lambda row:(row[0], row[1]), reverse=True)
+    return [row[2] for row in ranked[:limit]]
+
+
 def make_item(title, summary, url, published, source, channel, code, name, now, days):
     if published.tzinfo is None:
         raise ValueError('Publication timezone required')

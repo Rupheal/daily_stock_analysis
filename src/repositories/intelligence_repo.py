@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from sqlalchemy import and_, delete, desc, func, or_, select
@@ -178,8 +178,11 @@ class IntelligenceRepository:
         if days is not None:
             conditions.append(IntelligenceItem.fetched_at >= datetime.now() - timedelta(days=max(1, int(days))))
         if published_days is not None:
-            published_cutoff = datetime.now() - timedelta(days=max(1, int(published_days)))
+            # Native feed parsers persist aware timestamps as UTC-naive.
+            publication_now = datetime.now(timezone.utc).replace(tzinfo=None)
+            published_cutoff = publication_now - timedelta(days=max(1, int(published_days)))
             conditions.append(IntelligenceItem.published_at >= published_cutoff)
+            conditions.append(IntelligenceItem.published_at <= publication_now)
         where_clause = and_(*conditions) if conditions else True
         safe_page = max(1, int(page))
         safe_size = max(1, min(int(page_size), 100))

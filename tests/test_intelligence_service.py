@@ -49,6 +49,26 @@ NEWSNOW_FIXTURE = {
 
 
 class IntelligenceServiceTestCase(unittest.TestCase):
+    def test_publication_window_uses_utc_and_rejects_future_news(self):
+        from datetime import timezone
+        instant = datetime(2026, 9, 11, 20, 30)
+
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return instant.replace(tzinfo=timezone.utc) if tz else instant + timedelta(hours=8)
+
+        self.service.repo.upsert_items([
+            dict(source_name='test', source_type='rss', title=label, summary='',
+                 url='https://example.com/'+label, source='test', published_at=published,
+                 fetched_at=instant, scope_type='symbol', scope_value='HK01810', market='hk')
+            for label, published in [('recent', instant-timedelta(hours=71)), ('future', instant+timedelta(hours=1))]
+        ])
+        with patch('src.repositories.intelligence_repo.datetime', Clock):
+            rows, total = self.service.repo.list_items(published_days=3, market='hk')
+        self.assertEqual(total, 1)
+        self.assertEqual(rows[0].title, 'recent')
+
     def setUp(self) -> None:
         self._temp_dir = tempfile.TemporaryDirectory()
         os.environ["DATABASE_PATH"] = os.path.join(self._temp_dir.name, "intelligence.db")

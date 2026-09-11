@@ -8,6 +8,14 @@ from src.services.market_data_integrity import enforce_daily_report
 NOW = datetime(2026, 9, 11, 20, 30, tzinfo=timezone.utc)
 
 
+def test_financial_news_is_not_crowded_out_by_newer_consumer_tutorials():
+    from src.services.hk_company_news import select_company_evidence
+    items = [dict(title='如何将小米安全键盘换为普通键盘', published_at='2026-09-11 23:00'),
+             dict(title='小米车主服务故事', published_at='2026-09-11 22:00'),
+             dict(title='小米监管调查进展', published_at='2026-09-11 20:00')]
+    assert select_company_evidence(items, 1)[0]['title'] == '小米监管调查进展'
+
+
 def test_news_rejects_wrong_company_old_future_missing_time_and_dedicated_page_noise():
     valid = dict(title='小米发布公告', abstract='报道摘要', time=1789113161,
                  url='https://news.futunn.com/post/123?tracking=1', source='财联社')

@@ -2975,10 +2975,9 @@ class StockAnalysisPipeline:
                     seen_urls.add(url)
                     seen_titles.add(title_key)
                     collected.append(item)
-                    if len(collected) >= limit:
-                        break
-                if len(collected) >= limit:
-                    break
+            if market == 'hk':
+                from src.services.hk_company_news import select_company_evidence
+                collected = select_company_evidence(collected, limit)
             if not collected:
                 return None
             lines = [f"## 本地资讯证据池（{stock_name}/{code}）"]
@@ -2987,6 +2986,8 @@ class StockAnalysisPipeline:
                 summary = str(item.get("summary") or "").strip()
                 source = str(item.get("source") or item.get("source_name") or "local-intel").strip()
                 published = str(item.get("published_at") or "").strip()
+                if item.get("source_type") == "public_web" and published:
+                    published += " UTC"
                 url = str(item.get("url") or "").strip()
                 meta = " / ".join(part for part in (source, published) if part)
                 lines.append(f"{idx}. {title}" + (f"（{meta}）" if meta else ""))
