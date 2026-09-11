@@ -23,6 +23,51 @@ class MarketDataIntegrityError(ValueError):
     """Input cannot support a dated trading report."""
 
 
+def audit_daily_report(result, context):
+    """Audit report claims against daily evidence without another model call.
+
+    This is an acceptance gate, not a comprehensive natural-language verifier.
+    Findings require withholding the generated execution plan.
+    """
+    today = context['today']
+    dashboard = result.get('dashboard') or {}
+    perspective = dashboard.get('data_perspective') or {}
+    findings = []
+    position = perspective.get('price_position') or {}
+    for key, expected in [('current_price', today['close'])] + [(key, today[key]) for key in ('ma5','ma10','ma20') if key in today]:
+        actual = position.get(key)
+        if actual is not None and abs(float(actual)-float(expected)) > 0.015:
+            findings.append({'code':'price_indicator_mismatch', 'field':key, 'actual':actual, 'expected':expected})
+    ratio = (perspective.get('volume_analysis') or {}).get('volume_ratio')
+    if isinstance(ratio, (int,float)) and today.get('volume_ratio') is not None:
+        if abs(ratio - today['volume_ratio']) > 0.015:
+            findings.append({'code':'volume_ratio_semantics', 'reported':ratio,
+                             'expected_previous_five_session_ratio':today['volume_ratio'],
+                             'previous_session_ratio':context.get('volume_change_ratio')})
+    body = abs(today['close']-today['open'])
+    span = today['high']-today['low']
+    upper = today['high']-max(today['close'],today['open'])
+    lower = min(today['close'],today['open'])-today['low']
+    pattern = result.get('pattern_analysis') or ''
+    if span > 0 and '实体较小' in pattern and body/span > 0.5:
+        findings.append({'code':'candle_body_claim', 'body_fraction':body/span})
+    if '上下影线均较长' in pattern and upper < body and lower < body:
+        findings.append({'code':'candle_shadow_claim', 'body':body, 'upper_shadow':upper, 'lower_shadow':lower})
+    plan = dashboard.get('battle_plan') or {}
+    stop_text = str((plan.get('sniper_points') or {}).get('stop_loss') or '')
+    risk_text = str((plan.get('position_strategy') or {}).get('risk_control') or '')
+    stop = re.search(r'(\d+(?:\.\d+)?)\s*元', stop_text)
+    cap = re.search(r'(\d+(?:\.\d+)?)%以内', risk_text)
+    if stop and cap:
+        distance = (1-float(stop.group(1))/today['close'])*100
+        if distance > float(cap.group(1)) + 0.01:
+            findings.append({'code':'stop_distance_requires_entry_basis',
+                             'distance_from_last_close_pct':distance, 'claimed_cap_pct':float(cap.group(1)),
+                             'note':'No single agreed entry price; the stated cap is not established by this stop.'})
+    return {'passed':not findings, 'execution_plan_enabled':not findings, 'findings':findings,
+            'scope':'Selected numerical/semantic checks only; manual review remains necessary.'}
+
+
 def validate_daily_context(context, expected_date=None):
     today = context.get("today") or {}
     actual = str(today.get("date") or context.get("date") or "")[:10]

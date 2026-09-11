@@ -43,10 +43,17 @@ def main():
     Path('probe/model-results.json').write_text(json.dumps(rows,ensure_ascii=False,indent=2))
     for row in rows:
         print('MODEL_RESULT',row['raw_result'],flush=True)
-        context = json.loads(row['context_snapshot'] or '{}')
+        snapshot = json.loads(row['context_snapshot'] or '{}')
+        context = snapshot.get('enhanced_context', snapshot)
         print('MODEL_CONTEXT',json.dumps({key:context.get(key) for key in ('date','today','yesterday','trend_analysis')},ensure_ascii=False),flush=True)
     if status != 0 or len(rows) != 1 or not list(Path('reports').glob('report_*.md')):
         raise SystemExit('Single-stock technical acceptance incomplete; inspect artifacts')
+    from src.services.market_data_integrity import audit_daily_report
+    audit = audit_daily_report(json.loads(rows[0]['raw_result']), context)
+    Path('probe/report-quality-audit.json').write_text(json.dumps(audit,ensure_ascii=False,indent=2))
+    print('REPORT_QUALITY',json.dumps(audit,ensure_ascii=False),flush=True)
+    if not audit['passed']:
+        raise SystemExit('Report quality failed: generated execution plan must not be published as accepted')
 
 
 if __name__ == '__main__':
