@@ -1,0 +1,71 @@
+name: DSA environment check (no model calls)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dsa-environment-check
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Shanghai
+      ENV_FILE: /dev/null
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out unchanged original DSA
+        uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          persist-credentials: false
+
+      - name: Use the upstream Python version
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install upstream dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Verify installed dependencies
+        run: python -m pip check
+
+      - name: Check CLI startup
+        run: python main.py --help
+
+      - name: Import original analysis pipeline
+        env:
+          DSA_PACKAGED_IMPORT_PROBE: src.core.pipeline
+        run: python main.py
+
+      - name: Import original screening pipeline
+        env:
+          DSA_PACKAGED_IMPORT_PROBE: src.services.screening.pipeline
+        run: python main.py
+
+      - name: Record runtime and unchanged source
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          {
+            echo '### DSA environment check passed'
+            echo 'Scope: dependency installation, CLI help and module imports only.'
+            echo 'No stock analysis or model request was performed.'
+            echo 'Source commit:'
+            git rev-parse HEAD
+            python --version
+            echo '<details><summary>Resolved dependencies</summary>'
+            echo ''
+            echo '```text'
+            python -m pip freeze
+            echo '```'
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
