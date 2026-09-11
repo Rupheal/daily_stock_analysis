@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tencent direct daily K-line fetcher for A-share fallback routing."""
+"""Tencent direct daily K-line fetcher for mainland and Hong Kong equities."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ try:
 except ImportError:  # pragma: no cover - dependency is present in supported installs
     xcals = None
 
-from .base import BaseFetcher, DataFetchError, STANDARD_COLUMNS, normalize_stock_code, is_bse_code
+from .base import BaseFetcher, DataFetchError, STANDARD_COLUMNS, normalize_stock_code, is_bse_code, _is_hk_market
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ class TencentFetcher(BaseFetcher):
     allow_empty_daily_data = True
 
     _KLINE_ENDPOINT = "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get"
+    _HK_KLINE_ENDPOINT = "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get"
     _QUOTE_ENDPOINT = "https://qt.gtimg.cn/q"
     _HTTP_TIMEOUT_SECONDS = 8
 
@@ -54,7 +55,7 @@ class TencentFetcher(BaseFetcher):
             else ","
         )
         response = requests.get(
-            self._KLINE_ENDPOINT,
+            self._HK_KLINE_ENDPOINT if symbol.startswith('hk') else self._KLINE_ENDPOINT,
             params={"param": f"{symbol},day,{explicit_window},{lookback},qfq"},
             headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json,text/plain,*/*"},
             timeout=self._HTTP_TIMEOUT_SECONDS,
@@ -137,6 +138,11 @@ class TencentFetcher(BaseFetcher):
 def _to_tencent_symbol(stock_code: str) -> str:
     raw_code = (stock_code or "").strip().upper()
     code = normalize_stock_code(stock_code)
+    if _is_hk_market(stock_code):
+        digits = raw_code.removeprefix('HK').removesuffix('.HK')
+        if digits.isdigit() and len(digits) <= 5:
+            return 'hk' + digits.zfill(5)
+        return ''
     if not code or not code.isdigit() or len(code) != 6:
         return ""
     if raw_code.startswith(("SH", "SS")) or raw_code.endswith((".SH", ".SS")):
@@ -245,7 +251,12 @@ def _extract_kline_rows(payload: dict[str, Any], *, symbol: str) -> list[dict[st
     for row in rows:
         if not isinstance(row, list) or len(row) < 6:
             continue
+        is_hk = symbol.startswith('hk')
+        # HK endpoint: shares (not mainland lots); turnover is in HKD 10,000.
+        # row[6] is corporate-action metadata, never turnover.
         amount: Optional[Any] = row[6] if len(row) > 6 else None
+        if is_hk:
+            amount = float(row[8]) * 10000 if len(row) > 8 else None
         result.append(
             {
                 "date": str(row[0]),
@@ -253,7 +264,7 @@ def _extract_kline_rows(payload: dict[str, Any], *, symbol: str) -> list[dict[st
                 "close": row[2],
                 "high": row[3],
                 "low": row[4],
-                "volume": _lots_to_shares(row[5]),
+                "volume": row[5] if is_hk else _lots_to_shares(row[5]),
                 "amount": amount,
             }
         )

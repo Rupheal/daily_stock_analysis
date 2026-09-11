@@ -1,0 +1,22 @@
+[
+  {
+    "openbb_id": "deed15df-2cf7-3c98-a7bd-018c6411c5c1",
+    "title": "小米印度业务：SFIO建议进一步调查，尚不能视为立案或裁决",
+    "source": "Reuters，公开检索摘录复核；全文未取回",
+    "published_at": "2026-09-09T09:59:37+00:00",
+    "url": "https://www.reuters.com/business/retail-consumer/indias-serious-fraud-office-recommends-detailed-probe-into-xiaomis-business-2026-09-09/",
+    "summary": "媒体报道：印度SFIO建议审查小米资金流及外资合规事项，是否启动调查尚待主管部门决定。小米表示未收到正式通知。属于监管风险线索，不是违法认定或处罚结果。Yahoo转载时间9月10日，原始报道9月9日；不得当作9月11日新事件。",
+    "verification": "OpenBB发现；Reuters公开检索正文摘录与摘要核对。未取得监管原始备忘录或完整新闻正文。"
+  },
+  {
+    "openbb_id": "f368bf50-f6e8-38c9-aad7-c5d3d76e5ea9",
+    "title": "小米汽车欧洲市场计划的后续报道：事件发生于9月3日",
+    "source": "Just Auto / Xiaomi官方公开检索摘要；全文未取回",
+    "published_at": "2026-09-09T08:42:25+00:00",
+    "url": "https://finance.yahoo.com/technology/articles/xiaomi-set-enter-european-market-084225409.html",
+    "summary": "9月9日媒体回顾小米汽车拟于2027年进入欧洲及德国经销商布局。公司官方公开检索摘要将宣布日期标为9月3日，属于既有计划的后续报道，不是9月11日新增订单、已实现收入或已完成市场准入。",
+    "event_date": "2026-09-03",
+    "primary_url": "https://www.mi.com/global/discover/article?id=6352",
+    "verification": "OpenBB摘要与公司官网公开检索摘要交叉核对；公司网页正文依赖JavaScript，媒体页面限流/403。"
+  }
+]

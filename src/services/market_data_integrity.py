@@ -1,6 +1,22 @@
 """Deterministic validation for complete daily-bar analysis."""
 import math
 from datetime import date
+import re
+
+
+def company_news_matches(item, code, name):
+    """Require dated, linked company evidence; market tags alone are insufficient."""
+    if not item.get('published_at') or not str(item.get('url', '')).startswith(('https://', 'http://')):
+        return False
+    if item.get('scope_type') == 'symbol':
+        canonical = lambda value: str(value).upper().removeprefix('HK').removesuffix('.HK').lstrip('0')
+        if canonical(item.get('scope_value', '')) == canonical(code):
+            return True
+    text = str(item.get('title', '')) + ' ' + str(item.get('summary', ''))
+    digits = str(code).upper().removeprefix('HK').removesuffix('.HK')
+    company = re.sub(r'[-－](?:W|Ｗ|SW|B)$', '', str(name), flags=re.I).strip()
+    return bool((company and company.lower() in text.lower())
+                or (digits.isdigit() and re.search(r'(?<!\d)' + re.escape(digits) + r'(?!\d)', text)))
 
 
 class MarketDataIntegrityError(ValueError):

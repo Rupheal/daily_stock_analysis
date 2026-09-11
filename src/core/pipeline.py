@@ -2951,6 +2951,10 @@ class StockAnalysisPipeline:
                 for item in payload.get("items", []):
                     if not isinstance(item, dict):
                         continue
+                    if market == 'hk':
+                        from src.services.market_data_integrity import company_news_matches
+                        if not company_news_matches(item, code, stock_name):
+                            continue
                     url = str(item.get("url") or "")
                     if url in seen_urls:
                         continue

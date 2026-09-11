@@ -1,0 +1,68 @@
+name: Xiaomi verified-input single acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/05-xiaomi-verified-acceptance.yml]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: dsa-single-stock-acceptance
+  cancel-in-progress: false
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Shanghai
+      ENV_FILE: /dev/null
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'true'
+      NEWS_INTEL_FETCH_TIMEOUT_SEC: '8'
+      NEWS_INTEL_MAX_ITEMS_PER_SOURCE: '50'
+      NEWS_MAX_AGE_DAYS: '3'
+      MAX_WORKERS: '1'
+      REPORT_INTEGRITY_RETRY: '0'
+      TENCENT_PRIORITY: '0'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt pytest
+      - name: Download independently audited source evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: xiaomi-openbb-source-audit
+          run-id: '34641012836'
+          github-token: ${{ github.token }}
+          path: probe/
+      - name: Regression checks
+        run: python -m pytest tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py -q
+      - name: Verify freshness, independent prices and reviewed company news
+        run: python scripts/prepare_xiaomi_acceptance.py
+      - name: Run one Xiaomi analysis only after data acceptance
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: python scripts/run_xiaomi_acceptance.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xiaomi-verified-acceptance
+          path: |
+            probe/
+            reports/
+            logs/
+            data/stock_analysis.db
+          retention-days: 7
