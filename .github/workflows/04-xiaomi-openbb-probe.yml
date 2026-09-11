@@ -1,0 +1,46 @@
+name: Xiaomi OpenBB and independent source audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/04-xiaomi-openbb-probe.yml]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Shanghai
+      ENV_FILE: /dev/null
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'true'
+      NEWS_INTEL_FETCH_TIMEOUT_SEC: '8'
+      NEWS_INTEL_MAX_ITEMS_PER_SOURCE: '50'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install isolated OpenBB runtime
+        run: |
+          python -m venv /tmp/xiaomi-openbb
+          /tmp/xiaomi-openbb/bin/pip install openbb==4.7.2
+      - name: OpenBB free provider checks
+        run: |
+          mkdir -p probe
+          for mode in quote history news; do
+            timeout 90 /tmp/xiaomi-openbb/bin/python scripts/probe_xiaomi_sources.py "$mode" || echo "OpenBB $mode exited with status $?"
+          done
+      - run: python -m pip install -r requirements.txt
+      - name: Independent free sources and native news
+        run: timeout 240 python scripts/probe_xiaomi_sources.py native
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xiaomi-openbb-source-audit
+          path: probe/
+          retention-days: 7
