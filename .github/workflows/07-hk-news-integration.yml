@@ -33,3 +33,4 @@ jobs:
           name: hk-news-integration
           path: probe/media-integration/
           retention-days: 7
+# Verify legacy Chinese encoding and frozen-date failover.

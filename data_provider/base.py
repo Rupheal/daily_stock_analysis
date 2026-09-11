@@ -2085,13 +2085,17 @@ class DataFetcherManager:
                 )
                 
                 if df is not None and not df.empty:
-                    if is_hk and end_date:
+                    if is_hk:
                         from src.core.trading_calendar import get_effective_trading_date
                         from datetime import datetime as _datetime
                         from zoneinfo import ZoneInfo as _ZoneInfo
-                        target_day = get_effective_trading_date(
-                            "hk", current_time=_datetime.fromisoformat(str(end_date)[:10]).replace(
-                                hour=23, minute=59, tzinfo=_ZoneInfo("Asia/Shanghai")))
+                        from src.services.history_loader import get_frozen_target_date
+                        if end_date:
+                            target_day = get_effective_trading_date(
+                                "hk", current_time=_datetime.fromisoformat(str(end_date)[:10]).replace(
+                                    hour=23, minute=59, tzinfo=_ZoneInfo("Asia/Shanghai")))
+                        else:
+                            target_day = get_frozen_target_date() or get_effective_trading_date("hk")
                         actual_day = str(df["date"].max())[:10]
                         if actual_day != str(target_day)[:10]:
                             raise DataFetchError(f"Incomplete HK daily history: {actual_day}, expected {target_day}")

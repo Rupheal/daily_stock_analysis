@@ -126,8 +126,11 @@ def fetch_public(service, url):
         if response.status_code != 200:
             raise ValueError(f'Public news HTTP {response.status_code}')
         content = service._read_limited_response(response)
-        # Observed pages declare UTF-8; avoid heuristic corruption of Chinese text.
-        return content.decode('utf-8')
+        # Sina stock pages use legacy Chinese encoding; article/Futu pages use UTF-8.
+        try:
+            return content.decode('utf-8')
+        except UnicodeDecodeError:
+            return content.decode('gb18030')
     finally:
         response.close()
 
