@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [chore] 添加小米单股手动验收，使用官方 DeepSeek 与固定原版 DSA，保存原生报告和用量。
+
 - [chore] 新增手动云端环境检查：固定上游版本，验证依赖、CLI 和模块导入，不调用模型。
 
 - [测试] 修复股票名称解析冷启动超时并发测试的同步竞态：在放行后台抓取前确认两个等待者均已结束并返回空结果，避免 Docker 发布门禁偶发失败。

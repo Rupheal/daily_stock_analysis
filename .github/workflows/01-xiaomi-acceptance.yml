@@ -1,0 +1,61 @@
+name: Xiaomi original DSA single-stock acceptance
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dsa-single-stock-acceptance
+  cancel-in-progress: false
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Shanghai
+      ENV_FILE: /dev/null
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install upstream dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Analyze Xiaomi with original DSA
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          test -n "$LLM_DEEPSEEK_API_KEY" || { echo 'Missing DEEPSEEK_API_KEY repository secret'; exit 1; }
+          mkdir -p reports data
+          timeout 600 python main.py --stocks hk01810 --no-notify --no-market-review --force-run
+      - name: Verify original source and record scope
+        if: always()
+        run: |
+          git diff --exit-code
+          {
+            echo 'Original upstream commit: 089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+            echo 'Scope: hk01810 only; official DeepSeek; no notification or market review.'
+            echo 'This run is connectivity acceptance, not a validated investment signal.'
+            date -Iseconds
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve native report and usage database
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiaomi-original-dsa-acceptance
+          path: |
+            reports/
+            data/stock_analysis.db
+          if-no-files-found: warn
+          retention-days: 7
