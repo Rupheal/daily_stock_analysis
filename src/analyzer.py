@@ -3706,6 +3706,15 @@ class GeminiAnalyzer:
             except Exception as exc:
                 logger.debug("[analyzer] progress callback skipped: %s", exc)
 
+        from src.services.market_data_integrity import validate_daily_context
+        phase = context.get("market_phase_context") or {}
+        validate_daily_context(context, phase.get("effective_daily_bar_date"))
+        if not (news_context and str(news_context).strip()) or context.get("news_evidence_present") is False:
+            from src.services.market_data_integrity import MarketDataIntegrityError
+            raise MarketDataIntegrityError(
+                "数据验收未通过 / data validation failed: news evidence missing; "
+                "no trading report will be generated"
+            )
         code = context.get('code', 'Unknown')
         config = self._get_runtime_config()
         report_language = normalize_report_language(getattr(config, "report_language", "zh"))
@@ -4400,7 +4409,8 @@ class GeminiAnalyzer:
 """
         else:
             prompt += """
-未搜索到该股票近期的相关新闻。请主要依据技术面数据进行分析。
+本次未提供可核验新闻，可能未检索或检索失败，不能据此判断没有新闻。
+新闻、舆情和事件判断必须标记“数据缺失，无法判断”；不得写“消息面真空”“无重大利空”。
 """
 
         # 注入缺失数据警告

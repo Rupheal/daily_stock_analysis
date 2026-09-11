@@ -636,22 +636,27 @@ class StockAnalysisPipeline:
                 except Exception as e:
                     logger.debug(f"{stock_name}({code}) 基本面快照写入失败: {e}")
 
+            # Shared preflight before both legacy and Agent LLM paths.
+            from src.services.market_data_integrity import validate_daily_context
+            daily_context = self._get_analysis_context_with_market_fallback(
+                code, analysis_target=analysis_target
+            )
+            validate_daily_context(daily_context or {}, daily_market_target_date)
+            # This repair variant uses complete sessions only. Quote collection
+            # remains diagnostic; do not feed it into either decision path.
+            realtime_quote = None
+
             # Step 3: 趋势分析（基于交易理念）— 在 Agent 分支之前执行，供两条路径共用
             trend_result: Optional[TrendAnalysisResult] = None
             try:
                 from src.services.history_loader import get_frozen_target_date
                 _mkt = get_market_for_stock(normalize_stock_code(code))
                 frozen = get_frozen_target_date()
-                end_date = frozen if frozen else get_market_now(_mkt).date()
+                end_date = frozen if frozen else daily_market_target_date
                 start_date = end_date - timedelta(days=89)  # ~60 trading days for MA60
                 historical_bars = self.db.get_data_range(code, start_date, end_date)
                 if historical_bars:
                     df = pd.DataFrame([bar.to_dict() for bar in historical_bars])
-                    # Issue #234: Augment with realtime for intraday MA calculation
-                    if self.config.enable_realtime_quote and realtime_quote:
-                        df = self._augment_historical_with_realtime(
-                            df, realtime_quote, code, market=market
-                        )
                     trend_result = self.trend_analyzer.analyze(df, code)
                     logger.info(f"{stock_name}({code}) 趋势分析: {trend_result.trend_status.value}, "
                               f"买入信号={trend_result.buy_signal.value}, 评分={trend_result.signal_score}")
@@ -756,9 +761,7 @@ class StockAnalysisPipeline:
 
             # Step 5: 获取分析上下文（技术面数据）
             self._emit_progress(58, f"{stock_name}：正在整理分析上下文")
-            context = self._get_analysis_context_with_market_fallback(
-                code, analysis_target=analysis_target
-            )
+            context = daily_context
 
             if context is None:
                 logger.warning(f"{stock_name}({code}) 无法获取历史行情数据，将仅基于新闻和实时行情分析")
@@ -786,6 +789,9 @@ class StockAnalysisPipeline:
                 portfolio_context=portfolio_context,
             )
             enhanced_context["market_phase_context"] = market_phase_context_dict
+            enhanced_context["news_evidence_present"] = news_evidence_present(
+                news_result_count, social_evidence_context, persisted_intelligence_context,
+            )
             self._attach_daily_market_context(
                 enhanced_context,
                 daily_market_context,
@@ -891,9 +897,9 @@ class StockAnalysisPipeline:
             if result:
                 self._emit_progress(94, f"{stock_name}：正在校验并整理分析结果")
                 result.query_id = query_id
-                realtime_data = enhanced_context.get('realtime', {})
-                result.current_price = realtime_data.get('price')
-                result.change_pct = realtime_data.get('change_pct')
+                daily_data = enhanced_context.get('today', {})
+                result.current_price = daily_data.get('close')
+                result.change_pct = daily_data.get('pct_chg')
 
             # Step 7.6: chip_structure fallback (Issue #589) and unavailable collapse
             if result:
@@ -1096,106 +1102,8 @@ class StockAnalysisPipeline:
                 'risk_factors': trend_result.risk_factors,
             }
 
-        # Issue #234：盘中分析使用实时 OHLC 与趋势 MA 覆盖 today。
-        # 防护条件：trend_result.ma5 > 0 表示 MA 计算已成功且数据量充足。
-        if realtime_quote and trend_result and trend_result.ma5 > 0:
-            price = getattr(realtime_quote, 'price', None)
-            if price is not None and price > 0:
-                yesterday_close = None
-                if enhanced.get('yesterday') and isinstance(enhanced['yesterday'], dict):
-                    yesterday_close = enhanced['yesterday'].get('close')
-                orig_today = enhanced.get('today') or {}
-                market_today = get_market_now(
-                    get_market_for_stock(normalize_stock_code(enhanced.get('code', '')))
-                ).date().isoformat()
-                source = getattr(realtime_quote, 'source', None)
-                source_name = getattr(source, 'value', source)
-                source_name = str(source_name) if source_name is not None else 'unknown'
-                open_p = getattr(realtime_quote, 'open_price', None) or getattr(
-                    realtime_quote, 'pre_close', None
-                ) or yesterday_close or orig_today.get('open') or price
-                high_p = getattr(realtime_quote, 'high', None) or price
-                low_p = getattr(realtime_quote, 'low', None) or price
-                vol = getattr(realtime_quote, 'volume', None)
-                amt = getattr(realtime_quote, 'amount', None)
-                pct = getattr(realtime_quote, 'change_pct', None)
-                fetched_at = getattr(realtime_quote, 'fetched_at', None)
-                provider_timestamp = getattr(realtime_quote, 'provider_timestamp', None)
-                fallback_from = getattr(realtime_quote, 'fallback_from', None)
-                realtime_today = {
-                    'close': price,
-                    'open': open_p,
-                    'high': high_p,
-                    'low': low_p,
-                    'ma5': trend_result.ma5,
-                    'ma10': trend_result.ma10,
-                    'ma20': trend_result.ma20,
-                    'date': market_today,
-                    'data_source': f"realtime:{source_name}",
-                    'realtime_source': source_name,
-                    'is_estimated': True,
-                }
-                estimated_fields = [
-                    'close', 'open', 'high', 'low', 'ma5', 'ma10', 'ma20',
-                ]
-                if vol is not None:
-                    realtime_today['volume'] = vol
-                    estimated_fields.append('volume')
-                if amt is not None:
-                    realtime_today['amount'] = amt
-                    estimated_fields.append('amount')
-                if pct is not None:
-                    realtime_today['pct_chg'] = pct
-                    estimated_fields.append('pct_chg')
-                realtime_today['estimated_fields'] = estimated_fields
-                if isinstance(market_phase_context, dict) and "is_partial_bar" in market_phase_context:
-                    realtime_today['is_partial_bar'] = market_phase_context.get("is_partial_bar")
-                if fetched_at is not None:
-                    realtime_today['fetched_at'] = fetched_at
-                if provider_timestamp is not None:
-                    realtime_today['provider_timestamp'] = provider_timestamp
-                if fallback_from is not None:
-                    realtime_today['fallback_from'] = fallback_from
-                realtime_owned_fields = {
-                    'open', 'high', 'low', 'close',
-                    'volume', 'amount', 'pct_chg', 'pctChg',
-                    'date', 'data_source', 'dataSource', 'source',
-                    'realtime_source', 'realtimeSource',
-                    'is_partial_bar', 'isPartialBar', 'is_estimated',
-                    'isEstimated', 'estimated_fields', 'estimatedFields',
-                    'fetched_at', 'fetchedAt', 'provider_timestamp',
-                    'providerTimestamp', 'fallback_from', 'fallbackFrom',
-                }
-                for k, v in orig_today.items():
-                    if k not in realtime_today and k not in realtime_owned_fields and v is not None:
-                        realtime_today[k] = v
-                enhanced['today'] = realtime_today
-                enhanced['ma_status'] = self._compute_ma_status(
-                    price, trend_result.ma5, trend_result.ma10, trend_result.ma20
-                )
-                enhanced['date'] = market_today
-                if yesterday_close is not None:
-                    try:
-                        yc = float(yesterday_close)
-                        if yc > 0:
-                            enhanced['price_change_ratio'] = round(
-                                (price - yc) / yc * 100, 2
-                            )
-                    except (TypeError, ValueError):
-                        pass
-                if vol is not None and enhanced.get('yesterday'):
-                    yest_vol = enhanced['yesterday'].get('volume') if isinstance(
-                        enhanced['yesterday'], dict
-                    ) else None
-                    if yest_vol is not None:
-                        try:
-                            yv = float(yest_vol)
-                            if yv > 0:
-                                enhanced['volume_change_ratio'] = round(
-                                    float(vol) / yv, 2
-                                )
-                        except (TypeError, ValueError):
-                            pass
+        # Complete daily bars and timestamped quotes are separate datasets.
+        # Never overwrite dated OHLC/MA values with an undated quote.
 
         # ETF/index flag for analyzer prompt (Fixes #274)
         enhanced['is_index_etf'] = SearchService.is_index_or_etf(
@@ -1650,6 +1558,9 @@ class StockAnalysisPipeline:
                     social_evidence_context,
                     persisted_intelligence_context,
                 )
+            if result is not None and not result.news_evidence_present:
+                from src.services.market_data_integrity import MarketDataIntegrityError
+                raise MarketDataIntegrityError("数据验收未通过: Agent returned no news evidence")
             record_llm_run(
                 success=bool(result and getattr(result, "success", True)),
                 model=getattr(result, "model_used", None) if result else getattr(agent_result, "model", None),

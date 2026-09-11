@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [修复] 独立修复版采用完整日线分析，阻止未标时实时报价覆盖历史 OHLC/指标；在两条分析路径前校验交易日与 OHLC，修正缺失新闻的提示语义。
+
 - [chore] 添加小米单股手动验收，使用官方 DeepSeek 与固定原版 DSA，保存原生报告和用量。
 
 - [chore] 新增手动云端环境检查：固定上游版本，验证依赖、CLI 和模块导入，不调用模型。
