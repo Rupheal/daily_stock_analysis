@@ -1,4 +1,5 @@
 name: Xiaomi verified-input single acceptance
+# Manual acceptance also runs on non-trading days, using the last completed session.
 on:
   workflow_dispatch:
   push:

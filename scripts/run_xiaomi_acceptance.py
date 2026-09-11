@@ -31,7 +31,7 @@ def main():
     status = None
     try:
         status = subprocess.run([sys.executable,'main.py','--stocks','hk01810',
-                                 '--no-notify','--no-market-review'],timeout=600).returncode
+                                 '--no-notify','--no-market-review','--force-run'],timeout=600).returncode
     finally:
         ledger = {'before':before,'after':balance(), 'process_status':status,
                   'note':'Balance delta is account-wide during the run; other concurrent API use cannot be excluded.'}
