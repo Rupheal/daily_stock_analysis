@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [修复] 新增修复分支小米验收入口，显式开启原生免费资讯池自动采集，执行当前分支代码并保存失败证据；无定时触发。
+
 - [修复] 独立修复版采用完整日线分析，阻止未标时实时报价覆盖历史 OHLC/指标；在两条分析路径前校验交易日与 OHLC，修正缺失新闻的提示语义。
 
 - [chore] 添加小米单股手动验收，使用官方 DeepSeek 与固定原版 DSA，保存原生报告和用量。

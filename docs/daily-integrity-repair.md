@@ -67,3 +67,13 @@ python -m pytest tests/test_daily_integrity_repair.py tests/test_analysis_contex
 The classic path reuses the validated daily context instead of reading the
 database twice. Trend history ends at the expected daily session. Partial bars
 and malformed dates are rejected. No live analysis was dispatched for this branch.
+
+## Free-source acceptance entry
+
+`02-xiaomi-repaired-acceptance.yml` checks out the repair branch itself, enables
+the existing native RSS/Atom/NewsNow pool through `NEWS_INTEL_AUTO_FETCH_ENABLED`,
+and tests Xiaomi only. It runs on manual dispatch or changes to that workflow on
+the repair branch; it has no schedule. Model/data quality remain separate gates.
+Source retrieval uses the upstream default templates; no paid search key is needed.
+Public-source failures and missing news dates remain failures, not invented evidence.
+The original main branch and original acceptance workflow remain unchanged.

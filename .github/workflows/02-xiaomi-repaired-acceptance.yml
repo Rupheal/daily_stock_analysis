@@ -1,0 +1,63 @@
+name: Xiaomi repaired DSA acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/02-xiaomi-repaired-acceptance.yml]
+permissions:
+  contents: read
+concurrency:
+  group: dsa-single-stock-acceptance
+  cancel-in-progress: false
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Shanghai
+      ENV_FILE: /dev/null
+      PYTHONUNBUFFERED: '1'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'true'
+      NEWS_INTEL_FETCH_TIMEOUT_SEC: '8'
+      NEWS_INTEL_MAX_ITEMS_PER_SOURCE: '20'
+      NEWS_MAX_AGE_DAYS: '3'
+      MAX_WORKERS: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt pytest
+      - name: Offline repair tests
+        run: python -m pytest tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py -q
+      - name: Single Xiaomi acceptance with native free news sources
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          test -n "$LLM_DEEPSEEK_API_KEY"
+          timeout 600 python main.py --stocks hk01810 --no-notify --no-market-review --force-run
+          python - <<'PY'
+          from pathlib import Path
+          reports = list(Path('reports').glob('report_*.md'))
+          if not reports:
+              raise SystemExit('Acceptance incomplete: no report; inspect data and source logs.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xiaomi-repaired-acceptance
+          path: |
+            reports/
+            logs/
+            data/stock_analysis.db
+          if-no-files-found: warn
+          retention-days: 7
