@@ -1,0 +1,53 @@
+name: Free HK source probe
+on:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/03-free-source-probe.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      TZ: Asia/Shanghai
+      ENV_FILE: /dev/null
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'true'
+      NEWS_INTEL_FETCH_TIMEOUT_SEC: '8'
+      NEWS_INTEL_MAX_ITEMS_PER_SOURCE: '20'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt
+      - name: Probe native news and timestamped Xiaomi quote without LLM
+        run: |
+          timeout 180 python - <<'PY'
+          import json, logging, requests
+          from pathlib import Path
+          from src.services.intelligence_service import IntelligenceService
+          logging.basicConfig(level=logging.INFO)
+          out = Path('probe'); out.mkdir()
+          service = IntelligenceService()
+          result = {'refresh': service.refresh_auto_sources(),
+                    'sources': service.list_sources(),
+                    'hk_news': service.list_items(scope_type='market', market='hk', published_days=3)}
+          try:
+              r = requests.get('https://qt.gtimg.cn/q=r_hk01810', timeout=15)
+              r.encoding = 'gbk'
+              result['tencent_quote'] = {'status':r.status_code,'body':r.text}
+          except Exception as exc:
+              result['tencent_quote'] = {'error': str(exc)}
+          (out/'source-results.json').write_text(json.dumps(result,ensure_ascii=False,indent=2,default=str))
+          print(json.dumps(result,ensure_ascii=False,default=str))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: free-hk-source-probe
+          path: probe/
+          retention-days: 7
