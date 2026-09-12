@@ -34,6 +34,8 @@ class BoundedJudgmentTests(unittest.TestCase):
             self.assertIn('2050234', rendered)
             self.assertIn('1900000', rendered)
             self.assertNotIn('费用为0', rendered)
+            for document in preflight['verified_primary_evidence']['documents']:
+                self.assertIn(document['url'], rendered)
         self.assertFalse(brief['trading_plan_enabled'])
 
     def test_all_real_failed_free_form_reports_are_rejected_without_rewriting(self):

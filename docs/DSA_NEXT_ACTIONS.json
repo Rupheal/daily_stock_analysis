@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-09-12T15:58:16.001831+00:00",
+  "updated_at_utc": "2026-09-12T16:07:58.201766+00:00",
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "scope": "升级版DSA 港股中短交易",
   "description": "Planning/resumption queue; not an installed scheduler",
@@ -34,14 +34,16 @@
       "priority": 0,
       "title": "补事件聚合、持续风险复核及缺失诊断",
       "definition_of_done": "重复/跨语言/跨窗与新证据改变状态的真实反例通过；保留全部分母",
-      "status": "implemented_pending_cloud"
+      "status": "passed_current_reviewed_scope",
+      "run_id": 34703906428
     },
     {
       "id": "G3",
       "priority": 1,
       "title": "受约束的单股模型输出与真实消费者验收",
       "definition_of_done": "已验证数据、执行字段一致、事实可追溯、语义复核及拟发布入口通过；本批最多2次，先免费验收",
-      "status": "partial"
+      "status": "passed_limited_constrained_observation",
+      "run_id": 34704104399
     },
     {
       "id": "G4",
@@ -76,17 +78,17 @@
   "accepted_budget": {
     "authorization_status": "ACCEPTED_USER_GOAL",
     "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
-    "remaining_http_requests": 2,
+    "remaining_http_requests": 1,
     "max_requests": 2,
     "target_cny": "1.00",
     "ask_above_cny": "1.20",
-    "reserved_cny": "0",
+    "reserved_cny": "0.40",
     "excludes": [
       "bulk_stock_pool_model_calls",
       "new_subscriptions",
       "paid_data"
     ],
-    "paid_workflow_state": "closed_until_free_gate_passes"
+    "paid_workflow_state": "closed_after_request_1"
   },
   "frozen_acceptance_items": [
     {
@@ -107,17 +109,17 @@
     {
       "id": "G2.3",
       "title": "事件分组及跨窗风险复核",
-      "status": "pending"
+      "status": "passed_bounded_scope"
     },
     {
       "id": "G3.1",
       "title": "受约束输出离线与最终消费者",
-      "status": "pending"
+      "status": "passed_bounded_scope"
     },
     {
       "id": "G3.2",
       "title": "真实单股HTTP及语义复核",
-      "status": "pending"
+      "status": "passed_bounded_scope"
     },
     {
       "id": "G4.1",
@@ -170,5 +172,5 @@
       "status": "pending"
     }
   ],
-  "fixed_progress": "3/16 closed; strategy unverified"
+  "fixed_progress": "6/16 closed; limited observation product, strategy unverified"
 }

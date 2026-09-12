@@ -242,15 +242,35 @@
       "news_count": 6,
       "publishers": 4,
       "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34703482717"
+    },
+    {
+      "run_id": 34703906428,
+      "kind": "goal_constrained_free_gate",
+      "commit": "e84f41fa6686cc6714e3978e603d2e7c2da43743",
+      "workflow_conclusion": "success",
+      "model_http_requests": 0,
+      "tests_passed": 70,
+      "warnings": 2
+    },
+    {
+      "run_id": 34704104399,
+      "kind": "goal_constrained_model_1",
+      "commit": "149b66cff016de656cbd70d0dc4f2de3b3cc900f",
+      "workflow_conclusion": "success",
+      "model_http_requests": 1,
+      "manual_report_review": "PASSED_LIMITED_CONSTRAINED_OBSERVATION",
+      "estimated_cost_cny": "0.030078",
+      "actual_cost_cny": null
     }
   ],
   "counts": {
-    "indexed_runs": 17,
+    "indexed_runs": 19,
     "model_report_runs": 6,
     "approved_model_reports": 0,
     "current_round_runs": 10,
     "current_round_free_runs": 7,
-    "current_round_actual_model_http_requests": 3
+    "current_round_actual_model_http_requests": 3,
+    "approved_constrained_research_reports": 1
   },
   "billing": {
     "entire_task_actual_cny": null,
@@ -284,11 +304,26 @@
     },
     "research_goal_batch": {
       "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
-      "actual_http_requests": 0,
-      "reserved_cny": "0",
-      "estimated_cost_cny": "0",
-      "actual_cost_cny": "0",
-      "history_retained": true
+      "actual_http_requests": 1,
+      "reserved_cny": "0.40",
+      "estimated_cost_cny": "0.030078",
+      "actual_cost_cny": null,
+      "history_retained": true,
+      "estimated_peak_upper_cny": "0.060156",
+      "raw_usage": {
+        "prompt_tokens": 12406,
+        "completion_tokens": 4418,
+        "total_tokens": 16824,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 3957
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 12406
+      },
+      "run_id": 34704104399
     }
   },
   "evidence_packages": [
@@ -382,17 +417,17 @@
   "next_model_budget": {
     "authorization_status": "ACCEPTED_USER_GOAL",
     "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
-    "remaining_http_requests": 2,
+    "remaining_http_requests": 1,
     "max_requests": 2,
     "target_cny": "1.00",
     "ask_above_cny": "1.20",
-    "reserved_cny": "0",
+    "reserved_cny": "0.40",
     "excludes": [
       "bulk_stock_pool_model_calls",
       "new_subscriptions",
       "paid_data"
     ],
-    "paid_workflow_state": "closed_until_free_gate_passes"
+    "paid_workflow_state": "closed_after_request_1"
   },
   "top3_enabled_by_this_task": false,
   "schedules_enabled_by_this_task": false,
@@ -434,7 +469,7 @@
     "semantic_original_approved": false,
     "validated_manual_fact_brief_available": true
   },
-  "updated_at_utc": "2026-09-12T15:58:16.001831+00:00",
+  "updated_at_utc": "2026-09-12T16:07:58.201766+00:00",
   "project_status": "FACT_BRIEF_V1_RELEASED; FULL_MODEL_NOT_APPROVED; STRATEGY_UNVALIDATED",
   "project_progress_path": "docs/dsa-project-progress.md",
   "next_actions_path": "docs/DSA_NEXT_ACTIONS.json",
@@ -468,7 +503,7 @@
   "research_goal": {
     "accepted_at_recorded_utc": "2026-09-12T15:49:30.131654+00:00",
     "resumed_head": "313f78f68362eaab928ff7c8112dc98207bd2225",
-    "status": "G2_CLOUD_PASSED_G3_FREE_GATE_PENDING",
+    "status": "G3_BOUNDED_OBSERVATION_PASSED_CONTINUE_G4_G5",
     "local_tests_passed": 6,
     "primary_pdf_verified": 5,
     "primary_pdf_required": 5,
@@ -480,6 +515,9 @@
     "free_run": 34703482717,
     "free_job": 103579232838,
     "cloud_tests_passed": 65,
-    "cloud_warnings": 2
+    "cloud_warnings": 2,
+    "latest_model_review": "docs/xiaomi-constrained-review-20260912.json",
+    "remaining_requests": 1,
+    "fixed_progress": "6/16 closed"
   }
 }

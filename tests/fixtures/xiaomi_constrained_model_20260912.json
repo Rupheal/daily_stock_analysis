@@ -1,0 +1,100 @@
+{
+  "kind": "REAL_PROVIDER_CONTENT",
+  "run_id": 34704104399,
+  "judgments": {
+    "view": "cautious",
+    "evidence_assessments": [
+      {
+        "evidence_id": "prices:2026-09-11",
+        "direction": "uncertain",
+        "confidence": "low",
+        "reason_code": "price_confirmation_needed"
+      },
+      {
+        "evidence_id": "financial:2026-04-01:2026-06-30",
+        "direction": "adverse",
+        "confidence": "medium",
+        "reason_code": "financial_comparison_matters"
+      },
+      {
+        "evidence_id": "financial:2026-01-01:2026-06-30",
+        "direction": "adverse",
+        "confidence": "medium",
+        "reason_code": "cashflow_quality_matters"
+      },
+      {
+        "evidence_id": "issuer:daily_buybacks",
+        "direction": "supportive",
+        "confidence": "low",
+        "reason_code": "issuer_action_limited_signal"
+      },
+      {
+        "evidence_id": "xiaomi-india-sfio-20260909",
+        "direction": "adverse",
+        "confidence": "low",
+        "reason_code": "unresolved_claim_requires_followup"
+      },
+      {
+        "evidence_id": "xiaomi-anthropic-20260910",
+        "direction": "adverse",
+        "confidence": "low",
+        "reason_code": "unresolved_claim_requires_followup"
+      },
+      {
+        "evidence_id": "article-311a737801d9de37",
+        "direction": "context_only",
+        "confidence": "low",
+        "reason_code": "reported_opinion_not_confirmation"
+      },
+      {
+        "evidence_id": "article-f3c7d147ad499c9f",
+        "direction": "supportive",
+        "confidence": "low",
+        "reason_code": "reported_opinion_not_confirmation"
+      },
+      {
+        "evidence_id": "xiaomi-cocktailasr-20260910",
+        "direction": "uncertain",
+        "confidence": "low",
+        "reason_code": "reported_opinion_not_confirmation"
+      },
+      {
+        "evidence_id": "xiaomi-clsa-skynomad-20260911",
+        "direction": "mixed",
+        "confidence": "low",
+        "reason_code": "reported_opinion_not_confirmation"
+      },
+      {
+        "evidence_id": "article-e619af98647a66e9",
+        "direction": "supportive",
+        "confidence": "low",
+        "reason_code": "reported_opinion_not_confirmation"
+      }
+    ],
+    "condition_ids": [
+      "new_complete_session",
+      "primary_risk_update",
+      "financial_followup"
+    ],
+    "execution_basis": {
+      "mode": "watch",
+      "entry_price": null,
+      "stop_price": null,
+      "position_pct": null
+    }
+  },
+  "provider_usage": {
+    "prompt_tokens": 12406,
+    "completion_tokens": 4418,
+    "total_tokens": 16824,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3957
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 12406
+  },
+  "source_commit": "149b66cff016de656cbd70d0dc4f2de3b3cc900f"
+}

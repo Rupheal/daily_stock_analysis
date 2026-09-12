@@ -186,6 +186,7 @@ def render_markdown(brief):
                       '| ' + ' | '.join(['---'] * len(section['headers'])) + ' |']
             lines += ['| ' + ' | '.join(map(clean, row)) + ' |' for row in section['rows']]
             lines.append('')
+        lines += [clean(link['label']) + '：' + _url(link['url']) + '\n' for link in section.get('links', [])]
         for item in section.get('items', []):
             lines += ['### ' + clean(item['title']), ''] + [clean(p) + '\n' for p in item.get('paragraphs', [])]
             lines += [clean(link['label']) + '：' + link['url'] + '\n' for link in item.get('links', [])]
@@ -199,7 +200,7 @@ def render_html(brief):
         '<title>' + esc(brief['title']) + '</title><style>',
         'body{font:16px/1.7 system-ui,sans-serif;color:#192f43;background:#eef3f6;margin:0}main{max-width:960px;margin:32px auto;background:white;padding:36px}h1{font-size:29px}h2{border-bottom:2px solid #d7e5eb;padding-top:16px}h3{font-size:17px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid #d7e5eb;padding:9px;text-align:left}th{background:#eaf3f7}a{color:#145779;overflow-wrap:anywhere}p{overflow-wrap:anywhere}.meta{color:#526879;font-size:14px}.badge{background:#eaf3f7;padding:12px}@media print{body{background:white}main{padding:0;margin:0}h2,h3{break-after:avoid}tr{break-inside:avoid}}',
         '</style><main><h1>' + esc(brief['title']) + '</h1>',
-        '<p class="badge">固定事实版｜覆盖有限｜未启用交易方案</p>',
+        '<p class="badge">' + ('事实与受约束研究判断' if brief.get('product') == 'xiaomi_constrained_research' else '固定事实版') + '｜覆盖有限｜未启用交易方案</p>',
         '<p class="meta">交易日：' + esc(brief['session_date']) + '<br>数据预检：' + esc(brief['data_prepared_at']) + '<br>生成：' + esc(brief['generated_at']) + '</p>',
         '<p>' + ('本次重新取数并核验。' if brief['mode'] == 'refresh' else '已保存预检快照回放；不代表当前行情。') + '</p>']
     for section in brief['sections']:
@@ -209,6 +210,7 @@ def render_html(brief):
             parts += ['<table><thead><tr>' + ''.join('<th>' + esc(h) + '</th>' for h in section['headers']) + '</tr></thead><tbody>']
             parts += ['<tr>' + ''.join('<td>' + esc(c) + '</td>' for c in row) + '</tr>' for row in section['rows']]
             parts.append('</tbody></table>')
+        parts += ['<p><a rel="noreferrer" href="' + esc(_url(link['url'])) + '">' + esc(link['label']) + '</a></p>' for link in section.get('links', [])]
         for item in section.get('items', []):
             parts.append('<h3>' + esc(item['title']) + '</h3>')
             parts += ['<p>' + esc(p) + '</p>' for p in item.get('paragraphs', [])]
