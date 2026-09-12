@@ -1,20 +1,23 @@
 {
   "accepted_budget": {
-    "ask_above_cny": "1.20",
-    "authorization_status": "ACCEPTED_USER_GOAL",
-    "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
-    "excludes": [
-      "bulk_stock_pool_model_calls",
-      "new_subscriptions",
-      "paid_data"
+    "authorization_status": "ACCEPTED_USER_URGENT_GOAL",
+    "batch_id": "DSA_FUNDED_DUAL_20260912",
+    "limit": "actual verified available DeepSeek CNY balance",
+    "old_8_cny_or_2_requests_limit": false,
+    "auto_recharge": false,
+    "historical_ledger_refs": [
+      34704104399,
+      34707511466
     ],
-    "max_requests": 2,
-    "paid_workflow_state": "closed_after_request_1",
-    "remaining_http_requests": 1,
-    "reserved_cny": "0.40",
-    "target_cny": "1.00"
+    "readiness_run": 34708338449,
+    "excludes": [
+      "new_subscriptions",
+      "paid_data",
+      "unrelated_model_experiments"
+    ],
+    "paid_workflow_state": "new full-pool workflow not started; model-content disclosure blocked by auto-review"
   },
-  "active_model_authorization": "DSA_RESEARCH_GOAL_20260912_01",
+  "active_model_authorization": "DSA_FUNDED_DUAL_20260912",
   "completed": [
     {
       "id": "G1",
@@ -74,12 +77,12 @@
     },
     {
       "id": "G4.3",
-      "status": "partial_native_data_U45/45_O657/660; full_model_pending",
+      "status": "partial_O_single_model_and_U36/45_O407/660_independent_history; full_model_pending",
       "title": "独立原生运行及失败分母"
     },
     {
       "id": "G4.4",
-      "status": "passed_reviewable_scope_and_conditional_cost_plan; no bulk authorization",
+      "status": "passed_measured_cost_plan; funded_urgent_goal_authorized",
       "title": "全池付费运行具体方案"
     },
     {
@@ -89,7 +92,7 @@
     },
     {
       "id": "G5.2",
-      "status": "partial_9_macro_series_and_5_flow_records; source_level_replay",
+      "status": "partial_347_clock_ordered_archival_pairs; historical_PIT_still_unverified",
       "title": "历史时点回放证据"
     },
     {
@@ -113,7 +116,7 @@
       "title": "部署准备及等待交接"
     }
   ],
-  "full_pool_model_authorized": false,
+  "full_pool_model_authorized": true,
   "last_verified_native_run": 34705950297,
   "next_actions": [
     {
@@ -152,14 +155,14 @@
       "definition_of_done": "冻结独立代码配置与候选池，真实运行和覆盖数/分母留档；不得以样本冒充O全池",
       "id": "G4",
       "priority": 1,
-      "status": "partial_real_native_data; full_model_and_3_price_anomalies_pending",
+      "status": "partial_native_data_and_independent_history; raw_model_content_storage_authorization_pending",
       "title": "U45与O全港股通独立覆盖及原生实例验收"
     },
     {
       "definition_of_done": "冻结规则、PIT证据与交易时点，可复算成本后指标，接受/拒绝/不足均有证据",
       "id": "G5",
       "priority": 2,
-      "status": "in_progress_free_history_finalization; future_observation_waiting",
+      "status": "descriptive_clock_replay_completed; full_PIT_and_future_windows_pending",
       "title": "资金潮汐/宏观历史回放、时间外与因子对照"
     },
     {
@@ -182,11 +185,60 @@
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-12T17:19:32.129Z",
+  "updated_at_utc": "2026-09-12T17:53:53.539Z",
   "user_directive_override": {
     "priority": "urgent",
     "path": "docs/dsa-urgent-user-directive.md",
     "instruction": "User has recharged DeepSeek and authorizes necessary continued research calls; prioritize Monday pre-open deliverables; previous small-budget pause rules superseded for necessary DeepSeek work. Preserve actual usage/history and do not start duplicate runs.",
-    "receipt": "shared_repository_notice_only_not_chat_read_receipt"
+    "receipt": "read_and_applied; blocked disclosure separately recorded"
+  },
+  "budget_history": [
+    {
+      "ask_above_cny": "1.20",
+      "authorization_status": "ACCEPTED_USER_GOAL",
+      "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
+      "excludes": [
+        "bulk_stock_pool_model_calls",
+        "new_subscriptions",
+        "paid_data"
+      ],
+      "max_requests": 2,
+      "paid_workflow_state": "closed_after_request_1",
+      "remaining_http_requests": 1,
+      "reserved_cny": "0.40",
+      "target_cny": "1.00",
+      "state": "superseded_by_explicit_urgent_user_goal"
+    }
+  ],
+  "model_content_export_authorized": false,
+  "model_content_export_block": {
+    "reason": "Auto-review rejected full prompts/responses/request data in public GitHub artifacts; research fees are authorized",
+    "detail_document": "docs/dsa-content-export-boundary.md",
+    "repository_visibility": "public",
+    "complete_raw_output_save_permission_required": true,
+    "workflow_15_started": false
+  },
+  "latest_price_research": {
+    "run_id": 34709328183,
+    "session": "2026-09-11",
+    "U": {
+      "passed": 36,
+      "denominator": 45,
+      "isolated": 9
+    },
+    "O": {
+      "passed": 407,
+      "denominator": 660,
+      "isolated": 253
+    },
+    "scope": "21 observed daily OHLCV comparisons and retained-history geometry; not full corporate-action or model validation",
+    "model_http_requests": 0
+  },
+  "latest_clock_replay": {
+    "pairs": 347,
+    "historical_pit_predictions": 0,
+    "genuine_out_of_sample_results": 0,
+    "forward_horizons": "1/3/5/10/20 all waiting",
+    "document": "docs/dsa-clock-replay-results.md"
   }
 }
