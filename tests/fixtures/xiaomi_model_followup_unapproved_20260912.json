@@ -1,0 +1,275 @@
+{
+  "provenance": "Actual parsed output from authorized single-call run 34688694878. Automatic checks at 177cc418 passed; manual review rejected execution wording and evidence overclaims.",
+  "context": {
+    "today": {
+      "amount": 2969552900,
+      "close": 26.36,
+      "date": "2026-09-11",
+      "high": 26.66,
+      "low": 25.44,
+      "ma10": 27.22,
+      "ma20": 27.39,
+      "ma5": 26.62,
+      "open": 25.66,
+      "pct_chg": 1.6975308641975273,
+      "volume": 113533443,
+      "volume_ratio": 0.72
+    },
+    "yesterday": {
+      "amount": 3850950200,
+      "close": 25.92,
+      "date": "2026-09-10",
+      "high": 26.4,
+      "low": 25.68,
+      "ma10": 27.37,
+      "ma20": 27.35,
+      "ma5": 27.03,
+      "open": 26.04,
+      "pct_chg": -1.74374526156178,
+      "volume": 148663013,
+      "volume_ratio": 0.98
+    },
+    "volume_change_ratio": 0.76
+  },
+  "result": {
+    "action": "watch",
+    "action_label": "观望",
+    "analysis_summary": "小米集团-W（HK01810）9月11日收26.36元，涨1.70%，但MA5(26.62)＜MA10(27.22)＜MA20(27.39)，仍为空头排列，趋势强度25/100，系统评分47分属观望区间。MA5乖离率-0.96%处于安全范围，量比0.72为缩量反弹。消息面偏多：里昂维持优于大市、目标价35港元，澎程新车首4分钟1万订单、9月12日起全国75城交付。基本面偏多但技术面尚未确认，叠加行情与筹码数据缺失，建议观望，等待站稳MA10后重新评估。",
+    "buy_reason": "按“趋势交易、顺势而为”原则，MA5<MA10<MA20为空头排列，基线要求“只做多头排列的股票，空头排列坚决不碰”，故不给出买入。当前价格虽略低于MA5（乖离率-0.96%属回踩买点形态），且里昂维持优于大市、澎程系列交付在即，但事件面偏多只能视为“事件先行、技术待确认”，在均线未修复、量能未放大之前，以观望等待确认为主，符合“严进不追高、效率优先”的交易纪律。",
+    "change_pct": 1.6975308641975273,
+    "code": "HK01810",
+    "company_highlights": "亮点：澎程系列首四分钟锁定1万张订单，2026年预计交付约9万辆（里昂），自9月12日起全国75城交付；同步发布折叠手机与旗舰平板，产品结构向高端迁移，优先强调平均售价与毛利率；中策橡胶披露为澎程N70供应轮胎，供应链配套落地。风险：汽车业务尚未核验盈利贡献，行业竞争与供应链扰动可能压制估值；公司层面财报数据缺失，无法验证利润与现金流。",
+    "confidence_level": "中",
+    "current_price": 26.36,
+    "dashboard": {
+      "battle_plan": {
+        "action_checklist": [
+          "❌ 检查项1：多头排列——MA5<MA10<MA20，当前为空头排列，不符合趋势交易前提",
+          "✅ 检查项2：乖离率合理——MA5乖离率-0.96%，处于安全范围（<5%），无追高风险",
+          "⚠️ 检查项3：量能配合——量比0.72、相对昨日0.76，缩量反弹，未形成放量突破",
+          "⚠️ 检查项4：无重大利空——近3日无减持、处罚、业绩变脸公告，但行业供应链竞争情绪存在扰动",
+          "⚠️ 检查项5：筹码健康——筹码分布数据不可用，无法判断",
+          "⚠️ 检查项6：PE估值合理——估值与财务数据缺失，无法判断"
+        ],
+        "execution_basis": {
+          "entry_price": 26.62,
+          "notes": "入场价26.62元仅为条件触发假设（MA5企稳价），当前不代表可执行指令；position_pct为0表示现阶段不建仓。止损距离=(26.62-25.40)/26.62≈4.58%。",
+          "position_pct": 0,
+          "stop_price": 25.4
+        },
+        "position_strategy": {
+          "entry_plan": "空头排列未修复前不建仓。触发条件：放量站稳MA10（27.22元）且MA5上穿MA10，届时按26.62元附近回踩确认分两批介入，首批不超过3成，第二批需站稳MA20后补足。",
+          "risk_control": "假设入场价26.62元、止损价25.40元，股价止损距离约4.58%；账户名义风险=建议仓位比例×4.58%，跳空缺口与交易费用另计。在未获得账户规模与风险预算前，不给出确定投入金额或保证最大回撤。",
+          "suggested_position": "建议仓位：0成（当前观望，不建仓）"
+        },
+        "sniper_points": {
+          "ideal_buy": "理想买入点：26.62元（MA5）附近——需先放量站稳MA10并使MA5上穿MA10后回踩确认，当前空头排列下不建议直接执行",
+          "secondary_buy": "次优买入点：25.44元（9月11日低点）附近缩量企稳后观察，未确认前不入场",
+          "stop_loss": "止损位：25.40元（跌破9月11日低点25.44元即刻执行）",
+          "take_profit": "目标位：27.22元（MA10压力），有效突破后上看27.39元（MA20）"
+        }
+      },
+      "core_conclusion": {
+        "one_sentence": "空头排列未修复，暂不买入，等站稳MA10再评估",
+        "position_advice": {
+          "has_position": "持仓者可继续持有但需设纪律：上方压力看MA10（27.22元）与MA20（27.39元），反弹至该区间若量能不足可考虑减磅；跌破25.44元（9月11日低点）则减仓，跌破25.40元按止损处理。",
+          "no_position": "空仓者暂不建仓：当前MA5<MA10<MA20为空头排列，趋势强度仅25/100，不符合“只做多头排列”的基线。可等待股价放量站稳MA10（27.22元）且MA5上穿MA10后，再按26.62元附近回踩确认分批小仓介入，首批不超3成。"
+        },
+        "signal_type": "🟡持有观望",
+        "time_sensitivity": "不急"
+      },
+      "data_perspective": {
+        "chip_structure": {},
+        "chip_unavailable_reason": "筹码分布未启用或数据源暂不可用，未纳入筹码判断。",
+        "price_position": {
+          "bias_ma5": -0.96,
+          "bias_status": "安全",
+          "current_price": 26.36,
+          "ma10": 27.22,
+          "ma20": 27.39,
+          "ma5": 26.62,
+          "resistance_level": 27.22,
+          "support_level": 25.44
+        },
+        "trend_status": {
+          "is_bullish": false,
+          "ma_alignment": "空头排列：MA5(26.62) < MA10(27.22) < MA20(27.39)",
+          "trend_score": 25
+        },
+        "volume_analysis": {
+          "turnover_rate": null,
+          "volume_meaning": "量比为前五个完整交易日均量的0.72倍，相对昨日为0.76倍，属缩量反弹：抛压有所减轻，但承接力与突破力度不足，尚未构成放量突破信号。",
+          "volume_ratio": 0.72,
+          "volume_status": "缩量"
+        }
+      },
+      "decision_stability": {
+        "applied": false,
+        "capital_flow_bias": "unavailable",
+        "capital_flow_status": "市场资金流服务暂不支持",
+        "current_price": 26.36,
+        "reason": "资金流不可用，未使用资金流校准",
+        "resistance": 27.22,
+        "support": 25.44
+      },
+      "decision_type": "hold",
+      "intelligence": {
+        "earnings_outlook": "本轮未完成财报原始披露、报告期间、币种与单位核验，收入、利润、现金流、ROE及分红数据均缺失，无法判断实际业绩。仅机构观点预期第三季利润触底（2026-09-11 里昂），属预测性表述，不等于已实现盈利。",
+        "latest_news": "【最新消息】2026-09-11 中信里昂维持小米「优于大市」评级、目标价35港元，预计收入及盈利本季见底；2026-09-11 小米董事长雷军宣布澎程系列增程式SUV自9月12日起在全国75个城市开始交付，N70Pro、N70Max、N90Max售价20.99万、23.99万、26.99万元人民币；2026-09-11 里昂指该系列首四分钟锁定1万张订单，预计2026年交付约9万辆。",
+        "positive_catalysts": [
+          "2026-09-11 中信里昂维持「优于大市」评级、目标价35港元，判断公司收入及利润本季触底",
+          "2026-09-11 澎程系列首四分钟锁定1万张订单，机构预计2026年交付约9万辆，9月12日起全国75城开始交付",
+          "2026-09-11 中策橡胶向上交所披露将为澎程N70车型供应轮胎，供应链配套逐步落地"
+        ],
+        "risk_alerts": [
+          "2026-09-11 摩通报告中提及小米供应商多元化策略，被市场解读为加剧电池行业悲观情绪，属行业竞争与供应链层面的扰动，非公司直接利空",
+          "技术面风险：均线空头排列（MA5<MA10<MA20），趋势强度仅25/100，反弹持续性尚未得到确认",
+          "估值与筹码数据缺失，无法对PE、获利盘与集中度做风险校验"
+        ],
+        "sentiment_summary": "机构评级与新车交付订单偏正面，但技术面仍为空头排列，属“基本面/事件面偏多、技术面尚未确认”。"
+      },
+      "operation_advice": "观望",
+      "phase_decision": {
+        "action_window": "非交易日观察",
+        "confidence_reason": "日线与技术数据可用、近3日新闻可核验，但实时行情缺失（realtime_quote_missing）、筹码分布不可用、基本面为partial且财务未核验，故置信度定为中，不得为高。",
+        "data_limitations": [
+          "行情数据缺失（realtime_quote_missing），无实时价格与盘口",
+          "筹码分布数据缺失，无法评估获利比例、平均成本与集中度",
+          "基本面数据为partial，收入/利润/现金流/ROE/分红均未完成核验",
+          "quote: missing"
+        ],
+        "immediate_action": "观察",
+        "next_check_time": "2026-09-14（下一交易日）开盘及收盘",
+        "phase_context": {
+          "analysis_intent": "auto",
+          "effective_daily_bar_date": "2026-09-11",
+          "is_market_open_now": false,
+          "is_partial_bar": false,
+          "is_trading_day": false,
+          "market": "hk",
+          "market_local_time": "2026-09-12T18:33:19.502371+08:00",
+          "minutes_to_close": null,
+          "minutes_to_open": null,
+          "phase": "non_trading",
+          "session_date": "2026-09-12",
+          "trigger_source": "cli",
+          "warnings": []
+        },
+        "watch_conditions": [
+          "下一交易日能否放量站稳MA5（26.62元）并向MA10（27.22元）发起有效攻击",
+          "是否跌破9月11日低点25.44元，跌破则趋势进一步转弱",
+          "澎程系列自9月12日起全国交付的订单与交付数据后续落地情况"
+        ]
+      },
+      "sentiment_score": 47,
+      "signal_attribution": {
+        "fundamentals": 21,
+        "market_conditions": 26,
+        "news_sentiment": 37,
+        "strongest_bearish_signal": "均线空头排列（MA5<MA10<MA20），趋势强度仅25/100，反弹未获量能确认",
+        "strongest_bullish_signal": "里昂维持「优于大市」评级及目标价35港元，澎程系列首4分钟锁定1万订单并自9月12日起全国交付",
+        "technical_indicators": 16
+      }
+    },
+    "data_sources": "数据来源：本分析上下文包 pack_version 1.0；日线与技术指标来自 storage.get_analysis_context（最新完整交易日 2026-09-11）；新闻来自本地资讯证据池（AASTOCKS、经济通、MT Newswires、futunn 等，2026-09-11 发布）；基本面为 realtime_quote 部分字段（partial）；行情实时数据缺失（realtime_quote_missing），筹码分布数据缺失（chip_distribution_missing）。未经核验的财务数据、估值数据与筹码指标均标明缺失。",
+    "decision_type": "hold",
+    "error_message": null,
+    "fundamental_analysis": "本轮未完成财报原始披露、报告期间、币种与单位核验，收入、归母净利润、经营现金流、ROE、每股分红与TTM股息率数据均缺失，无法对基本面做量化判断。仅能从公开机构观点看到：里昂（2026-09-11）预计公司第三季利润触底，属预测性观点，非已实现业绩。基本面偏多但技术面未确认，需等待正式财务披露核验。",
+    "hot_topics": "澎程系列增程式SUV全国交付（9月12日起75城）、首4分钟1万订单、2026年预计交付9万辆、折叠手机与旗舰平板高端化、电池供应链多元化与行业价格竞争、语音识别技术论文发布",
+    "key_points": "均线空头排列MA5<MA10<MA20，MA5乖离率-0.96%无追高风险，量比0.72缩量反弹待放量确认，里昂维持优于大市且澎程系列9月12日全国交付，行情与筹码数据缺失限制判断精度",
+    "ma_analysis": "MA5=26.62、MA10=27.22、MA20=27.39，三线依次下压，呈清晰空头排列。现价26.36元位于MA5下方，MA5对价格形成短期压制，MA10与MA20构成上方双层压力（27.22/27.39元）。均线尚未出现粘合迹象，短期扭转需要价格连续放量上攻并带动MA5走平上翘，目前条件不具备。",
+    "market_sentiment": "机构情绪偏多（里昂优于大市、目标价35港元；摩通对产业链竞争持谨慎但不认定结构恶化），新车交付订单形成情绪催化；但技术面情绪为空头排列、缩量反抽，资金面尚未给出明确做多确认，整体呈“消息偏暖、技术未确认”的分歧状态。",
+    "market_snapshot": {
+      "amount": "29.70 亿元",
+      "amplitude": "4.71%",
+      "change_amount": "0.44",
+      "close": "26.36",
+      "date": "2026-09-11",
+      "high": "26.66",
+      "low": "25.44",
+      "open": "25.66",
+      "pct_chg": "1.70%",
+      "prev_close": "25.92",
+      "volume": "1.14 亿股"
+    },
+    "market_structure_context": {
+      "market": "hk",
+      "market_theme_context": {
+        "active_themes": [],
+        "data_quality": {
+          "errors": [],
+          "missing_fields": [
+            "a_share_theme_context"
+          ],
+          "sources": [
+            {
+              "dataset": "market_structure",
+              "message": "stock market structure is only supported for A-share first version",
+              "provider": "dsa",
+              "status": "not_supported"
+            }
+          ],
+          "status": "not_supported"
+        },
+        "hotspot_constituents": [],
+        "lagging_themes": [],
+        "leader_stocks": [],
+        "leading_concepts": [],
+        "leading_industries": [],
+        "market": "hk",
+        "schema_version": "market-theme-v1",
+        "status": "not_supported",
+        "theme_breadth": {
+          "active_count": 0,
+          "lagging_count": 0,
+          "leading_concept_count": 0,
+          "leading_industry_count": 0
+        },
+        "trade_date": "2026-09-11"
+      },
+      "schema_version": "market-structure-v1",
+      "status": "not_supported",
+      "stock_market_position": {
+        "market": "hk",
+        "missing_fields": [
+          "a_share_theme_context"
+        ],
+        "related_boards": [],
+        "risk_tags": [],
+        "schema_version": "stock-market-position-v1",
+        "status": "not_supported",
+        "stock_code": "HK01810",
+        "stock_name": "小米集团-W",
+        "stock_role": "unknown",
+        "theme_phase": "unknown"
+      },
+      "trade_date": "2026-09-11"
+    },
+    "medium_term_outlook": "中期1-2周：关键看MA5能否上穿MA10、并有效收复MA20（27.39元）。澎程系列交付与订单落地、第三季业绩触底预期是潜在催化，但均线修复前不宜给出方向性看多判断；若两周内均线仍维持空头并逐级下压，则维持震荡偏弱判断。",
+    "model_used": "deepseek-flash",
+    "name": "小米集团-W",
+    "news_evidence_present": true,
+    "news_result_count": null,
+    "news_result_count_known": true,
+    "news_summary": "近3日（2026-09-09至2026-09-11）消息面整体偏正面：2026-09-11 中信里昂维持小米「优于大市」评级、目标价35港元并预计第三季利润触底；同日里昂指澎程系列首四分钟锁定1万订单、预计2026年交付约9万辆；2026-09-11 雷军宣布澎程系列自9月12日起全国75城交付；2026-09-11 中策橡胶披露为澎程N70供应轮胎；2026-09-11 摩通报告提及小米供应商多元化策略，令电池行业悲观情绪升温。另有2026-09-11报道的小米语音识别技术论文（9月10日提交），属技术研究披露，商业影响待验证。",
+    "operation_advice": "观望",
+    "pattern_analysis": "K线实体0.70元、上影线0.30元、下影线0.22元，实体占振幅约57%，为带小上影的实体阳线，收盘站上开盘价但未能守住当日高点26.66元，显示上方抛压仍在。形态上属于空头趋势中的反弹试探，尚未形成明确的底部形态（如双底、W底），也无放量长阳突破的确认信号。",
+    "report_language": "zh",
+    "report_quality_audit": {
+      "execution_plan_enabled": true,
+      "findings": [],
+      "passed": true,
+      "scope": "Selected numerical/semantic checks only; manual review remains necessary."
+    },
+    "risk_warning": "1）技术面为空头排列，趋势强度仅25/100，若跌破25.44元前低将进一步转弱；2）行情数据缺失，无法核对实时价格与盘口，盘中变化可能超出本报告假设；3）筹码与估值数据不可用，获利盘与集中度风险无法校验；4）新车交付与订单为机构预测及媒体口径，尚未转化为经核验的收入与利润；5）行业供应链竞争与价格战情绪可能持续扰动估值。本报告不构成投资建议，不保证收益。",
+    "search_performed": true,
+    "sector_position": "小米集团-W同时覆盖智能手机、IoT与智能电动车业务，属于科技硬件与新能源车交叉板块。9月11日澎程系列新车宣布自9月12日起全国75城交付，标志其汽车业务进入规模化交付阶段；同时摩通报告提到小米供应商多元化策略对电池行业情绪造成扰动，反映其产业链影响力提升的同时也面临供应链竞争与价格战压力。",
+    "sentiment_score": 47,
+    "short_term_outlook": "短期1-3日：若下一交易日能放量站稳MA5（26.62元）并向MA10（27.22元）发起攻击，则反抽有望延续至27.2-27.4元压力区；若量能继续萎缩或跌破25.44元前低，则空头结构强化，可能进一步下探。区间震荡概率高于单边突破。",
+    "success": true,
+    "technical_analysis": "均线系统为空头排列，趋势强度25/100。RSI 43.6处中性偏弱区域，MACD位于中性区域，未出现底背离确认。乖离率MA5为-0.96%（安全）、MA10为-3.16%，股价位于MA20下方约3.8%，属于超跌反抽范畴。系统信号为观望，评分47/100。技术面核心矛盾在于：价格位置已具备回踩买点形态，但均线结构尚不支持做多，需等待趋势确认。",
+    "trend_analysis": "9月11日收出带小上下影线的阳线，实体0.70元、上影0.30元、下影0.22元，实体占振幅约57%，属温和反弹但上攻力度有限。股价自前期高位回落至26元区间后横向震荡，目前处在MA5下方约1%、MA10下方约3.2%的位置，均线整体向下发散，属于空头趋势中的技术性反抽，尚未形成底部反转结构。",
+    "trend_prediction": "震荡",
+    "volume_analysis": "9月11日成交1.14亿股、成交额29.70亿元，量比（对前五个完整交易日均量）0.72，相对前一交易日0.76，属缩量反弹。缩量意味着抛压减轻，但也说明新增资金承接意愿有限，反弹缺乏量能背书；有效反转通常需要放量突破MA10，当前量价配合度仅为中性偏弱。换手率数据缺失，无法进一步判断活跃度。"
+  }
+}

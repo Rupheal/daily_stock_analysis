@@ -1,5 +1,5 @@
-Warning: truncated output (original token count: 62032)
-Total output lines: 2391
+Warning: truncated output (original token count: 62094)
+Total output lines: 2393
 
 # Changelog
 
@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > For user-friendly release highlights, see the [GitHub Releases](https://github.com/ZhuLinsen/daily_stock_analysis/releases) page.
 
 ## [Unreleased]
+
+- [修复] 港股报告复核将止损注释中的即时离场阈值纳入一致性检查，并拦截有限新闻检索推导“无利空”、未核验基本面方向及虚假实时行情来源；增加第二次真实输出的无模型回放。
 
 - [测试] 经授权追加一次小米修复后验收；模型前确认未核验财务块已隔离，失败报告即使未入历史库也保留原始响应、拦截前后结果及用量证据。
 
@@ -141,145 +143,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - [新功能] Agent 工具调用支持按类别（data/search/analysis/action/market）配置默认超时，并允许单工具声明 `timeout_seconds`；有效超时按 first-wins 优先级解析（显式 per-run `tool_call_timeout_seconds` > 单工具显式 `timeout_seconds` > 类别默认 > 无限制），剩余 wall-clock 预算仅作不可突破的外层 cap，超时后返回结构化 `{"timeout": true}` 错误（标记 `retriable: false` 并写入 `non_retriable_tool_results` 防重试重复执行）供 Agent 继续执行而非中断循环（fixes #1890）。
 - [修复] Agent 工具注册表（`src/agent/factory.get_tool_registry`）由模块级缓存改为按「类别超时映射的值」比对失效，规避 CPython 回收对象后地址复用（`id(config)` 相同）导致配置 reload 后的 `Config` 被误判为未变、沿用过期超时的真 bug；新增 `_coerce_config_timeout` 类型白名单，使调用方传入 `MagicMock` / 缺属性 stub / 脏字符串（如 `float(MagicMock())` 静默得到 1.0）时降级为「无类别限制」而非崩溃或强加 1 秒超时；`build_agent_executor(config)` / `build_agent_chat_executor(config)` 现已把调用方 `config` 透传给 `get_tool_registry(config)`（不再无参调用冻结首构 registry）；`main._reload_runtime_config` 与 `SystemConfigService._reload_runtime_singletons`（及 `update()`→`reload_now` 路径）在配置热重载时调用 `reset_tool_registry()` 强制重建；回归测试补充「传入新 config 后 registry 重建」「reload 后新超时应生效」及「builder 透传 config」三类场景（#1890 的 review follow-up，闭环 OR-COM-dd1e8fa7 / OR-COM-bff42110）
-- [修复] Agent 工具超时 review 闭环（fixes #1890 的 4 个 blocker）：超时解析由 min 契约改为 first-wins（显式 per-run `tool_call_timeout_seconds` > 单工具 `ToolDefinition.timeout_seconds` > 类别默认 > 无限制，剩余 wall-clock 预算只作不可突破的外层 cap；research 路径不再传 `tool_call_timeout_seconds` 以免覆盖类别限制）；超时结果标记 `retriable: false` 并写入 `non_retriable_tool_results` 阻断 LLM 同调用重试重入，且超时触发时为仍在后台运行的 handler 武装协作取消信号（`is_tool_cancellation_requested()` 与既有 `check_tool_execution()` 检查点均响应，handler 从不轮询则行为不变），作为 review 要求的「handler 内协作取消」缓解，规避 Python 线程无法 force-stop 导致的重复执行与副作用；`_coerce_config_timeout` 对 `inf`/`nan`/负数降级为「无限制」，根绝 `future.result(timeout=inf)` 触发 `OverflowError`；`get_tool_registry` / `reset_tool_registry` 加 `threading.Lock` 双检锁，且重建后返回本次构建的局部 registry（而非全局缓存），消除并发重建竞态与跨调用超时串扰；`@tool` 装饰器将 `ToolPolicy.timeout_seconds` 折叠进 `ToolDefinition` 单一来源；统一单/并行工具超时包装（单一 executor + deadline 驱动的 wait loop，消除并行路径嵌套 executor 与线程翻倍，duration 精确到各工具自身超时值），并新增快慢工具混合并行回归；同步 `docs/full-guide_EN.md` 的超时环境变量文档；测试覆盖 first-wins、non-retriable、协作取消接线、finite 校验、缓存线程安全与快慢混合并行。
-- [修复] 按最新 review 复核收敛 3 处正确性问题（OR-COM-7f3d3f5b / 3d6b61f8 / a1e8b0c2）：`BaseAgent._filtered_registry()` 携带源 registry 的类别超时映射（工具子集仍生效类别上限，不再绕过 #1890 类别超时）；并行批次 >5 时排队调用的 per-tool 超时自 worker 实际开始起算（不再提交即烧预算导致对未启动调用的假超时）；`get_tool_registry()` 缓存命中快路径在锁内读取一致对（消除与 `reset_tool_registry()` 竞态返回 `None` 或错配 registry）。新增对应回归测试。
-- [新功能] 股票名称解析引擎重构增强：新增 `resolver_name_to_code_list()` 公开 API，返回按市场排序（A 股→港股→美股）的 `Stock` 候选列表（最多 5 个），新增 `US_stock_code_match()` 匹配美股 ticker（1~5 位字母且仅限本地库已存在代码，避免 hello/open 等英文词误判为股票）；AkShare 全量 A 股数据经幂等 `extend_AkShare()` 合并进全局 `stockDB`（30 分钟缓存 + 失败 5 分钟退避 + Future 单飞：TTL 过期 stale-while-revalidate 零等待、冷启动等待上界由拉取超时推导（拉取经子进程封顶 25s）、worker 先清账唤醒等待者再做日志/落盘（finally 兜底 BaseException）、成功拉取落盘 `data/cache` 跨重启复用，非中文输入跳过网络扩展），匹配策略升级为「精确→子串（≥2 汉字）→拼音子串（≥5 字母）→difflib 模糊（0.8，单字误写 0.7 兜底）」；`resolve_name_to_code()` 保持既有本地优先语义（本地精确命中零网络，调用方离线低延迟契约不变），跨市场候选能力由 `resolver_name_to_code_list()` 独立提供；解析全链路线程安全（`stockDB` 读写加锁、名称/拼音索引随库变更自动失效），新增 40 个单元测试覆盖精确/跨市场排序/子串/拼音/模糊/幂等扩展/失败退避/多候选场景。
-- [改进] `StockDaily` 表新增可空 `canonical_id` 列并支持双写（Expand-Contract PR2，issue #2207）：自愈式迁移幂等加列 + 普通索引 `ix_stock_daily_canonical_id`，存量行与 `save_daily_data` 未显式传参时均经 index-aware 推导（裸指数码命中注册表时统一到指数 `canonical_id`，避免同一指数按输入形态分裂到不同桶——例如裸 `000300` 与显式 `sh000300` 现在都收敛到 `sh000300`，而非裸码被推导为 `sz000300`），推导失败写 NULL 降级；读路径仍用 `code` 列，`(code, date)` 唯一约束保留不变。显式登记契约漂移：PRD Glossary/FR-1/DD-3 与架构 AD-1/AD-7 中 canonical_id 的点分格式描述（`000016.SH`）已被 Phase 1 已合入代码的前缀格式（`sh000016`）取代，本变更遵循代码，PRD/架构文档的同步修正留待后续 PR 统一收敛。
-- [新功能] 当前注册表已识别的 5 个沪深 A 股指数以显式市场输入按 canonical 身份路由：名称优先使用注册表并以 Tencent、AkShare、TickFlow 兜底，日线固定使用 Tencent、AkShare、TickFlow、yfinance 多源降级链，不读取普通 A 股日 K 的 `*_PRIORITY` 配置；裸代码仍按股票处理，并隔离同码股票名称缓存。
-- [修复] Anspire 搜索默认切换为全球区域模式（`region_mode=2`），使海外股票新闻检索能够覆盖境外信息。
-- [修复] 桌面端将 `builder-util-runtime` 升级至 9.7.0，修复 CVE-2026-54673 涉及的 HTTP 重定向凭据头信息泄露风险。
-- [文档] 增加 xAI Grok 的 LiteLLM 配置示例、Grok Bot 集成指南和异步分析 Skill，明确分析模型与 AI teammate 两类接入边界。
-- [测试] 固定 yfinance 股息 TTM 与单股报告文件名的时间夹具，消除跨日期和合并后时间基准冲突造成的 CI 波动。
-
-## [3.30.0] - 2026-08-09
-
-### 发布亮点
-
-- feat: LLM 渠道新增显式 Chat Completions / Responses API Surface，统一连接测试、分析、选股、图片识别与状态诊断的协议路由。
-- feat: Agent Chat 按会话持久化 Skill 选择，刷新和切换会话后可恢复，并完整保留省略、显式空列表与非空选择三态。
-- feat: Electron 桌面端恢复历史报告、市场复盘和完整报告分享图；未配置自定义品牌时，统一使用随包二维码与默认“小红书@霸天土小豆”账号文案。
-- feat: 新增单条分析目标解析契约，收紧交易所后缀、指数别名及美股代码的规范化边界。
-- fix: 修复移动端侧栏滚动、自选股详情状态、长通知标题分片及 Lark 国际域名等用户可见稳定性问题。
-- improve: 后端 CI 按测试文件分成三个 runner 并行执行，并收紧 Web 共享资产与跨层契约的门禁范围。
-
-### 新功能
-
-- LLM 渠道支持显式选择 Chat Completions 或 Responses API Surface，兼容 Responses-only 模型，并让连接测试、主分析、选股、图片识别和状态诊断复用统一路由契约。
-- Agent Chat 将 Skill 选择按会话持久化，刷新或切换会话后恢复；历史会话继续保留…44032 tokens truncated… NO tag** — only tags when commit message explicitly contains `#patch`, `#minor`, or `#major`
-- ♻️ **Formatter and notification refactor** (#516)
-
-### Fixed
-- 🐛 **STOCK_LIST not refreshed on scheduled runs** — `.env` or WebUI changes to `STOCK_LIST` now hot-reload before each scheduled analysis (#529)
-- 🐛 **WebUI fails to load with MIME type error** — SPA fallback route now resolves correct `Content-Type` for JS/CSS files (#520)
-- 🐛 **AstrBot sender docstring misplaced** — `import time` placed before docstring in `_send_astrbot`, causing it to become dead code
-- 🐛 **Telegram Markdown link escaping** — `_convert_to_telegram_markdown` escaped `[]()` characters, breaking all Markdown links in reports
-- 🐛 **Duplicate `discord_bot_status` field** in Config dataclass — second declaration silently shadowed the first
-- 🧹 **Unused imports** — removed `shutil`/`subprocess` from `main.py`
-- 🔧 **Config validation and Vision key check** (#525)
-
-### Docs
-- 📝 Clarified GitHub Actions non-trading-day manual run controls (`TRADING_DAY_CHECK_ENABLED` + `force_run`) for Issue #461 / PR #466
-
-## [3.4.8] - 2026-03-02
-
-### Fixed
-- 🐛 **Desktop exe crashes on startup with `FileNotFoundError`** — PyInstaller build was missing litellm's JSON data files (e.g. `model_prices_and_context_window_backup.json`). Added `--collect-data litellm` to both Windows and macOS build scripts so the files are correctly bundled in the executable.
-
-### CI
-- 🔧 Cache Electron binaries on macOS CI runners to prevent intermittent EOF download failures when fetching `electron-vX.Y.Z-darwin-*.zip` from GitHub CDN
-- 🔧 Fix macOS DMG `hdiutil Resource busy` error during desktop packaging
-
-### Docs
-- 📝 Clarify non-trading-day manual run controls for GitHub Actions (`TRADING_DAY_CHECK_ENABLED` + `force_run`) (#474)
-
-## [3.4.7] - 2026-02-28
-
-### Added
-- 🧠 **CN/US Market Strategy Blueprint System** (#395) — market review prompt injects region-specific strategy blueprints with position sizing and risk trigger recommendations
-
-### Fixed
-- 🐛 **`TRADING_DAY_CHECK_ENABLED` env var and `--force-run` for GitHub Actions** (#466)
-- 🐛 **Agent pipeline preserved resolved stock names** (#464) — placeholder names no longer leak into reports
-- 🐛 **Code cleanup** (#462, Fixes #422)
-- 🐛 **WebUI auto-build on startup** (#460)
-- 🐛 **ARCH_ARGS unbound variable** (#458)
-- 🐛 **Time zone inconsistency & right panel flash** (#439)
-
-### Docs
-- 📝 Clarify potential ambiguities in code (#343)
-- 📝 ENABLE_EASTMONEY_PATCH guidance for Issue #453 (#456)
-
-## [3.4.0] - 2026-02-27
-
-### Added
-- 📡 **LiteLLM Direct Integration + Multi API Key Support** (#454, Fixes #421 #428)
-  - Removed native SDKs (google-generativeai, google-genai, anthropic); unified through `litellm>=1.80.10`
-  - New config: `LITELLM_MODEL`, `LITELLM_FALLBACK_MODELS`, `GEMINI_API_KEYS`, `ANTHROPIC_API_KEYS`, `OPENAI_API_KEYS`
-  - Multi-key auto-builds LiteLLM Router (simple-shuffle) with 429 cooldown
-  - **Breaking**: `.env` `GEMINI_MODEL` (no prefix) only for fallback; explicit config must include provider prefix
-
-### Changed
-- ♻️ **Notification Refactoring** (#435) — extracted 10 sender classes into `src/notification_sender/`
-
-### Fixed
-- 🐛 LLM NoneType crash, history API 422, sniper points extraction
-- 🐛 Auto-build frontend on WebUI startup — `WEBUI_AUTO_BUILD` env var (default `true`)
-- 🐛 Docker explicit project name (#448)
-- 🐛 Bocha search SSL retry (#445, #446) — transient errors retry up to 3 times
-- 🐛 Gemini google-genai SDK migration (Fixes #440, #444)
-- 🐛 Mobile home page scrolling (Fixes #419, #433)
-- 🐛 History list scroll reset (#431)
-- 🐛 Settings save button false positive (fixes #417, #430)
-
-## [3.3.22] - 2026-02-26
-
-### Added
-- 💬 **Chat History Persistence** (Fixes #400, #414) — `/chat` page survives refresh, sidebar session list
-- 🎨 Project VI Assets — logo icon set, PSD, vector, banner (#425)
-- 🚀 Desktop CI Auto-Release (#426) — Windows + macOS parallel builds
-
-### Fixed
-- 🐛 Agent Reasoning 400 & LiteLLM Proxy (fixes #409, #427)
-- 🐛 Discord chunked sending (#413) — `DISCORD_MAX_WORDS` config
-- 🐛 yfinance shared DataFrame (#412)
-- 🐛 sniper_points parsing (#408)
-- 🐛 Agent framework category missing (#406)
-- 🐛 Date inconsistency & query id (fixes #322, #363)
-
-## [3.3.12] - 2026-02-24
-
-### Added
-- 📈 **Intraday Realtime Technical Indicators** (Issue #234, #397) — MA calculated from realtime price, config: `ENABLE_REALTIME_TECHNICAL_INDICATORS`
-- 🤖 **Agent Strategy Chat** (#367) — full ReAct pipeline, 11 YAML strategies, SSE streaming, multi-turn chat
-- 📢 PushPlus Group Push — `PUSHPLUS_TOPIC` (#402)
-- 📅 Trading Day Check (Issue #373, #375) — `TRADING_DAY_CHECK_ENABLED`, `--force-run`
-
-### Fixed
-- 🐛 DeepSeek reasoning mode (Issue #379, #386)
-- 🐛 Agent news intel persistence (Fixes #396, #405)
-- 🐛 Bare except clauses replaced with `except Exception` (#398)
-- 🐛 UUID fallback for HTTP non-secure context (fixes #377, #381)
-- 🐛 Docker DNS resolution (Fixes #372, #374)
-- 🐛 Agent session/strategy bugs — multiple follow-up fixes for #367
-- 🐛 yfinance parallel download data filtering
-
-### Changed
-- Market review strategy consistency — unified cn/us template
-- Agent test assertions updated (`6 -> 11`)
-
-
-## [3.2.11] - 2026-02-23
-
-### 修复（#patch）
-- 🐛 **StockTrendAnalyzer 从未执行** (Issue #357)
-  - 根因：`get_analysis_context` 仅返回 2 天数据且无 `raw_data`，pipeline 中 `raw_data in context` 始终为 False
-  - 修复：Step 3 直接调用 `get_data_range` 获取 90 日历天（约 60 交易日）历史数据用于趋势分析
-  - 改善：趋势分析失败时用 `logger.warning(..., exc_info=True)` 记录完整 traceback
-
-## [3.2.10] - 2026-02-22
-
-### 新增
-- ⚙️ 支持 `RUN_IMMEDIATELY` 配置项，设为 `true` 时定时任务触发后立即执行一次分析，无需等待首个定时点
+- [修复] Agent 工具超时 review 闭环（fixes #1890 的 4 个 blocker）：超时解析由 min 契约改为 first-wins（显式 per-run `tool_call_timeout_seconds` > 单工具 `ToolDefinition.timeout_seconds` > 类别默认 > 无限制，剩余 wall-clock 预算只作不可突破的外层 cap；research 路径不再传 `tool_call_timeout_seconds` 以免覆盖类别限制）；超时结果标记 `retriable: false` 并写入 `non_retriable_tool_results` 阻断 LLM 同调用重试重入，且…47094 tokens truncated…个定时点
 
 ### 修复
 - 🐛 修复 Web UI 页面居中问题

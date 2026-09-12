@@ -1,4 +1,5 @@
 name: HK US Europe free news and daily integration acceptance
+# Replay both real rejected Xiaomi reports without using any model credentials.
 on:
   workflow_dispatch:
   push:

@@ -142,3 +142,51 @@ def test_replay_real_unapproved_model_output_without_another_model_call():
     assert not audit['passed'] and not audit['execution_plan_enabled']
     assert {'cross_section_stop_conflict', 'primary_entry_conflict', 'unverified_financial_claim',
             'unverified_regulatory_absence'} <= {x['code'] for x in audit['findings']}
+
+
+def test_stop_annotation_is_a_trigger_but_reduction_line_is_separate():
+    context = {'today': dict(open=25.66, high=26.66, low=25.44, close=26.36)}
+    result = {'dashboard': {'battle_plan': {
+        'execution_basis': {'entry_price': 26.62, 'stop_price': 25.40, 'position_pct': 0},
+        'sniper_points': {'stop_loss': '止损位25.40元（跌破9月11日低点25.44元即刻执行）'}}}}
+    assert 'cross_section_stop_conflict' in {x['code'] for x in audit_daily_report(result, context)['findings']}
+    result['dashboard']['battle_plan']['sniper_points']['stop_loss'] = '止损25.40元；跌破25.44元则减仓，跌破25.40元按止损处理'
+    assert audit_daily_report(result, context)['passed']
+
+
+def test_limited_news_search_does_not_prove_absence_of_adverse_events():
+    context = {'today': dict(open=25.66, high=26.66, low=25.44, close=26.36)}
+    result = {'dashboard': {'battle_plan': {'action_checklist': ['⚠️ 检查项：无重大利空——近3日无减持、处罚、业绩变脸公告']}}}
+    assert 'unsupported_news_absence' in {x['code'] for x in audit_daily_report(result, context)['findings']}
+    result['dashboard']['battle_plan']['action_checklist'] = ['⚠️ 检查项：无重大利空——本轮已检索来源未发现减持或处罚公告，覆盖不完整，无法确认不存在重大利空']
+    assert audit_daily_report(result, context)['passed']
+
+
+def test_missing_financial_evidence_cannot_become_a_positive_fundamental_view():
+    context = {'today': dict(open=25.66, high=26.66, low=25.44, close=26.36)}
+    bad = {'fundamental_analysis': '财务未核验，但基本面偏多',
+           'data_sources': '基本面为 realtime_quote 部分字段（partial）'}
+    assert {'unverified_fundamental_direction', 'unsupported_realtime_financial_source'} == {
+        x['code'] for x in audit_daily_report(bad, context)['findings']}
+    good = {'fundamental_analysis': '财务未核验，基本面方向无法判断；机构事件观点偏多',
+            'data_sources': 'Tencent日线；realtime_quote缺失，未采用财务数值'}
+    assert audit_daily_report(good, context)['passed']
+
+
+def test_replay_authorized_followup_rejects_new_semantic_conflicts():
+    import json
+    from pathlib import Path
+    fixture = json.loads((Path(__file__).parent / 'fixtures/xiaomi_model_followup_unapproved_20260912.json').read_text())
+    audit = audit_daily_report(fixture['result'], fixture['context'])
+    assert not audit['passed']
+    assert {'cross_section_stop_conflict', 'unsupported_news_absence',
+            'unverified_fundamental_direction', 'unsupported_realtime_financial_source'} <= {
+        x['code'] for x in audit['findings']}
+
+
+def test_native_gate_checks_source_claim_even_when_legacy_serialization_omits_it():
+    from types import SimpleNamespace
+    result = SimpleNamespace(success=True, data_sources='基本面为 realtime_quote 部分字段', to_dict=lambda: {})
+    audit = enforce_daily_report(result, {'today': dict(open=25.66, high=26.66, low=25.44, close=26.36)})
+    assert not result.success
+    assert audit['findings'][0]['code'] == 'unsupported_realtime_financial_source'

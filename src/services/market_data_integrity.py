@@ -67,8 +67,12 @@ def render_daily_consistency(context):
 - 不把目标价、订单或技术发布推演为已实现盈利；不新增输入中没有的新闻事实或链接。
 - 调查建议、是否批准、正式通知与裁决是不同状态。未知就写未知；“尚不能确认立案”不能改成“尚未立案”。
 - 本轮尚未完成财报原始披露、期间、币种和单位核验。不得引用具体收入、利润、现金流、ROE或分红数值，包括模型记忆；明确写财务数据待核验。
+- 财务未核验时，基本面方向写“无法判断”；券商和产品新闻只代表事件观点，不能据此写基本面偏多或稳健。
+- 有限来源和时间窗口无法证明不存在减持、处罚或业绩风险。只能写“本轮已检索来源未发现/未覆盖”，并说明覆盖不完整；不能写“近三日无重大利空”等事实断言。
+- 数据来源须对应实际输入；缺失的realtime_quote不能被说成财务或基本面来源。
 - 若给出具体入场/止损方案，在 dashboard.battle_plan.execution_basis 中写明 entry_price、stop_price、position_pct（数字或null）。只有明确假设的入场价才能计算止损距离；范围入场按最高价计风险。
 - 同一执行方案的主入场价、止损价在持仓建议、买入点、风险控制及execution_basis中必须一致。不同场景要明确标注，不能用“附近”掩盖数值冲突。
+- 止损注释中的“跌破某价立即执行/离场”也是止损触发价，必须与stop_price一致。前低观察线、减仓线和止损触发线要分别写清，不能混用。
 - 股价止损距离=(entry_price-stop_price)/entry_price；账户名义风险=position_pct/100乘股价止损距离。两者不得混用，跳空及费用另计。没有账户规模与风险预算，不给确定投入金额或保证最大回撤。
 '''
 
@@ -76,7 +80,10 @@ def render_daily_consistency(context):
 def enforce_daily_report(result, context):
     """Reject unsafe HK outputs before history/signals/notifications are published."""
     try:
-        audit = audit_daily_report(result.to_dict(), context)
+        claims = result.to_dict()
+        # Legacy serialization omits data_sources, while history renderers consume it.
+        claims['data_sources'] = getattr(result, 'data_sources', claims.get('data_sources', ''))
+        audit = audit_daily_report(claims, context)
     except (KeyError, TypeError, ValueError, OverflowError) as exc:
         audit = {'passed': False, 'findings': [{'code': 'unverifiable_report', 'reason': str(exc)}]}
     result.report_quality_audit = audit
@@ -159,7 +166,7 @@ def audit_daily_report(result, context):
                 findings.append({'code':'conflicting_stop_prices'})
         if weight is not None and not (numeric(weight) and 0 <= weight <= 100):
             findings.append({'code':'invalid_position_percentage'})
-    findings.extend(_audit_cross_section_claims(result, plan, basis))
+    findings.extend(_audit_cross_section_claims(result, plan, basis, context))
     return {'passed':not findings, 'execution_plan_enabled':not findings, 'findings':findings,
             'scope':'Selected numerical/semantic checks only; manual review remains necessary.'}
 
@@ -177,7 +184,7 @@ def _text_fields(value, path=''):
             yield from _text_fields(child, f'{path}[{index}]')
 
 
-def _audit_cross_section_claims(result, plan, basis):
+def _audit_cross_section_claims(result, plan, basis, context):
     findings = []
     numeric = lambda n: isinstance(n, (int, float)) and not isinstance(n, bool) and math.isfinite(n)
     stop_claims = []
@@ -186,6 +193,7 @@ def _audit_cross_section_claims(result, plan, basis):
     stop_patterns = (
         r'止损(?:位|价|线)?[：:为设在于\s]*(?:HK\$|港元|HKD)?\s*(\d+(?:\.\d+)?)',
         r'(\d+(?:\.\d+)?)\s*(?:港元|元)?\s*(?:为|作为)(?:硬)?止损',
+        r'跌破[^。；;\n]{0,24}?(\d+(?:\.\d+)?)\s*(?:港元|元)?\s*(?:则)?(?:即刻执行|立即执行|立即离场|无条件离场|按止损处理)',
     )
     for path, text in _text_fields(result):
         for pattern in stop_patterns:
@@ -199,15 +207,28 @@ def _audit_cross_section_claims(result, plan, basis):
                          'ideal_buy_price': float(primary.group(1))})
     # Conservative HK acceptance policy until primary financial disclosure validation exists.
     financial = re.compile(r'(?:营业收入|營業收入|归母净利润|歸母淨利潤|经营现金流|經營現金流|ROE|股息率|现金分红|現金分紅)[^。；;\n]{0,16}?\d', re.I)
+    news_absence = re.compile(r'(?:没有|沒有|未有|未发生|未發生|不存在|无|無)(?:任何)?(?:重大利空|减持|減持|处罚|處罰|业绩变脸|業績變臉)')
     for path, text in _text_fields(result):
         if financial.search(text):
             findings.append({'code': 'unverified_financial_claim', 'field': path})
+        if re.search(r'基本面(?:偏多|稳健|穩健|强劲|強勁)', text):
+            findings.append({'code': 'unverified_fundamental_direction', 'field': path})
+        # Checklist headings name the criterion; only its answer is a claim.
+        claim_text = text.split('——', 1)[-1] if 'action_checklist' in path else text
+        for clause in re.split(r'[，,。；;\n]', claim_text):
+            match = news_absence.search(clause)
+            if match and not re.search(r'不能|无法|無法|不得|不确定|不確定|是否', clause[:match.start()]):
+                findings.append({'code': 'unsupported_news_absence', 'field': path})
         for clause in re.split(r'[，,。；;\n]', text):
             for absence in re.finditer(r'(?:尚未|并未|並未|未)(?:正式)?立案|无裁决|無裁決', clause):
                 qualifier = clause[:absence.start()]
                 if not re.search(r'无法确认|無法確認|不能确认|不能確認|不确定|不確定|是否|如果|若', qualifier):
                     findings.append({'code': 'unverified_regulatory_absence', 'field': path})
                     break
+    source_text = str(result.get('data_sources') or '')
+    if not context.get('realtime_quote') and re.search(
+            r'(?:基本面|财务|財務).{0,8}(?:来自|來自|源自|为|為).{0,12}realtime_quote', source_text):
+        findings.append({'code': 'unsupported_realtime_financial_source', 'field': 'data_sources'})
     return findings
 
 
