@@ -1,9 +1,6 @@
 name: Original DSA DeepSeek budget measurement
 on:
   workflow_dispatch:
-  push:
-    branches: [fix/daily-data-integrity]
-    paths: [.github/workflows/12-hk-original-budget-probe.yml]
 permissions:
   contents: read
 concurrency:
@@ -11,7 +8,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   measure:
-    if: github.event_name == 'push' && github.run_attempt == 1
+    if: ${{ false }} # Completed request slot; retain evidence, never rerun it
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
