@@ -22,6 +22,13 @@
       "title": "固定事实简报V1"
     }
   ],
+  "delivery": {
+    "files_verified": 53,
+    "integrity": "docs/dsa-resumption-integrity-audit.json",
+    "note": "Archive contains pre-delivery queue snapshot; this appended queue is authoritative for G6 closure.",
+    "package_sha256": "9b56b11f0c6f0c59d30d34bab9f7a55c8b27f55c675198aa8ce1451cb9800a3a",
+    "report": "docs/dsa-resumption-handoff.md"
+  },
   "description": "Planning/resumption queue; not an installed scheduler",
   "fixed_progress": "12/16 closed within named bounded scopes; strategy unverified",
   "frozen_acceptance_items": [
@@ -157,11 +164,11 @@
     },
     {
       "definition_of_done": "交付可审阅部署方案、失败恢复、费用及不可覆盖预测记录；正式启用另行批准",
+      "evidence": "docs/dsa-resumption-handoff.md",
       "id": "G6",
       "priority": 3,
       "status": "passed_preparation_and_delivery_only",
-      "title": "部署准备和未来观察交接",
-      "evidence": "docs/dsa-resumption-handoff.md"
+      "title": "部署准备和未来观察交接"
     }
   ],
   "operating_rules": {
@@ -175,12 +182,11 @@
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-12T17:04:28.341Z",
-  "delivery": {
-    "report": "docs/dsa-resumption-handoff.md",
-    "integrity": "docs/dsa-resumption-integrity-audit.json",
-    "package_sha256": "9b56b11f0c6f0c59d30d34bab9f7a55c8b27f55c675198aa8ce1451cb9800a3a",
-    "note": "Archive contains pre-delivery queue snapshot; this appended queue is authoritative for G6 closure.",
-    "files_verified": 53
+  "updated_at_utc": "2026-09-12T17:19:32.129Z",
+  "user_directive_override": {
+    "priority": "urgent",
+    "path": "docs/dsa-urgent-user-directive.md",
+    "instruction": "User has recharged DeepSeek and authorizes necessary continued research calls; prioritize Monday pre-open deliverables; previous small-budget pause rules superseded for necessary DeepSeek work. Preserve actual usage/history and do not start duplicate runs.",
+    "receipt": "shared_repository_notice_only_not_chat_read_receipt"
   }
 }
