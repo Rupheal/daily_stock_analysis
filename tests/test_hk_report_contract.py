@@ -116,8 +116,8 @@ def test_real_first_final_run_wrong_slope_pullback_and_risk_free_claims_are_reje
 def test_body_only_mentions_do_not_crowd_core_company_news():
     from src.services.hk_company_news import select_company_evidence
     rows = [{'title': 'CATL earnings review', 'summary': 'Xiaomi is a customer',
-             'url': 'https://news.futunn.com/post/1', 'source': 'AASTOCKS'},
-            {'title': 'Xiaomi deliveries', 'url': 'https://news.futunn.com/post/2', 'source': 'AASTOCKS'}]
+             'url': 'https://news.futunn.com/post/1', 'source': 'AASTOCKS', 'source_type': 'public_web'},
+            {'title': 'Xiaomi deliveries', 'url': 'https://news.futunn.com/post/2', 'source': 'AASTOCKS', 'source_type': 'public_web'}]
     assert select_company_evidence(rows, 6, require_approved_origin=True,
                                    code='hk01810', name='小米集团-W') == rows[1:]
 
