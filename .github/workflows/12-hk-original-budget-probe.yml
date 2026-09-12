@@ -1,0 +1,70 @@
+name: Original DSA DeepSeek budget measurement
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/12-hk-original-budget-probe.yml]
+permissions:
+  contents: read
+concurrency:
+  group: dsa-single-stock-acceptance
+  cancel-in-progress: false
+jobs:
+  measure:
+    if: github.event_name == 'push' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install -r research/requirements.txt pytest
+      - name: Free budget and observation regression
+        working-directory: research
+        run: python -m pytest -q tests/test_hk_budget_guard.py tests/test_hk_research_replay.py tests/test_hk_native_data_probe.py
+      - name: Fresh independent Xiaomi data gate
+        working-directory: research
+        run: python scripts/prepare_xiaomi_acceptance.py
+      - name: One original request within the accepted CNY8 batch
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        # Carry the prior research request's all-cache-miss peak estimate.
+        # The new user instruction replaces the previous two-request limit.
+        run: python research/scripts/run_hk_original_model_probe.py --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight research/probe/preflight.json --output probe/original-model --limit-cny 8 --carry-upper-cny 0.060156
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-native-model-budget-evidence
+          path: |
+            probe/
+            research/probe/
+          retention-days: 7
