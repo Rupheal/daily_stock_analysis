@@ -1,6 +1,6 @@
 name: Xiaomi verified-input single acceptance
 # One bounded model request, after fresh regional news and independent daily bars pass.
-# Budget round 20260912-final: slot 1 of at most 2; 0.40 CNY reserved before sending.
+# Budget round 20260912-final: slot 2 of 2 after manual failure and free replay; total reservation 0.80 CNY.
 on:
   workflow_dispatch:
   push:
@@ -30,8 +30,8 @@ jobs:
       REPORT_INTEGRITY_RETRY: '0'
       TENCENT_PRIORITY: '0'
       AGENT_MODE: 'false'
-      ACCEPTANCE_PRIOR_CALLS: '0'
-      ACCEPTANCE_PRIOR_RESERVED_CNY: '0.00'
+      ACCEPTANCE_PRIOR_CALLS: '1'
+      ACCEPTANCE_PRIOR_RESERVED_CNY: '0.40'
       ENABLE_REALTIME_QUOTE: 'false'
       ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
       PREFETCH_REALTIME_QUOTES: 'false'
