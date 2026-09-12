@@ -29,10 +29,11 @@ def main():
     pipeline = StockAnalysisPipeline.__new__(StockAnalysisPipeline)
     pipeline.config = config
     # Network fetch was performed above. Exercise the real DB consumer once.
-    with patch.object(IntelligenceService, 'refresh_auto_sources', return_value={}), patch(
+    with patch.object(IntelligenceService, 'refresh_auto_sources', return_value={}) as generic_refresh, patch(
             'src.services.hk_company_news.refresh_company_news', return_value=result):
         context = pipeline._load_persisted_intelligence_context(
             code='hk01810', stock_name='小米集团-W', market='hk', limit=12)
+    generic_refresh.assert_not_called()
     (out/'dsa-news-context.txt').write_text(context or '')
     print('DSA_CONTEXT', context)
     assert result['accepted'] > 0 and context and '来源：https://' in context

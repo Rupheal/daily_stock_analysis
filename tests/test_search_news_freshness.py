@@ -1310,8 +1310,8 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
-    def test_label_only_official_source_is_honored_without_url(self) -> None:
-        """Exact official labels without URL should still receive official-source treatment."""
+    def test_hk_label_only_official_source_requires_original_url(self) -> None:
+        """HK evidence needs a reviewed original link, not only an official label."""
         fresh = datetime.now().date().isoformat()
         service, _ = self._create_service_with_mock_provider(
             news_max_age_days=3,
@@ -1340,11 +1340,8 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["腾讯控股 00700 发布回购公告", "董事会公告"],
+            ["腾讯控股 00700 发布回购公告"],
         )
-        official_result = resp.results[1]
-        self.assertGreater(official_result.relevance_score or 0, 0)
-        self.assertIn("来源接近公告或交易所渠道", official_result.relevance_reasons)
 
     def test_full_chinese_official_source_label_is_honored_without_url(self) -> None:
         """Full Chinese exchange labels without URL should retain official-source treatment."""

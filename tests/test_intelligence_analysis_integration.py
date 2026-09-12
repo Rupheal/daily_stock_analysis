@@ -7,7 +7,7 @@ from dataclasses import replace
 import os
 import tempfile
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 from src.config import Config, get_config
@@ -24,8 +24,10 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
         Config._instance = None
         DatabaseManager.reset_instance()
         self.config = get_config()
+        self.config.news_intel_auto_fetch_enabled = False
         repo = IntelligenceRepository()
-        now = datetime.now()
+        # Repository publication timestamps are naive UTC, independent of TZ.
+        now = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=10)
         repo.upsert_items([
             {
                 "source_name": "symbol-feed",
@@ -110,7 +112,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
 
     def test_pipeline_loads_symbol_intelligence_with_exchange_alias_scope(self) -> None:
         repo = IntelligenceRepository()
-        now = datetime.now()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         repo.upsert_items([
             {
                 "source_name": "symbol-feed",
@@ -155,7 +157,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
 
     def test_pipeline_loads_hk_symbol_intelligence_with_plain_code_scope(self) -> None:
         repo = IntelligenceRepository()
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         repo.upsert_items([
             {
                 "source_name": "hk-symbol-feed",
@@ -199,6 +201,20 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
                 assert context is not None
                 self.assertIn("Plain HK code symbol feed", context)
                 self.assertIn("Trimmed HK code symbol feed", context)
+
+    def test_hk_pipeline_does_not_bootstrap_generic_mainland_sources(self) -> None:
+        self.config.news_intel_auto_fetch_enabled = True
+        pipeline = StockAnalysisPipeline.__new__(StockAnalysisPipeline)
+        pipeline.config = self.config
+        with patch("src.core.pipeline.IntelligenceService.refresh_auto_sources") as generic_refresh, patch(
+            "src.services.hk_company_news.refresh_company_news", return_value={"diagnostics": []}
+        ) as regional_refresh:
+            pipeline._load_persisted_intelligence_context(
+                code="hk01810", stock_name="小米集团-W", market="hk"
+            )
+        generic_refresh.assert_not_called()
+        regional_refresh.assert_called_once()
+        self.assertEqual(regional_refresh.call_args.args[1:3], ("hk01810", "小米集团-W"))
 
     def test_market_review_merges_persisted_market_intelligence(self) -> None:
         analyzer = MarketAnalyzer(config=self.config, region="cn")
@@ -269,7 +285,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
 
     def test_market_review_keeps_search_news_when_local_pool_is_full(self) -> None:
         repo = IntelligenceRepository()
-        now = datetime.now()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         for index in range(5):
             repo.upsert_items([
                 {
@@ -279,8 +295,8 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
                     "summary": f"Local market signal {index}",
                     "url": f"https://news.example.com/market-local/{index}",
                     "source": f"market-local-{index}",
-                    "published_at": now + timedelta(minutes=index + 1),
-                    "fetched_at": now + timedelta(minutes=index + 1),
+                    "published_at": now - timedelta(minutes=index + 1),
+                    "fetched_at": now,
                     "scope_type": "market",
                     "scope_value": None,
                     "market": "cn",
@@ -336,7 +352,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
         self.config.news_max_age_days = 30
         self.config.news_strategy_profile = "short"
         repo = IntelligenceRepository()
-        now = datetime.now()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         old_time = now - timedelta(days=5)
         repo.upsert_items([
             {

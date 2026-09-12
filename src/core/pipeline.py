@@ -2946,7 +2946,10 @@ class StockAnalysisPipeline:
         """Load locally persisted intelligence as fail-open evidence context."""
         try:
             service = IntelligenceService(config=self.config)
-            service.refresh_auto_sources()
+            # HK uses the regional company adapters below; the generic bootstrap
+            # enables mainland NewsNow feeds even when its results are filtered.
+            if market != 'hk':
+                service.refresh_auto_sources()
             days = max(1, int(self.config.get_effective_news_window_days() or 1))
             if market == 'hk' and getattr(self.config, 'news_intel_auto_fetch_enabled', False):
                 from src.services.hk_company_news import refresh_company_news
