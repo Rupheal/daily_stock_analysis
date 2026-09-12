@@ -1,0 +1,36 @@
+{
+  "reviewed_at_utc": "2026-09-12T17:28:01.771802+00:00",
+  "run": 34707511466,
+  "job": 103590129501,
+  "scope": "Append-only review of native parsed ORIGINAL_MODEL_RESULT from completed job log; raw provider transport not recovered here.",
+  "result_sha256_raw": "2a383684a66700ee29f10e1e39899afd63d64e99c80ce488b23b5af5b0ba576d",
+  "status": "REJECTED_FOR_TRADING_SEMANTICS",
+  "original_result_modified": false,
+  "checks": [
+    {
+      "path": "technical_analysis; buy_reason",
+      "issue": "26.36 described as between MA5=26.62 and MA10=27.22; arithmetic contradiction, it is below both."
+    },
+    {
+      "path": "dashboard.battle_plan.sniper_points.stop_loss; risk_warning",
+      "issue": "25.40 hard stop also instructs exit immediately below25.44; same inherited trigger conflict remains."
+    },
+    {
+      "path": "company_highlights; fundamental_analysis",
+      "issue": "438.1bn revenue and33bn parent profit are described as half-year results, disagreeing with reviewed issuer H1 revenue208.063227bn and parent profit14.185525bn RMB. Native financial adapter evidence not independently accepted."
+    },
+    {
+      "path": "pattern_analysis",
+      "issue": "Describes small body and long upper/lower shadows without definition; actual body0.70, upper0.30, lower0.22 HKD. Keep numeric geometry in the accepted fact product."
+    },
+    {
+      "path": "news_summary; search_performed",
+      "issue": "Claims no recent verifiable news but native search_performed=false and evidence_present=false. This is missing native news input, not evidence of no company news."
+    }
+  ],
+  "not_counted_as_error": "Native0.76 ratio explicitly uses previous-day volume; upgraded0.72 uses previous-five-session mean. They are different labelled denominators, not automatically conflicting arithmetic.",
+  "comparison_limit": "U11-evidence constrained observation and original O free narrative consume different native inputs; one sample is not a controlled strategy superiority test.",
+  "new_model_http_requests": 0,
+  "native_engineering_status": "1 actual native Xiaomi result, exit0; O full660 ranking not completed",
+  "next_step": "Keep raw O unchanged as baseline. Continue read-only coverage/quality and existing run handoff; no regex patch to original native logic."
+}
