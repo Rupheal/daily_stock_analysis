@@ -1,5 +1,5 @@
 name: Xiaomi verified-input single acceptance
-# Manual acceptance also runs on non-trading days, using the last completed session.
+# One bounded model request, after fresh regional news and independent daily bars pass.
 on:
   workflow_dispatch:
   push:
@@ -21,13 +21,14 @@ jobs:
       PYTHONPATH: .
       PYTHONUNBUFFERED: '1'
       LITELLM_LOCAL_MODEL_COST_MAP: 'true'
-      NEWS_INTEL_AUTO_FETCH_ENABLED: 'true'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
       NEWS_INTEL_FETCH_TIMEOUT_SEC: '8'
       NEWS_INTEL_MAX_ITEMS_PER_SOURCE: '50'
       NEWS_MAX_AGE_DAYS: '3'
       MAX_WORKERS: '1'
       REPORT_INTEGRITY_RETRY: '0'
       TENCENT_PRIORITY: '0'
+      AGENT_MODE: 'false'
     steps:
       - uses: actions/checkout@v5
         with:
@@ -36,16 +37,9 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements.txt pytest
-      - name: Download independently audited source evidence
-        uses: actions/download-artifact@v4
-        with:
-          name: xiaomi-openbb-source-audit
-          run-id: '34641012836'
-          github-token: ${{ github.token }}
-          path: probe/
       - name: Regression checks
-        run: python -m pytest tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py -q
-      - name: Verify freshness, independent prices and reviewed company news
+        run: python -m pytest tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py tests/test_daily_report_audit.py tests/test_xiaomi_acceptance_controls.py tests/test_hk_regional_sources.py tests/test_hk_search_source_policy.py -q
+      - name: Fetch fresh independent prices and regional company news
         run: python scripts/prepare_xiaomi_acceptance.py
       - name: Run one Xiaomi analysis only after data acceptance
         env:

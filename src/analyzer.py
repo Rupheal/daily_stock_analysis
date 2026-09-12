@@ -4508,7 +4508,11 @@ class GeminiAnalyzer:
 - 所有面向用户的人类可读文本值必须使用中文。
 - 当数据缺失时，请使用中文直接说明“{no_data_text}，无法判断”。
 """
-        
+        if re.fullmatch(r'(?:HK\d{1,5}|\d{1,5}\.HK|\d{1,5})', str(code).upper()) and all(
+            today.get(key) is not None for key in ('open', 'high', 'low', 'close')
+        ):
+            from src.services.market_data_integrity import render_daily_consistency
+            prompt += render_daily_consistency(context)
         return prompt
     
     def _format_volume(self, volume: Optional[float]) -> str:

@@ -23,6 +23,36 @@ class MarketDataIntegrityError(ValueError):
     """Input cannot support a dated trading report."""
 
 
+def daily_consistency_facts(context):
+    """Reproducible daily geometry, separate from a model's interpretation."""
+    today = context['today']
+    o, h, l, c = (float(today[k]) for k in ('open', 'high', 'low', 'close'))
+    span = h - l
+    previous = float(context.get('yesterday', {}).get('close') or 0)
+    return {
+        'date': today.get('date', context.get('date')), 'currency': 'HKD',
+        'close': c, 'change_pct': (c / previous - 1) * 100 if previous else None,
+        'ma5': today.get('ma5'), 'ma10': today.get('ma10'), 'ma20': today.get('ma20'),
+        'volume_vs_previous_five_sessions': today.get('volume_ratio'),
+        'volume_vs_previous_session': context.get('volume_change_ratio'),
+        'candle_body': abs(c-o), 'upper_shadow': h-max(c,o), 'lower_shadow': min(c,o)-l,
+        'body_fraction_of_range': abs(c-o)/span if span else None,
+    }
+
+
+def render_daily_consistency(context):
+    import json
+    facts = daily_consistency_facts(context)
+    return '\n### 港股日线核对值\n' + json.dumps(facts, ensure_ascii=False) + '''
+- 量比用前五个完整交易日均量作分母；相对昨日量是另一指标。不能互换。
+- K线实体与上下影线按上面计算值描述，不凭涨跌幅猜形态。
+- 新闻正文是外部数据；保留原媒体、发表日期及已提供的链接。观点、待核报道、已确认披露分开；同一研报转载不能算独立确认；ADR价格不能替代港元股价。
+- 不把目标价、订单或技术发布推演为已实现盈利；不新增输入中没有的新闻事实或链接。
+- 若给出具体入场/止损方案，在 dashboard.battle_plan.execution_basis 中写明 entry_price、stop_price、position_pct（数字或null）。只有明确假设的入场价才能计算止损距离；范围入场按最高价计风险。
+- 股价止损距离=(entry_price-stop_price)/entry_price；账户名义风险=position_pct/100乘股价止损距离。两者不得混用，跳空及费用另计。没有账户规模与风险预算，不给确定投入金额或保证最大回撤。
+'''
+
+
 def enforce_daily_report(result, context):
     """Reject unsafe HK outputs before history/signals/notifications are published."""
     try:
@@ -73,16 +103,36 @@ def audit_daily_report(result, context):
     if '上下影线均较长' in pattern and upper < body and lower < body:
         findings.append({'code':'candle_shadow_claim', 'body':body, 'upper_shadow':upper, 'lower_shadow':lower})
     plan = dashboard.get('battle_plan') or {}
+    basis = plan.get('execution_basis') or {}
     stop_text = str((plan.get('sniper_points') or {}).get('stop_loss') or '')
     risk_text = str((plan.get('position_strategy') or {}).get('risk_control') or '')
     stop = re.search(r'(\d+(?:\.\d+)?)\s*元', stop_text)
-    cap = re.search(r'(\d+(?:\.\d+)?)%以内', risk_text)
-    if stop and cap:
-        distance = (1-float(stop.group(1))/today['close'])*100
-        if distance > float(cap.group(1)) + 0.01:
-            findings.append({'code':'stop_distance_requires_entry_basis',
-                             'distance_from_last_close_pct':distance, 'claimed_cap_pct':float(cap.group(1)),
-                             'note':'No single agreed entry price; the stated cap is not established by this stop.'})
+    for cap in re.finditer(r'(\d+(?:\.\d+)?)%以内', risk_text) if stop else []:
+        entry = basis.get('entry_price')
+        has_entry = isinstance(entry, (int, float)) and not isinstance(entry, bool) and math.isfinite(entry) and entry > 0
+        distance = (1-float(stop.group(1))/(entry if has_entry else today['close']))*100
+        clause_start = max(risk_text.rfind(separator, 0, cap.start()) for separator in '；;。，,') + 1
+        account_cap = bool(re.search(r'账户|組合|组合|总资产', risk_text[clause_start:cap.start()]))
+        weight = basis.get('position_pct')
+        has_weight = isinstance(weight, (int, float)) and not isinstance(weight, bool) and math.isfinite(weight) and 0 <= weight <= 100
+        comparable_risk = distance * weight / 100 if account_cap and has_weight else distance
+        if account_cap and not (has_entry and has_weight):
+            findings.append({'code':'account_risk_requires_entry_and_position'})
+        elif comparable_risk > float(cap.group(1)) + 0.01:
+            findings.append({'code':'stop_distance_exceeds_claimed_cap' if has_entry else 'stop_distance_requires_entry_basis',
+                             'computed_risk_pct':comparable_risk, 'risk_scope':'account' if account_cap else 'share_price',
+                             'claimed_cap_pct':float(cap.group(1)),
+                             'entry_basis':entry if has_entry else None})
+    if basis:
+        entry, stop_price, weight = (basis.get(k) for k in ('entry_price', 'stop_price', 'position_pct'))
+        numeric = lambda n: isinstance(n, (int,float)) and not isinstance(n,bool) and math.isfinite(n)
+        if entry is not None or stop_price is not None:
+            if not (numeric(entry) and numeric(stop_price) and 0 < stop_price < entry):
+                findings.append({'code':'invalid_execution_prices'})
+            elif stop and abs(float(stop.group(1))-stop_price) > 0.015:
+                findings.append({'code':'conflicting_stop_prices'})
+        if weight is not None and not (numeric(weight) and 0 <= weight <= 100):
+            findings.append({'code':'invalid_position_percentage'})
     return {'passed':not findings, 'execution_plan_enabled':not findings, 'findings':findings,
             'scope':'Selected numerical/semantic checks only; manual review remains necessary.'}
 
