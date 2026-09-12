@@ -17,6 +17,13 @@
           "publisher_group": "Reuters",
           "verification": "公开检索摘录；正文直接访问401，监管备忘录未取得"
         }
+      ],
+      "review_attempts": [
+        {
+          "checked_at": "2026-09-12T15:47:58.456092+00:00",
+          "status": "original_body_unavailable",
+          "result": "公开原文读取失败；没有可支持关闭风险的新证据，保持原已复核状态及原reviewed_at"
+        }
       ]
     },
     {
@@ -24,7 +31,7 @@
       "symbol": "HK01810",
       "published_at": "2026-09-10",
       "publication_precision": "day",
-      "reviewed_at": "2026-09-12T11:49:59+00:00",
+      "reviewed_at": "2026-09-12T15:47:58.456092+00:00",
       "status": "unresolved",
       "kind": "当事方指控，非裁决",
       "summary": "Anthropic在其9月威胁情报报告中将小米与蒸馏行为关联。这是当事方自身调查主张，尚不等于独立核验、法律责任或监管裁决。报告同时指出相关观察不能说明小米将Claude回复提供给自身用户。小米回应及后续法律状态本轮未核实。",
@@ -33,7 +40,8 @@
         {
           "url": "https://www.anthropic.com/threat-intelligence-report-september-2026",
           "publisher_group": "Anthropic",
-          "verification": "已直接取得当事方报告HTML并核对小米段落；不是独立确认"
+          "verification": "本批重新读取当事方HTML中GTG-16008小米段落；指控与未向用户提供Claude回复的限定仍在。没有新增独立确认。",
+          "sha256": "88e3a5888bb4bb7aab68adb05190454b8a668f25babd75cd36c8a079dc85f08c"
         }
       ]
     },
@@ -60,16 +68,16 @@
       "symbol": "HK01810",
       "published_at": "2026-09-10",
       "publication_precision": "day",
-      "reviewed_at": "2026-09-12T12:11:21.585279+00:00",
+      "reviewed_at": "2026-09-12T15:47:58.456092+00:00",
       "status": "context",
-      "kind": "公司原始披露，已核对部分正文",
-      "summary": "小米提交翌日披露报表。已核对公司名称、股票代码、2026年9月10日提交日期及股权激励所涉新股栏目。未将报表中的历史回购累计表当作当日回购，也未据此判断财报盈利。",
+      "kind": "公司原始披露，已核指定字段",
+      "summary": "小米9月10日翌日披露报表：股权激励新股栏目及第6页当日回购栏已核对；具体数量、价格及期间由补证表生成。历史回购待注销和授权累计表不作为当日回购。未据此判断盈利、股价方向或风险解除。",
       "company_response": "公司原始披露",
       "sources": [
         {
           "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF",
           "publisher_group": "Xiaomi issuer disclosure",
-          "verification": "由小米官网嵌入公告目录链接取回PDF，核对首页及股本变动栏目。未逐格核验全部表格。",
+          "verification": "已核对原件公司、日期、首页股本栏目和第6页当日回购表；未逐格复核全部表格。",
           "sha256": "582cac9a53b4a465429bd2e63cc6f448869e8798689d79213760b6f52c0f568a"
         }
       ]

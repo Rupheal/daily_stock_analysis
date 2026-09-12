@@ -227,10 +227,25 @@
       "candidate_events": 5,
       "common_sessions": 126,
       "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34698138162"
+    },
+    {
+      "run_id": 34703482717,
+      "kind": "goal_primary_evidence_free",
+      "commit": "c273b3d88e8888312cbaab3696b76c21d7579702",
+      "workflow_conclusion": "success",
+      "model_http_requests": 0,
+      "tests_passed": 65,
+      "warnings": 2,
+      "primary_documents_verified": 5,
+      "primary_documents_required": 5,
+      "common_sessions": 126,
+      "news_count": 6,
+      "publishers": 4,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34703482717"
     }
   ],
   "counts": {
-    "indexed_runs": 16,
+    "indexed_runs": 17,
     "model_report_runs": 6,
     "approved_model_reports": 0,
     "current_round_runs": 10,
@@ -419,7 +434,7 @@
     "semantic_original_approved": false,
     "validated_manual_fact_brief_available": true
   },
-  "updated_at_utc": "2026-09-12T15:49:30.131654+00:00",
+  "updated_at_utc": "2026-09-12T15:58:16.001831+00:00",
   "project_status": "FACT_BRIEF_V1_RELEASED; FULL_MODEL_NOT_APPROVED; STRATEGY_UNVALIDATED",
   "project_progress_path": "docs/dsa-project-progress.md",
   "next_actions_path": "docs/DSA_NEXT_ACTIONS.json",
@@ -453,13 +468,18 @@
   "research_goal": {
     "accepted_at_recorded_utc": "2026-09-12T15:49:30.131654+00:00",
     "resumed_head": "313f78f68362eaab928ff7c8112dc98207bd2225",
-    "status": "G2_PRIMARY_EVIDENCE_IMPLEMENTED_CLOUD_PENDING",
+    "status": "G2_CLOUD_PASSED_G3_FREE_GATE_PENDING",
     "local_tests_passed": 6,
     "primary_pdf_verified": 5,
     "primary_pdf_required": 5,
     "financial_disclosed_cells_admitted": 23,
     "derived_metrics": 13,
     "evidence_registry": "docs/xiaomi-primary-evidence.json",
-    "note": "Fields/page review only, not all financial or announcement body coverage"
+    "note": "Fields/page review only, not all financial or announcement body coverage",
+    "code_commit": "c273b3d88e8888312cbaab3696b76c21d7579702",
+    "free_run": 34703482717,
+    "free_job": 103579232838,
+    "cloud_tests_passed": 65,
+    "cloud_warnings": 2
   }
 }

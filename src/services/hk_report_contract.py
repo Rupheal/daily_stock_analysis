@@ -215,19 +215,18 @@ def render_execution_fields(result, context):
 
 
 def event_identity(item):
-    """Known observed event families; other URLs remain unmerged candidates."""
+    """Only reviewed source URLs/dates share an event; later updates stay visible."""
     from src.services.hk_company_news import canonical_url
-    text = (str(item.get('title', '')) + ' ' + str(item.get('summary', ''))).casefold()
-    if 'cocktailasr' in text:
-        return 'xiaomi-cocktailasr-20260910', True
-    if ('sfio' in text or 'serious fraud' in text) and ('xiaomi' in text or '小米' in text):
-        return 'xiaomi-india-sfio-20260909', True
-    if ('anthropic' in text) and ('xiaomi' in text or '小米' in text):
-        return 'xiaomi-anthropic-20260910', True
-    # A single broker opinion event across observed translated republications.
-    if ('里昂' in text or 'clsa' in text) and any(x in text for x in ('skynomad', '澎程', 'pengcheng')):
-        return 'xiaomi-clsa-skynomad-20260911', True
-    return 'article-' + hashlib.sha256(canonical_url(item['url']).encode()).hexdigest()[:16], False
+    url = canonical_url(item['url'])
+    day = str(item.get('published_at') or '')[:10]
+    registry = json.loads((REGISTRY.parent/'hk-reviewed-news-groups.json').read_text())
+    matches = [group['id'] for group in registry['groups']
+               if url in group['urls'] and day in group['publication_dates']]
+    if len(matches) > 1:
+        raise ValueError('Conflicting reviewed event groups')
+    if matches:
+        return matches[0], True
+    return 'article-' + hashlib.sha256((url+'|'+day).encode()).hexdigest()[:16], False
 
 
 def deduplicate_events(items):

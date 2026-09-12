@@ -51,12 +51,84 @@ def validate_preflight_artifacts(root):
     queue = json.loads((root/'acceptance-queue.json').read_text())
     expected = {'prices': 'passed', 'news': 'passed_limited_coverage',
                 'issuer': 'listing_passed_body_incomplete', 'manifest': 'passed'}
+    if 'primary_evidence' in queue.get('tasks', {}):
+        expected['primary_evidence'] = 'passed'
     if queue.get('tasks') != expected or not queue.get('manifest'):
         raise ValueError('Free acceptance queue incomplete')
     for name, digest in queue['manifest'].items():
         if Path(name).name != name or hashlib.sha256((root/name).read_bytes()).hexdigest() != digest:
             raise ValueError('Preflight evidence hash mismatch: ' + name)
     return queue
+
+
+def run_constrained():
+    """Reuse the accepted data, HTTP guard and fact renderer for bounded U research."""
+    from src.services.hk_evidence_analysis import build_evidence_input, model_messages, render_research_brief
+    from src.reports.xiaomi_fact_brief import render_html, render_markdown
+    root = Path('probe')
+    validate_preflight_artifacts(root)
+    if os.getenv('GITHUB_ACTIONS') and (os.getenv('GITHUB_RUN_ATTEMPT') != '1' or os.getenv('GITHUB_EVENT_NAME') != 'push'):
+        raise RuntimeError('Reruns and implicit retries are outside this request slot')
+    checkpoint = json.loads(Path('docs/xiaomi-acceptance-checkpoint.json').read_text())
+    budget = checkpoint['next_model_budget']
+    previous = checkpoint['billing']['research_goal_batch']
+    if budget['authorization_status'] != 'ACCEPTED_USER_GOAL' or budget['batch_id'] != previous['batch_id'] or budget['remaining_http_requests'] <= 0:
+        raise RuntimeError('No remaining accepted batch authorization')
+    preflight = json.loads((root/'preflight.json').read_text())
+    payload = build_evidence_input(preflight)
+    guard = SingleCallGuard(os.environ['LLM_DEEPSEEK_BASE_URL'], os.environ['LLM_DEEPSEEK_MODELS'],
+        reservation_path=root/'model-request-reservation.json', prior_calls=previous['actual_http_requests'],
+        prior_reserved_cny=previous['reserved_cny'], max_calls=budget['max_requests'])
+    body = {'model': guard.model, 'messages': model_messages(payload), 'stream': False,
+        'max_tokens': 8192, 'response_format': {'type': 'json_object'}}
+    (root/'actual-model-input.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2))
+    before = balance()
+    failure = None
+    try:
+        with httpx.Client(timeout=120, transport=httpx.HTTPTransport(retries=0), follow_redirects=False) as client:
+            request = client.build_request('POST', os.environ['LLM_DEEPSEEK_BASE_URL'].rstrip('/')+'/chat/completions',
+                headers={'Authorization': 'Bearer '+os.environ['LLM_DEEPSEEK_API_KEY']}, json=body)
+            guard.input_validated = True
+            guard.admit(request)  # Durable exclusive reservation before network I/O.
+            response = client.send(request)
+            guard.capture(response)
+            response.raise_for_status()
+        choice = guard.raw_response['choices'][0]
+        if choice['finish_reason'] != 'stop':
+            raise ValueError('Incomplete model response')
+        judgments = json.loads(choice['message']['content'])
+        brief = render_research_brief(preflight, payload, judgments)
+        (root/'constrained-judgments.json').write_text(json.dumps(judgments,ensure_ascii=False,indent=2))
+        (root/'constrained-research.json').write_text(json.dumps(brief,ensure_ascii=False,indent=2))
+        (root/'constrained-research.md').write_text(render_markdown(brief))
+        (root/'constrained-research.html').write_text(render_html(brief))
+        print('CONSTRAINED_JUDGMENTS',json.dumps(judgments,ensure_ascii=False),flush=True)
+        print('CONSTRAINED_AUDIT',json.dumps(brief['model_audit'],ensure_ascii=False),flush=True)
+    except Exception as exc:
+        failure = type(exc).__name__
+        raise
+    finally:
+        after = balance()
+        usage = guard.raw_usage or {}
+        # Peak price is a conservative upper estimate for this pinned pricing
+        # review; the exact invoice and rounded account balance are separate.
+        estimate = None
+        if 'prompt_tokens' in usage and 'completion_tokens' in usage:
+            estimate = str((Decimal(usage['prompt_tokens'])*2 + Decimal(usage['completion_tokens'])*8)/1000000)
+        ledger = {'batch_id': budget['batch_id'], 'model_http_requests': guard.sent,
+            'reserved_cny': str(guard.reserved_cny), 'prior_calls': guard.prior_calls,
+            'cumulative_reserved_cny': str(guard.prior_reserved_cny+guard.reserved_cny),
+            'raw_provider_usage': guard.raw_usage, 'response_model': guard.response_model,
+            'estimated_upper_cost_cny': estimate, 'actual_cost_cny': None,
+            'pricing_url': 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing/',
+            'pricing_checked_date': '2026-09-12', 'estimate_basis': 'Flash peak price, all input cache misses; CNY2/8 per million input/output; reasoning included in completion',
+            'before': before, 'after': after, 'failure_type': failure,
+            'history_note': 'This new batch does not reset any historical project costs.'}
+        (root/'billing.json').write_text(json.dumps(ledger,ensure_ascii=False,indent=2))
+        print('BILLING',json.dumps(ledger,ensure_ascii=False),flush=True)
+        if guard.raw_response is not None:
+            (root/'provider-response.json').write_text(json.dumps(guard.raw_response,ensure_ascii=False,indent=2))
+            print('PROVIDER_RESPONSE',json.dumps(guard.raw_response,ensure_ascii=False),flush=True)
 
 
 def record_report_review(result, context, enforce, output_dir):
@@ -250,4 +322,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if '--constrained' in sys.argv:
+        run_constrained()
+    else:
+        main()

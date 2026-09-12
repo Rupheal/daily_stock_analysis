@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "symbol": "HK01810",
+  "groups": [
+    {
+      "id": "xiaomi-cocktailasr-20260910",
+      "publication_dates": [
+        "2026-09-11"
+      ],
+      "urls": [
+        "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260911776"
+      ],
+      "review_note": "Observed source URLs reviewed as same event; later follow-ups do not inherit this mapping."
+    },
+    {
+      "id": "xiaomi-clsa-skynomad-20260911",
+      "publication_dates": [
+        "2026-09-11"
+      ],
+      "urls": [
+        "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260906618",
+        "https://news.futunn.com/post/79120347/clsa-xiaomi-01810-hk-secures-10000-orders-for-skynomad-series"
+      ],
+      "review_note": "Observed source URLs reviewed as same event; later follow-ups do not inherit this mapping."
+    }
+  ]
+}

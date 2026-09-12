@@ -98,12 +98,21 @@ def test_second_execution_definition_is_rejected_before_replacement():
 
 
 def test_known_translated_event_is_one_candidate_unknown_events_stay_explicit():
-    rows = [{'title': '里昂：小米SkyNomad', 'url': 'https://news.futunn.com/post/1?lang=en'},
-            {'title': '中信里昂小米澎程', 'url': 'https://www.etnet.com.hk/article/2'},
-            {'title': 'Another event', 'url': 'https://www.etnet.com.hk/article/3'}]
+    fixture = json.loads((Path(__file__).parent/'fixtures/xiaomi_fact_preflight_20260912.json').read_text())
+    event = next(e for e in fixture['hk_report_contract']['news_events'] if 'clsa' in e['event_id'])
+    rows = [dict(title=event['title'], url=url, published_at=event['published_at']) for url in event['source_urls']]
+    rows.append({'title': 'Another event', 'url': 'https://www.etnet.com.hk/article/3'})
     result = deduplicate_events(rows)
     assert len(result) == 2 and len(result[0]['event_source_urls']) == 2
     assert result[0]['grouping_reviewed'] and not result[1]['grouping_reviewed']
+
+
+def test_followup_risk_or_broker_update_is_not_merged_by_keywords():
+    rows = [dict(title='CLSA Xiaomi SkyNomad updated forecast', url='https://example.com/new-clsa', published_at='2026-09-12'),
+            dict(title='CLSA Xiaomi SkyNomad revised forecast', url='https://example.com/revised-clsa', published_at='2026-09-12'),
+            dict(title='SFIO Xiaomi new regulatory decision', url='https://example.com/new-sfio', published_at='2026-09-12')]
+    result = deduplicate_events(rows)
+    assert len(result) == 3 and all(not r['grouping_reviewed'] for r in result)
 
 
 def test_real_first_final_run_wrong_slope_pullback_and_risk_free_claims_are_rejected():
