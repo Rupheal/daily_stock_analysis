@@ -1,0 +1,68 @@
+name: HK dual research balance and retained artifact readiness
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/14-hk-dual-readiness.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34705950297
+          name: original-official-pool-data-and-replay
+          github-token: ${{ github.token }}
+          path: retained/O
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34705579721
+          name: native-data-U45_data_only
+          github-token: ${{ github.token }}
+          path: retained/U
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34707511466
+          name: original-native-model-budget-evidence
+          github-token: ${{ github.token }}
+          path: retained/measured
+      - name: Read balance and artifact metadata without exporting model contents
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request, urlopen
+          from decimal import Decimal
+          from pathlib import Path
+          import os, json, hashlib
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: balance=json.load(r)
+          info=[x for x in balance['balance_infos'] if x['currency']=='CNY']
+          usable=bool(balance.get('is_available') and info and Decimal(info[0]['total_balance'])>0)
+          report={'model_http_requests':0,'balance_readable':True,'cny_available':usable,
+                  'measured_full_pool_peak_estimate_affordable': bool(usable and Decimal(info[0]['total_balance'])>=Decimal('35.193540')),
+                  'account_balance_disclosed':False,'artifacts':[]}
+          for path in sorted(Path('retained').rglob('coverage.json')):
+              d=json.loads(path.read_text()); db=path.parent/'native-data.db'
+              report['artifacts'].append({'scope':d['scope'],'database_exists':db.is_file(),
+                  'denominator':d['coverage_denominator'],'file':str(path),
+                  'database_sha256':hashlib.sha256(db.read_bytes()).hexdigest() if db.is_file() else None})
+          measured=list(Path('retained/measured').rglob('probe-summary.json'))
+          assert len(measured)==1
+          d=json.loads(measured[0].read_text())
+          report['prior_O_model']={'requests':len(d['budget']['requests']),'input_validated':d['input_validated'],
+                                    'original_commit':d['original_commit'],'reused_run':34707511466}
+          Path('readiness.json').write_text(json.dumps(report,indent=2))
+          print('READINESS',json.dumps(report),flush=True)
+          if not usable:raise SystemExit('No verified usable CNY balance')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hk-dual-readiness-metadata
+          path: readiness.json
+          retention-days: 7
