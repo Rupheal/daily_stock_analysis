@@ -53,6 +53,20 @@ def _response(results) -> SearchResponse:
 class SearchNewsFreshnessTestCase(unittest.TestCase):
     """Tests for strategy window and strict published_date filtering."""
 
+    def setUp(self) -> None:
+        # These mock providers use reserved example domains, representing reviewed
+        # publishers. Preserve their URL/content counterexamples after the regional
+        # gate; real origin exclusions are covered in test_hk_search_source_policy.
+        publisher_fixture = patch.dict('src.services.hk_company_news._DIRECT_PUBLISHERS', {
+            host: ('Test publisher', 'HK') for host in (
+                'example.com', 'finance.example.invalid', 'app.finance.example.invalid',
+                'apps.example.invalid', 'cdn.example.invalid', 'download.example.invalid',
+                'news.example.invalid', 'spam.example.invalid',
+            )
+        })
+        publisher_fixture.start()
+        self.addCleanup(publisher_fixture.stop)
+
     def _create_service_with_mock_provider(
         self,
         *,

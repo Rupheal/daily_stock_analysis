@@ -3363,9 +3363,18 @@ class SearchService:
         if not response.success or not response.results:
             return response
 
+        candidates = response.results
+        canonical_code = canonicalize_foreign_stock_code(stock_code)
+        if re.fullmatch(r'\d{1,5}', canonical_code) or re.fullmatch(r'HK\d{1,5}', canonical_code):
+            from src.services.hk_company_news import approved_news_origin
+            candidates = [item for item in candidates if approved_news_origin(
+                {'url':item.url, 'source':item.source})]
+            logger.info('[港股新闻来源] %s: retained=%s, excluded=%s',
+                        log_scope, len(candidates), len(response.results)-len(candidates))
+
         scored_results = [
             cls._score_news_relevance(item, stock_code=stock_code, stock_name=stock_name)
-            for item in response.results
+            for item in candidates
         ]
 
         indexed_results = list(enumerate(scored_results))
@@ -4089,7 +4098,7 @@ class SearchService:
         cache_key = self._cache_key(
             (
                 f"{query}|target={stock_code}:{stock_name}|"
-                f"news_pref={'zh' if prefer_chinese else 'default'}"
+                f"news_pref={'zh' if prefer_chinese else 'default'}|source_policy=hk-us-europe-v1"
             ),
             max_results,
             search_days,

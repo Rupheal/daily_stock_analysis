@@ -155,14 +155,14 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
 
     def test_pipeline_loads_hk_symbol_intelligence_with_plain_code_scope(self) -> None:
         repo = IntelligenceRepository()
-        now = datetime.now()
+        now = datetime.utcnow()
         repo.upsert_items([
             {
                 "source_name": "hk-symbol-feed",
                 "source_type": "rss",
                 "title": "Plain HK code symbol feed",
-                "summary": "Plain five-digit HK source should match canonical and suffixed analysis codes.",
-                "url": "https://news.example.com/hk-plain-code",
+                "summary": "腾讯控股 Plain five-digit HK source should match canonical and suffixed analysis codes.",
+                "url": "https://news.rthk.hk/hk-plain-code",
                 "source": "hk-symbol-feed",
                 "published_at": now,
                 "fetched_at": now,
@@ -174,8 +174,8 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
                 "source_name": "hk-trimmed-symbol-feed",
                 "source_type": "rss",
                 "title": "Trimmed HK code symbol feed",
-                "summary": "Trimmed HK source should match canonical analysis code.",
-                "url": "https://news.example.com/hk-trimmed-code",
+                "summary": "腾讯控股 Trimmed HK source should match canonical analysis code.",
+                "url": "https://news.rthk.hk/hk-trimmed-code",
                 "source": "hk-trimmed-symbol-feed",
                 "published_at": now,
                 "fetched_at": now,
