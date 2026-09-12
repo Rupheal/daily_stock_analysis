@@ -32,9 +32,11 @@
 - 路透仅报道调查建议、主管部门决定尚待确认、小米称未收到正式通知；输出写成“尚未立案亦无裁决”，把不确定状态变成确定的否定事实。
 - 财务预检只覆盖行情，随后原生fundamental_context.earnings.data中的financial_report/dividend又进入经典prompt。收入、净利润、现金流、ROE等缺少原始披露、期间、币种和单位核验，不能当成已验收财务数据；此次未确认这些数字应当改成什么。
 
+进一步查代码发现，yfinance_fundamental_adapter会在季度字段缺失时回填info中的TTM营业收入/现金流，并在净利润缺失时用“收入×利润率”推算；这些值最终放入同一financial_report，经典prompt只显示一个“最近报告期”，未展示每字段期间或估算属性。这是可定位的数据口径风险，不能仅归因于DeepSeek或境外IP。未拿到该次逐字段原始响应，不能断言每个数值具体走了哪条回退分支；因此本轮采用整块隔离，不以推算值替换缺口。恢复港股财务数值前必须实现逐字段来源、期间、单位与是否估算的验证，当前仍未开放。
+
 补救：保留原始快照后，在经典与Agent共用入口隔离港股earnings/growth/valuation财务块，保留其他模块与A股/美股行为；暂不开放财务数值结论，直至新增原始披露验证。报告审计增加跨段价格、财务数字和监管措辞检查；失败输出撤下dashboard和可能被旧渲染器使用的叙述建议，原始响应保留供诊断。提示约束不能保证模型准确，规则只覆盖已知模式；不同场景止损若无法区分会保守拦截，人工复核仍必需。
 
-12项本地纯审计测试通过，包括该次真实结构化输出的无模型回放；回放识别cross_section_stop_conflict、primary_entry_conflict、unverified_financial_claim、unverified_regulatory_absence四类缺陷，并确认执行方案已撤下。云端07工作流执行额外无模型回归及真实新闻抓取；结果完成后补记。本次不会再次触发05模型验收工作流。
+12项本地纯审计测试通过，包括该次真实结构化输出的无模型回放；回放识别cross_section_stop_conflict、primary_entry_conflict、unverified_financial_claim、unverified_regulatory_absence四类缺陷，并确认执行方案已撤下。云端07工作流[34681453752](https://github.com/Rupheal/daily_stock_analysis/actions/runs/34681453752)在cb5f64a1e4e3be7a67846aabb98f08f42c635586上完成：176项测试通过，7项依赖/框架弃用警告；实际抓取8条、5个原媒体来源的新闻并验证入库和DSA消费，腾讯返回138条日线，最新日仍为2026-09-11。作业结束于2026-09-12 07:44:52 UTC。FT两个RSS接口可访问但窗口内没有小米命中，不能计入公司新闻数量。无模型调用。本次不会再次触发05模型验收工作流。
 
 ## 中文小米观察简报（已校验数据，非通过验收的交易方案）
 
