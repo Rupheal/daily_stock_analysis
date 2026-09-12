@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "record_kind": "historical_acceptance_checkpoint_not_runtime_gate",
+  "recorded_at_utc": "2026-09-12T11:02:44.979713+00:00",
+  "symbol": "hk01810",
+  "repository": "Rupheal/daily_stock_analysis",
+  "branch": "fix/daily-data-integrity",
+  "parent_checkpoint_commit": "25ec5dd96a74ba38d395e637dd7451a0f2962c6e",
+  "protected_baseline_main": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
+  "overall_original_goal": "NOT_FULLY_ACCEPTED",
+  "last_complete_session": "2026-09-11",
+  "last_model_input_at_utc": "2026-09-12T10:33:11.782812+00:00",
+  "last_model_code": "177cc4187ad0a47a2c00dfb827256d60923505a9",
+  "last_regression_code": "c2bd223b38fbc6a0acd247ea87bf12b74e38b330",
+  "latest_fixed_report_generation": "NOT_RUN",
+  "market_data": {
+    "historical_daily_comparison": "PASS_FOR_OBSERVED_WINDOW",
+    "common_sessions": 126,
+    "quote_timestamp": "UNVERIFIED",
+    "quote_volume_delta_shares": 600,
+    "corporate_actions_generalization": "NOT_PROVEN"
+  },
+  "news": {
+    "pipeline": "PASS_FOR_OBSERVED_WINDOW",
+    "accepted_articles": 8,
+    "publisher_identities": 5,
+    "event_dedup": "URL_TITLE_ONLY",
+    "issuer_disclosure_coverage": "INCOMPLETE",
+    "ft_xiaomi_hits": 0,
+    "unresolved_risk_persistence": "NOT_IMPLEMENTED"
+  },
+  "financial_mode": "UNVERIFIED_BLOCKS_WITHHELD",
+  "trading_report_release": "NO_GO",
+  "investment_validity": "NOT_EVALUATED",
+  "completion_percent": null,
+  "runs": [
+    {
+      "run_id": 34641012836,
+      "kind": "openbb_source_probe",
+      "workflow_conclusion": "success",
+      "manual_report_review": "not_applicable",
+      "model_http_requests": 0
+    },
+    {
+      "run_id": 34642291178,
+      "kind": "earlier_model_report",
+      "workflow_conclusion": "success",
+      "manual_report_review": "rejected",
+      "model_http_requests": null,
+      "actual_cost_cny": null,
+      "usage_status": "inconsistent_telemetry"
+    },
+    {
+      "run_id": 34680448374,
+      "kind": "pre_model_serialization_failure",
+      "workflow_conclusion": "failure",
+      "manual_report_review": "not_generated",
+      "model_http_requests": 0
+    },
+    {
+      "run_id": 34680709223,
+      "kind": "regional_model_report",
+      "workflow_conclusion": "success",
+      "manual_report_review": "rejected",
+      "model_http_requests": 1,
+      "estimated_cost_cny": "0.03141432",
+      "actual_cost_cny": null
+    },
+    {
+      "run_id": 34688694878,
+      "kind": "followup_model_report",
+      "workflow_conclusion": "success",
+      "manual_report_review": "rejected",
+      "model_http_requests": 1,
+      "estimated_cost_cny": "0.03572332",
+      "actual_cost_cny": null
+    },
+    {
+      "run_id": 34689102322,
+      "kind": "no_model_regression_and_live_sources",
+      "workflow_conclusion": "success",
+      "manual_report_review": "not_generated",
+      "model_http_requests": 0,
+      "test_summary": "182 passed, 7 warnings in 14.66s"
+    }
+  ],
+  "counts": {
+    "indexed_runs": 6,
+    "model_report_runs": 3,
+    "approved_model_reports": 0
+  },
+  "billing": {
+    "two_latest_estimates_cny": "0.06713764",
+    "entire_task_actual_cny": null,
+    "entire_account_actual_cny": null,
+    "current_status_report_new_model_requests": 0
+  },
+  "evidence_packages": [
+    {
+      "name": "Xiaomi_Acceptance_2026-09-12.zip",
+      "sha256": "2d0b94df326aa9d8d8d1653faf3d150309531d331e6c5b9f3e7cb449e87a3599",
+      "manifest_members_verified": 17
+    },
+    {
+      "name": "Stage3_Workflow_Upgrade_20260912.zip",
+      "sha256": "f9ee71d382a7525a8bde48aae6eacef11514e890ed270b7897ce7bbbd540033f",
+      "manifest_members_verified": 9,
+      "sec_batch_reexecuted_in_this_work": false
+    }
+  ],
+  "backlog": [
+    {
+      "id": "HK-N01",
+      "priority": "P0",
+      "status": "open",
+      "requirement": "Issuer disclosure retrieval and provenance/coverage accounting"
+    },
+    {
+      "id": "HK-N02",
+      "priority": "P0",
+      "status": "open",
+      "requirement": "Persistent unresolved-risk ledger beyond rolling 72-hour window"
+    },
+    {
+      "id": "HK-N03",
+      "priority": "P0",
+      "status": "open",
+      "requirement": "Cross-language event and media-group deduplication"
+    },
+    {
+      "id": "HK-R01",
+      "priority": "P0",
+      "status": "regression_fixed_new_model_untested",
+      "requirement": "Canonical execution fields and no conflicting immediate-stop triggers"
+    },
+    {
+      "id": "HK-R02",
+      "priority": "P0",
+      "status": "regression_fixed_new_model_untested",
+      "requirement": "No unsupported news absence, fundamental direction or nonexistent source claims"
+    },
+    {
+      "id": "HK-E01",
+      "priority": "P0",
+      "status": "open",
+      "requirement": "Final report and rejected-output behavior across applicable runtime and consumers"
+    },
+    {
+      "id": "HK-F01",
+      "priority": "P1",
+      "status": "quarantined_not_repaired",
+      "requirement": "Field-level primary financial disclosure verification before reopening financial claims"
+    },
+    {
+      "id": "HK-Q01",
+      "priority": "P1",
+      "status": "excluded_from_daily_only_mode",
+      "requirement": "Quote exchange timestamp and 600-share volume discrepancy"
+    },
+    {
+      "id": "HK-O01",
+      "priority": "P1",
+      "status": "specified_not_implemented",
+      "requirement": "Persisted resumable acceptance queue and actual counters"
+    },
+    {
+      "id": "HK-C01",
+      "priority": "P1",
+      "status": "unverified",
+      "requirement": "Actual provider and GitHub charges reconciled against ledger"
+    }
+  ],
+  "current_work_applied": [
+    "lineage_and_evidence_hashes",
+    "actual_run_ledger_without_duplicate_credit",
+    "engineering_semantic_and_investment_status_separation",
+    "explicit_missing_failed_and_unverified_states",
+    "bounded_next_goal_plan"
+  ],
+  "runtime_transfer_status": "DSA_QUEUE_AND_RISK_LEDGER_NOT_YET_IMPLEMENTED",
+  "next_model_budget": {
+    "authorization_status": "PROPOSED_FOR_NEXT_USER_GOAL_ONLY",
+    "maximum_http_requests": 2,
+    "conservative_estimate_budget_cny": "1.00"
+  },
+  "top3_enabled_by_this_task": false,
+  "schedules_enabled_by_this_task": false
+}
