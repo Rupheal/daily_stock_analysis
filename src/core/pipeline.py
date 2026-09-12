@@ -637,7 +637,10 @@ class StockAnalysisPipeline:
                     logger.debug(f"{stock_name}({code}) 基本面快照写入失败: {e}")
 
             # Shared preflight before both legacy and Agent LLM paths.
-            from src.services.market_data_integrity import validate_daily_context
+            from src.services.market_data_integrity import (
+                validate_daily_context, withhold_unverified_hk_financials,
+            )
+            fundamental_context = withhold_unverified_hk_financials(fundamental_context, market)
             daily_context = self._get_analysis_context_with_market_fallback(
                 code, analysis_target=analysis_target
             )

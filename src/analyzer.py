@@ -1793,6 +1793,7 @@ class AnalysisResult:
             'news_evidence_present': self.news_evidence_present,
             'success': self.success,
             'error_message': self.error_message,
+            'report_quality_audit': getattr(self, 'report_quality_audit', None),
             'current_price': self.current_price,
             'change_pct': self.change_pct,
             'model_used': self.model_used,

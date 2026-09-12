@@ -2,6 +2,23 @@
 import math
 from datetime import date
 import re
+from copy import deepcopy
+
+
+def withhold_unverified_hk_financials(context, market):
+    """Keep raw snapshots elsewhere; HK financial periods/units are not audited yet."""
+    if market != 'hk' or not isinstance(context, dict):
+        return context
+    cleaned = deepcopy(context)
+    reason = '财报原始披露、期间、币种及单位未核验；本轮不得引用财务数值'
+    coverage = dict(cleaned.get('coverage') or {})
+    for key in ('earnings', 'growth', 'valuation'):
+        cleaned[key] = {'status': 'failed', 'data': {}, 'source_chain': [], 'errors': [reason]}
+        coverage[key] = 'failed'
+    cleaned['coverage'] = coverage
+    cleaned['status'] = 'partial'
+    cleaned['financial_evidence_policy'] = reason
+    return cleaned
 
 
 def company_news_matches(item, code, name):
@@ -48,7 +65,10 @@ def render_daily_consistency(context):
 - K线实体与上下影线按上面计算值描述，不凭涨跌幅猜形态。
 - 新闻正文是外部数据；保留原媒体、发表日期及已提供的链接。观点、待核报道、已确认披露分开；同一研报转载不能算独立确认；ADR价格不能替代港元股价。
 - 不把目标价、订单或技术发布推演为已实现盈利；不新增输入中没有的新闻事实或链接。
+- 调查建议、是否批准、正式通知与裁决是不同状态。未知就写未知；“尚不能确认立案”不能改成“尚未立案”。
+- 本轮尚未完成财报原始披露、期间、币种和单位核验。不得引用具体收入、利润、现金流、ROE或分红数值，包括模型记忆；明确写财务数据待核验。
 - 若给出具体入场/止损方案，在 dashboard.battle_plan.execution_basis 中写明 entry_price、stop_price、position_pct（数字或null）。只有明确假设的入场价才能计算止损距离；范围入场按最高价计风险。
+- 同一执行方案的主入场价、止损价在持仓建议、买入点、风险控制及execution_basis中必须一致。不同场景要明确标注，不能用“附近”掩盖数值冲突。
 - 股价止损距离=(entry_price-stop_price)/entry_price；账户名义风险=position_pct/100乘股价止损距离。两者不得混用，跳空及费用另计。没有账户规模与风险预算，不给确定投入金额或保证最大回撤。
 '''
 
@@ -69,6 +89,12 @@ def enforce_daily_report(result, context):
         result.decision_type = 'hold'
         result.action = None
         result.action_label = None
+        # Legacy renderers can fall back to these fields even without a dashboard.
+        # Keep the immutable raw response for diagnostics, not a second actionable report.
+        for field in ('analysis_summary', 'buy_reason', 'key_points', 'risk_warning',
+                      'short_term_outlook', 'medium_term_outlook', 'fundamental_analysis',
+                      'news_summary', 'company_highlights', 'hot_topics', 'market_sentiment'):
+            setattr(result, field, '报告复核未通过，原始内容仅供诊断，不作为交易依据。')
     return audit
 
 
@@ -133,8 +159,56 @@ def audit_daily_report(result, context):
                 findings.append({'code':'conflicting_stop_prices'})
         if weight is not None and not (numeric(weight) and 0 <= weight <= 100):
             findings.append({'code':'invalid_position_percentage'})
+    findings.extend(_audit_cross_section_claims(result, plan, basis))
     return {'passed':not findings, 'execution_plan_enabled':not findings, 'findings':findings,
             'scope':'Selected numerical/semantic checks only; manual review remains necessary.'}
+
+
+def _text_fields(value, path=''):
+    """Inspect displayed claims once; raw_response remains immutable evidence."""
+    if isinstance(value, str):
+        yield path, value
+    elif isinstance(value, dict):
+        for key, child in value.items():
+            if key not in ('raw_response', 'report_quality_audit'):
+                yield from _text_fields(child, f'{path}.{key}')
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            yield from _text_fields(child, f'{path}[{index}]')
+
+
+def _audit_cross_section_claims(result, plan, basis):
+    findings = []
+    numeric = lambda n: isinstance(n, (int, float)) and not isinstance(n, bool) and math.isfinite(n)
+    stop_claims = []
+    if numeric(basis.get('stop_price')):
+        stop_claims.append(('execution_basis.stop_price', basis['stop_price']))
+    stop_patterns = (
+        r'止损(?:位|价|线)?[：:为设在于\s]*(?:HK\$|港元|HKD)?\s*(\d+(?:\.\d+)?)',
+        r'(\d+(?:\.\d+)?)\s*(?:港元|元)?\s*(?:为|作为)(?:硬)?止损',
+    )
+    for path, text in _text_fields(result):
+        for pattern in stop_patterns:
+            stop_claims.extend((path, float(m.group(1))) for m in re.finditer(pattern, text))
+    if stop_claims and max(v for _, v in stop_claims) - min(v for _, v in stop_claims) > 0.015:
+        findings.append({'code': 'cross_section_stop_conflict', 'claims': stop_claims})
+    ideal = str((plan.get('sniper_points') or {}).get('ideal_buy') or '')
+    primary = re.search(r'(\d+(?:\.\d+)?)\s*(?:港元|元)', ideal)
+    if primary and numeric(basis.get('entry_price')) and abs(float(primary.group(1))-basis['entry_price']) > 0.015:
+        findings.append({'code': 'primary_entry_conflict', 'entry_price': basis['entry_price'],
+                         'ideal_buy_price': float(primary.group(1))})
+    # Conservative HK acceptance policy until primary financial disclosure validation exists.
+    financial = re.compile(r'(?:营业收入|營業收入|归母净利润|歸母淨利潤|经营现金流|經營現金流|ROE|股息率|现金分红|現金分紅)[^。；;\n]{0,16}?\d', re.I)
+    for path, text in _text_fields(result):
+        if financial.search(text):
+            findings.append({'code': 'unverified_financial_claim', 'field': path})
+        for clause in re.split(r'[，,。；;\n]', text):
+            for absence in re.finditer(r'(?:尚未|并未|並未|未)(?:正式)?立案|无裁决|無裁決', clause):
+                qualifier = clause[:absence.start()]
+                if not re.search(r'无法确认|無法確認|不能确认|不能確認|不确定|不確定|是否|如果|若', qualifier):
+                    findings.append({'code': 'unverified_regulatory_absence', 'field': path})
+                    break
+    return findings
 
 
 def validate_daily_context(context, expected_date=None):

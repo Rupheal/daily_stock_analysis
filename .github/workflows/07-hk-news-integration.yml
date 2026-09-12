@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt pytest
-      - run: python -m pytest -q tests/test_hk_regional_sources.py tests/test_hk_search_source_policy.py tests/test_hk_public_news.py tests/test_daily_report_audit.py tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py tests/test_intelligence_analysis_integration.py tests/test_search_news_freshness.py
+      - run: python -m pytest -q tests/test_hk_regional_sources.py tests/test_hk_search_source_policy.py tests/test_hk_public_news.py tests/test_daily_report_audit.py tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py tests/test_intelligence_analysis_integration.py tests/test_search_news_freshness.py tests/test_xiaomi_acceptance_controls.py
       - run: python scripts/verify_hk_public_news.py
         env:
           NEWS_INTEL_AUTO_FETCH_ENABLED: 'true'

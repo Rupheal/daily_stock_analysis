@@ -1,0 +1,270 @@
+{
+  "provenance": "Unapproved parsed response from GitHub Actions run 34680709223, exactly one DeepSeek request. Raw response is retained in the acceptance archive.",
+  "context": {
+    "today": {
+      "amount": 2969552900,
+      "close": 26.36,
+      "date": "2026-09-11",
+      "high": 26.66,
+      "low": 25.44,
+      "ma10": 27.22,
+      "ma20": 27.39,
+      "ma5": 26.62,
+      "open": 25.66,
+      "pct_chg": 1.6975308641975273,
+      "volume": 113533443,
+      "volume_ratio": 0.72
+    },
+    "yesterday": {
+      "amount": 3850950200,
+      "close": 25.92,
+      "date": "2026-09-10",
+      "high": 26.4,
+      "low": 25.68,
+      "ma10": 27.37,
+      "ma20": 27.35,
+      "ma5": 27.03,
+      "open": 26.04,
+      "pct_chg": -1.74374526156178,
+      "volume": 148663013,
+      "volume_ratio": 0.98
+    },
+    "volume_change_ratio": 0.76
+  },
+  "result": {
+    "action": "watch",
+    "action_label": "观望",
+    "analysis_summary": "小米集团-W（01810）2026-09-11收26.36港元、涨1.70%，但MA5 26.62、MA10 27.22、MA20 27.39呈空头排列，收盘价仍在三线下方，趋势强度仅25/100。MA5乖离-0.96%处安全区间，量比0.72为缩量反弹，缺乏增量资金确认。消息面偏暖：里昂维持优于大市、目标价35港元，澎程系列首四分钟万张订单并将于9月12日全国交付；风险为印度SFIO建议调查（未立案）与产业链情绪扰动。综合判断为「基本面偏多、技术面尚未确认」，给观望。",
+    "buy_reason": "交易理念要求「顺势而为、只做多头排列」。当前MA5<MA10<MA20为明确空头排列，价格虽贴近MA5（乖离-0.96%）且消息面偏暖，但技术面尚未确认，属于「事件先行、技术待确认」。按「严进策略」不追高、不猜底，暂不给出买入信号；待MA5走平上翘、收复MA10且量能回升后再评估介入。",
+    "change_pct": 1.6975308641975273,
+    "code": "HK01810",
+    "company_highlights": "亮点：澎程系列首四分钟锁定1万张订单并自9月12日起全国75城交付，预计2026年交付约9万辆；同步发布Xiaomi 18 Fold与Xiaomi Pad 9 Pro Max，券商维持优于大市评级。风险：印度SFIO建议调查尚未立案，属待核事项；公司当前无现金分红记录。",
+    "confidence_level": "中",
+    "current_price": 26.36,
+    "dashboard": {
+      "battle_plan": {
+        "action_checklist": [
+          "❌ 检查项1：多头排列——当前MA5<MA10<MA20，明确空头排列，不满足",
+          "✅ 检查项2：乖离率合理——MA5乖离-0.96%，处于安全区间（<2%），但方向向下",
+          "⚠️ 检查项3：量能配合——量比0.72、仅为昨日0.76倍，缩量反弹，无增量资金确认",
+          "⚠️ 检查项4：无重大利空——印度SFIO建议调查属待核报道，尚未立案，需跟踪",
+          "⚠️ 检查项5：筹码健康——筹码分布数据不可用，无法判断获利盘与集中度",
+          "⚠️ 检查项6：PE估值合理——估值数据缺失，无法判断"
+        ],
+        "execution_basis": {
+          "entry_price": 26.62,
+          "note": "按假设入场价26.62、止损25.40计算，股价止损距离约4.58%；账户名义风险=仓位比例×4.58%。无账户规模与风险预算数据，故不给出确定投入金额，跳空及交易费用另计。",
+          "position_pct": 10,
+          "stop_distance_pct": 4.58,
+          "stop_price": 25.4
+        },
+        "position_strategy": {
+          "entry_plan": "分两档：首档在26.60附近轻仓试探，需同时满足放量+MA5拐头；第二档等有效收复27.22（MA10）后再加，未收复前不加仓",
+          "risk_control": "以25.40为硬止损；反弹至MA10（27.22）附近若缩量滞涨先减半；单笔亏损控制在账户可承受范围内，不因券商目标价35港元而放大仓位",
+          "suggested_position": "建议仓位：0-1成（观察仓，不宜重仓）"
+        },
+        "sniper_points": {
+          "ideal_buy": "理想买入点：26.60元附近（回踩MA5 26.62），前提是MA5走平上翘且放量站稳，空头排列未修复前不追",
+          "secondary_buy": "次优买入点：25.50元附近（2026-09-11低点25.44上方区域）",
+          "stop_loss": "止损位：25.40元（有效跌破2026-09-11低点25.44即离场）",
+          "take_profit": "目标位：27.20元（MA10压力），进一步看27.40元（MA20压力）"
+        }
+      },
+      "core_conclusion": {
+        "one_sentence": "空头排列未修复，26.6元下方观望，站不稳MA5不买",
+        "position_advice": {
+          "has_position": "持仓者：以25.44为止损线。反弹至27.20（MA10）附近若缩量滞涨，可先减一半锁定反弹利润；跌破25.44无条件离场。",
+          "no_position": "空仓者：不追。等MA5（26.62）走平上翘、且放量站稳后再考虑1成观察仓；若先跌破25.44则继续空仓等待。"
+        },
+        "signal_type": "🟡持有观望",
+        "time_sensitivity": "本周内"
+      },
+      "data_perspective": {
+        "chip_structure": {},
+        "chip_unavailable_reason": "筹码分布未启用或数据源暂不可用，未纳入筹码判断。",
+        "price_position": {
+          "bias_ma5": -0.96,
+          "bias_status": "安全",
+          "current_price": 26.36,
+          "ma10": 27.22,
+          "ma20": 27.39,
+          "ma5": 26.62,
+          "resistance_level": 27.22,
+          "support_level": 25.44
+        },
+        "trend_status": {
+          "is_bullish": false,
+          "ma_alignment": "MA5 26.62 < MA10 27.22 < MA20 27.39，空头排列，收盘价26.36位于三条均线下方",
+          "trend_score": 25
+        },
+        "volume_analysis": {
+          "turnover_rate": null,
+          "volume_meaning": "量比0.72（以近五个完整交易日均量为分母）、仅为昨日0.76倍，属缩量反弹；抛压不重，但同样缺少增量资金确认，反弹力度待观察",
+          "volume_ratio": 0.72,
+          "volume_status": "缩量"
+        }
+      },
+      "decision_stability": {
+        "applied": false,
+        "capital_flow_bias": "unavailable",
+        "capital_flow_status": "市场资金流服务暂不支持",
+        "current_price": 26.36,
+        "reason": "资金流不可用，未使用资金流校准",
+        "resistance": 27.22,
+        "support": 25.44
+      },
+      "decision_type": "hold",
+      "intelligence": {
+        "earnings_outlook": "基于2026-06-30报告期结构化数据：营业收入约4381亿元、归母净利润约330亿元、经营现金流约81亿元、ROE 12.63%；近12个月现金分红为0，TTM股息率0%。券商观点为「第三季利润触底、本季见底」，属预测口径，尚未被业绩公告证实。",
+        "latest_news": "2026-09-11 中信里昂维持小米「优于大市」评级、目标价35港元，预计第三季利润触底；2026-09-11 雷军宣布澎程（SkyNomad）系列9月12日起在全国75城开始交付；2026-09-11 里昂指该系列首四分钟锁定1万张订单；2026-09-11 经济通报道小米发布Xiaomi-CocktailASR-1语音识别技术论文（9月10日论文公开）；2026-09-09 路透报道印度SFIO建议进一步调查小米业务。",
+        "positive_catalysts": [
+          "2026-09-11 中信里昂维持「优于大市」评级及35港元目标价，料第三季利润触底、收入与盈利本季见底",
+          "2026-09-11 SkyNomad（澎程）系列首四分钟锁定1万张订单，预计2026年交付约9万辆，9月12日全国75城开始交付",
+          "2026-09-11 同步推出Xiaomi 18 Fold与Xiaomi Pad 9 Pro Max，产品结构向高端倾斜，公司优先保ASP与毛利率"
+        ],
+        "risk_alerts": [
+          "2026-09-09 路透报道印度SFIO建议对小米业务进一步调查，小米称未收到正式通知，尚未立案亦无裁决，属待核报道，需持续跟踪监管进展",
+          "2026-09-11 摩通报告提及小米供应商多元化策略令电池行业悲观情绪升温，属产业链情绪扰动，非小米自身经营利空"
+        ],
+        "sentiment_summary": "消息面偏暖（评级维持+新车交付+订单），但均线空头排列未修复，属事件先行、技术待确认。"
+      },
+      "operation_advice": "观望",
+      "phase_decision": {
+        "action_window": "非交易日观察",
+        "confidence_reason": "实时行情块缺失（realtime_quote_missing），仅能基于2026-09-11完整日线与近3日公开消息；筹码数据不可用，故置信度定为中，不给高置信度结论。",
+        "data_limitations": [
+          "实时行情缺失，无法确认最新报价与盘中资金流",
+          "筹码分布数据不可用，无法评估获利比例、平均成本与集中度",
+          "估值为空，无法判断PE是否偏高",
+          "quote: missing"
+        ],
+        "immediate_action": "观察",
+        "next_check_time": "2026-09-14 09:30（港股开盘）",
+        "phase_context": {
+          "analysis_intent": "auto",
+          "effective_daily_bar_date": "2026-09-11",
+          "is_market_open_now": false,
+          "is_partial_bar": false,
+          "is_trading_day": false,
+          "market": "hk",
+          "market_local_time": "2026-09-12T15:27:23.918182+08:00",
+          "minutes_to_close": null,
+          "minutes_to_open": null,
+          "phase": "non_trading",
+          "session_date": "2026-09-12",
+          "trigger_source": "cli",
+          "warnings": []
+        },
+        "watch_conditions": [
+          "2026-09-14开盘能否重新站上MA5 26.62并放量",
+          "澎程系列9月12日启动交付后的订单/交付节奏与市场反馈",
+          "成交量能否回升至近五日均量以上（当前量比0.72）",
+          "印度SFIO调查是否出现正式立案或处罚等实质进展"
+        ]
+      },
+      "sentiment_score": 48,
+      "signal_attribution": {
+        "fundamentals": 28,
+        "market_conditions": 22,
+        "news_sentiment": 30,
+        "strongest_bearish_signal": "MA5<MA10<MA20空头排列，收盘价位于三条均线下方",
+        "strongest_bullish_signal": "里昂维持「优于大市」及35港元目标价，澎程首四分钟锁定1万张订单",
+        "technical_indicators": 20
+      }
+    },
+    "data_sources": "数据来源：本分析上下文包（pack_version 1.0）。日线与技术指标来自 storage.get_analysis_context（2026-09-11完整交易日）；基本面来自 realtime_quote 结构化财报字段；新闻来自本地资讯证据池（近3日，含 AASTOCKS、經濟通、Reuters、futunn 等公开报道摘要）。实时行情块缺失（realtime_quote_missing），筹码分布不可用（chip_distribution_missing）。",
+    "decision_type": "hold",
+    "error_message": null,
+    "fundamental_analysis": "最近报告期2026-06-30：营业收入约4381亿元、归母净利润约330亿元、经营现金流约81亿元、ROE 12.63%；近12个月每股现金分红为0，TTM股息率0%。基本面体量稳健但无分红回报；估值（PE/PB）数据缺失，无法判断是否偏高。",
+    "hot_topics": "智能电动车交付放量、折叠屏与高端平板、增程式SUV竞争格局、端侧AI语音识别技术、港股科技股估值修复",
+    "key_points": "空头排列未修复（MA5<MA10<MA20），乖离率-0.96%处安全区间但方向向下，量比0.72缩量反弹缺乏资金确认，券商维持优于大市+澎程9月12日交付构成事件催化，印度SFIO建议调查属待核监管风险",
+    "ma_analysis": "MA5 26.62、MA10 27.22、MA20 27.39，三条均线自上而下依次递减且整体向下，为标准空头排列；MA5乖离-0.96%（安全），MA10乖离-3.16%。均线未粘合、呈发散下行，短期不具备做多的均线基础。",
+    "market_sentiment": "舆情中性偏多：卖方评级与新品订单形成正向催化，但监管传闻带来扰动，整体情绪未出现一边倒。",
+    "market_snapshot": {
+      "amount": "29.70 亿元",
+      "amplitude": "4.71%",
+      "change_amount": "0.44",
+      "close": "26.36",
+      "date": "2026-09-11",
+      "high": "26.66",
+      "low": "25.44",
+      "open": "25.66",
+      "pct_chg": "1.70%",
+      "prev_close": "25.92",
+      "volume": "1.14 亿股"
+    },
+    "market_structure_context": {
+      "market": "hk",
+      "market_theme_context": {
+        "active_themes": [],
+        "data_quality": {
+          "errors": [],
+          "missing_fields": [
+            "a_share_theme_context"
+          ],
+          "sources": [
+            {
+              "dataset": "market_structure",
+              "message": "stock market structure is only supported for A-share first version",
+              "provider": "dsa",
+              "status": "not_supported"
+            }
+          ],
+          "status": "not_supported"
+        },
+        "hotspot_constituents": [],
+        "lagging_themes": [],
+        "leader_stocks": [],
+        "leading_concepts": [],
+        "leading_industries": [],
+        "market": "hk",
+        "schema_version": "market-theme-v1",
+        "status": "not_supported",
+        "theme_breadth": {
+          "active_count": 0,
+          "lagging_count": 0,
+          "leading_concept_count": 0,
+          "leading_industry_count": 0
+        },
+        "trade_date": "2026-09-11"
+      },
+      "schema_version": "market-structure-v1",
+      "status": "not_supported",
+      "stock_market_position": {
+        "market": "hk",
+        "missing_fields": [
+          "a_share_theme_context"
+        ],
+        "related_boards": [],
+        "risk_tags": [],
+        "schema_version": "stock-market-position-v1",
+        "status": "not_supported",
+        "stock_code": "HK01810",
+        "stock_name": "小米集团-W",
+        "stock_role": "unknown",
+        "theme_phase": "unknown"
+      },
+      "trade_date": "2026-09-11"
+    },
+    "medium_term_outlook": "中期1-2周关键在均线能否由空头转为缠绕再转多头。澎程交付节奏与新旗舰销售是最可能的催化，若配合量能回升并收复MA20（27.39），趋势有望修复；若量能持续萎缩且跌破25.44，则中期仍偏弱。",
+    "model_used": "deepseek-flash",
+    "name": "小米集团-W",
+    "news_evidence_present": true,
+    "news_result_count": null,
+    "news_result_count_known": true,
+    "news_summary": "近3日资讯以利好为主：2026-09-11中信里昂维持小米「优于大市」评级及35港元目标价，预计第三季利润触底；同日雷军宣布澎程系列9月12日全国75城交付，首四分钟锁定1万张订单；2026-09-11报道小米发布CocktailASR-1语音识别技术论文（商业影响待验证）。风险方面，2026-09-09路透报道印度SFIO建议进一步调查小米业务，尚未立案；2026-09-11摩通提及小米供应商多元化扰动电池行业情绪。",
+    "operation_advice": "观望",
+    "pattern_analysis": "K线实体0.70、上影0.30、下影0.22，实体占振幅约57%，为带上下影的小阳线，多空拉锯后买方略占优，但上影显示26.66附近有抛压，下影显示25.44附近有承接，短期呈区间震荡特征，未构成明确反转形态。",
+    "report_language": "zh",
+    "risk_warning": "①技术风险：均线空头排列，收盘价位于MA5/MA10/MA20下方，趋势未反转，反弹可能只是弱势修复；②监管风险：2026-09-09路透报道印度SFIO建议进一步调查小米业务，虽未立案亦无裁决，若后续正式立案可能冲击情绪；③数据风险：实时行情与筹码分布数据缺失，无法评估获利回吐压力与主力资金动向；④估值数据缺失，无法判断PE水平；⑤券商35港元目标价属预测观点，非已实现盈利，不可作为追高依据。",
+    "search_performed": true,
+    "sector_position": "小米集团-W属港股科技硬件与智能电动车板块，业务横跨智能手机、IoT与新能源车。近期看点集中在澎程（SkyNomad）增程式SUV交付与高端折叠机、平板发布，产品结构向高ASP、高毛利倾斜。",
+    "sentiment_score": 48,
+    "short_term_outlook": "短期1-3日以震荡为主：26.62（MA5）是第一道争夺位，站上并放量才有望向27.22（MA10）修复；若失守25.44，则可能再度下探。区间25.44—27.22内不建议追涨杀跌。",
+    "success": true,
+    "technical_analysis": "趋势强度25/100，系统评分47/100，信号为观望。MACD处中性区域，RSI 43.6属中性偏弱，震荡整理中。价格略低于MA5（-1.0%）具备回踩形态，但空头排列下回踩买点的可靠性打折，需量价配合确认。",
+    "trend_analysis": "2026-09-11收出小阳线，实体0.70、上影0.30、下影0.22，实体占振幅约57%，开盘25.66、最高26.66、最低25.44，收26.36。价格自低位反弹但收盘仍未收复MA5，属空头排列中的技术性反抽，均线系统整体下行且呈发散状态，尚未出现止跌企稳形态。",
+    "trend_prediction": "震荡",
+    "volume_analysis": "成交1.14亿股、成交额29.70亿港元；量比0.72（以近五个完整交易日均量为分母），为昨日成交的0.76倍。属缩量上涨：抛压减轻是正面，但缺乏放量确认，反弹持续性存疑，需观察后续能否补量。"
+  }
+}
