@@ -2987,7 +2987,8 @@ class StockAnalysisPipeline:
                     collected.append(item)
             if market == 'hk':
                 from src.services.hk_company_news import select_company_evidence
-                collected = select_company_evidence(collected, limit, require_approved_origin=True)
+                collected = select_company_evidence(collected, limit, require_approved_origin=True,
+                                                    code=code, name=stock_name)
             if not collected:
                 return None
             lines = [f"## 本地资讯证据池（{stock_name}/{code}）"]

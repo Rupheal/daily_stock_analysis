@@ -52,6 +52,8 @@ def attach_report_contract(context, code=None):
         'required_risk_ids': [e['id'] for e in events if e['status'] == 'unresolved'],
         'coverage': '有限公开信源；未解决风险跨新闻窗口保留。未完成全部公告正文及财报核验。',
     }
+    if context.get('company_news_evidence') is not None:
+        context['hk_report_contract']['news_events'] = deepcopy(context['company_news_evidence'])
     return context
 
 
@@ -60,7 +62,7 @@ def render_contract_prompt(context):
     if not contract:
         return ''
     issuer = context.get('issuer_announcements') or {}
-    return '\n### 必须遵守的结构化报告契约（优先于旧版仪表盘示例）\n' + json.dumps(
+    text = '\n### 必须遵守的结构化报告契约（优先于旧版仪表盘示例）\n' + json.dumps(
         dict(contract, issuer_announcements=issuer), ensure_ascii=False) + '''
 以上是经过人工复核的证据状态，不代表完整调查或当前法律结论。发布时间不能换成复核时间。
 在 dashboard.evidence_review 中输出数组；每项必须是 {"event_id":"输入ID","status":"输入status","kind":"输入kind","source_urls":["输入sources中的url"],"assessment":"你的简短评述"}。全部 required_risk_ids 必须出现；不得把报道/当事方指控当成监管裁决。证据里的公司回应未知必须保持未知。
@@ -71,6 +73,41 @@ watch代表观察，三个数值均填null，不发布买卖触发。conditional
 模型不要在其他叙述重复入场/止损/仓位数字。dashboard.battle_plan.sniper_points、position_strategy和dashboard.core_conclusion.position_advice一律输出{}；这些展示字段由程序依据execution_basis生成，不要自行填写。不要另给次优买入、减仓或止盈方案。
 数字行情和均线可照实分析；分析不等于交易指令。财务数据待核验，基本面方向无法判断。全文约1500中文字以内，保留风险来源链接和覆盖限制。
 '''
+    if 'news_events' in contract:
+        text += '''
+本轮还启用确定性行情与新闻展示：顶层ma_analysis、news_summary以及dashboard.intelligence.latest_news均输出空字符串，dashboard.intelligence.positive_catalysts输出[]。这些字段由程序从核验值和news_events生成，包含原媒体、公开时间、URL和证据类型。其他分析只给观点，不重复新闻细节或未经核验的“公告已证明”事实。
+在dashboard.news_review中逐个给出news_events的event_id与assessment（只写观点，不能添加新事实数字）。每个事件只能出现一次。程序将观点与输入中的媒体报道/券商预测明确分开，完整保留逐事件引用。
+均线排列是同一天不同周期的大小关系，均线升降必须分别比较各自前一交易日，按下面计算值描述。如果昨日和今日收盘均低于各自MA5，只能说从下方接近或远离MA5，不能写成从均线上方缩量回踩。
+乖离率只是价格距离指标，不可写“无追高风险”“零风险”；低乖离不等于无交易风险。
+'''
+        text += '\n均线逐日变化核验值：' + verified_ma_text(context)
+    return text
+
+
+def verified_ma_text(context):
+    today, yesterday = context['today'], context.get('yesterday') or {}
+    parts = []
+    for key in ('ma5', 'ma10', 'ma20'):
+        if today.get(key) is None:
+            continue
+        value = float(today[key])
+        label = f'{key.upper()} {value:.2f} 港元'
+        if yesterday.get(key) is not None:
+            delta = value-float(yesterday[key])
+            label += f'，较前一交易日{("上升" if delta > 0 else "下降" if delta < 0 else "持平")} {abs(delta):.2f} 港元'
+        parts.append(label)
+    return '；'.join(parts)+'。排列与各条均线的日变化是不同指标。'
+
+
+def verified_news_text(context, reviews):
+    opinions = {r['event_id']: r['assessment'] for r in reviews}
+    lines = []
+    for event in context['hk_report_contract']['news_events']:
+        sources = event.get('source_records')
+        citations = ' ; '.join(f"{s['source']}: {s['url']}" for s in sources) if sources else ' ; '.join(event['source_urls'])
+        lines.append(f"[{event['evidence_kind']}] {event['source']} / {event['published_at']} UTC / {event['title']}\n"
+                     f"输入摘要：{event['summary']}\n模型观点：{opinions[event['event_id']]}\n来源：" + citations)
+    return '\n\n'.join(lines)
 
 
 def execution_fields(basis):
@@ -118,6 +155,23 @@ def audit_contract(result, context):
     missing = set(contract['required_risk_ids']) - acknowledged
     if missing:
         findings.append({'code': 'unresolved_risk_omitted', 'event_ids': sorted(missing)})
+    if 'news_events' in contract:
+        news_reviews = dashboard.get('news_review')
+        expected_ids = {e['event_id'] for e in contract['news_events']}
+        valid_reviews = isinstance(news_reviews, list) and all(isinstance(r, dict)
+            and r.get('event_id') in expected_ids and str(r.get('assessment') or '').strip() for r in news_reviews)
+        if not valid_reviews or {r['event_id'] for r in news_reviews} != expected_ids or len(news_reviews) != len(expected_ids):
+            findings.append({'code': 'company_news_review_incomplete'})
+        else:
+            rendered = verified_news_text(context, news_reviews)
+            intelligence = dashboard.get('intelligence') or {}
+            for name, actual, expected in [('ma_analysis', result.get('ma_analysis'), verified_ma_text(context)),
+                    ('news_summary', result.get('news_summary'), rendered),
+                    ('latest_news', intelligence.get('latest_news'), rendered)]:
+                if actual not in (None, '', expected):
+                    findings.append({'code': 'duplicate_verified_fact_definition', 'field': name})
+            if intelligence.get('positive_catalysts') not in (None, []):
+                findings.append({'code': 'unattributed_media_fact_definition'})
     plan = dashboard.get('battle_plan') or {}
     basis = plan.get('execution_basis') or {}
     values = [basis.get(k) for k in ('entry_price', 'stop_price', 'position_pct')]
@@ -143,6 +197,11 @@ def render_execution_fields(result, context):
     plan = result.dashboard['battle_plan']
     plan['sniper_points'], plan['position_strategy'], advice = execution_fields(plan['execution_basis'])
     result.dashboard.setdefault('core_conclusion', {})['position_advice'] = advice
+    if 'news_events' in context['hk_report_contract']:
+        result.ma_analysis = verified_ma_text(context)
+        result.news_summary = verified_news_text(context, result.dashboard['news_review'])
+        result.dashboard.setdefault('intelligence', {})['latest_news'] = result.news_summary
+        result.dashboard['intelligence']['positive_catalysts'] = []
 
 
 def event_identity(item):
@@ -156,7 +215,7 @@ def event_identity(item):
     if ('anthropic' in text) and ('xiaomi' in text or '小米' in text):
         return 'xiaomi-anthropic-20260910', True
     # A single broker opinion event across observed translated republications.
-    if ('里昂' in text or 'clsa' in text) and ('skynomad' in text):
+    if ('里昂' in text or 'clsa' in text) and any(x in text for x in ('skynomad', '澎程', 'pengcheng')):
         return 'xiaomi-clsa-skynomad-20260911', True
     return 'article-' + hashlib.sha256(canonical_url(item['url']).encode()).hexdigest()[:16], False
 
@@ -167,7 +226,10 @@ def deduplicate_events(items):
         identity, reviewed = event_identity(item)
         if identity not in grouped:
             grouped[identity] = dict(item, event_id=identity, grouping_reviewed=reviewed,
-                                     event_source_urls=[item['url']])
+                                     event_source_urls=[item['url']],
+                                     event_source_records=[{'source': item.get('source', 'unknown'),
+                                                            'url': item['url']}])
         elif item['url'] not in grouped[identity]['event_source_urls']:
             grouped[identity]['event_source_urls'].append(item['url'])
+            grouped[identity]['event_source_records'].append({'source': item.get('source', 'unknown'), 'url': item['url']})
     return list(grouped.values())

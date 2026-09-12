@@ -149,6 +149,7 @@ def main():
 
     def analyze(instance, context, *args, **kwargs):
         from src.services.hk_report_contract import attach_report_contract
+        context['company_news_evidence'] = preflight['company_news_evidence']
         attach_report_contract(context)
         validate_model_input(context, preflight)
         if context.get('hk_report_contract') != preflight.get('hk_report_contract'):

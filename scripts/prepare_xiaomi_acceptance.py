@@ -11,7 +11,7 @@ import yfinance as yf
 
 from data_provider.tencent_fetcher import TencentFetcher, _extract_kline_rows
 from src.core.trading_calendar import get_effective_trading_date
-from src.services.hk_company_news import approved_news_origin, refresh_company_news
+from src.services.hk_company_news import approved_news_origin, refresh_company_news, canonical_url, related
 from src.services.intelligence_service import IntelligenceService
 from src.services.market_data_integrity import daily_consistency_facts, validate_daily_context
 from src.services.hk_report_contract import attach_report_contract, deduplicate_events
@@ -144,19 +144,29 @@ def prepare():
             raise ValueError('Reviewed news violates regional source policy')
         reviewed_items.append(dict(source_id=None, source_name='Reviewed regional evidence',
             source_type='public_web', scope_type='symbol', scope_value='HK01810', market='hk',
-            title=item['title'], summary=item['summary'], url=item['url'], source=item['source'],
+            title=item['title'], summary=item['summary'], url=canonical_url(item['url']), source=item['source'],
             published_at=published.astimezone(timezone.utc).replace(tzinfo=None),
             fetched_at=now.replace(tzinfo=None), raw_payload=json.dumps(item, ensure_ascii=False)))
     service.repo.upsert_items(reviewed_items)
-    items = {row['url']: row for row in news['items']}
+    all_items = news['items']
+    industry_context = [row for row in all_items if not related(row['title'], '', 'HK01810', '小米集团-W')]
+    items = {canonical_url(row['url']): row for row in all_items
+             if related(row['title'], '', 'HK01810', '小米集团-W')}
     items.update({row['url']: row for row in reviewed_items})
     origins = sorted({approved_news_origin(item) for item in items.values()})
     (root/'news.json').write_text(json.dumps({'items': list(items.values()), 'origins': origins,
-        'diagnostics': news['diagnostics'], 'review_diagnostics': review_diagnostics},
+        'diagnostics': news['diagnostics'], 'review_diagnostics': review_diagnostics,
+        'industry_context_items': industry_context, 'fetched_company_mentions': len(all_items)},
         ensure_ascii=False, indent=2, default=str))
     if len(items) < 3 or len(origins) < 2:
         raise ValueError('Insufficient dated company evidence')
     events = deduplicate_events(list(items.values()))
+    context['company_news_evidence'] = [{'event_id': e['event_id'], 'title': e['title'],
+        'summary': e['summary'], 'source': e['source'], 'published_at': str(e['published_at']),
+        'source_urls': e['event_source_urls'],
+        'source_records': e['event_source_records'],
+        'evidence_kind': (json.loads(e.get('raw_payload') or '{}').get('evidence_kind')
+                          or '媒体报道；待原始披露核验')} for e in events]
     checkpoint['tasks']['news'] = 'passed_limited_coverage'
     atomic_json(root/'acceptance-queue.json', checkpoint)
     issuer = fetch_issuer_announcements(now, root)
@@ -170,6 +180,7 @@ def prepare():
         facts=daily_consistency_facts(context), allowed_news_urls=list(items),
         hk_report_contract=context['hk_report_contract'], issuer_announcements=issuer,
         event_candidates=len(events), reviewed_group_count=sum(e['grouping_reviewed'] for e in events),
+        industry_context_count=len(industry_context), company_news_evidence=context['company_news_evidence'],
         limitation='Known event families merged; unknown events are upper-bound candidates. Issuer listing verified; full disclosure bodies and financial periods remain incomplete.')
     atomic_json(root/'preflight.json', audit)
     files = ['tencent_history.json', 'independent_history.json', 'news.json', 'issuer-feed-raw.json',

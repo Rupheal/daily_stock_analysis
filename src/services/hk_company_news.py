@@ -93,7 +93,7 @@ def canonical_url(url):
     return url
 
 
-def select_company_evidence(items, limit, *, require_approved_origin=False):
+def select_company_evidence(items, limit, *, require_approved_origin=False, code=None, name=None):
     """Prioritize dated financial/risk coverage over consumer tutorials and PR.
 
     Ranking is a transparent relevance heuristic, not verification or sentiment.
@@ -102,6 +102,8 @@ def select_company_evidence(items, limit, *, require_approved_origin=False):
     for item in items:
         if require_approved_origin and not approved_news_origin(item):
             continue
+        if code and not related(str(item.get('title') or ''), '', code, name or ''):
+            continue  # Body-only mentions belong to industry context, not core company evidence.
         title = str(item.get('title') or '')
         if re.search(r'如何.*(?:键盘|设置|安装)|使用教程|壁纸下载|铃声下载', title):
             continue

@@ -57,6 +57,9 @@ def daily_consistency_facts(context):
         'date': str(today.get('date', context.get('date'))), 'currency': 'HKD',
         'close': c, 'change_pct': (c / previous - 1) * 100 if previous else None,
         'ma5': today.get('ma5'), 'ma10': today.get('ma10'), 'ma20': today.get('ma20'),
+        'bias_ma5_pct_from_displayed_ma': (c/float(today['ma5'])-1)*100 if today.get('ma5') else None,
+        'ma_daily_changes': {k: float(today[k])-float(context['yesterday'][k])
+            for k in ('ma5', 'ma10', 'ma20') if today.get(k) and (context.get('yesterday') or {}).get(k)},
         'volume_vs_previous_five_sessions': today.get('volume_ratio'),
         'volume_vs_previous_session': context.get('volume_change_ratio'),
         'candle_body': abs(c-o), 'upper_shadow': h-max(c,o), 'lower_shadow': min(c,o)-l,
@@ -181,7 +184,7 @@ def audit_daily_report(result, context):
     findings.extend(_audit_cross_section_claims(result, plan, basis, context))
     from src.services.hk_report_contract import audit_contract
     findings.extend(audit_contract(result, context))
-    return {'passed':not findings, 'execution_plan_enabled':not findings, 'findings':findings,
+    return {'passed':not findings, 'execution_plan_enabled':not findings and basis.get('mode') != 'watch', 'findings':findings,
             'scope':'Selected numerical/semantic checks only; manual review remains necessary.'}
 
 
@@ -210,6 +213,17 @@ def _audit_cross_section_claims(result, plan, basis, context):
         r'跌破[^。；;\n]{0,24}?(\d+(?:\.\d+)?)\s*(?:港元|元)?\s*(?:则)?(?:即刻执行|立即执行|立即离场|无条件离场|按止损处理)',
     )
     for path, text in _text_fields(result):
+        if re.search(r'无追高风险|無追高風險|零风险|零風險', text):
+            findings.append({'code': 'unsupported_risk_free_claim', 'field': path})
+        previous = context.get('yesterday') or {}
+        if (context['today'].get('ma20') and previous.get('ma20')
+                and context['today']['ma20'] > previous['ma20']
+                and re.search(r'MA5.{0,30}MA10.{0,30}MA20.{0,24}(?:依次|均|全部|都)下行', text, re.I)):
+            findings.append({'code': 'ma_order_confused_with_daily_slope', 'field': path})
+        if (previous.get('ma5') and previous.get('close') and context['today'].get('ma5')
+                and previous['close'] < previous['ma5'] and context['today']['close'] < context['today']['ma5']
+                and re.search(r'缩量回踩|縮量回踩|回踩MA5', text, re.I)):
+            findings.append({'code': 'unsupported_pullback_from_above_ma', 'field': path})
         for pattern in stop_patterns:
             stop_claims.extend((path, float(m.group(1))) for m in re.finditer(pattern, text))
     if stop_claims and max(v for _, v in stop_claims) - min(v for _, v in stop_claims) > 0.015:

@@ -99,11 +99,47 @@ def test_second_execution_definition_is_rejected_before_replacement():
 
 def test_known_translated_event_is_one_candidate_unknown_events_stay_explicit():
     rows = [{'title': '里昂：小米SkyNomad', 'url': 'https://news.futunn.com/post/1?lang=en'},
-            {'title': 'CLSA Xiaomi SkyNomad', 'url': 'https://www.etnet.com.hk/article/2'},
+            {'title': '中信里昂小米澎程', 'url': 'https://www.etnet.com.hk/article/2'},
             {'title': 'Another event', 'url': 'https://www.etnet.com.hk/article/3'}]
     result = deduplicate_events(rows)
     assert len(result) == 2 and len(result[0]['event_source_urls']) == 2
     assert result[0]['grouping_reviewed'] and not result[1]['grouping_reviewed']
+
+
+def test_real_first_final_run_wrong_slope_pullback_and_risk_free_claims_are_rejected():
+    fixture = json.loads((Path(__file__).parent/'fixtures/xiaomi_model_final_first_unapproved_20260912.json').read_text())
+    codes = {f['code'] for f in audit_daily_report(fixture['result'], fixture['context'])['findings']}
+    assert {'ma_order_confused_with_daily_slope', 'unsupported_pullback_from_above_ma',
+            'unsupported_risk_free_claim'} <= codes
+
+
+def test_body_only_mentions_do_not_crowd_core_company_news():
+    from src.services.hk_company_news import select_company_evidence
+    rows = [{'title': 'CATL earnings review', 'summary': 'Xiaomi is a customer',
+             'url': 'https://news.futunn.com/post/1', 'source': 'AASTOCKS'},
+            {'title': 'Xiaomi deliveries', 'url': 'https://news.futunn.com/post/2', 'source': 'AASTOCKS'}]
+    assert select_company_evidence(rows, 6, require_approved_origin=True,
+                                   code='hk01810', name='小米集团-W') == rows[1:]
+
+
+def test_cited_news_and_ma_slopes_are_generated_from_evidence_not_model_repetition():
+    from src.services.hk_report_contract import verified_ma_text
+    ctx = context();ctx['yesterday'] = {'ma5': 27.03, 'ma10': 27.37, 'ma20': 27.35, 'close': 25.92}
+    ctx['today'].update(ma5=26.62, ma10=27.22, ma20=27.39)
+    ctx['company_news_evidence'] = [{'event_id': 'event-1', 'title': 'Xiaomi report',
+        'summary': 'A broker forecast, not a result.', 'source': 'Reviewed publisher',
+        'source_urls': ['https://example.test/source'], 'published_at': '2026-09-11', 'evidence_kind': '观点/预测'}]
+    attach_report_contract(ctx)
+    data = report(ctx, 'watch');data['ma_analysis']='';data['news_summary']=''
+    data['dashboard']['news_review']=[{'event_id': 'event-1', 'assessment': '这是预测，不能当作实现业绩。'}]
+    obj = SimpleNamespace(**data)
+    obj.to_dict=lambda: {k:v for k,v in vars(obj).items() if k != 'to_dict'}
+    assert enforce_daily_report(obj,ctx)['passed']
+    assert 'MA20 27.39 港元，较前一交易日上升 0.04' in obj.ma_analysis
+    assert 'https://example.test/source' in obj.news_summary and '观点/预测' in obj.news_summary
+    assert enforce_daily_report(obj,ctx)['passed']
+    obj.ma_analysis='MA5、MA10、MA20全部下行'
+    assert not enforce_daily_report(obj,ctx)['passed']
 
 
 @pytest.mark.parametrize('name', ['xiaomi_model_unapproved_20260912.json',
