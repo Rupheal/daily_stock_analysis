@@ -1,0 +1,60 @@
+name: HK original full official pool data-only and coverage replay
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/10-hk-original-pool-data.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-pool:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Reaudit existing native databases without network/model requests
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 34705579721
+          github-token: ${{ github.token }}
+          pattern: native-data-*
+          path: old-evidence
+      - name: Preserve corrected coverage beside original audit
+        run: |
+          PYTHONPATH=research python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          from scripts.run_hk_native_data_probe import audit_database
+          root=Path('probe/replayed-coverage');root.mkdir(parents=True)
+          for path in Path('old-evidence').rglob('coverage.json'):
+              old=json.loads(path.read_text());rows=audit_database(path.parent/'native-data.db',old['requested_codes'],old['expected_complete_session'])
+              new={'source_run_id':34705579721,'source_scope':old['scope'],'original_coverage_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'database_sha256':hashlib.sha256((path.parent/'native-data.db').read_bytes()).hexdigest(),'correction':'Case-normalized native HK codes were missed by the first external auditor; original code/data unchanged.','coverage':rows,'current_valid_count':sum(r['status']=='current_valid_bar' for r in rows),'denominator':len(rows)}
+              (root/(old['scope']+'.json')).write_text(json.dumps(new,ensure_ascii=False,indent=2))
+              print('CORRECTED_NATIVE_COVERAGE',json.dumps(new,ensure_ascii=False))
+          PY
+      - run: pip install -r original/requirements.txt
+      - name: Run the full verified official union through unchanged original CLI
+        run: python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-o-universe.json --scope O_full_pool_data_only --expected-date 2026-09-11 --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --timeout 720 --output probe/O-full
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-official-pool-data-and-replay
+          path: probe/
+          retention-days: 7

@@ -6,232 +6,368 @@
     {
       "code": "00700",
       "user_alias": "腾讯控股",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "TENCENT"
     },
     {
       "code": "03690",
       "user_alias": "美团-W",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "MEITUAN-W"
     },
     {
       "code": "09618",
       "user_alias": "京东集团-SW",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "absent_both_official_lists",
+      "membership_asof": "2026-09-11",
+      "official_name": null
     },
     {
       "code": "09988",
       "user_alias": "阿里巴巴-W",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "BABA-W"
     },
     {
       "code": "01211",
       "user_alias": "比亚迪股份",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "BYD COMPANY"
     },
     {
       "code": "01810",
       "user_alias": "小米集团-W",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "XIAOMI-W"
     },
     {
       "code": "03888",
       "user_alias": "金山软件",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "KINGSOFT"
     },
     {
       "code": "03896",
       "user_alias": "金山云",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "KINGSOFT CLOUD"
     },
     {
       "code": "03986",
       "user_alias": "兆易创新",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "GIGADEVICE"
     },
     {
       "code": "02513",
       "user_alias": "智谱",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "Z.AI"
     },
     {
       "code": "06082",
       "user_alias": "壁仞科技",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "BIREN TECH"
     },
     {
       "code": "00981",
       "user_alias": "中芯国际",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "SMIC"
     },
     {
       "code": "06166",
       "user_alias": "剑桥科技",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "CIG"
     },
     {
       "code": "06682",
       "user_alias": "范式智能",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "PHANCY"
     },
     {
       "code": "09880",
       "user_alias": "优必选",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "UBTECH ROBOTICS"
     },
     {
       "code": "02556",
       "user_alias": "迈富时",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "MARKETINGFORCE"
     },
     {
       "code": "01428",
       "user_alias": "耀才证券金融",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "BRIGHT SMART"
     },
     {
       "code": "09999",
       "user_alias": "网易",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "NTES"
     },
     {
       "code": "02359",
       "user_alias": "药明康德",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "WUXI APPTEC"
     },
     {
       "code": "06160",
       "user_alias": "百济神州",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "BEONE MEDICINES"
     },
     {
       "code": "03968",
       "user_alias": "招商银行",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "CM BANK"
     },
     {
       "code": "09992",
       "user_alias": "泡泡玛特",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "POP MART"
     },
     {
       "code": "00100",
       "user_alias": "MiniMax",
-      "membership_note": "原池保留；本次截图重合"
+      "membership_note": "原池保留；本次截图重合",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "MINIMAX-W"
     },
     {
       "code": "02899",
       "user_alias": "紫金矿业",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "ZIJIN MINING"
     },
     {
       "code": "02318",
       "user_alias": "中国平安",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "PING AN"
     },
     {
       "code": "00939",
       "user_alias": "建设银行",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "CCB"
     },
     {
       "code": "00992",
       "user_alias": "联想集团",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "LENOVO GROUP"
     },
     {
       "code": "00883",
       "user_alias": "中国海洋石油",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "CNOOC"
     },
     {
       "code": "01347",
       "user_alias": "华虹半导体",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "HUA HONG GRACE"
     },
     {
       "code": "00005",
       "user_alias": "汇丰控股",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "HSBC HOLDINGS"
     },
     {
       "code": "03993",
       "user_alias": "洛阳钼业",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "CMOC"
     },
     {
       "code": "02269",
       "user_alias": "药明生物",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "WUXI BIO"
     },
     {
       "code": "00388",
       "user_alias": "香港交易所",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "HKEX"
     },
     {
       "code": "01801",
       "user_alias": "信达生物",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "INNOVENT BIO"
     },
     {
       "code": "09926",
       "user_alias": "康方生物",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "AKESO"
     },
     {
       "code": "02382",
       "user_alias": "舜宇光学科技",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "SUNNY OPTICAL"
     },
     {
       "code": "01024",
       "user_alias": "快手",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "KUAISHOU-W"
     },
     {
       "code": "09626",
       "user_alias": "哔哩哔哩",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "BILIBILI-W"
     },
     {
       "code": "00941",
       "user_alias": "中国移动",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "CHINA MOBILE"
     },
     {
       "code": "01787",
       "user_alias": "山东黄金",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "SD GOLD"
     },
     {
       "code": "02020",
       "user_alias": "安踏体育",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "ANTA SPORTS"
     },
     {
       "code": "00175",
       "user_alias": "吉利汽车",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "GEELY AUTO"
     },
     {
       "code": "09660",
       "user_alias": "地平线机器人",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "HORIZONROBOT-W"
     },
     {
       "code": "06181",
       "user_alias": "老铺黄金",
-      "membership_note": "原池保留"
+      "membership_note": "原池保留",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "LAOPU GOLD"
     },
     {
       "code": "03308",
       "user_alias": "中际旭创",
-      "membership_note": "本次新增；官方身份/资格待核验"
+      "membership_note": "本次新增；官方身份/资格待核验",
+      "official_current_membership": "both_channels_buy_sell",
+      "membership_asof": "2026-09-11",
+      "official_name": "ZJ INNOLIGHT"
     }
   ],
   "source": "DSA_HK_Dual_Model_Operating_Agreement_2026-09-11.md v1.4",
   "source_library_file_id": "libfile_c7d0f996ba1c8191b72499ff57b4cd92",
   "source_version": "4",
-  "identity_status": "pending_official_effective_date_validation",
-  "no_implicit_membership_removal": true
+  "identity_status": "44_current_official_identity_matches; JD identity only future-dated HKEX reference, review pending",
+  "no_implicit_membership_removal": true,
+  "current_eligibility_count": 44
 }

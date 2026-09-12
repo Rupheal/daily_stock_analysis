@@ -16,7 +16,7 @@ class CoverageTest(unittest.TestCase):
             db = sqlite3.connect(path)
             db.execute("CREATE TABLE stock_daily(code TEXT, date TEXT, open REAL, high REAL, low REAL, close REAL, volume REAL)")
             db.executemany("INSERT INTO stock_daily VALUES(?,?,?,?,?,?,?)", [
-                ("current", "2026-09-11", 10, 12, 9, 11, 100),
+                ("CURRENT", "2026-09-11", 10, 12, 9, 11, 100),
                 ("stale", "2026-09-10", 10, 12, 9, 11, 100),
                 ("invalid", "2026-09-11", 10, 8, 9, 11, 100),
             ])
@@ -25,4 +25,5 @@ class CoverageTest(unittest.TestCase):
             result = probe.audit_database(path, ["current", "stale", "invalid", "missing"], "2026-09-11")
             self.assertEqual(len(result), 4)
             self.assertEqual([r["status"] for r in result], ["current_valid_bar", "invalid_or_stale", "invalid_or_stale", "missing"])
+            self.assertEqual(result[0]["database_code"], "CURRENT")
             self.assertEqual(len(probe.audit_database(Path(directory) / "absent.db", ["A", "B"], "2026-09-11")), 2)

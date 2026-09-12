@@ -23,14 +23,16 @@ def audit_database(database, codes, expected_date):
             record = {"code": code, "status": "missing", "bars": 0}
             try:
                 rows = connection.execute(
-                    "SELECT date, open, high, low, close, volume FROM stock_daily WHERE code=? ORDER BY date",
+                    "SELECT date, open, high, low, close, volume, code FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date",
                     (code,),
                 ).fetchall() if connection else []
                 record["bars"] = len(rows)
                 if rows:
+                    if len({row[6] for row in rows}) != 1:
+                        raise ValueError("Ambiguous case aliases in native database")
                     last = rows[-1]
-                    record.update(latest_date=str(last[0])[:10], latest_ohlcv=list(last[1:]))
-                    valid = all(v is not None and isfinite(float(v)) for v in last[1:])
+                    record.update(database_code=last[6], latest_date=str(last[0])[:10], latest_ohlcv=list(last[1:6]))
+                    valid = all(v is not None and isfinite(float(v)) for v in last[1:6])
                     valid = valid and 0 < last[3] <= min(last[1], last[4]) <= max(last[1], last[4]) <= last[2] and last[5] >= 0
                     record["status"] = "current_valid_bar" if valid and record["latest_date"] == expected_date else "invalid_or_stale"
             except Exception as exc:
@@ -46,7 +48,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkout", type=Path, required=True)
     parser.add_argument("--universe", type=Path, required=True)
-    parser.add_argument("--scope", choices=["U45_data_only", "O_single_stock_smoke"], required=True)
+    parser.add_argument("--scope", choices=["U45_data_only", "O_single_stock_smoke", "O_full_pool_data_only"], required=True)
     parser.add_argument("--expected-date", required=True)
     parser.add_argument("--expected-commit", required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -57,9 +59,14 @@ def main():
     raw_universe = args.universe.read_bytes()
     universe = json.loads(raw_universe)
     all_codes = ["hk" + c["code"] for c in universe["members"]]
-    if len(all_codes) != 45 or len(set(all_codes)) != 45:
-        raise ValueError("The frozen U denominator must be exactly 45 distinct codes")
-    codes = all_codes if args.scope == "U45_data_only" else ["hk01810"]
+    if len(set(all_codes)) != universe["member_count"] or len(all_codes) != universe["member_count"]:
+        raise ValueError("Frozen universe count or uniqueness mismatch")
+    if args.scope == "O_full_pool_data_only":
+        if not universe.get("full_union_verified") or universe.get("effective_session") != args.expected_date:
+            raise ValueError("O requires a complete verified official union for the requested session")
+    elif len(all_codes) != 45:
+        raise ValueError("The frozen U denominator must be 45")
+    codes = ["hk01810"] if args.scope == "O_single_stock_smoke" else all_codes
     actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=checkout, text=True).strip()
     if actual != args.expected_commit:
         raise ValueError("Native checkout commit mismatch")
@@ -74,7 +81,7 @@ def main():
     audit = {"scope": args.scope, "code_commit": actual, "started_at": datetime.now(timezone.utc).isoformat(),
              "universe_sha256": hashlib.sha256(raw_universe).hexdigest(), "requested_codes": codes,
              "expected_complete_session": args.expected_date, "command": command,
-             "coverage_denominator": len(codes), "O_full_union_N": None, "O_full_pool_passed": False,
+             "coverage_denominator": len(codes), "O_full_union_N": len(codes) if args.scope == "O_full_pool_data_only" else None, "O_full_pool_passed": False,
              "model_credentials_provided": False, "model_analysis_enabled": False,
              "native_logic_modified": False, "independent_price_validation": False}
     try:
@@ -94,6 +101,11 @@ def main():
     except Exception as exc:
         audit["error"] = type(exc).__name__ + ": " + str(exc)
     audit["coverage"] = audit_database(database, codes, args.expected_date)
+    if (output / "native.log").exists():
+        native_log = (output / "native.log").read_text(errors="replace")
+        for record in audit["coverage"]:
+            record["native_log_mentions_code"] = record["code"].lower() in native_log.lower()
+        print("NATIVE_LOG_TAIL", native_log[-12000:], flush=True)
     audit["current_valid_count"] = sum(r["status"] == "current_valid_bar" for r in audit["coverage"])
     audit["completed_at"] = datetime.now(timezone.utc).isoformat()
     audit["status"] = "data_acquisition_complete" if audit["current_valid_count"] == len(codes) else "partial_or_failed"
