@@ -1,0 +1,79 @@
+{
+  "recorded_at_utc": "2026-09-12T17:18:52.607441+00:00",
+  "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
+  "scope": "This two-request goal batch only. Later concurrent batches are separate; this ledger is not a new authorization.",
+  "max_http_requests": 2,
+  "used_http_requests": 1,
+  "remaining_at_batch_handoff": 1,
+  "target_cny": "1.00",
+  "ask_before_projected_above_cny": "1.20",
+  "paid_workflow_05": "closed_after_request_1",
+  "new_request_for_archive_or_delivery": 0,
+  "entries": [
+    {
+      "run": 34642291178,
+      "http_requests": null,
+      "estimated_cost_cny": null,
+      "actual_cost_cny": null,
+      "reason": "early inconsistent telemetry"
+    },
+    {
+      "run": 34680709223,
+      "http_requests": 1,
+      "estimated_cost_cny": "0.03141432",
+      "actual_cost_cny": null
+    },
+    {
+      "run": 34688694878,
+      "http_requests": 1,
+      "estimated_cost_cny": "0.03572332",
+      "actual_cost_cny": null
+    },
+    {
+      "run": 34693409713,
+      "http_requests": 1,
+      "estimated_cost_cny": "0.03508332",
+      "actual_cost_cny": null
+    },
+    {
+      "run": 34694414050,
+      "http_requests": 1,
+      "estimated_cost_cny": "0.03343532",
+      "actual_cost_cny": null
+    },
+    {
+      "run": 34697756860,
+      "http_requests": 1,
+      "estimated_cost_cny": "0.02877032",
+      "actual_cost_cny": null
+    },
+    {
+      "run": 34704104399,
+      "http_requests": 1,
+      "estimated_cost_cny": "0.030078",
+      "peak_estimate_cny": "0.060156",
+      "actual_cost_cny": null
+    }
+  ],
+  "known_six_usage_estimates_sum_cny": "0.19450460",
+  "sum_is_total_project_cost": false,
+  "raw_current_usage": {
+    "prompt_tokens": 12406,
+    "completion_tokens": 4418,
+    "total_tokens": 16824,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3957
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 12406
+  },
+  "pricing_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "account_balance_is_invoice": false,
+  "github_platform_actual_cost_cny": null,
+  "later_concurrent_commit_seen": "7df05867a33f82e975f412ac7d5e194f276940db",
+  "later_concurrent_budget_doc": "docs/dsa-eight-yuan-batch.md",
+  "later_concurrent_budget_note": "Remote later work declares another authorization. This batch did not issue, count, approve, or review that separate model request; inspect its actual run and original user instruction before resuming it."
+}

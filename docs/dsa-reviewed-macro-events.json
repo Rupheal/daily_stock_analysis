@@ -1,0 +1,52 @@
+{
+  "scope": "three chosen policy-document case studies, not exhaustive event coverage or randomly selected validation set",
+  "events": [
+    {
+      "file": "policy-20250402.html",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/04/regulating-imports-with-a-reciprocal-tariff-to-rectify-trade-practices-that-contribute-to-large-and-persistent-annual-united-states-goods-trade-deficits/",
+      "retrieved_at": "2026-09-12T16:42:13.689870+00:00",
+      "status": "received",
+      "sha256": "c8035027bce7b3a73859fd1fb48ed0f1e0d246329739146d6ab544d0bf586815",
+      "bytes": 327713,
+      "event_date": "2025-04-02",
+      "kind": "executed_policy_document",
+      "reviewed_fact": "Reciprocal-tariff executive order; exceptions and staged effective dates must be retained.",
+      "historical_publication_minute_verified": false,
+      "retrieved_now_not_vintage_proof": true,
+      "15_minute_confirmation": null,
+      "causal_effect_estimate": null
+    },
+    {
+      "file": "policy-20250409.html",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/04/modifying-reciprocal-tariff-rates-to-reflect-trading-partner-retaliation-and-alignment/",
+      "retrieved_at": "2026-09-12T16:42:13.690841+00:00",
+      "status": "received",
+      "sha256": "42a34c8a5698094ed98b6cb4bfa60207fd6d182dd50545f0c15925388ebecf2e",
+      "bytes": 303630,
+      "event_date": "2025-04-09",
+      "kind": "executed_policy_document",
+      "reviewed_fact": "90-day suspension of specified partner-specific duties excludes China; separate China escalation. Not a universal tariff cancellation.",
+      "effective_at": "2025-04-10T00:01:00-04:00",
+      "historical_publication_minute_verified": false,
+      "retrieved_now_not_vintage_proof": true,
+      "15_minute_confirmation": null,
+      "causal_effect_estimate": null
+    },
+    {
+      "file": "policy-20250512.html",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/05/modifying-reciprocal-tariff-rates-to-reflect-discussions-with-the-peoples-republic-of-china/",
+      "retrieved_at": "2026-09-12T16:42:13.691372+00:00",
+      "status": "received",
+      "sha256": "55f782c9fa5ba9d2027d30e01476817508ecb934d655d0cd150a4776fa9eb779",
+      "bytes": 302626,
+      "event_date": "2025-05-12",
+      "kind": "executed_policy_document",
+      "reviewed_fact": "Separate subsequent China arrangement with specified duties suspended for90days and remaining rate; not elimination of all US tariffs.",
+      "effective_at": "2025-05-14T00:01:00-04:00",
+      "historical_publication_minute_verified": false,
+      "retrieved_now_not_vintage_proof": true,
+      "15_minute_confirmation": null,
+      "causal_effect_estimate": null
+    }
+  ]
+}

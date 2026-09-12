@@ -1,0 +1,110 @@
+{
+  "native_run": 34705950297,
+  "independent_run": 34706757715,
+  "status": "Conflicting open fields; native values retained and rejected by external quality gate. Independent source is corroboration, not a silent replacement.",
+  "checks": [
+    {
+      "code": "hk00719",
+      "url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00719%2Cday%2C%2C%2C60%2Cqfq",
+      "retrieved_at": "2026-09-12T16:58:08.423842+00:00",
+      "status": "received",
+      "sha256": "41d67e3928e7c3c215b19856f96674b9e2945617b8ebe2614fabaeb5eae36c36",
+      "bars": {
+        "qfqday": [
+          [
+            "2026-09-10",
+            "5.575",
+            "5.540",
+            "5.585",
+            "5.540",
+            "240000.000",
+            {},
+            "0.120",
+            "133.471"
+          ],
+          [
+            "2026-09-11",
+            "5.515",
+            "5.435",
+            "5.515",
+            "5.420",
+            "342000.000",
+            {},
+            "0.180",
+            "186.484"
+          ]
+        ]
+      }
+    },
+    {
+      "code": "hk01318",
+      "url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk01318%2Cday%2C%2C%2C60%2Cqfq",
+      "retrieved_at": "2026-09-12T16:58:09.824311+00:00",
+      "status": "received",
+      "sha256": "0382ac70e9d3640f9e64624a6daa7eec1ca619b694289e09d3fa902678ac06fd",
+      "bars": {
+        "qfqday": [
+          [
+            "2026-09-10",
+            "48.800",
+            "48.100",
+            "49.200",
+            "48.000",
+            "1510700.000",
+            {},
+            "0.310",
+            "7322.653"
+          ],
+          [
+            "2026-09-11",
+            "48.000",
+            "47.460",
+            "48.380",
+            "46.940",
+            "1674011.000",
+            {},
+            "0.340",
+            "7938.175"
+          ]
+        ]
+      }
+    },
+    {
+      "code": "hk06715",
+      "url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk06715%2Cday%2C%2C%2C60%2Cqfq",
+      "retrieved_at": "2026-09-12T16:58:10.606654+00:00",
+      "status": "received",
+      "sha256": "5cef64d30c546a0a0e9d66cd9d3cf3a74a9daa7657ff7c96a9f1ef1308ae9682",
+      "bars": {
+        "day": [
+          [
+            "2026-09-10",
+            "77.000",
+            "70.450",
+            "80.000",
+            "69.500",
+            "514091.00",
+            {},
+            "0.47",
+            "3811.53",
+            "0.000",
+            "0.000"
+          ],
+          [
+            "2026-09-11",
+            "69.550",
+            "67.800",
+            "69.550",
+            "66.000",
+            "225596.00",
+            {},
+            "0.21",
+            "1514.01",
+            "0.000",
+            "0.000"
+          ]
+        ]
+      }
+    }
+  ]
+}

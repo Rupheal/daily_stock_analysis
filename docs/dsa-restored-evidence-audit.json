@@ -1,0 +1,36 @@
+{
+  "source_export_run": 34707157107,
+  "files_verified": 17,
+  "checks": [
+    {
+      "scope": "U",
+      "database_sha256": "4de088566416b6535a931a62107303cbfe346ac673e04f8ee7a5c3b8f2b0e663",
+      "sqlite_quick_check": "ok",
+      "stored_daily_rows": 1924,
+      "coverage": 45,
+      "denominator": 45,
+      "zero_volume_latest": 0,
+      "native_model_results_expected": false
+    },
+    {
+      "scope": "O",
+      "database_sha256": "f1b50fa459e229455fddadb6fbd23823199ec5ea4927d289f54ad683ed9a045b",
+      "sqlite_quick_check": "ok",
+      "stored_daily_rows": 28201,
+      "coverage": 657,
+      "denominator": 660,
+      "zero_volume_latest": 4,
+      "native_model_results_expected": false,
+      "zero_volume_codes": [
+        "HK00853",
+        "HK01196",
+        "HK02172",
+        "HK02252"
+      ]
+    }
+  ],
+  "no_new_acquisition": true,
+  "model_requests": 0,
+  "quality_scope": "Basic latest OHLC validity only, not independently verified adjustment/calendar/liquidity or executable coverage.",
+  "zero_volume_note": "Retain these four in O660; no inferred suspension status and no execution approval from OHLC validity."
+}

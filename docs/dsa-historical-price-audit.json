@@ -1,0 +1,29 @@
+{
+  "source_run": 34706757715,
+  "series": [
+    {
+      "symbol": "^HSI",
+      "rows": 357,
+      "unique_dates": 357,
+      "invalid_ohlc": [],
+      "start": "2025-04-01",
+      "end": "2026-09-11",
+      "close_to_close_pct": 6.88930947250701,
+      "daily_close_mdd_pct": -18.93668998611838,
+      "scope": "single-source descriptive price series only; not PIT, adjusted total return, strategy, or calendar coverage verification"
+    },
+    {
+      "symbol": "1810.HK",
+      "rows": 357,
+      "unique_dates": 357,
+      "invalid_ohlc": [],
+      "start": "2025-04-01",
+      "end": "2026-09-11",
+      "close_to_close_pct": -43.31182664440524,
+      "daily_close_mdd_pct": -64.38902820795738,
+      "scope": "single-source descriptive price series only; not PIT, adjusted total return, strategy, or calendar coverage verification"
+    }
+  ],
+  "matched_dates": true,
+  "strategy_validated": false
+}
