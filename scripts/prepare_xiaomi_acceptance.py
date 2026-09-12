@@ -42,6 +42,8 @@ def fetch_issuer_announcements(now, root):
     endpoint = 'https://asia.tools.euroland.com/tools/Pressreleases/Main/GetNews/'
     response = requests.post(endpoint, data={'companyCode': 'ky-1810', 'lang': 'en-GB',
         'strYears': str(now.year), 'pageIndex': '0', 'pageJummp': '50', 'orderBy': '0',
+        'strDateFrom': (now-timedelta(days=7)).strftime('%d/%m/%Y'),
+        'strDateTo': now.strftime('%d/%m/%Y'), 'typeFilter': '', 'searchPhrase': '', 'v': '',
         'hasTypeFilter': 'false', 'onlyInsiderInfo': 'false', 'alwaysIncludeInsiders': 'false'}, timeout=20)
     response.raise_for_status()
     payload = response.json()

@@ -1,5 +1,5 @@
 name: HK US Europe free news and daily integration acceptance
-# Final free gate v2: preserve news interface compatibility and verify failed-output consumers.
+# Final free gate v3: preserve the issuer feed's full public form parameter contract.
 on:
   workflow_dispatch:
   push:
