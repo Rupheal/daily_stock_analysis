@@ -18,6 +18,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
+      - run: pip install yfinance
       - uses: actions/download-artifact@v4
         with:
           run-id: 34705950297
@@ -30,8 +31,14 @@ jobs:
           name: native-data-U45_data_only
           github-token: ${{ github.token }}
           path: retained/U
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34708983319
+          name: public-pool-price-checks
+          github-token: ${{ github.token }}
+          path: prior-public
       - name: Public OHLCV only, no model keys or model outputs
-        run: python scripts/probe_hk_pool_daily_integrity.py --original-db retained/O/O-full/native-data.db --upgraded-db retained/U/U/native-data.db --repo . --output public-price-check --target 2026-09-11
+        run: python scripts/probe_hk_pool_daily_integrity.py --original-db retained/O/O-full/native-data.db --upgraded-db retained/U/U/native-data.db --repo . --output public-price-check --target 2026-09-11 --reuse-cache prior-public
       - uses: actions/upload-artifact@v4
         if: always()
         with:

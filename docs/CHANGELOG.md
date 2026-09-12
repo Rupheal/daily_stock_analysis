@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > For user-friendly release highlights, see the [GitHub Releases](https://github.com/ZhuLinsen/daily_stock_analysis/releases) page.
 
 ## [Unreleased]
+- [修复] 双轨公开日线核验识别原生腾讯来源并切换真实独立对照，复用既有资料；加入美港交易顺序回放并记录模型内容导出的权限边界。
 
 - [交付] 恢复并核验17份云端原始证据，复算U45/45与O657/660，记录4项零成交量及未解决研究门槛；保存本批费用与正式中文报告。
 

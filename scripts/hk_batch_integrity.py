@@ -32,7 +32,9 @@ def validate_rows(rows, target):
         if not all(x.is_finite() for x in v.values()):
             raise ValueError('non_finite_daily_value')
         if not 0 < v['low'] <= min(v['open'], v['close']) <= max(v['open'], v['close']) <= v['high'] or v['volume'] < 0:
-            raise ValueError('invalid_daily_geometry')
+            error = ValueError('invalid_daily_geometry')
+            error.public_row = {'date': row['date'], **{k: str(x) for k, x in v.items()}}
+            raise error
     return rows[-21:]
 
 
@@ -47,11 +49,16 @@ def tencent_rows(payload, code):
     return rows, key
 
 
-def compare_history(native, independent, target):
+def compare_history(native, independent, target, independent_provider='TencentFetcher'):
     recent = validate_rows(native, target)
     independent = validate_rows(independent, target)
     lookup = {r['date']: r for r in independent}
-    if any('Tencent' in str(r.get('data_source', '')) for r in recent):
+    def provider_id(name):
+        name = str(name).casefold()
+        if 'tencent' in name or 'gtimg' in name: return 'tencent'
+        if 'yfinance' in name or 'yahoo' in name: return 'yahoo'
+        return name
+    if not independent_provider or any(provider_id(r.get('data_source')) == provider_id(independent_provider) for r in recent):
         raise ValueError('comparison_provider_not_independent')
     mismatches = []
     for row in recent:

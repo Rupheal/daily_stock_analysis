@@ -41,3 +41,10 @@ class FundedBatchInputTest(unittest.TestCase):
         self.assertEqual(adjustment, 'day')
         self.assertEqual(rows[0]['volume'], '113533443')
         self.assertEqual(rows[0]['high'], '26.66')
+
+    def test_upgraded_tencent_data_requires_a_different_provider(self):
+        tencent = deepcopy(self.rows)
+        for row in tencent: row['data_source'] = 'TencentFetcher'
+        self.assertTrue(compare_history(tencent, self.rows, self.target, 'YfinanceFetcher')['passed'])
+        with self.assertRaisesRegex(ValueError, 'not_independent'):
+            compare_history(tencent, self.rows, self.target, 'TencentFetcher')

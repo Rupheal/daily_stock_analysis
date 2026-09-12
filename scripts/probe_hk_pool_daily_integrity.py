@@ -19,6 +19,7 @@ def main():
     p.add_argument('--repo', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--target', required=True)
+    p.add_argument('--reuse-cache', type=Path)
     args = p.parse_args()
     root = args.output.resolve(); root.mkdir(parents=True, exist_ok=False)
     requests, failures = {}, {}
@@ -38,7 +39,22 @@ def main():
             try:
                 native = native_rows(database, code)
                 validate_rows(native, args.target)
-                if code not in requests:
+                previous = args.reuse_cache / (code + '.json') if args.reuse_cache else None
+                if code not in requests and previous and previous.is_file():
+                    requests[code] = json.loads(previous.read_text())['payload']
+                if track == 'U' and 'Tencent' in str(native[-1].get('data_source')):
+                    independent = native_rows(args.original_db, code)
+                    if independent and independent[-1].get('data_source'):
+                        provider = independent[-1]['data_source']
+                        adjustment = 'retained original provider adjusted values; database hash recorded'
+                        record['independent_reused_original_data'] = True
+                    else:
+                        import yfinance as yf
+                        frame = yf.Ticker(code[2:].lstrip('0').zfill(4)+'.HK').history(period='3mo', auto_adjust=True, actions=True, timeout=20)
+                        independent = [{'date':str(idx)[:10], **{k:row[k.title()] for k in ['open','high','low','close','volume']}} for idx,row in frame.iterrows()]
+                        provider, adjustment = 'YfinanceFetcher', 'auto_adjust=True'
+                        (root/(code+'-yahoo.json')).write_text(json.dumps({'provider':provider,'retrieved_at':datetime.now(timezone.utc).isoformat(),'rows':independent},default=str))
+                elif code not in requests:
                     url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?' + urlencode({'param': code.lower()+',day,,,180,qfq'})
                     with urlopen(Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=20) as response:
                         raw = response.read(2000000)
@@ -47,16 +63,19 @@ def main():
                                'sha256': hashlib.sha256(raw).hexdigest(), 'payload': payload}
                     (root / (code + '.json')).write_text(json.dumps(receipt, ensure_ascii=False))
                     requests[code] = payload
-                independent, adjustment = tencent_rows(requests[code], code)
+                if not (track == 'U' and 'Tencent' in str(native[-1].get('data_source'))):
+                    independent, adjustment = tencent_rows(requests[code], code)
+                    provider = 'TencentFetcher'
                 independent = [r for r in independent if r['date'] <= args.target]
-                audit = compare_history(native, independent, args.target)
-                record.update(audit=audit, adjustment=adjustment, native_source=native[-1].get('data_source'))
+                audit = compare_history(native, independent, args.target, provider)
+                record.update(audit=audit, adjustment=adjustment, native_source=native[-1].get('data_source'), independent_provider=provider)
                 if audit['passed']:
                     record['status'] = 'passed_21_observed_daily_bars'
                 else:
                     record['reason'] = 'independent_daily_disagreement'
             except Exception as exc:
                 record['reason'] = type(exc).__name__+':'+str(exc)[:150]
+                if hasattr(exc, 'public_row'): record['invalid_bar'] = exc.public_row
             with lock:
                 rows_out.append(record)
         with ThreadPoolExecutor(max_workers=6) as pool:
@@ -73,6 +92,7 @@ def main():
         (root / (track+'-integrity.json')).write_text(json.dumps(report,ensure_ascii=False,indent=2))
         print('FREE_POOL_INTEGRITY',json.dumps({k:v for k,v in report.items() if k!='coverage'},ensure_ascii=False),flush=True)
         print('ISOLATED_PUBLIC_MARKET_CODES',json.dumps({'track':track,'codes':[{'code':r['code'],'reason':r['reason']} for r in isolated]},ensure_ascii=False),flush=True)
+        print('PUBLIC_DATA_FAILURE_EXAMPLES',json.dumps({'track':track,'examples':isolated[:12]},ensure_ascii=False),flush=True)
 
 
 if __name__=='__main__': main()
