@@ -1,0 +1,189 @@
+{
+  "recorded_at_utc": "2026-09-12T17:00:45.355546+00:00",
+  "base_commit": "458f4e75d3286447079430357a8995abdad75d31",
+  "protected_main_verified": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
+  "input_hash_checks": [
+    {
+      "item": "financial-results.pdf",
+      "passed": true,
+      "actual": "b3270bb2e3e8e5a1c4aac485bb686b9ae97fc520414455e8fa557c3c9062ef45",
+      "expected": "b3270bb2e3e8e5a1c4aac485bb686b9ae97fc520414455e8fa557c3c9062ef45"
+    },
+    {
+      "item": "issuer-20260907.pdf",
+      "passed": true,
+      "actual": "178789f1a2a85b5559389f1c1e9ee50dba1f3e3ed7ea2b07e61c5a8eadf67c2c",
+      "expected": "178789f1a2a85b5559389f1c1e9ee50dba1f3e3ed7ea2b07e61c5a8eadf67c2c"
+    },
+    {
+      "item": "issuer-20260908.pdf",
+      "passed": true,
+      "actual": "2958ed7ba6bad16e51891f9487c45d63cf81c0388a54dccbd8ecce24e575b721",
+      "expected": "2958ed7ba6bad16e51891f9487c45d63cf81c0388a54dccbd8ecce24e575b721"
+    },
+    {
+      "item": "issuer-20260909.pdf",
+      "passed": true,
+      "actual": "b1b63b2b8dc4f525e6d030bc18ed178384976055bb2956d60198fa7c766ba32a",
+      "expected": "b1b63b2b8dc4f525e6d030bc18ed178384976055bb2956d60198fa7c766ba32a"
+    },
+    {
+      "item": "issuer-20260910.pdf",
+      "passed": true,
+      "actual": "582cac9a53b4a465429bd2e63cc6f448869e8798689d79213760b6f52c0f568a",
+      "expected": "582cac9a53b4a465429bd2e63cc6f448869e8798689d79213760b6f52c0f568a"
+    },
+    {
+      "item": "U45_data_only",
+      "passed": true,
+      "actual": "c73689446b963b1baaee7cfacc4fd2ae353fa1fdc371b3857c65d32569d78f2d",
+      "expected": "c73689446b963b1baaee7cfacc4fd2ae353fa1fdc371b3857c65d32569d78f2d"
+    },
+    {
+      "item": "O_single_stock_smoke",
+      "passed": true,
+      "actual": "177073fe8c607b06b7472528dd63f9f4bd34fad4a6d9b587f13c34d3ff943d72",
+      "expected": "177073fe8c607b06b7472528dd63f9f4bd34fad4a6d9b587f13c34d3ff943d72"
+    },
+    {
+      "item": "O_full_pool_data_only",
+      "passed": true,
+      "actual": "53b52aac3bf3363606e823652d3de33d87631fc5077c3a2dfdf2748281d60e78",
+      "expected": "53b52aac3bf3363606e823652d3de33d87631fc5077c3a2dfdf2748281d60e78"
+    },
+    {
+      "item": "SP500",
+      "passed": true,
+      "actual": "c5504c9776a7c0a3ff57ec6d5de377d01a11318217d39f68d3e09db343f8bba9",
+      "expected": "c5504c9776a7c0a3ff57ec6d5de377d01a11318217d39f68d3e09db343f8bba9"
+    },
+    {
+      "item": "NASDAQCOM",
+      "passed": true,
+      "actual": "b09fd89fc73d0a0ee577261f66292cb64917d69028b8cfd123f5bf62d5615ae2",
+      "expected": "b09fd89fc73d0a0ee577261f66292cb64917d69028b8cfd123f5bf62d5615ae2"
+    },
+    {
+      "item": "VIXCLS",
+      "passed": true,
+      "actual": "cd5d2824bbd99db813abd4ed1c1399b2f82ae5f46a3b16620129d3011066cf14",
+      "expected": "cd5d2824bbd99db813abd4ed1c1399b2f82ae5f46a3b16620129d3011066cf14"
+    },
+    {
+      "item": "DGS10",
+      "passed": true,
+      "actual": "e2132a3db7eca0a72a1778b08bf613ae2921a3e6db763290694ca157cdaeef3d",
+      "expected": "e2132a3db7eca0a72a1778b08bf613ae2921a3e6db763290694ca157cdaeef3d"
+    },
+    {
+      "item": "DGS2",
+      "passed": true,
+      "actual": "750363c52b176dda9916d7f374e88408a50cff5ffb225715ad52bd952568a2e0",
+      "expected": "750363c52b176dda9916d7f374e88408a50cff5ffb225715ad52bd952568a2e0"
+    },
+    {
+      "item": "NIKKEI225",
+      "passed": true,
+      "actual": "d2502186bdbc6e13e7ab68aed81ae42f859f0dbb8c4473b7176fd84d66bd01c7",
+      "expected": "d2502186bdbc6e13e7ab68aed81ae42f859f0dbb8c4473b7176fd84d66bd01c7"
+    },
+    {
+      "item": "DEXJPUS",
+      "passed": true,
+      "actual": "2b1ba7df031aa995b576ab2019e7643309d5a936b5a64b050d593f1d032325c2",
+      "expected": "2b1ba7df031aa995b576ab2019e7643309d5a936b5a64b050d593f1d032325c2"
+    },
+    {
+      "item": "DEXCHUS",
+      "passed": true,
+      "actual": "2c7052e7cf9bd4777b4facf20fea725e6ae1bbc51977e4f126f6cadc296dfa3b",
+      "expected": "2c7052e7cf9bd4777b4facf20fea725e6ae1bbc51977e4f126f6cadc296dfa3b"
+    },
+    {
+      "item": "DCOILBRENTEU",
+      "passed": true,
+      "actual": "4821e8c36c7a15dbd6c9f9fa5dea6c5a5b4fdaeeaac0988a927a11e074728977",
+      "expected": "4821e8c36c7a15dbd6c9f9fa5dea6c5a5b4fdaeeaac0988a927a11e074728977"
+    },
+    {
+      "item": "observation-name",
+      "passed": true,
+      "actual": "b08aa8a96282d6a99325daff53d65dcdb5599b70ef323e48f7670c10939a34cd",
+      "expected": "b08aa8a96282d6a99325daff53d65dcdb5599b70ef323e48f7670c10939a34cd"
+    },
+    {
+      "item": "rules",
+      "passed": true,
+      "actual": "3a8e395218eb6262c02707355587e0400c6b01c37add391467346b8890c6a62d",
+      "expected": "3a8e395218eb6262c02707355587e0400c6b01c37add391467346b8890c6a62d"
+    },
+    {
+      "item": "input",
+      "passed": true,
+      "actual": "ee610501ecaa8f073fd8378aa0fc19cd7a31ed45c8f99a0cc33883f9896886bb",
+      "expected": "ee610501ecaa8f073fd8378aa0fc19cd7a31ed45c8f99a0cc33883f9896886bb"
+    },
+    {
+      "item": "model-response",
+      "passed": true,
+      "actual": "3557eae00e46f904bc86af22358c98052f49bf2da74f621df36d32537616b8b6",
+      "expected": "3557eae00e46f904bc86af22358c98052f49bf2da74f621df36d32537616b8b6",
+      "first_check_method": "raw_bytes_incorrect_for_canonical_digest",
+      "method": "canonical_json_sha256_confirmed_by_manual_review_record"
+    }
+  ],
+  "hash_checks_passed": 21,
+  "hash_checks_total": 21,
+  "macro_replay_equal_excluding_runtime_timestamp": true,
+  "local_replay_tests_passed": 5,
+  "cloud_gate": {
+    "run": 34706757715,
+    "job": 103588096218,
+    "passed": 6,
+    "warnings": 2,
+    "conclusion": "success"
+  },
+  "original_failed_gate": {
+    "run": 34706668810,
+    "failure": "pytest collection missing anyio; no tests or history probe ran"
+  },
+  "independent_history_audit": {
+    "source_run": 34706757715,
+    "series": [
+      {
+        "symbol": "^HSI",
+        "rows": 357,
+        "unique_dates": 357,
+        "invalid_ohlc": [],
+        "start": "2025-04-01",
+        "end": "2026-09-11",
+        "close_to_close_pct": 6.88930947250701,
+        "daily_close_mdd_pct": -18.93668998611838,
+        "scope": "single-source descriptive price series only; not PIT, adjusted total return, strategy, or calendar coverage verification"
+      },
+      {
+        "symbol": "1810.HK",
+        "rows": 357,
+        "unique_dates": 357,
+        "invalid_ohlc": [],
+        "start": "2025-04-01",
+        "end": "2026-09-11",
+        "close_to_close_pct": -43.31182664440524,
+        "daily_close_mdd_pct": -64.38902820795738,
+        "scope": "single-source descriptive price series only; not PIT, adjusted total return, strategy, or calendar coverage verification"
+      }
+    ],
+    "matched_dates": true,
+    "strategy_validated": false
+  },
+  "new_model_http_requests_this_resumption_audit": 0,
+  "existing_authorization_batch": "DSA_RESEARCH_GOAL_20260912_01",
+  "existing_consumed_requests": 1,
+  "existing_remaining_requests": 1,
+  "existing_estimated_cost_cny": "0.030078",
+  "actual_charge_cny": null,
+  "duplicate_authorization_created": false,
+  "strategy_validated": false,
+  "frozen_observation_modified": false,
+  "concurrent_ref_note": "Non-fast-forward prevented duplicate workflow fix; adopted verified 458f4e75 fix already on branch. Unreferenced 926f4b0 commit was not activated."
+}
