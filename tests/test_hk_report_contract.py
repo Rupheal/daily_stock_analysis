@@ -113,6 +113,22 @@ def test_real_first_final_run_wrong_slope_pullback_and_risk_free_claims_are_reje
             'unsupported_risk_free_claim'} <= codes
 
 
+def test_second_real_report_keeps_true_source_failure_but_not_negation_false_positives():
+    fixture = json.loads((Path(__file__).parent/'fixtures/xiaomi_model_final_second_unapproved_20260912.json').read_text())
+    audit = audit_daily_report(fixture['result'], fixture['context'])
+    assert not audit['passed']
+    assert {f['code'] for f in audit['findings']} == {'unsupported_realtime_financial_source'}
+
+
+def test_financial_quarantine_clears_top_level_provenance_without_erasing_raw_snapshot():
+    from src.services.market_data_integrity import withhold_unverified_hk_financials
+    raw = {'source_chain': ['realtime_quote'], 'source': 'realtime_quote', 'data_sources': 'realtime_quote',
+           'earnings': {'data': {'revenue': 123}}}
+    clean = withhold_unverified_hk_financials(raw, 'hk')
+    assert clean['source_chain'] == [] and 'source' not in clean and 'data_sources' not in clean
+    assert raw['source_chain'] == ['realtime_quote'] and raw['earnings']['data']
+
+
 def test_body_only_mentions_do_not_crowd_core_company_news():
     from src.services.hk_company_news import select_company_evidence
     rows = [{'title': 'CATL earnings review', 'summary': 'Xiaomi is a customer',

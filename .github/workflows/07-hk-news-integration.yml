@@ -1,5 +1,5 @@
 name: HK US Europe free news and daily integration acceptance
-# Final free gate v5: primary-public-media filtering preserves explicitly scoped user RSS feeds.
+# Final free gate v6: no paid calls; preserve negation and quarantine legacy financial provenance.
 on:
   workflow_dispatch:
   push:

@@ -1,0 +1,242 @@
+{
+  "source_run": 34694414050,
+  "source_commit": "46f1881bee7e804290977ec74cba4a961c396728",
+  "result": {
+    "action": "watch",
+    "action_label": "观望",
+    "analysis_summary": "小米集团-W（HK01810）2026-09-11收26.36港元，涨1.7%，但MA5、MA10、MA20仍为空头排列，趋势强度仅25。MA5乖离-0.98%属安全区间，价格在MA5下方，既非回踩支撑确认，也不构成追高风险。量能缩至前五日均量0.72倍，抛压减轻但上攻动能不足。筹码与财务数据不可用，基本面无法判断。事件面有新车型交付与机构正面观点，但属事件先行、技术待确认，整体观望。",
+    "buy_reason": "趋势交易的第一前提是MA5>MA10>MA20的多头排列，当前为空头排列，不满足入场条件；严进策略要求不在趋势未确认时介入，也不因单日1.7%上涨就由观望切换为买入。价格位于支撑与压力之间、资金流与筹码不明，按可操作性约束输出观望。",
+    "change_pct": null,
+    "code": "HK01810",
+    "company_highlights": "亮点：新车型进入全国交付阶段、机构维持正面观点、技术研究持续披露；风险：印度相关调查报道未解决、当事方指控未核验、公司公告正文未完整核验、财务数据缺失。",
+    "confidence_level": "中",
+    "current_price": null,
+    "dashboard": {
+      "battle_plan": {
+        "action_checklist": [
+          "❌ 检查项1：多头排列——当前为空头排列 MA5<MA10<MA20，不满足",
+          "✅ 检查项2：乖离率——MA5乖离-0.98%，处于安全区间；但低乖离仅代表价格距离近，不等于无交易风险",
+          "⚠️ 检查项3：量能配合——缩量（前五日均量0.72倍），抛压轻但上攻动能不足",
+          "⚠️ 检查项4：重大利空核查——印度SFIO调查报道与Anthropic指控均未解决，状态未知，覆盖不完整",
+          "⚠️ 检查项5：筹码健康——筹码分布数据不可用，无法判断",
+          "⚠️ 检查项6：PE估值——财务与估值数据待核验，无法判断"
+        ],
+        "execution_basis": {
+          "entry_price": null,
+          "mode": "watch",
+          "position_pct": null,
+          "stop_price": null
+        },
+        "position_strategy": {},
+        "sniper_points": {}
+      },
+      "core_conclusion": {
+        "one_sentence": "空头排列未破，乖离虽安全，观望等站回MA5",
+        "position_advice": {},
+        "signal_type": "🟡持有观望",
+        "time_sensitivity": "不急"
+      },
+      "data_perspective": {
+        "chip_structure": {},
+        "chip_unavailable_reason": "筹码分布未启用或数据源暂不可用，未纳入筹码判断。",
+        "price_position": {
+          "bias_ma5": -0.98,
+          "bias_status": "安全",
+          "current_price": 26.36,
+          "ma10": 27.22,
+          "ma20": 27.39,
+          "ma5": 26.62,
+          "resistance_level": 26.62,
+          "support_level": 25.44
+        },
+        "trend_status": {
+          "is_bullish": false,
+          "ma_alignment": "空头排列：MA5 26.62 < MA10 27.22 < MA20 27.39，三条均线中MA5、MA10较前一交易日分别下降0.41、0.15港元，MA20微升0.04港元",
+          "trend_score": 25
+        },
+        "volume_analysis": {
+          "turnover_rate": "数据缺失，无法判断",
+          "volume_meaning": "成交量为前五个完整交易日均量的0.72倍、前一交易日的0.76倍，属缩量。缩量上涨说明抛压不重，但也说明上攻动能不足，不足以确认趋势反转。",
+          "volume_ratio": 0.72,
+          "volume_status": "缩量"
+        }
+      },
+      "evidence_review": [
+        {
+          "assessment": "仅据媒体报道，未取得监管原件。建议、批准、立案、裁决四态分离，当前状态未知，不能写成已立案或已裁决；公司回应在报道当时为未见正式通知，不可推断当前状态。",
+          "event_id": "xiaomi-india-sfio-20260909",
+          "kind": "媒体报道，监管原件未取得",
+          "source_urls": [
+            "https://www.reuters.com/business/retail-consumer/indias-serious-fraud-office-recommends-detailed-probe-into-xiaomis-business-2026-09-09/"
+          ],
+          "status": "unresolved"
+        },
+        {
+          "assessment": "属当事方自身调查主张，非独立核验、非法律责任、非监管结论；报告同时指出相关观察不能说明小米将相关内容提供给自身用户。小米回应本轮未知。",
+          "event_id": "xiaomi-anthropic-20260910",
+          "kind": "当事方指控，非裁决",
+          "source_urls": [
+            "https://www.anthropic.com/threat-intelligence-report-september-2026"
+          ],
+          "status": "unresolved"
+        },
+        {
+          "assessment": "属技术论文披露，实验性能为作者主张，本轮未复现，不能据此推导订单、收入或利润。",
+          "event_id": "xiaomi-cocktailasr-20260910",
+          "kind": "技术研究披露，商业影响未核验",
+          "source_urls": [
+            "https://arxiv.org/abs/2609.11274"
+          ],
+          "status": "context"
+        },
+        {
+          "assessment": "仅核对首页与股本变动栏目，未逐格核验全部表格；不能把历史回购累计表当作当日回购，也不能据此判断盈利。",
+          "event_id": "xiaomi-disclosure-8135479",
+          "kind": "公司原始披露，已核对部分正文",
+          "source_urls": [
+            "https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF"
+          ],
+          "status": "context"
+        }
+      ],
+      "intelligence": {
+        "earnings_outlook": "财务数据待核验，无法判断。券商对第三季利润“触底、第四季反弹”的表述属机构预测与观点，不代表已实现业绩；车型订单与交付属产品事件，不能推演为已实现收入或利润。",
+        "latest_news": "",
+        "positive_catalysts": [],
+        "risk_alerts": [
+          "2026-09-09 路透报道印度SFIO建议对小米业务进一步调查；本轮未取得监管原件，“建议、批准、立案、裁决”属不同阶段，当前是否立案或已有裁决未知，不应视为已裁决（https://www.reuters.com/business/retail-consumer/indias-serious-fraud-office-recommends-detailed-probe-into-xiaomis-business-2026-09-09/）",
+          "2026-09-10 Anthropic在其威胁情报报告中将小米与蒸馏行为关联，属当事方自身调查主张，非独立核验、非法律责任、非监管裁决；小米对应回应本轮未取得（https://www.anthropic.com/threat-intelligence-report-september-2026）",
+          "2026-09-10 公司翌日披露报表已核对首页与股本变动栏目，但未逐格核验全部表格，不能据此推断回购数量，也不能据此排除其他风险（https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF）",
+          "财务数据（收入、利润、现金流、ROE、分红）本轮未完成原始披露、期间、币种与单位核验，基本面方向无法判断；本轮已检索来源未发现减持或处罚，但覆盖不完整，不能断言不存在"
+        ],
+        "sentiment_summary": "事件面偏正面（新车型交付、机构维持正面观点），但技术面仍空头排列，属事件先行、技术待确认。"
+      },
+      "news_review": [
+        {
+          "assessment": "属自动生成的行情类报道，仅记录当日价格变动，不构成基本面或趋势判断依据。",
+          "event_id": "article-ff80d22781b41193"
+        },
+        {
+          "assessment": "新车型交付属产品与事件面信息，代表需求端进展，但交付节奏与毛利贡献尚未核验，不能推演为已实现利润。",
+          "event_id": "article-474efe3ee3713444"
+        },
+        {
+          "assessment": "技术发布属长期能力信号，短期不改变技术面空头排列的事实，商业价值待验证。",
+          "event_id": "xiaomi-cocktailasr-20260910"
+        },
+        {
+          "assessment": "券商评级与目标价属观点与预测，其中订单与交付预期未经公司原始披露核验；同一研报被转载不构成独立确认。",
+          "event_id": "xiaomi-clsa-skynomad-20260911"
+        },
+        {
+          "assessment": "供应链配套信息反映车型量产推进，属事件面中性偏正面，对当期利润影响无法量化。",
+          "event_id": "article-53dcefb4d70bb8a4"
+        }
+      ],
+      "phase_decision": {
+        "action_window": "非交易日观察",
+        "confidence_reason": "行情块缺失（realtime_quote_missing）、筹码数据不可用、基本面为partial且财务未核验，且当前为非交易日，只能基于2026-09-11完整日线与已知事件判断，故置信度为中。",
+        "data_limitations": [
+          "实时行情缺失，无法评估最新盘口与资金流",
+          "筹码分布不可用，无法评估获利盘与集中度",
+          "财报未核验，基本面方向无法判断",
+          "非交易日，不得推演今日盘中走势",
+          "信源覆盖有限，无法证明不存在减持、处罚或业绩风险"
+        ],
+        "immediate_action": "观察",
+        "next_check_time": "2026-09-14（下一交易日）开盘及盘中",
+        "phase_context": {
+          "phase": "non_trading"
+        },
+        "watch_conditions": [
+          "下一交易日价格能否收在MA5（26.62）之上并带动MA5止跌走平",
+          "MA5、MA10能否止跌并形成MA5>MA10的初步改善",
+          "量能是否放大至前五日均量之上并配合价格上行",
+          "印度调查报道与Anthropic指控是否出现监管或公司正式文件更新"
+        ]
+      },
+      "signal_attribution": {
+        "fundamentals": 7,
+        "market_conditions": 29,
+        "news_sentiment": 25,
+        "strongest_bearish_signal": "均线空头排列 MA5<MA10<MA20，趋势强度仅25",
+        "strongest_bullish_signal": "MA5乖离率-0.98%处于安全区间、缩量显示抛压减轻",
+        "technical_indicators": 39
+      }
+    },
+    "decision_type": "hold",
+    "error_message": null,
+    "fundamental_analysis": "财务数据待核验：本轮未完成财报原始披露、期间、币种与单位核验，收入、利润、现金流、ROE及分红均无可用数值，基本面方向无法判断。基本面数据块为partial，不能作为入场依据。",
+    "hot_topics": "新车型交付、AI语音技术、智能电动车供应链配套、机构评级观点",
+    "key_points": "空头排列未扭转，MA5乖离-0.98%安全，缩量显示抛压减轻但动能不足，新车型交付与机构观点属事件催化待技术确认，印度调查与Anthropic指控状态未知",
+    "ma_analysis": "",
+    "market_sentiment": "事件面情绪偏正面，但技术面仍处空头排列，二者冲突，应以“事件先行、技术待确认”表述，不作为确定性买点。",
+    "market_snapshot": {
+      "amount": "29.70 亿元",
+      "amplitude": "4.71%",
+      "change_amount": "0.44",
+      "close": "26.36",
+      "date": "2026-09-11",
+      "high": "26.66",
+      "low": "25.44",
+      "open": "25.66",
+      "pct_chg": "1.70%",
+      "prev_close": "25.92",
+      "volume": "1.14 亿股"
+    },
+    "market_structure_context": null,
+    "medium_term_outlook": "1-2周关键在于MA5、MA10能否止跌并由MA5上穿MA10。在重回MA5>MA10>MA20之前，趋势仍属修复阶段；事件面催化需配合量能放大才能推动均线修复。",
+    "model_used": "deepseek-flash",
+    "name": "小米集团-W",
+    "news_evidence_present": false,
+    "news_result_count": null,
+    "news_result_count_known": true,
+    "news_summary": "",
+    "operation_advice": "观望",
+    "pattern_analysis": "小阳线带上下影，实体占振幅约57.4%，属多空均衡偏多的K线。价格自低位反弹但未收复MA5，形态上仍需后续K线确认是止跌还是反抽。",
+    "report_language": "zh",
+    "report_quality_audit": null,
+    "risk_warning": "①印度SFIO调查仅见媒体报道，未取得监管原件，立案与裁决状态未知；②Anthropic报告属当事方指控，非独立核验或监管结论；③公司翌日披露报表未逐格核验，不能推断回购或排除其他风险；④筹码、估值与财务数据不可用，无法判断基本面；⑤本轮已检索来源未发现减持或处罚，但覆盖不完整，不能断言不存在；⑥低乖离≠零风险，空头排列下反弹可能受阻于MA5/MA10。",
+    "search_performed": true,
+    "sector_position": "属科技硬件与智能电动车交叉标的，产品线覆盖手机、平板、汽车与AI技术。板块层面的资金与政策数据本轮未提供，无法判断相对强弱。",
+    "sentiment_score": 48,
+    "short_term_outlook": "1-3日内大概率在25.44-26.62区间震荡整理。站上并站稳26.62（MA5）才有转强迹象；若失守25.44，则调整幅度可能扩大至MA20下方区间。",
+    "success": true,
+    "technical_analysis": "系统趋势评分25/100，系统信号为观望。乖离率MA5为-0.98%、MA10为-3.16%，价格未过度偏离短期均线。MACD处中性区域，RSI约43.6，属震荡整理而非超卖或超买。技术面结论：弱势整理，方向未定，均线排列是首要约束。",
+    "trend_analysis": "上一交易日为带上下影的小阳线，实体0.70、上影0.30、下影0.22，实体占振幅约57.4%，多空相对均衡、上方略受压。收盘26.36仍低于MA5 26.62，属从下方接近MA5但未收复，不能定义为从均线上方缩量回踩。中期均线MA20仍上行，但短期MA5、MA10下行，属短期调整未结束的结构。",
+    "trend_prediction": "震荡",
+    "volume_analysis": "成交量为前一交易日的0.76倍、前五个完整交易日均量的0.72倍，属缩量。缩量上涨说明抛压不重，但也说明承接与进攻意愿有限，不构成放量突破，量价配合度中性偏弱。换手率数据缺失，无法判断。",
+    "data_sources": "行情与均线取本地分析上下文（storage.get_analysis_context，日线日期2026-09-11）；技术指标来自系统技术面块；资讯来自本地资讯证据池与news_events；realtime_quote缺失（missing_reason=realtime_quote_missing）；筹码分布不可用（chip_distribution_missing）；基本面为partial（来源realtime_quote）；财务与分红数据待核验；公告目录来自公司投资者关系页面，正文未完整核验。"
+  },
+  "context": {
+    "today": {
+      "amount": 2969552900,
+      "close": 26.36,
+      "date": "2026-09-11",
+      "high": 26.66,
+      "low": 25.44,
+      "ma10": 27.22,
+      "ma20": 27.39,
+      "ma5": 26.62,
+      "open": 25.66,
+      "pct_chg": 1.6975308641975273,
+      "volume": 113533443,
+      "volume_ratio": 0.72
+    },
+    "yesterday": {
+      "amount": 3850950200,
+      "close": 25.92,
+      "date": "2026-09-10",
+      "high": 26.4,
+      "low": 25.68,
+      "ma10": 27.37,
+      "ma20": 27.35,
+      "ma5": 27.03,
+      "open": 26.04,
+      "pct_chg": -1.74374526156178,
+      "volume": 148663013,
+      "volume_ratio": 0.98
+    },
+    "volume_change_ratio": 0.76
+  }
+}

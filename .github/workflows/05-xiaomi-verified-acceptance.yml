@@ -1,11 +1,8 @@
-name: Xiaomi verified-input single acceptance
+name: Xiaomi acceptance - model budget closed
 # One bounded model request, after fresh regional news and independent daily bars pass.
 # Budget round 20260912-final: slot 2 of 2 after manual failure and free replay; total reservation 0.80 CNY.
 on:
   workflow_dispatch:
-  push:
-    branches: [fix/daily-data-integrity]
-    paths: [.github/workflows/05-xiaomi-verified-acceptance.yml]
 permissions:
   contents: read
   actions: read
@@ -14,6 +11,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   acceptance:
+    # Both authorized requests are consumed. Reopening requires a new user authorization.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

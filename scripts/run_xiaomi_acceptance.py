@@ -43,6 +43,8 @@ def validate_model_input(context, preflight):
     fundamental = context.get('fundamental_context') or {}
     if any((fundamental.get(key) or {}).get('data') for key in ('earnings', 'growth', 'valuation')):
         raise ValueError('Unverified HK financial data reached model input')
+    if 'realtime_quote' in json.dumps(fundamental.get('source_chain') or [], ensure_ascii=False):
+        raise ValueError('Quarantined financial source chain reached model input')
 
 
 def validate_preflight_artifacts(root):

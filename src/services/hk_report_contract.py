@@ -76,6 +76,7 @@ watch代表观察，三个数值均填null，不发布买卖触发。conditional
     if 'news_events' in contract:
         text += '''
 本轮还启用确定性行情与新闻展示：顶层ma_analysis、news_summary以及dashboard.intelligence.latest_news均输出空字符串，dashboard.intelligence.positive_catalysts输出[]。这些字段由程序从核验值和news_events生成，包含原媒体、公开时间、URL和证据类型。其他分析只给观点，不重复新闻细节或未经核验的“公告已证明”事实。
+顶层data_sources也输出空字符串。来源声明由程序生成；已隔离的财务数值及旧来源链均不能重新成为证据。
 在dashboard.news_review中逐个给出news_events的event_id与assessment（只写观点，不能添加新事实数字）。每个事件只能出现一次。程序将观点与输入中的媒体报道/券商预测明确分开，完整保留逐事件引用。
 均线排列是同一天不同周期的大小关系，均线升降必须分别比较各自前一交易日，按下面计算值描述。如果昨日和今日收盘均低于各自MA5，只能说从下方接近或远离MA5，不能写成从均线上方缩量回踩。
 乖离率只是价格距离指标，不可写“无追高风险”“零风险”；低乖离不等于无交易风险。
@@ -108,6 +109,13 @@ def verified_news_text(context, reviews):
         lines.append(f"[{event['evidence_kind']}] {event['source']} / {event['published_at']} UTC / {event['title']}\n"
                      f"输入摘要：{event['summary']}\n模型观点：{opinions[event['event_id']]}\n来源：" + citations)
     return '\n\n'.join(lines)
+
+
+def verified_source_text(context):
+    return (f"日线日期 {context['today']['date']}，对应本轮已校验的日线输入；"
+            '新闻原媒体、公开时间和链接见逐事件引用；风险原件可得性见证据账本；'
+            '财务数据及其旧来源链已隔离，未作为基本面数值依据；'
+            '未采用缺失的realtime_quote；公告目录不等于逐份正文核验。')
 
 
 def execution_fields(basis):
@@ -166,6 +174,7 @@ def audit_contract(result, context):
             rendered = verified_news_text(context, news_reviews)
             intelligence = dashboard.get('intelligence') or {}
             for name, actual, expected in [('ma_analysis', result.get('ma_analysis'), verified_ma_text(context)),
+                    ('data_sources', result.get('data_sources'), verified_source_text(context)),
                     ('news_summary', result.get('news_summary'), rendered),
                     ('latest_news', intelligence.get('latest_news'), rendered)]:
                 if actual not in (None, '', expected):
@@ -202,6 +211,7 @@ def render_execution_fields(result, context):
         result.news_summary = verified_news_text(context, result.dashboard['news_review'])
         result.dashboard.setdefault('intelligence', {})['latest_news'] = result.news_summary
         result.dashboard['intelligence']['positive_catalysts'] = []
+        result.data_sources = verified_source_text(context)
 
 
 def event_identity(item):

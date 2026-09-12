@@ -17,6 +17,11 @@ def withhold_unverified_hk_financials(context, market):
         coverage[key] = 'failed'
     cleaned['coverage'] = coverage
     cleaned['status'] = 'partial'
+    # The context-pack builder renders this top-level chain even when earnings
+    # data is empty. The original snapshot was saved before this quarantine.
+    cleaned['source_chain'] = []
+    cleaned.pop('source', None)
+    cleaned.pop('data_sources', None)
     cleaned['financial_evidence_policy'] = reason
     return cleaned
 
@@ -213,7 +218,7 @@ def _audit_cross_section_claims(result, plan, basis, context):
         r'跌破[^。；;\n]{0,24}?(\d+(?:\.\d+)?)\s*(?:港元|元)?\s*(?:则)?(?:即刻执行|立即执行|立即离场|无条件离场|按止损处理)',
     )
     for path, text in _text_fields(result):
-        if re.search(r'无追高风险|無追高風險|零风险|零風險', text):
+        if _affirmative_claim(text, r'无追高风险|無追高風險|零风险|零風險'):
             findings.append({'code': 'unsupported_risk_free_claim', 'field': path})
         previous = context.get('yesterday') or {}
         if (context['today'].get('ma20') and previous.get('ma20')
@@ -222,7 +227,7 @@ def _audit_cross_section_claims(result, plan, basis, context):
             findings.append({'code': 'ma_order_confused_with_daily_slope', 'field': path})
         if (previous.get('ma5') and previous.get('close') and context['today'].get('ma5')
                 and previous['close'] < previous['ma5'] and context['today']['close'] < context['today']['ma5']
-                and re.search(r'缩量回踩|縮量回踩|回踩MA5', text, re.I)):
+                and _affirmative_claim(text, r'缩量回踩|縮量回踩|回踩MA5')):
             findings.append({'code': 'unsupported_pullback_from_above_ma', 'field': path})
         for pattern in stop_patterns:
             stop_claims.extend((path, float(m.group(1))) for m in re.finditer(pattern, text))
@@ -258,6 +263,15 @@ def _audit_cross_section_claims(result, plan, basis, context):
             r'(?:基本面|财务|財務).{0,8}(?:来自|來自|源自|为|為).{0,12}realtime_quote', source_text):
         findings.append({'code': 'unsupported_realtime_financial_source', 'field': 'data_sources'})
     return findings
+
+
+def _affirmative_claim(text, pattern):
+    """Check local assertions; quoted prohibitions and explicit negation are not claims."""
+    for clause in re.split(r'[，,。；;\n]', text):
+        for match in re.finditer(pattern, clause, re.I):
+            if not re.search(r'不能|不可|不应|不應|无法|無法|不代表|不等于|不等於|≠|不是|并非|並非', clause[:match.start()]):
+                return True
+    return False
 
 
 def validate_daily_context(context, expected_date=None):
