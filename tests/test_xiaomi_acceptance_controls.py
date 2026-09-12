@@ -112,3 +112,30 @@ def test_failed_native_report_is_retained_without_publishing_its_execution(tmp_p
     assert saved['before_enforcement']['raw_response'] == 'original response'
     assert not saved['after_enforcement']['success']
     assert saved['after_enforcement']['dashboard'] is None
+
+
+def test_new_authorization_adds_exactly_one_slot_without_resetting_prior_calls():
+    guard = SingleCallGuard('https://model.example', 'test-model',
+        prior_calls=2, prior_reserved_cny='0.80', max_calls=3)
+    guard.input_validated = True
+    assert guard.admit(request())
+    assert guard.prior_calls == 2 and guard.sent == 1
+    with pytest.raises(RuntimeError):
+        guard.admit(request())
+    for calls, reserved in [(3, '0.80'), (2, '0.81')]:
+        blocked = SingleCallGuard('https://model.example', 'test-model',
+            prior_calls=calls, prior_reserved_cny=reserved, max_calls=3)
+        blocked.input_validated = True
+        with pytest.raises(RuntimeError, match='approval'):
+            blocked.admit(request())
+        assert blocked.sent == 0
+
+
+def test_source_chain_contamination_is_blocked_before_model_request():
+    today = dict(date='2026-09-11', open=25.66, high=26.66, low=25.44, close=26.36,
+                 volume=113533443, ma5=26.62, ma10=27.22, ma20=27.39, volume_ratio=0.72)
+    preflight = dict(passed=True, prepared_at=datetime.now(timezone.utc).isoformat(),
+                     target='2026-09-11', today=dict(today))
+    with pytest.raises(ValueError, match='source chain'):
+        validate_model_input({'today':today, 'fundamental_context': {
+            'source_chain': [{'provider':'realtime_quote'}]}}, preflight)

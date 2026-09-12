@@ -1,8 +1,11 @@
-name: Xiaomi acceptance - model budget closed
+name: Xiaomi authorized follow-up - one model request
 # One bounded model request, after fresh regional news and independent daily bars pass.
-# Budget round 20260912-final: slot 2 of 2 after manual failure and free replay; total reservation 0.80 CNY.
+# User authorized one additional request on 2026-09-12; slot 3 total, 0.40 CNY incremental reservation.
 on:
   workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/05-xiaomi-verified-acceptance.yml]
 permissions:
   contents: read
   actions: read
@@ -11,8 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   acceptance:
-    # Both authorized requests are consumed. Reopening requires a new user authorization.
-    if: ${{ false }}
+    if: ${{ github.event_name == 'push' && github.run_attempt == 1 }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -29,8 +31,9 @@ jobs:
       REPORT_INTEGRITY_RETRY: '0'
       TENCENT_PRIORITY: '0'
       AGENT_MODE: 'false'
-      ACCEPTANCE_PRIOR_CALLS: '1'
-      ACCEPTANCE_PRIOR_RESERVED_CNY: '0.40'
+      ACCEPTANCE_PRIOR_CALLS: '2'
+      ACCEPTANCE_MAX_CALLS: '3'
+      ACCEPTANCE_PRIOR_RESERVED_CNY: '0.80'
       ENABLE_REALTIME_QUOTE: 'false'
       ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
       PREFETCH_REALTIME_QUOTES: 'false'

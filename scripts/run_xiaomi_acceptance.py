@@ -63,6 +63,7 @@ def record_report_review(result, context, enforce, output_dir):
     """Retain the real failed output even when the pipeline correctly skips history."""
     before = json.loads(json.dumps(result.to_dict(), ensure_ascii=False, default=str))
     before['raw_response'] = getattr(result, 'raw_response', None)
+    before['data_sources'] = getattr(result, 'data_sources', before.get('data_sources', ''))
     audit = enforce(result, context)
     review = {'before_enforcement': before, 'audit': audit,
               'after_enforcement': result.to_dict()}
@@ -72,7 +73,7 @@ def record_report_review(result, context, enforce, output_dir):
 
 
 class SingleCallGuard:
-    def __init__(self, base_url, model, *, reservation_path=None, prior_calls=0, prior_reserved_cny=0):
+    def __init__(self, base_url, model, *, reservation_path=None, prior_calls=0, prior_reserved_cny=0, max_calls=2):
         self.host = urlsplit(base_url).hostname
         self.model = model
         self.sent = 0
@@ -82,6 +83,7 @@ class SingleCallGuard:
         self.raw_response = None
         self.reservation_path = Path(reservation_path) if reservation_path else None
         self.prior_calls = prior_calls
+        self.max_calls = max_calls
         self.prior_reserved_cny = Decimal(str(prior_reserved_cny))
         self.reserved_cny = Decimal('0')
 
@@ -99,7 +101,7 @@ class SingleCallGuard:
         # envelope), all cache misses at peak price, plus the full 8192 output cap.
         # This is a spending estimate, not a provider invoice or tokenizer proof.
         reserve = Decimal('0.40')
-        if self.prior_calls >= 2 or self.prior_reserved_cny + reserve > Decimal('1.20'):
+        if self.prior_calls >= self.max_calls or self.prior_reserved_cny + reserve > Decimal('1.20'):
             raise RuntimeError('User approval required: request count or CNY budget exceeded')
         if self.reservation_path:
             self.reservation_path.parent.mkdir(parents=True, exist_ok=True)
@@ -107,7 +109,8 @@ class SingleCallGuard:
             with self.reservation_path.open('x') as handle:
                 json.dump({'reserved_at': datetime.now(timezone.utc).isoformat(),
                     'run_id': os.getenv('GITHUB_RUN_ID'), 'commit': os.getenv('GITHUB_SHA'),
-                    'prior_calls': self.prior_calls, 'reserved_cny': str(reserve),
+                    'prior_calls': self.prior_calls, 'max_authorized_calls': self.max_calls,
+                    'reserved_cny': str(reserve),
                     'cumulative_reserved_cny': str(self.prior_reserved_cny + reserve),
                     'status': 'reserved_before_send; no automatic refund'}, handle)
                 handle.flush()
@@ -139,7 +142,8 @@ def main():
     guard = SingleCallGuard(os.environ['LLM_DEEPSEEK_BASE_URL'], os.environ['LLM_DEEPSEEK_MODELS'],
         reservation_path='probe/model-request-reservation.json',
         prior_calls=int(os.getenv('ACCEPTANCE_PRIOR_CALLS', '0')),
-        prior_reserved_cny=os.getenv('ACCEPTANCE_PRIOR_RESERVED_CNY', '0'))
+        prior_reserved_cny=os.getenv('ACCEPTANCE_PRIOR_RESERVED_CNY', '0'),
+        max_calls=int(os.getenv('ACCEPTANCE_MAX_CALLS', '2')))
     original_analyze = GeminiAnalyzer.analyze
     original_impl = GeminiAnalyzer._call_litellm_impl
     original_dispatch = GeminiAnalyzer._dispatch_litellm_completion
@@ -209,6 +213,7 @@ def main():
             'model_http_requests': guard.sent, 'response_model': guard.response_model,
             'raw_provider_usage': guard.raw_usage, 'balance_delta': None,
             'reserved_cny': str(guard.reserved_cny), 'prior_calls': guard.prior_calls,
+            'max_authorized_calls': guard.max_calls,
             'cumulative_reserved_cny': str(guard.prior_reserved_cny + guard.reserved_cny),
             'target_budget_cny': '1.00', 'approval_threshold_cny': '1.20',
             'note': 'Balance delta is account-wide; token prices/rounding and concurrent use can differ.'}
