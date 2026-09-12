@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - run: pip install yfinance pytest
+      - run: pip install -r requirements.txt pytest
       - run: python -m pytest -q tests/test_hk_research_replay.py tests/test_hk_native_data_probe.py
       - run: python scripts/probe_hk_historical_prices.py
       - uses: actions/upload-artifact@v4
