@@ -1,0 +1,50 @@
+name: HK independent native data-only coverage
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/09-hk-native-data-probe.yml]
+permissions:
+  contents: read
+jobs:
+  native-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        scope: [U45_data_only, O_single_stock_smoke]
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        if: matrix.scope == 'O_single_stock_smoke'
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install -r research/requirements.txt
+      - name: Run native CLI with no model credentials
+        shell: bash
+        run: |
+          if [[ '${{ matrix.scope }}' == 'U45_data_only' ]]; then
+            python research/scripts/run_hk_native_data_probe.py --checkout research --universe research/docs/dsa-u-universe.json --scope U45_data_only --expected-date 2026-09-11 --expected-commit '${{ github.sha }}' --timeout 420 --output probe/U
+          else
+            python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-u-universe.json --scope O_single_stock_smoke --expected-date 2026-09-11 --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --timeout 180 --output probe/O
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-data-${{ matrix.scope }}
+          path: probe/
+          retention-days: 7

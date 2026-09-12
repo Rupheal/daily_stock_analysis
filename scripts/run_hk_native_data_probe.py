@@ -1,0 +1,108 @@
+"""Run an unchanged native CLI in an isolated checkout; audit every requested code.
+
+This is data acquisition evidence, never full analysis or independent price verification.
+The O smoke scope cannot stand in for the still-unresolved official union N.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import sqlite3
+import subprocess
+import sys
+from datetime import datetime, timezone
+from math import isfinite
+
+
+def audit_database(database, codes, expected_date):
+    records = []
+    connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True) if database.exists() else None
+    try:
+        for code in codes:
+            record = {"code": code, "status": "missing", "bars": 0}
+            try:
+                rows = connection.execute(
+                    "SELECT date, open, high, low, close, volume FROM stock_daily WHERE code=? ORDER BY date",
+                    (code,),
+                ).fetchall() if connection else []
+                record["bars"] = len(rows)
+                if rows:
+                    last = rows[-1]
+                    record.update(latest_date=str(last[0])[:10], latest_ohlcv=list(last[1:]))
+                    valid = all(v is not None and isfinite(float(v)) for v in last[1:])
+                    valid = valid and 0 < last[3] <= min(last[1], last[4]) <= max(last[1], last[4]) <= last[2] and last[5] >= 0
+                    record["status"] = "current_valid_bar" if valid and record["latest_date"] == expected_date else "invalid_or_stale"
+            except Exception as exc:
+                record.update(status="audit_failed", error=type(exc).__name__ + ": " + str(exc))
+            records.append(record)
+    finally:
+        if connection:
+            connection.close()
+    return records
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--checkout", type=Path, required=True)
+    parser.add_argument("--universe", type=Path, required=True)
+    parser.add_argument("--scope", choices=["U45_data_only", "O_single_stock_smoke"], required=True)
+    parser.add_argument("--expected-date", required=True)
+    parser.add_argument("--expected-commit", required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--timeout", type=int, default=420)
+    args = parser.parse_args()
+    checkout, output = args.checkout.resolve(), args.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    raw_universe = args.universe.read_bytes()
+    universe = json.loads(raw_universe)
+    all_codes = ["hk" + c["code"] for c in universe["members"]]
+    if len(all_codes) != 45 or len(set(all_codes)) != 45:
+        raise ValueError("The frozen U denominator must be exactly 45 distinct codes")
+    codes = all_codes if args.scope == "U45_data_only" else ["hk01810"]
+    actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=checkout, text=True).strip()
+    if actual != args.expected_commit:
+        raise ValueError("Native checkout commit mismatch")
+    if subprocess.check_output(["git", "diff", "--name-only", "HEAD"], cwd=checkout, text=True).strip():
+        raise ValueError("Native tracked code must be unchanged")
+    database = output / "native-data.db"
+    env = {k: v for k, v in os.environ.items() if not any(t in k.upper() for t in ("TOKEN", "API_KEY", "SECRET", "WEBHOOK"))}
+    env.update(ENV_FILE="/dev/null", DATABASE_PATH=str(database), BACKTEST_ENABLED="false",
+               NEWS_INTEL_AUTO_FETCH_ENABLED="false", PYTHONUNBUFFERED="1")
+    command = [sys.executable, "main.py", "--stocks", ",".join(codes), "--dry-run", "--no-notify",
+               "--no-market-review", "--force-run", "--workers", "3"]
+    audit = {"scope": args.scope, "code_commit": actual, "started_at": datetime.now(timezone.utc).isoformat(),
+             "universe_sha256": hashlib.sha256(raw_universe).hexdigest(), "requested_codes": codes,
+             "expected_complete_session": args.expected_date, "command": command,
+             "coverage_denominator": len(codes), "O_full_union_N": None, "O_full_pool_passed": False,
+             "model_credentials_provided": False, "model_analysis_enabled": False,
+             "native_logic_modified": False, "independent_price_validation": False}
+    try:
+        with (output / "native.log").open("w") as log:
+            process = subprocess.Popen(command, cwd=checkout, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+            try:
+                audit["returncode"] = process.wait(timeout=args.timeout)
+            except subprocess.TimeoutExpired:
+                import signal
+                os.killpg(process.pid, signal.SIGTERM)
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGKILL)
+                    process.wait()
+                audit.update(returncode=process.returncode, timeout=True)
+    except Exception as exc:
+        audit["error"] = type(exc).__name__ + ": " + str(exc)
+    audit["coverage"] = audit_database(database, codes, args.expected_date)
+    audit["current_valid_count"] = sum(r["status"] == "current_valid_bar" for r in audit["coverage"])
+    audit["completed_at"] = datetime.now(timezone.utc).isoformat()
+    audit["status"] = "data_acquisition_complete" if audit["current_valid_count"] == len(codes) else "partial_or_failed"
+    for name in ["native.log", "native-data.db"]:
+        if (output / name).exists():
+            audit[name + "_sha256"] = hashlib.sha256((output / name).read_bytes()).hexdigest()
+    (output / "coverage.json").write_text(json.dumps(audit, ensure_ascii=False, indent=2))
+    print("NATIVE_DATA_COVERAGE", json.dumps(audit, ensure_ascii=False), flush=True)
+
+
+if __name__ == "__main__":
+    main()
