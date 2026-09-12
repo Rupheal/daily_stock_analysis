@@ -112,8 +112,15 @@ def select_company_evidence(items, limit, *, require_approved_origin=False):
             priority = 1
         ranked.append((priority, str(item.get('published_at') or ''), item))
     ranked.sort(key=lambda row:(row[0], row[1]), reverse=True)
-    from src.services.hk_report_contract import deduplicate_events
-    return deduplicate_events([row[2] for row in ranked])[:limit]
+    from src.services.hk_report_contract import event_identity
+    selected, seen = [], set()
+    for _, _, item in ranked:
+        identity = event_identity(item)[0] if item.get('url') else None
+        if identity is not None and identity in seen:
+            continue
+        seen.add(identity)
+        selected.append(item)
+    return selected[:limit]
 
 
 def make_item(title, summary, url, published, source, channel, code, name, now, days):

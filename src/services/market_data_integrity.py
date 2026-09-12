@@ -40,6 +40,13 @@ class MarketDataIntegrityError(ValueError):
     """Input cannot support a dated trading report."""
 
 
+def report_is_publishable(result):
+    """All presentation paths honor explicit failure and a rejected report audit."""
+    audit = getattr(result, 'report_quality_audit', None)
+    return bool(result and getattr(result, 'success', False)
+                and not (isinstance(audit, dict) and audit.get('passed') is False))
+
+
 def daily_consistency_facts(context):
     """Reproducible daily geometry, separate from a model's interpretation."""
     today = context['today']

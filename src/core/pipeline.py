@@ -3572,6 +3572,9 @@ class StockAnalysisPipeline:
         fallback_code: Optional[str] = None,
     ) -> None:
         """发送单股通知，供直接单股入口和批量串行推送共用。"""
+        from src.services.market_data_integrity import report_is_publishable
+        if not report_is_publishable(result):
+            return
         stock_code = getattr(result, "code", None) or fallback_code or "unknown"
         notify_lock = getattr(self, "_single_stock_notify_lock", None)
         if notify_lock is None:
@@ -3760,6 +3763,10 @@ class StockAnalysisPipeline:
         """
         noise_decision = None
         noise_finalized = False
+        from src.services.market_data_integrity import report_is_publishable
+        results = [result for result in results if report_is_publishable(result)]
+        if not results:
+            return
         try:
             logger.info("生成决策仪表盘日报...")
             report = self._generate_aggregate_report(results, report_type)
@@ -4310,6 +4317,10 @@ class StockAnalysisPipeline:
         report_type: ReportType,
     ) -> str:
         """Generate aggregate report with backward-compatible notifier fallback."""
+        from src.services.market_data_integrity import report_is_publishable
+        results = [result for result in results if report_is_publishable(result)]
+        if not results:
+            raise ValueError('No accepted report available for rendering')
         generator = getattr(self.notifier, "generate_aggregate_report", None)
         if callable(generator):
             return generator(results, report_type)
