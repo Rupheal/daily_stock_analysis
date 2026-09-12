@@ -39,6 +39,21 @@ def validate_model_input(context, preflight):
         actual, expected = float(context['today'][key]), float(preflight['today'][key])
         if not math.isfinite(actual) or abs(actual-expected) > (0 if key == 'volume' else 0.015):
             raise ValueError('Model input differs from accepted evidence: ' + key)
+    fundamental = context.get('fundamental_context') or {}
+    if any((fundamental.get(key) or {}).get('data') for key in ('earnings', 'growth', 'valuation')):
+        raise ValueError('Unverified HK financial data reached model input')
+
+
+def record_report_review(result, context, enforce, output_dir):
+    """Retain the real failed output even when the pipeline correctly skips history."""
+    before = json.loads(json.dumps(result.to_dict(), ensure_ascii=False, default=str))
+    before['raw_response'] = getattr(result, 'raw_response', None)
+    audit = enforce(result, context)
+    review = {'before_enforcement': before, 'audit': audit,
+              'after_enforcement': result.to_dict()}
+    (output_dir/'report-review.json').write_text(json.dumps(review, ensure_ascii=False, indent=2, default=str))
+    print('REPORT_REVIEW', json.dumps(review, ensure_ascii=False, default=str), flush=True)
+    return audit
 
 
 class SingleCallGuard:
@@ -49,6 +64,7 @@ class SingleCallGuard:
         self.input_validated = False
         self.raw_usage = None
         self.response_model = None
+        self.raw_response = None
 
     def admit(self, request):
         if request.method != 'POST' or not request.url.path.endswith('/chat/completions'):
@@ -66,6 +82,7 @@ class SingleCallGuard:
     def capture(self, response):
         try:
             data = response.json()
+            self.raw_response = data
             self.raw_usage = data.get('usage')
             self.response_model = data.get('model')
         except (ValueError, RuntimeError):
@@ -76,17 +93,26 @@ def main():
     preflight = json.loads(Path('probe/preflight.json').read_text())
     from src.analyzer import GeminiAnalyzer
     from src.services.market_data_integrity import audit_daily_report
+    from src.services import market_data_integrity
     from main import main as dsa_main
     guard = SingleCallGuard(os.environ['LLM_DEEPSEEK_BASE_URL'], os.environ['LLM_DEEPSEEK_MODELS'])
     original_analyze = GeminiAnalyzer.analyze
     original_impl = GeminiAnalyzer._call_litellm_impl
     original_dispatch = GeminiAnalyzer._dispatch_litellm_completion
     original_send, original_async_send = httpx.Client.send, httpx.AsyncClient.send
+    original_enforce = market_data_integrity.enforce_daily_report
+
+    def enforce(result, context):
+        return record_report_review(result, context, original_enforce, Path('probe'))
 
     def analyze(instance, context, *args, **kwargs):
         validate_model_input(context, preflight)
         guard.input_validated = True
         Path('probe/actual-model-input.json').write_text(json.dumps(context, ensure_ascii=False, default=str))
+        print('MODEL_INPUT_GUARD', json.dumps({'passed': True, 'date': str(context['today']['date']),
+            'financial_blocks_empty': True,
+            'financial_policy': (context.get('fundamental_context') or {}).get('financial_evidence_policy')},
+            ensure_ascii=False), flush=True)
         return original_analyze(instance, context, *args, **kwargs)
 
     def generate(instance, *args, **kwargs):
@@ -123,7 +149,8 @@ def main():
             GeminiAnalyzer, '_call_litellm_impl', generate
         ), patch.object(GeminiAnalyzer, '_dispatch_litellm_completion', dispatch), patch.object(
             httpx.Client, 'send', send
-        ), patch.object(httpx.AsyncClient, 'send', async_send):
+        ), patch.object(httpx.AsyncClient, 'send', async_send), patch.object(
+            market_data_integrity, 'enforce_daily_report', enforce):
             status = dsa_main()
     finally:
         sys.argv = original_argv
@@ -140,6 +167,9 @@ def main():
             pass
         Path('probe/billing.json').write_text(json.dumps(ledger, ensure_ascii=False, indent=2))
         print('BILLING', json.dumps(ledger, ensure_ascii=False), flush=True)
+        if guard.raw_response is not None:
+            Path('probe/provider-response.json').write_text(json.dumps(guard.raw_response, ensure_ascii=False, indent=2))
+            print('PROVIDER_RESPONSE', json.dumps(guard.raw_response, ensure_ascii=False), flush=True)
     db = sqlite3.connect(os.getenv('DATABASE_PATH', './data/stock_analysis.db'))
     db.row_factory = sqlite3.Row
     rows = [dict(row) for row in db.execute(

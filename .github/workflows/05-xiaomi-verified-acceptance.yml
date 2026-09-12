@@ -1,5 +1,6 @@
 name: Xiaomi verified-input single acceptance
 # One bounded model request, after fresh regional news and independent daily bars pass.
+# Follow-up acceptance authorized on 2026-09-12 after the manual review fixes.
 on:
   workflow_dispatch:
   push:

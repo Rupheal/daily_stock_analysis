@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from scripts.prepare_xiaomi_acceptance import compare_prices
-from scripts.run_xiaomi_acceptance import SingleCallGuard, validate_model_input
+from scripts.run_xiaomi_acceptance import SingleCallGuard, validate_model_input, record_report_review
 
 
 def request(**overrides):
@@ -42,6 +42,7 @@ def test_guard_records_raw_provider_usage_without_normalizing_tokens():
     raw = {'prompt_tokens': 300, 'completion_tokens': 120, 'total_tokens': 420}
     guard.capture(httpx.Response(200, json={'model': 'test-model', 'usage': raw}))
     assert guard.raw_usage == raw
+    assert guard.raw_response['usage'] == raw
 
 
 def test_changed_model_input_or_expired_preflight_is_rejected():
@@ -51,6 +52,10 @@ def test_changed_model_input_or_expired_preflight_is_rejected():
     preflight = dict(passed=True, prepared_at=datetime.now(timezone.utc).isoformat(),
                      target='2026-09-11', today=dict(today))
     validate_model_input(context, preflight)
+    context['fundamental_context'] = {'earnings': {'data': {'financial_report': {'revenue': 123}}}}
+    with pytest.raises(ValueError, match='Unverified HK financial'):
+        validate_model_input(context, preflight)
+    context.pop('fundamental_context')
     context['today']['close'] = 30
     with pytest.raises(ValueError, match='differs'):
         validate_model_input(context, preflight)
@@ -71,3 +76,20 @@ def test_independent_prices_require_exact_volume_and_finite_values():
     other.loc[58, 'open'] = float('nan')
     with pytest.raises(ValueError, match='Missing'):
         compare_prices(primary, other, '2026-09-11')
+
+
+def test_failed_native_report_is_retained_without_publishing_its_execution(tmp_path):
+    from types import SimpleNamespace
+    from src.services.market_data_integrity import enforce_daily_report
+    obj = SimpleNamespace(success=True, raw_response='original response', dashboard={'battle_plan': {
+        'execution_basis': {'entry_price': 26.62, 'stop_price': 25.40},
+        'sniper_points': {'ideal_buy': '26.60元'}}})
+    obj.to_dict = lambda: {key: value for key, value in vars(obj).items() if key != 'to_dict'}
+    context = {'today': dict(open=25.66, high=26.66, low=25.44, close=26.36)}
+    audit = record_report_review(obj, context, enforce_daily_report, tmp_path)
+    saved = json.loads((tmp_path/'report-review.json').read_text())
+    assert not audit['passed']
+    assert saved['before_enforcement']['dashboard']['battle_plan']['execution_basis']['entry_price'] == 26.62
+    assert saved['before_enforcement']['raw_response'] == 'original response'
+    assert not saved['after_enforcement']['success']
+    assert saved['after_enforcement']['dashboard'] is None
