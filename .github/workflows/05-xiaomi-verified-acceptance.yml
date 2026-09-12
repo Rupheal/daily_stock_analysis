@@ -29,6 +29,10 @@ jobs:
       REPORT_INTEGRITY_RETRY: '0'
       TENCENT_PRIORITY: '0'
       AGENT_MODE: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
     steps:
       - uses: actions/checkout@v5
         with:

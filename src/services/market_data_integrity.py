@@ -30,7 +30,7 @@ def daily_consistency_facts(context):
     span = h - l
     previous = float(context.get('yesterday', {}).get('close') or 0)
     return {
-        'date': today.get('date', context.get('date')), 'currency': 'HKD',
+        'date': str(today.get('date', context.get('date'))), 'currency': 'HKD',
         'close': c, 'change_pct': (c / previous - 1) * 100 if previous else None,
         'ma5': today.get('ma5'), 'ma10': today.get('ma10'), 'ma20': today.get('ma20'),
         'volume_vs_previous_five_sessions': today.get('volume_ratio'),

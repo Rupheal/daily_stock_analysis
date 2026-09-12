@@ -1,4 +1,5 @@
 import pytest
+from datetime import date
 
 from src.services.market_data_integrity import audit_daily_report, daily_consistency_facts, render_daily_consistency
 
@@ -24,7 +25,7 @@ def test_correctly_labeled_ratios_and_geometry_pass_selected_checks():
 
 
 def test_daily_geometry_and_both_volume_denominators_are_explicit():
-    context = {'today': dict(open=25.66, high=26.66, low=25.44, close=26.36, volume_ratio=0.72),
+    context = {'today': dict(date=date(2026, 9, 11), open=25.66, high=26.66, low=25.44, close=26.36, volume_ratio=0.72),
                'yesterday': {'close': 25.92}, 'volume_change_ratio': 0.76}
     facts = daily_consistency_facts(context)
     assert facts['candle_body'] == pytest.approx(0.70)
@@ -34,6 +35,7 @@ def test_daily_geometry_and_both_volume_denominators_are_explicit():
     assert facts['change_pct'] == pytest.approx(1.6975308642)
     assert facts['volume_vs_previous_five_sessions'] == 0.72
     assert facts['volume_vs_previous_session'] == 0.76
+    assert facts['date'] == '2026-09-11'
     assert 'execution_basis' in render_daily_consistency(context)
 
 
