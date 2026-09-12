@@ -1,5 +1,7 @@
 """Fresh independent prices and regional news before exposing a model key."""
 import json
+import hashlib
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -12,7 +14,64 @@ from src.core.trading_calendar import get_effective_trading_date
 from src.services.hk_company_news import approved_news_origin, refresh_company_news
 from src.services.intelligence_service import IntelligenceService
 from src.services.market_data_integrity import daily_consistency_facts, validate_daily_context
+from src.services.hk_report_contract import attach_report_contract, deduplicate_events
 from src.storage import get_db
+
+
+def atomic_json(path, value):
+    path = Path(path)
+    temporary = path.with_suffix(path.suffix + '.tmp')
+    with temporary.open('w') as handle:
+        json.dump(value, handle, ensure_ascii=False, indent=2, default=str)
+        handle.flush()
+        os.fsync(handle.fileno())
+    temporary.replace(path)
+
+
+def fetch_issuer_announcements(now, root):
+    """Discoverable public feed embedded by ir.mi.com; dates retain day precision.
+
+    Euroland's displayed dates and raw epoch fields have ambiguous timezone
+    semantics. Do not turn either into a fabricated exact publication time.
+    """
+    from urllib.parse import quote
+    response = requests.get('https://ir.mi.com/news-events/announcements', timeout=20)
+    response.raise_for_status()
+    if 'asia.tools.euroland.com/tools/pressreleases/' not in response.text:
+        raise ValueError('Issuer feed delegation no longer verifiable')
+    endpoint = 'https://asia.tools.euroland.com/tools/Pressreleases/Main/GetNews/'
+    response = requests.post(endpoint, data={'companyCode': 'ky-1810', 'lang': 'en-GB',
+        'strYears': str(now.year), 'pageIndex': '0', 'pageJummp': '50', 'orderBy': '0',
+        'hasTypeFilter': 'false', 'onlyInsiderInfo': 'false', 'alwaysIncludeInsiders': 'false'}, timeout=20)
+    response.raise_for_status()
+    payload = response.json()
+    atomic_json(root/'issuer-feed-raw.json', payload)
+    rows = payload.get('News')
+    if not isinstance(rows, list) or not rows:
+        raise ValueError('Issuer announcement listing missing')
+    items = []
+    for row in rows:
+        day = datetime.strptime(row['formatedDate'], '%b %d, %Y').date()
+        if day > now.date():
+            raise ValueError('Future issuer disclosure date')
+        if day < (now-timedelta(days=7)).date():
+            continue
+        attachments = [a for a in payload.get('Attachments', []) if a['prID'] == row['ID']]
+        urls = ['https://ea-cdn.eurolandir.com/press-releases-attachments/' + str(a['atID']) + '/' + quote(a['filename'])
+                for a in attachments if a.get('mime') == 'application/pdf']
+        if not urls:
+            raise ValueError('Recent issuer announcement has no original attachment')
+        items.append({'id': 'xiaomi-disclosure-' + str(row['ID']), 'title': row['title'],
+            'published_date': day.isoformat(), 'publication_precision': 'day',
+            'source_urls': urls, 'full_text_verified': False,
+            'kind': '公司公告目录；正文尚未自动核验，不能推断回购数量或不存在其他风险'})
+    result = {'retrieved_at': now.isoformat(), 'issuer_page': 'https://ir.mi.com/news-events/announcements',
+        'feed_url': endpoint, 'items': items, 'listed_rows': len(rows), 'provider_total': payload.get('total'),
+        'coverage_complete': False, 'timezone_note': '仅使用公告显示日期，原始epoch时区语义未确认。'}
+    if not items:
+        raise ValueError('No recent issuer announcement listing to inspect')
+    atomic_json(root/'issuer-announcements.json', result)
+    return result
 
 
 def compare_prices(primary, independent, target):
@@ -36,6 +95,10 @@ def compare_prices(primary, independent, target):
 def prepare():
     root = Path('probe'); root.mkdir(exist_ok=True)
     now = datetime.now(timezone.utc)
+    checkpoint = {'run_id': os.getenv('GITHUB_RUN_ID', now.strftime('%Y%m%dT%H%M%SZ')),
+        'commit': os.getenv('GITHUB_SHA'), 'started_at': now.isoformat(), 'model_http_requests': 0,
+        'tasks': {key: 'pending' for key in ('prices', 'news', 'issuer', 'manifest')}}
+    atomic_json(root/'acceptance-queue.json', checkpoint)
     target = str(get_effective_trading_date('hk'))
     endpoint = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get'
     response = requests.get(endpoint, params={'param': 'hk01810,day,,,180,qfq'}, timeout=20)
@@ -64,6 +127,8 @@ def prepare():
     context = {'today': today, 'yesterday': yesterday,
                'volume_change_ratio': round(today['volume']/yesterday['volume'], 2)}
     validate_daily_context(context, target)
+    checkpoint['tasks']['prices'] = 'passed'
+    atomic_json(root/'acceptance-queue.json', checkpoint)
     service = IntelligenceService()
     news = refresh_company_news(service, 'hk01810', '小米集团-W', days=3)
     reviewed = json.loads(Path('docs/xiaomi-reviewed-news.json').read_text())
@@ -89,12 +154,28 @@ def prepare():
         ensure_ascii=False, indent=2, default=str))
     if len(items) < 3 or len(origins) < 2:
         raise ValueError('Insufficient dated company evidence')
+    events = deduplicate_events(list(items.values()))
+    checkpoint['tasks']['news'] = 'passed_limited_coverage'
+    atomic_json(root/'acceptance-queue.json', checkpoint)
+    issuer = fetch_issuer_announcements(now, root)
+    checkpoint['tasks']['issuer'] = 'listing_passed_body_incomplete'
+    atomic_json(root/'acceptance-queue.json', checkpoint)
+    attach_report_contract(context, 'HK01810')
+    atomic_json(root/'reviewed-evidence.json', context['hk_report_contract'])
     get_db().save_daily_data(df, 'HK01810', 'TencentFetcher / Yahoo cross-checked')
     audit = dict(passed=True, prepared_at=datetime.now(timezone.utc).isoformat(), target=target,
         overlap=overlap, today=today, yesterday=yesterday, news_count=len(items), origins=origins,
         facts=daily_consistency_facts(context), allowed_news_urls=list(items),
-        limitation='Public excerpts and attributed reports; full issuer disclosure and event deduplication are incomplete.')
-    (root/'preflight.json').write_text(json.dumps(audit, ensure_ascii=False, indent=2, default=str))
+        hk_report_contract=context['hk_report_contract'], issuer_announcements=issuer,
+        event_candidates=len(events), reviewed_group_count=sum(e['grouping_reviewed'] for e in events),
+        limitation='Known event families merged; unknown events are upper-bound candidates. Issuer listing verified; full disclosure bodies and financial periods remain incomplete.')
+    atomic_json(root/'preflight.json', audit)
+    files = ['tencent_history.json', 'independent_history.json', 'news.json', 'issuer-feed-raw.json',
+             'issuer-announcements.json', 'reviewed-evidence.json', 'preflight.json']
+    manifest = {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in files}
+    checkpoint.update(manifest=manifest, finished_at=datetime.now(timezone.utc).isoformat())
+    checkpoint['tasks']['manifest'] = 'passed'
+    atomic_json(root/'acceptance-queue.json', checkpoint)
     print('PREFLIGHT', json.dumps(audit, ensure_ascii=False, default=str))
 
 

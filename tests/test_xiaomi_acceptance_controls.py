@@ -45,6 +45,25 @@ def test_guard_records_raw_provider_usage_without_normalizing_tokens():
     assert guard.raw_response['usage'] == raw
 
 
+def test_budget_reservation_survives_process_restart_and_caps_cumulative_calls(tmp_path):
+    path = tmp_path/'reservation.json'
+    first = SingleCallGuard('https://model.example', 'test-model', reservation_path=path)
+    first.input_validated = True
+    assert first.admit(request())
+    assert json.loads(path.read_text())['reserved_cny'] == '0.40'
+    resumed = SingleCallGuard('https://model.example', 'test-model', reservation_path=path)
+    resumed.input_validated = True
+    with pytest.raises(FileExistsError):
+        resumed.admit(request())
+    for previous_calls, previous_spend in [(2, '.8'), (1, '.81')]:
+        guard = SingleCallGuard('https://model.example', 'test-model',
+            prior_calls=previous_calls, prior_reserved_cny=previous_spend)
+        guard.input_validated = True
+        with pytest.raises(RuntimeError, match='approval'):
+            guard.admit(request())
+        assert guard.sent == 0
+
+
 def test_changed_model_input_or_expired_preflight_is_rejected():
     today = dict(date='2026-09-11', open=25.66, high=26.66, low=25.44, close=26.36,
                  volume=113533443, ma5=26.62, ma10=27.22, ma20=27.39, volume_ratio=0.72)

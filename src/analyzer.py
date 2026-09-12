@@ -3708,6 +3708,8 @@ class GeminiAnalyzer:
                 logger.debug("[analyzer] progress callback skipped: %s", exc)
 
         from src.services.market_data_integrity import validate_daily_context
+        from src.services.hk_report_contract import attach_report_contract
+        attach_report_contract(context)
         phase = context.get("market_phase_context") or {}
         validate_daily_context(context, phase.get("effective_daily_bar_date"))
         if not (news_context and str(news_context).strip()) or context.get("news_evidence_present") is False:
@@ -3936,6 +3938,13 @@ class GeminiAnalyzer:
                 result.model_used = model_used
                 result.report_language = report_language
                 normalize_chip_structure_availability(result, context.get("chip"))
+
+                # Shared contract applies before placeholder filling and direct return.
+                if context.get('hk_report_contract'):
+                    from src.services.market_data_integrity import enforce_daily_report
+                    enforce_daily_report(result, context)
+                    if not result.success:
+                        break
 
                 # 内容完整性校验（可选）
                 if not config.report_integrity_enabled:

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "events": [
+    {
+      "id": "xiaomi-india-sfio-20260909",
+      "symbol": "HK01810",
+      "published_at": "2026-09-09T09:59:37+00:00",
+      "publication_precision": "second",
+      "reviewed_at": "2026-09-12T11:49:59+00:00",
+      "status": "unresolved",
+      "kind": "媒体报道，监管原件未取得",
+      "summary": "路透报道印度SFIO建议对小米业务进一步调查。建议、主管部门批准、立案与裁决是不同阶段。本轮未取得监管原件，当前是否已立案或已有裁决未知。报道所述小米回应未收到正式通知只代表报道当时，不可推断当前仍未收到。",
+      "company_response": "仅有路透报道当时的转述；当前回应未核实",
+      "sources": [{"url": "https://www.reuters.com/business/retail-consumer/indias-serious-fraud-office-recommends-detailed-probe-into-xiaomis-business-2026-09-09/", "publisher_group": "Reuters", "verification": "公开检索摘录；正文直接访问401，监管备忘录未取得"}]
+    },
+    {
+      "id": "xiaomi-anthropic-20260910",
+      "symbol": "HK01810",
+      "published_at": "2026-09-10",
+      "publication_precision": "day",
+      "reviewed_at": "2026-09-12T11:49:59+00:00",
+      "status": "unresolved",
+      "kind": "当事方指控，非裁决",
+      "summary": "Anthropic在其9月威胁情报报告中将小米与蒸馏行为关联。这是当事方自身调查主张，尚不等于独立核验、法律责任或监管裁决。报告同时指出相关观察不能说明小米将Claude回复提供给自身用户。小米回应及后续法律状态本轮未核实。",
+      "company_response": "未知，未取得小米对应回应",
+      "sources": [{"url": "https://www.anthropic.com/threat-intelligence-report-september-2026", "publisher_group": "Anthropic", "verification": "已直接取得当事方报告HTML并核对小米段落；不是独立确认"}]
+    },
+    {
+      "id": "xiaomi-cocktailasr-20260910",
+      "symbol": "HK01810",
+      "published_at": "2026-09-10T09:06:00+00:00",
+      "publication_precision": "minute",
+      "reviewed_at": "2026-09-12T10:42:59+00:00",
+      "status": "context",
+      "kind": "技术研究披露，商业影响未核验",
+      "summary": "小米Xiaomi-CocktailASR-1论文已公开。实验性能属于作者主张，本轮未复现实验；不能推导已实现的订单、收入或利润。论文日期与媒体报道日期应分别保留。",
+      "company_response": "论文为作者技术披露",
+      "sources": [{"url": "https://arxiv.org/abs/2609.11274", "publisher_group": "Xiaomi research authors", "verification": "已核对论文摘要、作者及提交时间"}]
+    }
+  ]
+}

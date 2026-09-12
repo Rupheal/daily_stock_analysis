@@ -1,5 +1,6 @@
 """One native DSA run; one model HTTP request, raw usage and balance evidence."""
 import json
+import hashlib
 import math
 import os
 import sqlite3
@@ -44,6 +45,18 @@ def validate_model_input(context, preflight):
         raise ValueError('Unverified HK financial data reached model input')
 
 
+def validate_preflight_artifacts(root):
+    queue = json.loads((root/'acceptance-queue.json').read_text())
+    expected = {'prices': 'passed', 'news': 'passed_limited_coverage',
+                'issuer': 'listing_passed_body_incomplete', 'manifest': 'passed'}
+    if queue.get('tasks') != expected or not queue.get('manifest'):
+        raise ValueError('Free acceptance queue incomplete')
+    for name, digest in queue['manifest'].items():
+        if Path(name).name != name or hashlib.sha256((root/name).read_bytes()).hexdigest() != digest:
+            raise ValueError('Preflight evidence hash mismatch: ' + name)
+    return queue
+
+
 def record_report_review(result, context, enforce, output_dir):
     """Retain the real failed output even when the pipeline correctly skips history."""
     before = json.loads(json.dumps(result.to_dict(), ensure_ascii=False, default=str))
@@ -57,7 +70,7 @@ def record_report_review(result, context, enforce, output_dir):
 
 
 class SingleCallGuard:
-    def __init__(self, base_url, model):
+    def __init__(self, base_url, model, *, reservation_path=None, prior_calls=0, prior_reserved_cny=0):
         self.host = urlsplit(base_url).hostname
         self.model = model
         self.sent = 0
@@ -65,6 +78,10 @@ class SingleCallGuard:
         self.raw_usage = None
         self.response_model = None
         self.raw_response = None
+        self.reservation_path = Path(reservation_path) if reservation_path else None
+        self.prior_calls = prior_calls
+        self.prior_reserved_cny = Decimal(str(prior_reserved_cny))
+        self.reserved_cny = Decimal('0')
 
     def admit(self, request):
         if request.method != 'POST' or not request.url.path.endswith('/chat/completions'):
@@ -76,6 +93,24 @@ class SingleCallGuard:
             raise RuntimeError('Unexpected model route or streaming request')
         if len(request.content) > 100000 or not 0 < int(body.get('max_tokens', 0)) <= 8192:
             raise RuntimeError('Model request exceeds acceptance size limit')
+        # Conservative reservation: 150k input tokens (above the 100k UTF-8 byte
+        # envelope), all cache misses at peak price, plus the full 8192 output cap.
+        # This is a spending estimate, not a provider invoice or tokenizer proof.
+        reserve = Decimal('0.40')
+        if self.prior_calls >= 2 or self.prior_reserved_cny + reserve > Decimal('1.20'):
+            raise RuntimeError('User approval required: request count or CNY budget exceeded')
+        if self.reservation_path:
+            self.reservation_path.parent.mkdir(parents=True, exist_ok=True)
+            # Exclusive creation before the network request; failures consume the slot.
+            with self.reservation_path.open('x') as handle:
+                json.dump({'reserved_at': datetime.now(timezone.utc).isoformat(),
+                    'run_id': os.getenv('GITHUB_RUN_ID'), 'commit': os.getenv('GITHUB_SHA'),
+                    'prior_calls': self.prior_calls, 'reserved_cny': str(reserve),
+                    'cumulative_reserved_cny': str(self.prior_reserved_cny + reserve),
+                    'status': 'reserved_before_send; no automatic refund'}, handle)
+                handle.flush()
+                os.fsync(handle.fileno())
+        self.reserved_cny = reserve
         self.sent += 1
         return True
 
@@ -90,12 +125,19 @@ class SingleCallGuard:
 
 
 def main():
+    validate_preflight_artifacts(Path('probe'))
     preflight = json.loads(Path('probe/preflight.json').read_text())
     from src.analyzer import GeminiAnalyzer
     from src.services.market_data_integrity import audit_daily_report
     from src.services import market_data_integrity
     from main import main as dsa_main
-    guard = SingleCallGuard(os.environ['LLM_DEEPSEEK_BASE_URL'], os.environ['LLM_DEEPSEEK_MODELS'])
+    if os.getenv('GITHUB_ACTIONS') and (os.getenv('GITHUB_RUN_ATTEMPT') != '1'
+                                      or os.getenv('GITHUB_EVENT_NAME') != 'push'):
+        raise RuntimeError('This budget authorization excludes workflow reruns and dispatches')
+    guard = SingleCallGuard(os.environ['LLM_DEEPSEEK_BASE_URL'], os.environ['LLM_DEEPSEEK_MODELS'],
+        reservation_path='probe/model-request-reservation.json',
+        prior_calls=int(os.getenv('ACCEPTANCE_PRIOR_CALLS', '0')),
+        prior_reserved_cny=os.getenv('ACCEPTANCE_PRIOR_RESERVED_CNY', '0'))
     original_analyze = GeminiAnalyzer.analyze
     original_impl = GeminiAnalyzer._call_litellm_impl
     original_dispatch = GeminiAnalyzer._dispatch_litellm_completion
@@ -106,7 +148,12 @@ def main():
         return record_report_review(result, context, original_enforce, Path('probe'))
 
     def analyze(instance, context, *args, **kwargs):
+        from src.services.hk_report_contract import attach_report_contract
+        attach_report_contract(context)
         validate_model_input(context, preflight)
+        if context.get('hk_report_contract') != preflight.get('hk_report_contract'):
+            raise ValueError('Reviewed evidence changed after free preflight')
+        context['issuer_announcements'] = preflight['issuer_announcements']
         guard.input_validated = True
         Path('probe/actual-model-input.json').write_text(json.dumps(context, ensure_ascii=False, default=str))
         print('MODEL_INPUT_GUARD', json.dumps({'passed': True, 'date': str(context['today']['date']),
@@ -158,6 +205,9 @@ def main():
         ledger = {'before': before, 'after': after, 'process_status': status,
             'model_http_requests': guard.sent, 'response_model': guard.response_model,
             'raw_provider_usage': guard.raw_usage, 'balance_delta': None,
+            'reserved_cny': str(guard.reserved_cny), 'prior_calls': guard.prior_calls,
+            'cumulative_reserved_cny': str(guard.prior_reserved_cny + guard.reserved_cny),
+            'target_budget_cny': '1.00', 'approval_threshold_cny': '1.20',
             'note': 'Balance delta is account-wide; token prices/rounding and concurrent use can differ.'}
         try:
             b = {r['currency']: Decimal(r['total_balance']) for r in before['balance_infos']}

@@ -85,6 +85,11 @@ def canonical_url(url):
     # Tracking parameters are removed only on these observed article URL formats.
     if parts.hostname in ('news.futunn.com', 'finance.sina.com.cn'):
         return urlunsplit((parts.scheme, parts.netloc, parts.path, '', ''))
+    if parts.hostname == 'www.etnet.com.hk' and parts.path.endswith('quote_news_detail.php'):
+        query = parse_qs(parts.query)
+        if query.get('newsid'):
+            return urlunsplit((parts.scheme, parts.netloc, parts.path,
+                              urlencode({'newsid': query['newsid'][0]}), ''))
     return url
 
 
@@ -107,7 +112,8 @@ def select_company_evidence(items, limit, *, require_approved_origin=False):
             priority = 1
         ranked.append((priority, str(item.get('published_at') or ''), item))
     ranked.sort(key=lambda row:(row[0], row[1]), reverse=True)
-    return [row[2] for row in ranked[:limit]]
+    from src.services.hk_report_contract import deduplicate_events
+    return deduplicate_events([row[2] for row in ranked])[:limit]
 
 
 def make_item(title, summary, url, published, source, channel, code, name, now, days):

@@ -1127,7 +1127,8 @@ class StockAnalysisPipeline:
             )
         )
 
-        return enhanced
+        from src.services.hk_report_contract import attach_report_contract
+        return attach_report_contract(enhanced)
 
     def _attach_belong_boards_to_fundamental_context(
         self,
@@ -1485,6 +1486,9 @@ class StockAnalysisPipeline:
             analysis_context = self._load_agent_analysis_context(
                 code, stock_name, analysis_target=analysis_target
             )
+            from src.services.hk_report_contract import attach_report_contract, render_contract_prompt
+            attach_report_contract(analysis_context, code)
+            initial_context['news_context'] = (initial_context.get('news_context') or '') + render_contract_prompt(analysis_context)
             market = "cn" if is_index else get_market_for_stock(normalize_stock_code(code))
             (
                 analysis_context_pack_summary,

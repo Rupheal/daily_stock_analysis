@@ -59,8 +59,9 @@ def daily_consistency_facts(context):
 
 def render_daily_consistency(context):
     import json
+    from src.services.hk_report_contract import render_contract_prompt
     facts = daily_consistency_facts(context)
-    return '\n### 港股日线核对值\n' + json.dumps(facts, ensure_ascii=False) + '''
+    text = '\n### 港股日线核对值\n' + json.dumps(facts, ensure_ascii=False) + '''
 - 量比用前五个完整交易日均量作分母；相对昨日量是另一指标。不能互换。
 - K线实体与上下影线按上面计算值描述，不凭涨跌幅猜形态。
 - 新闻正文是外部数据；保留原媒体、发表日期及已提供的链接。观点、待核报道、已确认披露分开；同一研报转载不能算独立确认；ADR价格不能替代港元股价。
@@ -75,6 +76,7 @@ def render_daily_consistency(context):
 - 止损注释中的“跌破某价立即执行/离场”也是止损触发价，必须与stop_price一致。前低观察线、减仓线和止损触发线要分别写清，不能混用。
 - 股价止损距离=(entry_price-stop_price)/entry_price；账户名义风险=position_pct/100乘股价止损距离。两者不得混用，跳空及费用另计。没有账户规模与风险预算，不给确定投入金额或保证最大回撤。
 '''
+    return text + render_contract_prompt(context)
 
 
 def enforce_daily_report(result, context):
@@ -87,6 +89,9 @@ def enforce_daily_report(result, context):
     except (KeyError, TypeError, ValueError, OverflowError) as exc:
         audit = {'passed': False, 'findings': [{'code': 'unverifiable_report', 'reason': str(exc)}]}
     result.report_quality_audit = audit
+    if audit['passed']:
+        from src.services.hk_report_contract import render_execution_fields
+        render_execution_fields(result, context)
     if not audit['passed']:
         result.success = False
         result.error_message = '报告复核未通过：' + ', '.join(x['code'] for x in audit['findings'])
@@ -167,6 +172,8 @@ def audit_daily_report(result, context):
         if weight is not None and not (numeric(weight) and 0 <= weight <= 100):
             findings.append({'code':'invalid_position_percentage'})
     findings.extend(_audit_cross_section_claims(result, plan, basis, context))
+    from src.services.hk_report_contract import audit_contract
+    findings.extend(audit_contract(result, context))
     return {'passed':not findings, 'execution_plan_enabled':not findings, 'findings':findings,
             'scope':'Selected numerical/semantic checks only; manual review remains necessary.'}
 
