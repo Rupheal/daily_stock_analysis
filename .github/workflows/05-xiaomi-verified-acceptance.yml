@@ -1,6 +1,6 @@
 name: Xiaomi verified-input single acceptance
 # One bounded model request, after fresh regional news and independent daily bars pass.
-# Follow-up acceptance authorized on 2026-09-12 after the manual review fixes.
+# Budget round 20260912-final: slot 1 of at most 2; 0.40 CNY reserved before sending.
 on:
   workflow_dispatch:
   push:
@@ -30,6 +30,8 @@ jobs:
       REPORT_INTEGRITY_RETRY: '0'
       TENCENT_PRIORITY: '0'
       AGENT_MODE: 'false'
+      ACCEPTANCE_PRIOR_CALLS: '0'
+      ACCEPTANCE_PRIOR_RESERVED_CNY: '0.00'
       ENABLE_REALTIME_QUOTE: 'false'
       ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
       PREFETCH_REALTIME_QUOTES: 'false'
@@ -43,7 +45,7 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -r requirements.txt pytest
       - name: Regression checks
-        run: python -m pytest tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py tests/test_daily_report_audit.py tests/test_xiaomi_acceptance_controls.py tests/test_hk_regional_sources.py tests/test_hk_search_source_policy.py -q
+        run: python -m pytest tests/test_hk_report_contract.py tests/test_hk_report_consumers.py tests/test_pipeline_single_stock_notify.py tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py tests/test_daily_report_audit.py tests/test_xiaomi_acceptance_controls.py tests/test_hk_regional_sources.py tests/test_hk_search_source_policy.py -q
       - name: Fetch fresh independent prices and regional company news
         run: python scripts/prepare_xiaomi_acceptance.py
       - name: Run one Xiaomi analysis only after data acceptance
