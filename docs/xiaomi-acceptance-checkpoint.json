@@ -1,404 +1,155 @@
 {
-  "schema_version": 2,
-  "record_kind": "historical_acceptance_checkpoint_not_runtime_gate",
-  "recorded_at_utc": "2026-09-12T14:08:03.725Z",
-  "symbol": "hk01810",
-  "repository": "Rupheal/daily_stock_analysis",
-  "branch": "fix/daily-data-integrity",
-  "parent_checkpoint_commit": "f8fc7f3b45a9053f04e3e215a8c77d79ea9a4b12",
-  "protected_baseline_main": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
-  "overall_original_goal": "NOT_FULLY_ACCEPTED",
-  "last_complete_session": "2026-09-11",
-  "last_model_input_at_utc": null,
-  "last_model_code": "c30dca17c18d9005542db4692e7ec133eae30600",
-  "last_regression_code": "14d46ddcee3d112e06e7eb977e6f0282402d6a85",
-  "latest_fixed_report_generation": "RAW_GENERATED_ONCE; POST_GENERATION_VALIDATOR_FIX_REPLAYED_WITHOUT_NEW_REQUEST",
-  "market_data": {
-    "historical_daily_comparison": "PASS_FOR_OBSERVED_WINDOW",
-    "common_sessions": 126,
-    "quote_timestamp": "UNVERIFIED",
-    "quote_volume_delta_shares": 600,
-    "corporate_actions_generalization": "NOT_PROVEN"
-  },
-  "news": {
-    "pipeline": "PASS_FOR_OBSERVED_WINDOW",
-    "accepted_articles": 6,
-    "publisher_identities": 4,
-    "event_dedup": "KNOWN_CROSS_LANGUAGE_EVENTS_MERGED_UNREVIEWED_EVENTS_REMAIN_CANDIDATES",
-    "issuer_disclosure_coverage": "DIRECTORY_AND_ONE_PARTIAL_BODY_ONLY",
-    "ft_xiaomi_hits": 0,
-    "unresolved_risk_persistence": "IMPLEMENTED_REVIEWED_REGISTRY",
-    "core_event_candidates": 5,
-    "industry_context_articles": 2,
-    "issuer_recent_directory_listings": 4,
-    "issuer_pdf_bodies_partially_verified": 1,
-    "unresolved_risk_events": 2
-  },
-  "financial_mode": "UNVERIFIED_BLOCKS_WITHHELD",
-  "trading_report_release": "NO_GO_ORIGINAL_MODEL; MANUALLY_REVIEWED_FACT_BRIEF_ONLY",
-  "investment_validity": "NOT_EVALUATED",
-  "completion_percent": null,
-  "runs": [
-    {
-      "run_id": 34641012836,
-      "kind": "openbb_source_probe",
-      "workflow_conclusion": "success",
-      "manual_report_review": "not_applicable",
-      "model_http_requests": 0
-    },
-    {
-      "run_id": 34642291178,
-      "kind": "earlier_model_report",
-      "workflow_conclusion": "success",
-      "manual_report_review": "rejected",
-      "model_http_requests": null,
-      "actual_cost_cny": null,
-      "usage_status": "inconsistent_telemetry"
-    },
-    {
-      "run_id": 34680448374,
-      "kind": "pre_model_serialization_failure",
-      "workflow_conclusion": "failure",
-      "manual_report_review": "not_generated",
-      "model_http_requests": 0
-    },
-    {
-      "run_id": 34680709223,
-      "kind": "regional_model_report",
-      "workflow_conclusion": "success",
-      "manual_report_review": "rejected",
-      "model_http_requests": 1,
-      "estimated_cost_cny": "0.03141432",
-      "actual_cost_cny": null
-    },
-    {
-      "run_id": 34688694878,
-      "kind": "followup_model_report",
-      "workflow_conclusion": "success",
-      "manual_report_review": "rejected",
-      "model_http_requests": 1,
-      "estimated_cost_cny": "0.03572332",
-      "actual_cost_cny": null
-    },
-    {
-      "run_id": 34689102322,
-      "kind": "no_model_regression_and_live_sources",
-      "workflow_conclusion": "success",
-      "manual_report_review": "not_generated",
-      "model_http_requests": 0,
-      "test_summary": "182 passed, 7 warnings in 14.66s"
-    },
-    {
-      "run_id": 34692859644,
-      "kind": "free_replay",
-      "commit": "ae8c1aeb50e7b56a6811610568af3f673598e867",
-      "workflow_conclusion": "failure",
-      "model_http_requests": 0,
-      "tests_passed": 202,
-      "tests_failed": 2,
-      "issue": "News selection return compatibility and URL-less fixture",
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34692859644"
-    },
-    {
-      "run_id": 34693056859,
-      "kind": "free_replay_live",
-      "commit": "27aef19ae707199320a316a1ec79d7e6c18974de",
-      "workflow_conclusion": "failure",
-      "model_http_requests": 0,
-      "tests_passed": 216,
-      "tests_failed": 0,
-      "issue": "Issuer directory HTTP 500 when empty form parameters omitted",
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693056859"
-    },
-    {
-      "run_id": 34693248660,
-      "kind": "free_replay_live",
-      "commit": "914ded913521a6fa462edc658bd56ff48a5b7613",
-      "workflow_conclusion": "success",
-      "model_http_requests": 0,
-      "tests_passed": 216,
-      "tests_failed": 0,
-      "news_count": 9,
-      "publishers": 5,
-      "candidate_events": 8,
-      "common_sessions": 126,
-      "issuer_listings": 4,
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693248660"
-    },
-    {
-      "run_id": 34693409713,
-      "kind": "bounded_model_1",
-      "commit": "5ced687dfc9c22ef4e4a527db6bccf281da12090",
-      "workflow_conclusion": "success",
-      "model_http_requests": 1,
-      "tests_passed": 118,
-      "tests_failed": 0,
-      "automated_report_review": "passed_at_run",
-      "manual_report_review": "rejected",
-      "estimated_cost_cny": "0.03508332",
-      "actual_cost_cny": null,
-      "issue": "MA direction / pullback / unsupported risk absence / attribution",
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693409713"
-    },
-    {
-      "run_id": 34694024505,
-      "kind": "free_replay",
-      "commit": "7da918513507085c7f1d1ca2a9e2b5375cd3a2c9",
-      "workflow_conclusion": "failure",
-      "model_http_requests": 0,
-      "tests_passed": 219,
-      "subtests_failed": 2,
-      "issue": "Public headline filtering affected explicitly scoped RSS fixtures",
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694024505"
-    },
-    {
-      "run_id": 34694246727,
-      "kind": "free_replay_live",
-      "commit": "f1dfeace266f0827c6cea08d28347b452ffc8567",
-      "workflow_conclusion": "success",
-      "model_http_requests": 0,
-      "tests_passed": 219,
-      "tests_failed": 0,
-      "news_count": 6,
-      "publishers": 4,
-      "candidate_events": 5,
-      "common_sessions": 126,
-      "issuer_listings": 4,
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694246727"
-    },
-    {
-      "run_id": 34694414050,
-      "kind": "bounded_model_2",
-      "commit": "46f1881bee7e804290977ec74cba4a961c396728",
-      "workflow_conclusion": "failure",
-      "model_http_requests": 1,
-      "tests_passed": 121,
-      "tests_failed": 0,
-      "automated_report_review": "rejected",
-      "manual_report_review": "rejected",
-      "estimated_cost_cny": "0.03343532",
-      "actual_cost_cny": null,
-      "issue": "Two negation false positives and one real false financial-source claim; no accepted history row",
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694414050"
-    },
-    {
-      "run_id": 34694901922,
-      "kind": "final_free_replay_live",
-      "commit": "1773abf387fd16211f8213a849ce1b7bbd7b255a",
-      "workflow_conclusion": "success",
-      "model_http_requests": 0,
-      "tests_passed": 221,
-      "tests_failed": 0,
-      "warnings": 7,
-      "duration_s": 15.63,
-      "news_count": 6,
-      "publishers": 4,
-      "candidate_events": 5,
-      "common_sessions": 126,
-      "issuer_listings": 4,
-      "new_model_report": "not_generated",
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694901922"
-    },
-    {
-      "run_id": 34697756860,
-      "kind": "newly_authorized_single_followup",
-      "commit": "c30dca17c18d9005542db4692e7ec133eae30600",
-      "workflow_conclusion": "failure",
-      "model_http_requests": 1,
-      "tests_passed": 125,
-      "automated_report_review": "two_negation_false_positives",
-      "post_fix_raw_replay": "PASS_SELECTED_CHECKS_UNCHANGED_RAW",
-      "manual_report_review": "not_approved_ambiguous_technical_narrative_and_uncalibrated_forecast",
-      "estimated_cost_cny": "0.02877032",
-      "actual_cost_cny": null,
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34697756860"
-    },
-    {
-      "run_id": 34698138162,
-      "kind": "followup_final_free_replay",
-      "commit": "14d46ddcee3d112e06e7eb977e6f0282402d6a85",
-      "workflow_conclusion": "success",
-      "model_http_requests": 0,
-      "tests_passed": 230,
-      "tests_failed": 0,
-      "warnings": 7,
-      "news_count": 6,
-      "publishers": 4,
-      "candidate_events": 5,
-      "common_sessions": 126,
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34698138162"
-    },
-    {
-      "run_id": 34703482717,
-      "kind": "goal_primary_evidence_free",
-      "commit": "c273b3d88e8888312cbaab3696b76c21d7579702",
-      "workflow_conclusion": "success",
-      "model_http_requests": 0,
-      "tests_passed": 65,
-      "warnings": 2,
-      "primary_documents_verified": 5,
-      "primary_documents_required": 5,
-      "common_sessions": 126,
-      "news_count": 6,
-      "publishers": 4,
-      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34703482717"
-    },
-    {
-      "run_id": 34703906428,
-      "kind": "goal_constrained_free_gate",
-      "commit": "e84f41fa6686cc6714e3978e603d2e7c2da43743",
-      "workflow_conclusion": "success",
-      "model_http_requests": 0,
-      "tests_passed": 70,
-      "warnings": 2
-    },
-    {
-      "run_id": 34704104399,
-      "kind": "goal_constrained_model_1",
-      "commit": "149b66cff016de656cbd70d0dc4f2de3b3cc900f",
-      "workflow_conclusion": "success",
-      "model_http_requests": 1,
-      "manual_report_review": "PASSED_LIMITED_CONSTRAINED_OBSERVATION",
-      "estimated_cost_cny": "0.030078",
-      "actual_cost_cny": null
-    }
-  ],
-  "counts": {
-    "indexed_runs": 19,
-    "model_report_runs": 6,
-    "approved_model_reports": 0,
-    "current_round_runs": 10,
-    "current_round_free_runs": 7,
-    "current_round_actual_model_http_requests": 3,
-    "approved_constrained_research_reports": 1
-  },
-  "billing": {
-    "entire_task_actual_cny": null,
-    "entire_account_actual_cny": null,
-    "previous_regional_and_followup_estimates_cny": "0.06713764",
-    "current_round": {
-      "actual_http_requests": 3,
-      "target_budget_cny": "1.00",
-      "approval_threshold_cny": "1.20",
-      "reserved_cny": "1.20",
-      "estimated_cost_cny": "0.09728896",
-      "actual_cost_cny": null,
-      "authorization_exhausted": true,
-      "paid_gate": "closed",
-      "estimate_basis": "2026-09-12 official Flash off-peak pricing; input cache hit 0.02, miss 1, output 4 CNY per million tokens; reasoning included in output",
-      "pricing_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
-      "additional_model_estimated_cost_cny": "0.02877032",
-      "additional_authorization_consumed": true
-    },
-    "prior_round_at_close": {
-      "actual_http_requests": 2,
-      "target_budget_cny": "1.00",
-      "approval_threshold_cny": "1.20",
-      "reserved_cny": "0.80",
-      "estimated_cost_cny": "0.06851864",
-      "actual_cost_cny": null,
-      "authorization_exhausted": true,
-      "paid_gate": "closed",
-      "estimate_basis": "2026-09-12 official Flash off-peak pricing; input cache hit 0.02, miss 1, output 4 CNY per million tokens; reasoning included in output",
-      "pricing_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
-    },
-    "research_goal_batch": {
-      "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
-      "actual_http_requests": 1,
-      "reserved_cny": "0.40",
-      "estimated_cost_cny": "0.030078",
-      "actual_cost_cny": null,
-      "history_retained": true,
-      "estimated_peak_upper_cny": "0.060156",
-      "raw_usage": {
-        "prompt_tokens": 12406,
-        "completion_tokens": 4418,
-        "total_tokens": 16824,
-        "prompt_tokens_details": {
-          "cached_tokens": 0
-        },
-        "completion_tokens_details": {
-          "reasoning_tokens": 3957
-        },
-        "prompt_cache_hit_tokens": 0,
-        "prompt_cache_miss_tokens": 12406
-      },
-      "run_id": 34704104399
-    }
-  },
-  "evidence_packages": [
-    {
-      "name": "Xiaomi_Acceptance_2026-09-12.zip",
-      "sha256": "2d0b94df326aa9d8d8d1653faf3d150309531d331e6c5b9f3e7cb449e87a3599",
-      "manifest_members_verified": 17
-    },
-    {
-      "name": "Stage3_Workflow_Upgrade_20260912.zip",
-      "sha256": "f9ee71d382a7525a8bde48aae6eacef11514e890ed270b7897ce7bbbd540033f",
-      "manifest_members_verified": 9,
-      "sec_batch_reexecuted_in_this_work": false
-    }
-  ],
   "backlog": [
     {
       "id": "HK-N01",
       "priority": "P0",
-      "status": "partial_directory_and_one_pdf_body_verified",
-      "requirement": "Issuer disclosure retrieval and provenance/coverage accounting"
+      "requirement": "Issuer disclosure retrieval and provenance/coverage accounting",
+      "status": "partial_directory_and_one_pdf_body_verified"
     },
     {
       "id": "HK-N02",
       "priority": "P0",
-      "status": "implemented_and_regression_verified",
-      "requirement": "Persistent unresolved-risk ledger beyond rolling 72-hour window"
+      "requirement": "Persistent unresolved-risk ledger beyond rolling 72-hour window",
+      "status": "implemented_and_regression_verified"
     },
     {
       "id": "HK-N03",
       "priority": "P0",
-      "status": "known_cross_language_events_merged_generalization_incomplete",
-      "requirement": "Cross-language event and media-group deduplication"
+      "requirement": "Cross-language event and media-group deduplication",
+      "status": "known_cross_language_events_merged_generalization_incomplete"
     },
     {
       "id": "HK-R01",
       "priority": "P0",
-      "status": "canonical_contract_implemented_two_real_outputs_checked_no_approved_report",
-      "requirement": "Canonical execution fields and no conflicting immediate-stop triggers"
+      "requirement": "Canonical execution fields and no conflicting immediate-stop triggers",
+      "status": "canonical_contract_implemented_two_real_outputs_checked_no_approved_report"
     },
     {
       "id": "HK-R02",
       "priority": "P0",
-      "status": "source_provenance_fixed; fact_product_excludes_model_claims; full_semantic_model_review_unapproved",
-      "requirement": "No unsupported news absence, fundamental direction or nonexistent source claims"
+      "requirement": "No unsupported news absence, fundamental direction or nonexistent source claims",
+      "status": "source_provenance_fixed; fact_product_excludes_model_claims; full_semantic_model_review_unapproved"
     },
     {
       "id": "HK-E01",
       "priority": "P0",
-      "status": "standalone_fact_cli_and_cloud_passed; legacy_consumers_separately_scoped; full_browser_and_live_agent_unverified",
-      "requirement": "Final report and rejected-output behavior across applicable runtime and consumers"
+      "requirement": "Final report and rejected-output behavior across applicable runtime and consumers",
+      "status": "standalone_fact_cli_and_cloud_passed; legacy_consumers_separately_scoped; full_browser_and_live_agent_unverified"
     },
     {
       "id": "HK-F01",
       "priority": "P1",
-      "status": "quarantined_not_repaired",
-      "requirement": "Field-level primary financial disclosure verification before reopening financial claims"
+      "requirement": "Field-level primary financial disclosure verification before reopening financial claims",
+      "status": "quarantined_not_repaired"
     },
     {
       "id": "HK-Q01",
       "priority": "P1",
-      "status": "excluded_from_daily_only_mode",
-      "requirement": "Quote exchange timestamp and 600-share volume discrepancy"
+      "requirement": "Quote exchange timestamp and 600-share volume discrepancy",
+      "status": "excluded_from_daily_only_mode"
     },
     {
       "id": "HK-O01",
       "priority": "P1",
-      "status": "atomic_checkpoint_implemented_cross_run_resumption_not_implemented",
-      "requirement": "Persisted resumable acceptance queue and actual counters"
+      "requirement": "Persisted resumable acceptance queue and actual counters",
+      "status": "atomic_checkpoint_implemented_cross_run_resumption_not_implemented"
     },
     {
       "id": "HK-C01",
       "priority": "P1",
-      "status": "unverified",
-      "requirement": "Actual provider and GitHub charges reconciled against ledger"
+      "requirement": "Actual provider and GitHub charges reconciled against ledger",
+      "status": "unverified"
+    }
+  ],
+  "billing": {
+    "current_round": {
+      "actual_cost_cny": null,
+      "actual_http_requests": 3,
+      "additional_authorization_consumed": true,
+      "additional_model_estimated_cost_cny": "0.02877032",
+      "approval_threshold_cny": "1.20",
+      "authorization_exhausted": true,
+      "estimate_basis": "2026-09-12 official Flash off-peak pricing; input cache hit 0.02, miss 1, output 4 CNY per million tokens; reasoning included in output",
+      "estimated_cost_cny": "0.09728896",
+      "paid_gate": "closed",
+      "pricing_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+      "reserved_cny": "1.20",
+      "target_budget_cny": "1.00"
+    },
+    "entire_account_actual_cny": null,
+    "entire_task_actual_cny": null,
+    "previous_regional_and_followup_estimates_cny": "0.06713764",
+    "prior_round_at_close": {
+      "actual_cost_cny": null,
+      "actual_http_requests": 2,
+      "approval_threshold_cny": "1.20",
+      "authorization_exhausted": true,
+      "estimate_basis": "2026-09-12 official Flash off-peak pricing; input cache hit 0.02, miss 1, output 4 CNY per million tokens; reasoning included in output",
+      "estimated_cost_cny": "0.06851864",
+      "paid_gate": "closed",
+      "pricing_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+      "reserved_cny": "0.80",
+      "target_budget_cny": "1.00"
+    },
+    "research_goal_batch": {
+      "actual_cost_cny": null,
+      "actual_http_requests": 1,
+      "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
+      "estimated_cost_cny": "0.030078",
+      "estimated_peak_upper_cny": "0.060156",
+      "history_retained": true,
+      "raw_usage": {
+        "completion_tokens": 4418,
+        "completion_tokens_details": {
+          "reasoning_tokens": 3957
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 12406,
+        "prompt_tokens": 12406,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 16824
+      },
+      "reserved_cny": "0.40",
+      "run_id": 34704104399
+    }
+  },
+  "branch": "fix/daily-data-integrity",
+  "completion_percent": null,
+  "counts": {
+    "approved_constrained_research_reports": 1,
+    "approved_model_reports": 0,
+    "current_round_actual_model_http_requests": 3,
+    "current_round_free_runs": 7,
+    "current_round_runs": 10,
+    "indexed_runs": 19,
+    "model_report_runs": 6
+  },
+  "current_round_artifacts": [
+    {
+      "artifact_id": 10298236235,
+      "bytes": 159565,
+      "digest_status": "GitHub metadata; complete remote ZIP not downloaded or independently rehashed this round",
+      "run_id": 34693409713,
+      "sha256": "76c71b51bcb35d2dc50b0ce37896d3aa188ce7cdb46e6b6b5d26b3dee823bef7",
+      "url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693409713/artifacts/10298236235"
+    },
+    {
+      "artifact_id": 10298388547,
+      "bytes": 133333,
+      "digest_status": "GitHub metadata; complete remote ZIP not downloaded or independently rehashed this round",
+      "run_id": 34694414050,
+      "sha256": "cb8a81c5f81ffd23947185e9dd4f96b4a5673c17d02937d179a11519f4028f07",
+      "url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694414050/artifacts/10298388547"
+    },
+    {
+      "artifact_id": 10297904684,
+      "bytes": 36093,
+      "digest_status": "GitHub metadata; complete remote ZIP not downloaded or independently rehashed this round",
+      "run_id": 34694901922,
+      "sha256": "ec916487175854ed9d8256609a81714b9654103a91fc3bdd73b3d35111362c58",
+      "url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694901922/artifacts/10297904684"
     }
   ],
   "current_work_applied": [
@@ -413,125 +164,376 @@
     "pre_request_fsynced_budget_reservation",
     "paid_workflow_closed_after_two_requests"
   ],
-  "runtime_transfer_status": "ATOMIC_EXTERNAL_CHECKPOINTS_AND_REVIEWED_RISK_LEDGER_IMPLEMENTED; CROSS_RUN_AUTOMATIC_RESUMPTION_NOT_IMPLEMENTED",
-  "next_model_budget": {
-    "authorization_status": "ACCEPTED_USER_GOAL",
-    "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
-    "remaining_http_requests": 1,
-    "max_requests": 2,
-    "target_cny": "1.00",
-    "ask_above_cny": "1.20",
-    "reserved_cny": "0.40",
-    "excludes": [
-      "bulk_stock_pool_model_calls",
-      "new_subscriptions",
-      "paid_data"
-    ],
-    "paid_workflow_state": "closed_after_request_1"
-  },
-  "top3_enabled_by_this_task": false,
-  "schedules_enabled_by_this_task": false,
-  "last_model_input_time_precision": "Raw input guard passed; exact input timestamp retained in workflow log, not assigned from fetch time",
-  "latest_preflight_at_utc": "2026-09-12T14:46:32.269774+00:00",
-  "latest_free_test_summary": "244 passed, 7 warnings in 14.79s",
-  "current_round_artifacts": [
+  "evidence_packages": [
     {
-      "run_id": 34693409713,
-      "artifact_id": 10298236235,
-      "bytes": 159565,
-      "sha256": "76c71b51bcb35d2dc50b0ce37896d3aa188ce7cdb46e6b6b5d26b3dee823bef7",
-      "url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693409713/artifacts/10298236235",
-      "digest_status": "GitHub metadata; complete remote ZIP not downloaded or independently rehashed this round"
+      "manifest_members_verified": 17,
+      "name": "Xiaomi_Acceptance_2026-09-12.zip",
+      "sha256": "2d0b94df326aa9d8d8d1653faf3d150309531d331e6c5b9f3e7cb449e87a3599"
     },
     {
-      "run_id": 34694414050,
-      "artifact_id": 10298388547,
-      "bytes": 133333,
-      "sha256": "cb8a81c5f81ffd23947185e9dd4f96b4a5673c17d02937d179a11519f4028f07",
-      "url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694414050/artifacts/10298388547",
-      "digest_status": "GitHub metadata; complete remote ZIP not downloaded or independently rehashed this round"
-    },
-    {
-      "run_id": 34694901922,
-      "artifact_id": 10297904684,
-      "bytes": 36093,
-      "sha256": "ec916487175854ed9d8256609a81714b9654103a91fc3bdd73b3d35111362c58",
-      "url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694901922/artifacts/10297904684",
-      "digest_status": "GitHub metadata; complete remote ZIP not downloaded or independently rehashed this round"
+      "manifest_members_verified": 9,
+      "name": "Stage3_Workflow_Upgrade_20260912.zip",
+      "sec_batch_reexecuted_in_this_work": false,
+      "sha256": "f9ee71d382a7525a8bde48aae6eacef11514e890ed270b7897ce7bbbd540033f"
     }
   ],
-  "report_path": "docs/xiaomi-followup-acceptance.md",
+  "fact_brief_v1": {
+    "browser_pixel_rendering": "not_verified_local_browser_binary_unavailable",
+    "code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
+    "data_prepared_at": "2026-09-12T14:46:32.269774+00:00",
+    "documentation": "docs/xiaomi-fact-brief.md",
+    "entry": "scripts/run_xiaomi_fact_brief.py",
+    "mode": "refresh",
+    "model_http_requests": 0,
+    "preflight_recovery": {
+      "canonical_sha256_verified": true,
+      "local_json_reencoding_note": "Earlier JS reserialization changed integral float syntax. Values equal; raw original recovered before hash verification.",
+      "source": "original JSON text from completed job 103570388692 log"
+    },
+    "preflight_sha256_canonical": "9f00a346a95d622b7abd9a86599f273460edf4e543e2d1a225a93fdf0cb0cbda",
+    "release_scope": "Standalone HTML/Markdown/JSON fact brief; legacy free-form model consumers unchanged",
+    "session": "2026-09-11",
+    "status": "RELEASED_LIMITED_COVERAGE",
+    "tests": {
+      "new_fact_tests": 14,
+      "passed": 244,
+      "seconds": 14.79,
+      "warnings": 7
+    },
+    "workflow_job_id": 103570388692,
+    "workflow_run_id": 34700162747
+  },
+  "financial_mode": "UNVERIFIED_BLOCKS_WITHHELD",
+  "goal_draft_path": "docs/dsa-research-goal.txt",
+  "investment_validity": "NOT_EVALUATED",
+  "last_complete_session": "2026-09-11",
+  "last_model_code": "c30dca17c18d9005542db4692e7ec133eae30600",
+  "last_model_input_at_utc": null,
+  "last_model_input_time_precision": "Raw input guard passed; exact input timestamp retained in workflow log, not assigned from fetch time",
+  "last_regression_code": "14d46ddcee3d112e06e7eb977e6f0282402d6a85",
+  "latest_fixed_report_generation": "RAW_GENERATED_ONCE; POST_GENERATION_VALIDATOR_FIX_REPLAYED_WITHOUT_NEW_REQUEST",
   "latest_followup": {
-    "model_run": 34697756860,
     "free_run": 34698138162,
+    "model_run": 34697756860,
     "raw_input_not_recreated": true,
     "raw_output_unchanged_for_replay": true,
     "semantic_original_approved": false,
     "validated_manual_fact_brief_available": true
   },
-  "updated_at_utc": "2026-09-12T16:52:54.474440+00:00",
-  "project_status": "FACT_BRIEF_V1_RELEASED; FULL_MODEL_NOT_APPROVED; STRATEGY_UNVALIDATED",
-  "project_progress_path": "docs/dsa-project-progress.md",
-  "next_actions_path": "docs/DSA_NEXT_ACTIONS.json",
-  "goal_draft_path": "docs/dsa-research-goal.txt",
-  "fact_brief_v1": {
-    "code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
-    "workflow_run_id": 34700162747,
-    "workflow_job_id": 103570388692,
-    "tests": {
-      "passed": 244,
-      "warnings": 7,
-      "seconds": 14.79,
-      "new_fact_tests": 14
-    },
-    "data_prepared_at": "2026-09-12T14:46:32.269774+00:00",
-    "mode": "refresh",
-    "session": "2026-09-11",
-    "preflight_sha256_canonical": "9f00a346a95d622b7abd9a86599f273460edf4e543e2d1a225a93fdf0cb0cbda",
-    "model_http_requests": 0,
-    "release_scope": "Standalone HTML/Markdown/JSON fact brief; legacy free-form model consumers unchanged",
-    "status": "RELEASED_LIMITED_COVERAGE",
-    "entry": "scripts/run_xiaomi_fact_brief.py",
-    "documentation": "docs/xiaomi-fact-brief.md",
-    "browser_pixel_rendering": "not_verified_local_browser_binary_unavailable",
-    "preflight_recovery": {
-      "source": "original JSON text from completed job 103570388692 log",
-      "canonical_sha256_verified": true,
-      "local_json_reencoding_note": "Earlier JS reserialization changed integral float syntax. Values equal; raw original recovered before hash verification."
-    }
+  "latest_free_test_summary": "244 passed, 7 warnings in 14.79s",
+  "latest_preflight_at_utc": "2026-09-12T14:46:32.269774+00:00",
+  "market_data": {
+    "common_sessions": 126,
+    "corporate_actions_generalization": "NOT_PROVEN",
+    "historical_daily_comparison": "PASS_FOR_OBSERVED_WINDOW",
+    "quote_timestamp": "UNVERIFIED",
+    "quote_volume_delta_shares": 600
   },
+  "news": {
+    "accepted_articles": 6,
+    "core_event_candidates": 5,
+    "event_dedup": "KNOWN_CROSS_LANGUAGE_EVENTS_MERGED_UNREVIEWED_EVENTS_REMAIN_CANDIDATES",
+    "ft_xiaomi_hits": 0,
+    "industry_context_articles": 2,
+    "issuer_disclosure_coverage": "DIRECTORY_AND_ONE_PARTIAL_BODY_ONLY",
+    "issuer_pdf_bodies_partially_verified": 1,
+    "issuer_recent_directory_listings": 4,
+    "pipeline": "PASS_FOR_OBSERVED_WINDOW",
+    "publisher_identities": 4,
+    "unresolved_risk_events": 2,
+    "unresolved_risk_persistence": "IMPLEMENTED_REVIEWED_REGISTRY"
+  },
+  "next_actions_path": "docs/DSA_NEXT_ACTIONS.json",
+  "next_model_budget": {
+    "ask_above_cny": "1.20",
+    "authorization_status": "ACCEPTED_USER_GOAL",
+    "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
+    "excludes": [
+      "bulk_stock_pool_model_calls",
+      "new_subscriptions",
+      "paid_data"
+    ],
+    "max_requests": 2,
+    "paid_workflow_state": "closed_after_request_1",
+    "remaining_http_requests": 1,
+    "reserved_cny": "0.40",
+    "target_cny": "1.00"
+  },
+  "overall_original_goal": "NOT_FULLY_ACCEPTED",
+  "parent_checkpoint_commit": "f8fc7f3b45a9053f04e3e215a8c77d79ea9a4b12",
+  "project_progress_path": "docs/dsa-project-progress.md",
+  "project_status": "FACT_BRIEF_V1_RELEASED; FULL_MODEL_NOT_APPROVED; STRATEGY_UNVALIDATED",
+  "protected_baseline_main": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
+  "record_kind": "historical_acceptance_checkpoint_not_runtime_gate",
+  "recorded_at_utc": "2026-09-12T14:08:03.725Z",
+  "report_path": "docs/xiaomi-followup-acceptance.md",
+  "repository": "Rupheal/daily_stock_analysis",
   "research_goal": {
+    "O_N": 660,
+    "O_native_success_count": 660,
+    "O_valid_basic_daily": 657,
+    "U_count": 45,
+    "U_current_eligible": 44,
+    "U_identity_verified": 45,
+    "U_valid_basic_daily": 45,
     "accepted_at_recorded_utc": "2026-09-12T15:49:30.131654+00:00",
-    "resumed_head": "313f78f68362eaab928ff7c8112dc98207bd2225",
-    "status": "G4_NATIVE_DATA_RECORDED_G5_MECHANISM_REPLAY_IN_PROGRESS",
-    "local_tests_passed": 6,
-    "primary_pdf_verified": 5,
-    "primary_pdf_required": 5,
-    "financial_disclosed_cells_admitted": 23,
-    "derived_metrics": 13,
-    "evidence_registry": "docs/xiaomi-primary-evidence.json",
-    "note": "Fields/page review only, not all financial or announcement body coverage",
-    "code_commit": "c273b3d88e8888312cbaab3696b76c21d7579702",
-    "free_run": 34703482717,
-    "free_job": 103579232838,
+    "bulk_proposal": "docs/dsa-bulk-run-proposal.md",
     "cloud_tests_passed": 65,
     "cloud_warnings": 2,
-    "latest_model_review": "docs/xiaomi-constrained-review-20260912.json",
-    "remaining_requests": 1,
-    "fixed_progress": "10/16 closed in bounded scopes",
-    "last_verified_research_parent": "5949ed4861e0ba6542f42a98569907ed81db8d9d",
+    "code_commit": "c273b3d88e8888312cbaab3696b76c21d7579702",
+    "derived_metrics": 13,
     "dual_runtime": "docs/dsa-dual-runtime-20260912.json",
-    "native_data_run": 34705950297,
-    "U_count": 45,
-    "U_identity_verified": 45,
-    "U_current_eligible": 44,
-    "U_valid_basic_daily": 45,
-    "O_N": 660,
-    "O_valid_basic_daily": 657,
-    "O_native_success_count": 660,
-    "macro_series_parsed": 9,
-    "macro_rules": "docs/dsa-macro-research-contract.json",
+    "evidence_registry": "docs/xiaomi-primary-evidence.json",
+    "financial_disclosed_cells_admitted": 23,
+    "fixed_progress": "12/16 closed within named bounded scopes; strategy unverified",
+    "free_job": 103579232838,
+    "free_run": 34703482717,
     "future_observation": "docs/research-observations/b08aa8a96282d6a99325daff53d65dcdb5599b70ef323e48f7670c10939a34cd.json",
-    "bulk_proposal": "docs/dsa-bulk-run-proposal.md"
-  }
+    "last_verified_research_parent": "5949ed4861e0ba6542f42a98569907ed81db8d9d",
+    "latest_model_review": "docs/xiaomi-constrained-review-20260912.json",
+    "local_tests_passed": 6,
+    "macro_rules": "docs/dsa-macro-research-contract.json",
+    "macro_series_parsed": 9,
+    "native_data_run": 34705950297,
+    "note": "Fields/page review only, not all financial or announcement body coverage",
+    "primary_pdf_required": 5,
+    "primary_pdf_verified": 5,
+    "remaining_requests": 1,
+    "resumed_head": "313f78f68362eaab928ff7c8112dc98207bd2225",
+    "status": "BOUNDED_DELIVERY_COMPLETE_FULL_POOL_AUTHORIZATION_AND_PIT_DATA_AND_FUTURE_WINDOWS_OUTSTANDING",
+    "latest_integrity_audit": "docs/dsa-resumption-integrity-audit.json",
+    "latest_free_history_run": 34706757715
+  },
+  "runs": [
+    {
+      "kind": "openbb_source_probe",
+      "manual_report_review": "not_applicable",
+      "model_http_requests": 0,
+      "run_id": 34641012836,
+      "workflow_conclusion": "success"
+    },
+    {
+      "actual_cost_cny": null,
+      "kind": "earlier_model_report",
+      "manual_report_review": "rejected",
+      "model_http_requests": null,
+      "run_id": 34642291178,
+      "usage_status": "inconsistent_telemetry",
+      "workflow_conclusion": "success"
+    },
+    {
+      "kind": "pre_model_serialization_failure",
+      "manual_report_review": "not_generated",
+      "model_http_requests": 0,
+      "run_id": 34680448374,
+      "workflow_conclusion": "failure"
+    },
+    {
+      "actual_cost_cny": null,
+      "estimated_cost_cny": "0.03141432",
+      "kind": "regional_model_report",
+      "manual_report_review": "rejected",
+      "model_http_requests": 1,
+      "run_id": 34680709223,
+      "workflow_conclusion": "success"
+    },
+    {
+      "actual_cost_cny": null,
+      "estimated_cost_cny": "0.03572332",
+      "kind": "followup_model_report",
+      "manual_report_review": "rejected",
+      "model_http_requests": 1,
+      "run_id": 34688694878,
+      "workflow_conclusion": "success"
+    },
+    {
+      "kind": "no_model_regression_and_live_sources",
+      "manual_report_review": "not_generated",
+      "model_http_requests": 0,
+      "run_id": 34689102322,
+      "test_summary": "182 passed, 7 warnings in 14.66s",
+      "workflow_conclusion": "success"
+    },
+    {
+      "commit": "ae8c1aeb50e7b56a6811610568af3f673598e867",
+      "issue": "News selection return compatibility and URL-less fixture",
+      "kind": "free_replay",
+      "model_http_requests": 0,
+      "run_id": 34692859644,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34692859644",
+      "tests_failed": 2,
+      "tests_passed": 202,
+      "workflow_conclusion": "failure"
+    },
+    {
+      "commit": "27aef19ae707199320a316a1ec79d7e6c18974de",
+      "issue": "Issuer directory HTTP 500 when empty form parameters omitted",
+      "kind": "free_replay_live",
+      "model_http_requests": 0,
+      "run_id": 34693056859,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693056859",
+      "tests_failed": 0,
+      "tests_passed": 216,
+      "workflow_conclusion": "failure"
+    },
+    {
+      "candidate_events": 8,
+      "commit": "914ded913521a6fa462edc658bd56ff48a5b7613",
+      "common_sessions": 126,
+      "issuer_listings": 4,
+      "kind": "free_replay_live",
+      "model_http_requests": 0,
+      "news_count": 9,
+      "publishers": 5,
+      "run_id": 34693248660,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693248660",
+      "tests_failed": 0,
+      "tests_passed": 216,
+      "workflow_conclusion": "success"
+    },
+    {
+      "actual_cost_cny": null,
+      "automated_report_review": "passed_at_run",
+      "commit": "5ced687dfc9c22ef4e4a527db6bccf281da12090",
+      "estimated_cost_cny": "0.03508332",
+      "issue": "MA direction / pullback / unsupported risk absence / attribution",
+      "kind": "bounded_model_1",
+      "manual_report_review": "rejected",
+      "model_http_requests": 1,
+      "run_id": 34693409713,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34693409713",
+      "tests_failed": 0,
+      "tests_passed": 118,
+      "workflow_conclusion": "success"
+    },
+    {
+      "commit": "7da918513507085c7f1d1ca2a9e2b5375cd3a2c9",
+      "issue": "Public headline filtering affected explicitly scoped RSS fixtures",
+      "kind": "free_replay",
+      "model_http_requests": 0,
+      "run_id": 34694024505,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694024505",
+      "subtests_failed": 2,
+      "tests_passed": 219,
+      "workflow_conclusion": "failure"
+    },
+    {
+      "candidate_events": 5,
+      "commit": "f1dfeace266f0827c6cea08d28347b452ffc8567",
+      "common_sessions": 126,
+      "issuer_listings": 4,
+      "kind": "free_replay_live",
+      "model_http_requests": 0,
+      "news_count": 6,
+      "publishers": 4,
+      "run_id": 34694246727,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694246727",
+      "tests_failed": 0,
+      "tests_passed": 219,
+      "workflow_conclusion": "success"
+    },
+    {
+      "actual_cost_cny": null,
+      "automated_report_review": "rejected",
+      "commit": "46f1881bee7e804290977ec74cba4a961c396728",
+      "estimated_cost_cny": "0.03343532",
+      "issue": "Two negation false positives and one real false financial-source claim; no accepted history row",
+      "kind": "bounded_model_2",
+      "manual_report_review": "rejected",
+      "model_http_requests": 1,
+      "run_id": 34694414050,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694414050",
+      "tests_failed": 0,
+      "tests_passed": 121,
+      "workflow_conclusion": "failure"
+    },
+    {
+      "candidate_events": 5,
+      "commit": "1773abf387fd16211f8213a849ce1b7bbd7b255a",
+      "common_sessions": 126,
+      "duration_s": 15.63,
+      "issuer_listings": 4,
+      "kind": "final_free_replay_live",
+      "model_http_requests": 0,
+      "new_model_report": "not_generated",
+      "news_count": 6,
+      "publishers": 4,
+      "run_id": 34694901922,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694901922",
+      "tests_failed": 0,
+      "tests_passed": 221,
+      "warnings": 7,
+      "workflow_conclusion": "success"
+    },
+    {
+      "actual_cost_cny": null,
+      "automated_report_review": "two_negation_false_positives",
+      "commit": "c30dca17c18d9005542db4692e7ec133eae30600",
+      "estimated_cost_cny": "0.02877032",
+      "kind": "newly_authorized_single_followup",
+      "manual_report_review": "not_approved_ambiguous_technical_narrative_and_uncalibrated_forecast",
+      "model_http_requests": 1,
+      "post_fix_raw_replay": "PASS_SELECTED_CHECKS_UNCHANGED_RAW",
+      "run_id": 34697756860,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34697756860",
+      "tests_passed": 125,
+      "workflow_conclusion": "failure"
+    },
+    {
+      "candidate_events": 5,
+      "commit": "14d46ddcee3d112e06e7eb977e6f0282402d6a85",
+      "common_sessions": 126,
+      "kind": "followup_final_free_replay",
+      "model_http_requests": 0,
+      "news_count": 6,
+      "publishers": 4,
+      "run_id": 34698138162,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34698138162",
+      "tests_failed": 0,
+      "tests_passed": 230,
+      "warnings": 7,
+      "workflow_conclusion": "success"
+    },
+    {
+      "commit": "c273b3d88e8888312cbaab3696b76c21d7579702",
+      "common_sessions": 126,
+      "kind": "goal_primary_evidence_free",
+      "model_http_requests": 0,
+      "news_count": 6,
+      "primary_documents_required": 5,
+      "primary_documents_verified": 5,
+      "publishers": 4,
+      "run_id": 34703482717,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34703482717",
+      "tests_passed": 65,
+      "warnings": 2,
+      "workflow_conclusion": "success"
+    },
+    {
+      "commit": "e84f41fa6686cc6714e3978e603d2e7c2da43743",
+      "kind": "goal_constrained_free_gate",
+      "model_http_requests": 0,
+      "run_id": 34703906428,
+      "tests_passed": 70,
+      "warnings": 2,
+      "workflow_conclusion": "success"
+    },
+    {
+      "actual_cost_cny": null,
+      "commit": "149b66cff016de656cbd70d0dc4f2de3b3cc900f",
+      "estimated_cost_cny": "0.030078",
+      "kind": "goal_constrained_model_1",
+      "manual_report_review": "PASSED_LIMITED_CONSTRAINED_OBSERVATION",
+      "model_http_requests": 1,
+      "run_id": 34704104399,
+      "workflow_conclusion": "success"
+    }
+  ],
+  "runtime_transfer_status": "ATOMIC_EXTERNAL_CHECKPOINTS_AND_REVIEWED_RISK_LEDGER_IMPLEMENTED; CROSS_RUN_AUTOMATIC_RESUMPTION_NOT_IMPLEMENTED",
+  "schedules_enabled_by_this_task": false,
+  "schema_version": 2,
+  "symbol": "hk01810",
+  "top3_enabled_by_this_task": false,
+  "trading_report_release": "NO_GO_ORIGINAL_MODEL; MANUALLY_REVIEWED_FACT_BRIEF_ONLY",
+  "updated_at_utc": "2026-09-12T17:04:28.341Z"
 }
