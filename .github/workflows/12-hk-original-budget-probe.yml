@@ -18,6 +18,7 @@ jobs:
       ENV_FILE: /dev/null
       TZ: Asia/Hong_Kong
       PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
       LITELLM_LOCAL_MODEL_COST_MAP: 'true'
       BACKTEST_ENABLED: 'false'
       AGENT_MODE: 'false'
