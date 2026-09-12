@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-09-12T16:07:58.201766+00:00",
+  "updated_at_utc": "2026-09-12T16:52:54.474440+00:00",
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "scope": "升级版DSA 港股中短交易",
   "description": "Planning/resumption queue; not an installed scheduler",
@@ -50,14 +50,14 @@
       "priority": 1,
       "title": "U45与O全港股通独立覆盖及原生实例验收",
       "definition_of_done": "冻结独立代码配置与候选池，真实运行和覆盖数/分母留档；不得以样本冒充O全池",
-      "status": "pending"
+      "status": "partial_real_native_data; full_model_and_3_price_anomalies_pending"
     },
     {
       "id": "G5",
       "priority": 2,
       "title": "资金潮汐/宏观历史回放、时间外与因子对照",
       "definition_of_done": "冻结规则、PIT证据与交易时点，可复算成本后指标，接受/拒绝/不足均有证据",
-      "status": "pending"
+      "status": "in_progress_free_history_finalization; future_observation_waiting"
     },
     {
       "id": "G6",
@@ -124,42 +124,42 @@
     {
       "id": "G4.1",
       "title": "U45身份与覆盖清单",
-      "status": "pending"
+      "status": "passed_identity_and_data_coverage; 44/45 Southbound eligible, all45 retained"
     },
     {
       "id": "G4.2",
       "title": "O官方全港股通并集N",
-      "status": "pending"
+      "status": "passed_snapshot_N660_asof_2026-09-11"
     },
     {
       "id": "G4.3",
       "title": "独立原生运行及失败分母",
-      "status": "pending"
+      "status": "partial_native_data_U45/45_O657/660; full_model_pending"
     },
     {
       "id": "G4.4",
       "title": "全池付费运行具体方案",
-      "status": "pending"
+      "status": "passed_reviewable_scope_and_conditional_cost_plan; no bulk authorization"
     },
     {
       "id": "G5.1",
       "title": "冻结既有资金潮汐/宏观规则",
-      "status": "pending"
+      "status": "passed_inherited_rules_freeze; numeric_weights_undefined"
     },
     {
       "id": "G5.2",
       "title": "历史时点回放证据",
-      "status": "pending"
+      "status": "partial_9_macro_series_and_5_flow_records; source_level_replay"
     },
     {
       "id": "G5.3",
       "title": "时间外观察",
-      "status": "pending"
+      "status": "waiting_future_actual_HK_sessions; original_observation_frozen"
     },
     {
       "id": "G5.4",
       "title": "基准与因子移除对照",
-      "status": "pending"
+      "status": "not_estimable_missing_full_PIT_trade_contract"
     },
     {
       "id": "G6.1",
@@ -172,5 +172,7 @@
       "status": "pending"
     }
   ],
-  "fixed_progress": "6/16 closed; limited observation product, strategy unverified"
+  "fixed_progress": "10/16 closed within named bounded scopes; strategy unverified",
+  "last_verified_native_run": 34705950297,
+  "full_pool_model_authorized": false
 }

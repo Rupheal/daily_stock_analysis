@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "version": "HK_MACRO_INHERITED_RULES_20260912_v1",
+  "frozen_at": "2026-09-12T16:48:56.669564+00:00",
+  "source_agreement": {
+    "library_file_id": "libfile_c7d0f996ba1c8191b72499ff57b4cd92",
+    "library_version": 4,
+    "agreement_version": "1.4",
+    "local_extracted_text_sha256": "945098a471e0730e721189c15d3c4b52cd9fad640182e399cc72341bb0d2b98d",
+    "note": "Hash of locally extracted text; not asserted original upload bytes"
+  },
+  "scope": "U only; no O injection; descriptive evidence and research protocol, not calibrated strategy",
+  "engines": {
+    "A": "US overnight Nasdaq/SP500/SOX/VIX/sector",
+    "B": "2Y/10Y/real rates/Fed expectations",
+    "C": "Japan/Korea indices and FX, Asian opening",
+    "D": "HSI/HSTECH/CSI300/CNH/HIBOR/HK flows",
+    "E": "war/Brent/WTI/gold, growth vs inflation",
+    "F": "policy execution, first-party business information, industry opinion, personal/social sentiment",
+    "G": "Southbound, verified foreign/local/passive/retail/arbitrage sources"
+  },
+  "speech_review_dimensions": [
+    "authority",
+    "novelty",
+    "specificity",
+    "exposure",
+    "market_confirmation",
+    "persistence",
+    "reversal_risk"
+  ],
+  "speech_rules": {
+    "Trump": "policy reversal/TACO risk; executed policy separate from statement",
+    "Musk": "company-specific versus systemic",
+    "Jensen_Altman": "verifiable operating data versus industry views",
+    "confirmation": [
+      "15_minutes",
+      "same_day_close",
+      "next_Asia_open",
+      "sector",
+      "target_stock"
+    ]
+  },
+  "capital_evidence_classes": [
+    "Verified Capital Flow",
+    "Price Transmission",
+    "Price/Volume Inference"
+  ],
+  "forbidden_inferences": [
+    "volume rise => institution inflow",
+    "price rise => US/EU capital inflow",
+    "net_buy_turnover => ultimate investor identity",
+    "single-channel flow => combined Southbound",
+    "today archive download => historical PIT proof",
+    "current U45 or O660 => historical universe"
+  ],
+  "tide_directions": [
+    "Influx/Accumulation",
+    "Rotation",
+    "Neutral",
+    "Distribution",
+    "Outflow/Panic"
+  ],
+  "regime_reference_exposure_pct": {
+    "Strong Risk-On": [
+      60,
+      80
+    ],
+    "Selective Risk-On": [
+      40,
+      60
+    ],
+    "Neutral-Divergence": [
+      25,
+      40
+    ],
+    "Defensive": [
+      10,
+      25
+    ],
+    "Global Risk-Off": [
+      0,
+      10
+    ]
+  },
+  "numeric_weights": null,
+  "quantitative_regime_thresholds": null,
+  "status_of_reference_bands": "Inherited proposed ranges; not fitted/validated; do not apply a position from incomplete engines",
+  "first_observation_horizons": [
+    1,
+    3,
+    5,
+    10,
+    20
+  ],
+  "out_of_time": {
+    "starts_after_actual_freeze": true,
+    "historical_data_used_in_development_is_not_holdout": true,
+    "calendar": "actual verified HK trading sessions, not weekdays",
+    "first_possible_observation": "2026-09-14 subject to verified actual session",
+    "twenty_sessions": "operational preliminary check, not statistical proof"
+  },
+  "fill_contract": {
+    "earliest": "after report availability; no historical/current-close retroactive fills",
+    "not_triggered": "no fill",
+    "overlap": "do not duplicate positions or capital",
+    "same_bar_stop_and_profit": "unknown or explicitly conservative; no optimistic ordering",
+    "costs": "include brokerage, exchange/levies/stamp duty, slippage/currency; unknown != zero"
+  },
+  "comparison": {
+    "baseline": [
+      "HSI on same dates and return basis",
+      "cash with explicit rate/currency",
+      "O and U as different systems, not pure algorithm comparison"
+    ],
+    "ablation": [
+      "full",
+      "without_A",
+      "without_B",
+      "without_C",
+      "without_D",
+      "without_E",
+      "without_F",
+      "without_G"
+    ],
+    "metrics_if_inputs_available": [
+      "net_return",
+      "max_drawdown",
+      "turnover",
+      "filled_trade_count",
+      "coverage",
+      "uncertainty"
+    ],
+    "current_metrics": null
+  },
+  "factor_promotion": "none; requires evidence and user-approved specific change",
+  "deployment": "manual only; no scheduler, orders, or notifications enabled"
+}

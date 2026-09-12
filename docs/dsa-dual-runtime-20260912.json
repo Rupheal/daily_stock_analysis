@@ -1,0 +1,79 @@
+{
+  "U45_data_only": {
+    "source_run": 34705579721,
+    "audit_run": 34705950297,
+    "count": 45,
+    "denominator": 45,
+    "raw_audit_sha256": "c73689446b963b1baaee7cfacc4fd2ae353fa1fdc371b3857c65d32569d78f2d",
+    "failed": []
+  },
+  "O_single_stock_smoke": {
+    "source_run": 34705579721,
+    "audit_run": 34705950297,
+    "count": 1,
+    "denominator": 1,
+    "raw_audit_sha256": "177073fe8c607b06b7472528dd63f9f4bd34fad4a6d9b587f13c34d3ff943d72",
+    "failed": []
+  },
+  "O_full_pool_data_only": {
+    "source_run": 34705950297,
+    "audit_run": 34705950297,
+    "count": 657,
+    "denominator": 660,
+    "raw_audit_sha256": "53b52aac3bf3363606e823652d3de33d87631fc5077c3a2dfdf2748281d60e78",
+    "failed": [
+      {
+        "code": "hk00719",
+        "status": "invalid_or_stale",
+        "bars": 43,
+        "database_code": "HK00719",
+        "latest_date": "2026-09-11",
+        "latest_ohlcv": [
+          5.519999980926514,
+          5.514999866485596,
+          5.420000076293945,
+          5.434999942779541,
+          342000.0
+        ],
+        "native_log_mentions_code": true
+      },
+      {
+        "code": "hk01318",
+        "status": "invalid_or_stale",
+        "bars": 43,
+        "database_code": "HK01318",
+        "latest_date": "2026-09-11",
+        "latest_ohlcv": [
+          48.58000183105469,
+          48.380001068115234,
+          46.939998626708984,
+          47.459999084472656,
+          1674011.0
+        ],
+        "native_log_mentions_code": true
+      },
+      {
+        "code": "hk06715",
+        "status": "invalid_or_stale",
+        "bars": 43,
+        "database_code": "HK06715",
+        "latest_date": "2026-09-11",
+        "latest_ohlcv": [
+          70.0,
+          69.55000305175781,
+          66.0,
+          67.80000305175781,
+          225596.0
+        ],
+        "native_log_mentions_code": true
+      }
+    ]
+  },
+  "recorded_at": "2026-09-12T16:51:25.496591+00:00",
+  "native_O_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "native_U_commit": "56e30a345961155781b418e726553d9c5813b1aa",
+  "native_O_claimed_acquisition_success": 660,
+  "model_http_requests": 0,
+  "full_analysis_passed": false,
+  "ranking": null
+}

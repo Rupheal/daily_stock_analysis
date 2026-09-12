@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "symbol": "hk01810",
+  "available_at": "2026-09-12T16:49:30.721417+00:00",
+  "rules_sha256": "3a8e395218eb6262c02707355587e0400c6b01c37add391467346b8890c6a62d",
+  "input_sha256": "ee610501ecaa8f073fd8378aa0fc19cd7a31ed45c8f99a0cc33883f9896886bb",
+  "model_source_run": 34704104399,
+  "model_response_sha256": "3557eae00e46f904bc86af22358c98052f49bf2da74f621df36d32537616b8b6",
+  "reference_session": "2026-09-11",
+  "reference_close": "26.36",
+  "view": "cautious",
+  "mode": "watch",
+  "entry": null,
+  "stop": null,
+  "position": null,
+  "purpose": "Forward reference-price observations of a limited reviewed report; no orders or strategy performance claim",
+  "historical_backfill": false
+}

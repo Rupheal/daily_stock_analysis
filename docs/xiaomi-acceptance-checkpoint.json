@@ -469,7 +469,7 @@
     "semantic_original_approved": false,
     "validated_manual_fact_brief_available": true
   },
-  "updated_at_utc": "2026-09-12T16:07:58.201766+00:00",
+  "updated_at_utc": "2026-09-12T16:52:54.474440+00:00",
   "project_status": "FACT_BRIEF_V1_RELEASED; FULL_MODEL_NOT_APPROVED; STRATEGY_UNVALIDATED",
   "project_progress_path": "docs/dsa-project-progress.md",
   "next_actions_path": "docs/DSA_NEXT_ACTIONS.json",
@@ -503,7 +503,7 @@
   "research_goal": {
     "accepted_at_recorded_utc": "2026-09-12T15:49:30.131654+00:00",
     "resumed_head": "313f78f68362eaab928ff7c8112dc98207bd2225",
-    "status": "G3_BOUNDED_OBSERVATION_PASSED_CONTINUE_G4_G5",
+    "status": "G4_NATIVE_DATA_RECORDED_G5_MECHANISM_REPLAY_IN_PROGRESS",
     "local_tests_passed": 6,
     "primary_pdf_verified": 5,
     "primary_pdf_required": 5,
@@ -518,6 +518,20 @@
     "cloud_warnings": 2,
     "latest_model_review": "docs/xiaomi-constrained-review-20260912.json",
     "remaining_requests": 1,
-    "fixed_progress": "6/16 closed"
+    "fixed_progress": "10/16 closed in bounded scopes",
+    "last_verified_research_parent": "5949ed4861e0ba6542f42a98569907ed81db8d9d",
+    "dual_runtime": "docs/dsa-dual-runtime-20260912.json",
+    "native_data_run": 34705950297,
+    "U_count": 45,
+    "U_identity_verified": 45,
+    "U_current_eligible": 44,
+    "U_valid_basic_daily": 45,
+    "O_N": 660,
+    "O_valid_basic_daily": 657,
+    "O_native_success_count": 660,
+    "macro_series_parsed": 9,
+    "macro_rules": "docs/dsa-macro-research-contract.json",
+    "future_observation": "docs/research-observations/b08aa8a96282d6a99325daff53d65dcdb5599b70ef323e48f7670c10939a34cd.json",
+    "bulk_proposal": "docs/dsa-bulk-run-proposal.md"
   }
 }

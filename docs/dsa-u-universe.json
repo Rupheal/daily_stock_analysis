@@ -9,7 +9,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "TENCENT"
+      "official_name": "TENCENT",
+      "identity_verified": true
     },
     {
       "code": "03690",
@@ -17,7 +18,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "MEITUAN-W"
+      "official_name": "MEITUAN-W",
+      "identity_verified": true
     },
     {
       "code": "09618",
@@ -25,7 +27,11 @@
       "membership_note": "原池保留",
       "official_current_membership": "absent_both_official_lists",
       "membership_asof": "2026-09-11",
-      "official_name": null
+      "official_name": "JD.com, Inc.",
+      "identity_verified": true,
+      "identity_source": "https://ir.jd.com/news-releases/news-release-details/jdcom-announces-second-quarter-and-interim-2026-results",
+      "identity_source_sha256": "714ddcceb9a3f56a79824ff37dbf5d4778c095c20d421eb6bf70f0c37813027d",
+      "execution_eligibility": "not_in_verified_current_southbound_buy_sell_union; retain U membership but exclude executable candidates"
     },
     {
       "code": "09988",
@@ -33,7 +39,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "BABA-W"
+      "official_name": "BABA-W",
+      "identity_verified": true
     },
     {
       "code": "01211",
@@ -41,7 +48,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "BYD COMPANY"
+      "official_name": "BYD COMPANY",
+      "identity_verified": true
     },
     {
       "code": "01810",
@@ -49,7 +57,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "XIAOMI-W"
+      "official_name": "XIAOMI-W",
+      "identity_verified": true
     },
     {
       "code": "03888",
@@ -57,7 +66,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "KINGSOFT"
+      "official_name": "KINGSOFT",
+      "identity_verified": true
     },
     {
       "code": "03896",
@@ -65,7 +75,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "KINGSOFT CLOUD"
+      "official_name": "KINGSOFT CLOUD",
+      "identity_verified": true
     },
     {
       "code": "03986",
@@ -73,7 +84,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "GIGADEVICE"
+      "official_name": "GIGADEVICE",
+      "identity_verified": true
     },
     {
       "code": "02513",
@@ -81,7 +93,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "Z.AI"
+      "official_name": "Z.AI",
+      "identity_verified": true
     },
     {
       "code": "06082",
@@ -89,7 +102,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "BIREN TECH"
+      "official_name": "BIREN TECH",
+      "identity_verified": true
     },
     {
       "code": "00981",
@@ -97,7 +111,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "SMIC"
+      "official_name": "SMIC",
+      "identity_verified": true
     },
     {
       "code": "06166",
@@ -105,7 +120,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "CIG"
+      "official_name": "CIG",
+      "identity_verified": true
     },
     {
       "code": "06682",
@@ -113,7 +129,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "PHANCY"
+      "official_name": "PHANCY",
+      "identity_verified": true
     },
     {
       "code": "09880",
@@ -121,7 +138,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "UBTECH ROBOTICS"
+      "official_name": "UBTECH ROBOTICS",
+      "identity_verified": true
     },
     {
       "code": "02556",
@@ -129,7 +147,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "MARKETINGFORCE"
+      "official_name": "MARKETINGFORCE",
+      "identity_verified": true
     },
     {
       "code": "01428",
@@ -137,7 +156,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "BRIGHT SMART"
+      "official_name": "BRIGHT SMART",
+      "identity_verified": true
     },
     {
       "code": "09999",
@@ -145,7 +165,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "NTES"
+      "official_name": "NTES",
+      "identity_verified": true
     },
     {
       "code": "02359",
@@ -153,7 +174,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "WUXI APPTEC"
+      "official_name": "WUXI APPTEC",
+      "identity_verified": true
     },
     {
       "code": "06160",
@@ -161,7 +183,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "BEONE MEDICINES"
+      "official_name": "BEONE MEDICINES",
+      "identity_verified": true
     },
     {
       "code": "03968",
@@ -169,7 +192,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "CM BANK"
+      "official_name": "CM BANK",
+      "identity_verified": true
     },
     {
       "code": "09992",
@@ -177,7 +201,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "POP MART"
+      "official_name": "POP MART",
+      "identity_verified": true
     },
     {
       "code": "00100",
@@ -185,7 +210,8 @@
       "membership_note": "原池保留；本次截图重合",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "MINIMAX-W"
+      "official_name": "MINIMAX-W",
+      "identity_verified": true
     },
     {
       "code": "02899",
@@ -193,7 +219,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "ZIJIN MINING"
+      "official_name": "ZIJIN MINING",
+      "identity_verified": true
     },
     {
       "code": "02318",
@@ -201,7 +228,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "PING AN"
+      "official_name": "PING AN",
+      "identity_verified": true
     },
     {
       "code": "00939",
@@ -209,7 +237,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "CCB"
+      "official_name": "CCB",
+      "identity_verified": true
     },
     {
       "code": "00992",
@@ -217,7 +246,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "LENOVO GROUP"
+      "official_name": "LENOVO GROUP",
+      "identity_verified": true
     },
     {
       "code": "00883",
@@ -225,7 +255,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "CNOOC"
+      "official_name": "CNOOC",
+      "identity_verified": true
     },
     {
       "code": "01347",
@@ -233,7 +264,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "HUA HONG GRACE"
+      "official_name": "HUA HONG GRACE",
+      "identity_verified": true
     },
     {
       "code": "00005",
@@ -241,7 +273,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "HSBC HOLDINGS"
+      "official_name": "HSBC HOLDINGS",
+      "identity_verified": true
     },
     {
       "code": "03993",
@@ -249,7 +282,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "CMOC"
+      "official_name": "CMOC",
+      "identity_verified": true
     },
     {
       "code": "02269",
@@ -257,7 +291,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "WUXI BIO"
+      "official_name": "WUXI BIO",
+      "identity_verified": true
     },
     {
       "code": "00388",
@@ -265,7 +300,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "HKEX"
+      "official_name": "HKEX",
+      "identity_verified": true
     },
     {
       "code": "01801",
@@ -273,7 +309,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "INNOVENT BIO"
+      "official_name": "INNOVENT BIO",
+      "identity_verified": true
     },
     {
       "code": "09926",
@@ -281,7 +318,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "AKESO"
+      "official_name": "AKESO",
+      "identity_verified": true
     },
     {
       "code": "02382",
@@ -289,7 +327,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "SUNNY OPTICAL"
+      "official_name": "SUNNY OPTICAL",
+      "identity_verified": true
     },
     {
       "code": "01024",
@@ -297,7 +336,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "KUAISHOU-W"
+      "official_name": "KUAISHOU-W",
+      "identity_verified": true
     },
     {
       "code": "09626",
@@ -305,7 +345,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "BILIBILI-W"
+      "official_name": "BILIBILI-W",
+      "identity_verified": true
     },
     {
       "code": "00941",
@@ -313,7 +354,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "CHINA MOBILE"
+      "official_name": "CHINA MOBILE",
+      "identity_verified": true
     },
     {
       "code": "01787",
@@ -321,7 +363,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "SD GOLD"
+      "official_name": "SD GOLD",
+      "identity_verified": true
     },
     {
       "code": "02020",
@@ -329,7 +372,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "ANTA SPORTS"
+      "official_name": "ANTA SPORTS",
+      "identity_verified": true
     },
     {
       "code": "00175",
@@ -337,7 +381,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "GEELY AUTO"
+      "official_name": "GEELY AUTO",
+      "identity_verified": true
     },
     {
       "code": "09660",
@@ -345,7 +390,8 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "HORIZONROBOT-W"
+      "official_name": "HORIZONROBOT-W",
+      "identity_verified": true
     },
     {
       "code": "06181",
@@ -353,21 +399,24 @@
       "membership_note": "原池保留",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "LAOPU GOLD"
+      "official_name": "LAOPU GOLD",
+      "identity_verified": true
     },
     {
       "code": "03308",
       "user_alias": "中际旭创",
-      "membership_note": "本次新增；官方身份/资格待核验",
+      "membership_note": "本次新增；2026-09-11沪深官方清单身份已核对",
       "official_current_membership": "both_channels_buy_sell",
       "membership_asof": "2026-09-11",
-      "official_name": "ZJ INNOLIGHT"
+      "official_name": "ZJ INNOLIGHT",
+      "identity_verified": true
     }
   ],
   "source": "DSA_HK_Dual_Model_Operating_Agreement_2026-09-11.md v1.4",
   "source_library_file_id": "libfile_c7d0f996ba1c8191b72499ff57b4cd92",
   "source_version": "4",
-  "identity_status": "44_current_official_identity_matches; JD identity only future-dated HKEX reference, review pending",
+  "identity_status": "45/45 matched to current official exchange or issuer sources",
   "no_implicit_membership_removal": true,
-  "current_eligibility_count": 44
+  "current_eligibility_count": 44,
+  "identity_verified_count": 45
 }

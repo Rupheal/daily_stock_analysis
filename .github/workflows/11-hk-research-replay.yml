@@ -1,0 +1,31 @@
+name: HK historical mechanism and observation controls
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/11-hk-research-replay.yml]
+permissions:
+  contents: read
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      ENV_FILE: /dev/null
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install yfinance pytest
+      - run: python -m pytest -q tests/test_hk_research_replay.py tests/test_hk_native_data_probe.py
+      - run: python scripts/probe_hk_historical_prices.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hk-research-history-and-tests
+          path: probe/
+          retention-days: 7
