@@ -1,5 +1,5 @@
 name: HK US Europe free news and daily integration acceptance
-# Final free gate v6: no paid calls; preserve negation and quarantine legacy financial provenance.
+# Follow-up free gate v7: replay third raw response; fix negation scope; model budget closed.
 on:
   workflow_dispatch:
   push:

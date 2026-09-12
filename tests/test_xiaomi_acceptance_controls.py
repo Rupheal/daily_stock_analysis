@@ -139,3 +139,33 @@ def test_source_chain_contamination_is_blocked_before_model_request():
     with pytest.raises(ValueError, match='source chain'):
         validate_model_input({'today':today, 'fundamental_context': {
             'source_chain': [{'provider':'realtime_quote'}]}}, preflight)
+def test_actual_third_output_negated_pullback_is_not_a_positive_claim():
+    from pathlib import Path
+    from copy import deepcopy
+    from src.services.market_data_integrity import audit_daily_report, enforce_daily_report
+    from types import SimpleNamespace
+    fixture = json.loads((Path(__file__).parent/'fixtures/xiaomi_model_followup3_20260912.json').read_text())
+    original = deepcopy(fixture)
+    audit = audit_daily_report(fixture['result'], fixture['context'])
+    assert audit['passed'], audit
+    obj = SimpleNamespace(**deepcopy(fixture['result']))
+    obj.to_dict = lambda: {k:v for k,v in vars(obj).items() if k != 'to_dict'}
+    assert enforce_daily_report(obj, fixture['context'])['passed']
+    assert enforce_daily_report(obj, fixture['context'])['passed']
+    assert fixture == original
+    assert '财务数据及其旧来源链已隔离' in obj.data_sources
+    assert '较前一交易日上升 0.04' in obj.ma_analysis
+    assert obj.dashboard['battle_plan']['execution_basis']['mode'] == 'watch'
+
+
+@pytest.mark.parametrize('text,expected', [
+    ('尚不构成放量突破或缩量回踩确认', False),
+    ('自下方接近MA5，而非自上方缩量回踩', False),
+    ('当前属于缩量回踩', True),
+    ('不能追高但是缩量回踩', True),
+    ('低乖离不等于零风险', False),
+    ('不是超卖而是零风险', True),
+])
+def test_negation_scope_keeps_real_assertions_after_contrast(text, expected):
+    from src.services.market_data_integrity import _affirmative_claim
+    assert _affirmative_claim(text, '缩量回踩|零风险') is expected

@@ -1,11 +1,8 @@
-name: Xiaomi authorized follow-up - one model request
+name: Xiaomi acceptance - additional request consumed
 # One bounded model request, after fresh regional news and independent daily bars pass.
 # User authorized one additional request on 2026-09-12; slot 3 total, 0.40 CNY incremental reservation.
 on:
   workflow_dispatch:
-  push:
-    branches: [fix/daily-data-integrity]
-    paths: [.github/workflows/05-xiaomi-verified-acceptance.yml]
 permissions:
   contents: read
   actions: read
@@ -14,7 +11,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   acceptance:
-    if: ${{ github.event_name == 'push' && github.run_attempt == 1 }}
+    # Additional single request completed; no model call can run from this workflow.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

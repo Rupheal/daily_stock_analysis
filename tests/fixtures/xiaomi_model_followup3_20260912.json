@@ -1,0 +1,506 @@
+{
+  "source_run": 34697756860,
+  "source_commit": "c30dca17c18d9005542db4692e7ec133eae30600",
+  "result": {
+    "action": "watch",
+    "action_label": "观望",
+    "analysis_summary": "小米集团-W上一交易日收26.36港元，涨1.70%，但MA5、MA10、MA20呈空头排列且MA5、MA10继续下移，趋势强度仅25分；价格自下方接近MA5，乖离-0.98%处安全区间，量能为缩量整理。筹码与财务数据缺失，基本面方向无法判断；事件面偏暖但技术未确认，另有监管类未决事项。综合给予观望。",
+    "buy_reason": "遵循严进策略与趋势交易理念：只在MA5>MA10>MA20多头排列下顺势做多，当前为空头排列，即使乖离率处安全区间也不构成买点；量能缩量且事件面未获技术确认，宜观望等待趋势修复。",
+    "change_pct": null,
+    "code": "HK01810",
+    "company_highlights": "亮点在于新车型交付启动与高端产品组合拓展带来事件关注度；风险在于监管类未决事项、财务数据未核验及技术面弱势。",
+    "confidence_level": "中",
+    "current_price": null,
+    "dashboard": {
+      "battle_plan": {
+        "action_checklist": [
+          "❌ 检查项1：多头排列——MA5<MA10<MA20为空头排列，不满足趋势交易前提",
+          "✅ 检查项2：乖离率——MA5乖离-0.98%，处安全范围，但低乖离不等于无交易风险",
+          "✅ 检查项3：量能配合——相对前日0.76倍、相对前五日均量0.72倍，缩量整理",
+          "⚠️ 检查项4：风险事件——存在未解决监管类报道与当事方指控，状态未明",
+          "⚠️ 检查项5：筹码健康——筹码数据不可用，无法判断",
+          "⚠️ 检查项6：估值/财务——财报与估值数据缺失，无法判断"
+        ],
+        "execution_basis": {
+          "entry_price": null,
+          "mode": "watch",
+          "position_pct": null,
+          "stop_price": null
+        },
+        "position_strategy": {},
+        "sniper_points": {}
+      },
+      "core_conclusion": {
+        "one_sentence": "空头排列未改，乖离率虽安全但趋势未确认，观望等企稳",
+        "position_advice": {},
+        "signal_type": "🟡持有观望",
+        "time_sensitivity": "不急"
+      },
+      "data_perspective": {
+        "chip_structure": {},
+        "chip_unavailable_reason": "筹码分布未启用或数据源暂不可用，未纳入筹码判断。",
+        "price_position": {
+          "bias_ma5": -0.98,
+          "bias_status": "安全",
+          "current_price": 26.36,
+          "ma10": 27.22,
+          "ma20": 27.39,
+          "ma5": 26.62,
+          "resistance_level": 27.22,
+          "support_level": 25.44
+        },
+        "trend_status": {
+          "is_bullish": false,
+          "ma_alignment": "空头排列：MA5(26.62) < MA10(27.22) < MA20(27.39)",
+          "trend_score": 25
+        },
+        "volume_analysis": {
+          "turnover_rate": null,
+          "volume_meaning": "相对前一交易日0.76倍、相对前五日均量0.72倍，价格小涨而量能收缩，属缩量整理，尚不构成放量突破或缩量回踩确认",
+          "volume_ratio": 0.72,
+          "volume_status": "缩量"
+        }
+      },
+      "evidence_review": [
+        {
+          "assessment": "属媒体报道，建议与立案、裁决是不同状态；未取得监管原件，是否已立案或已有裁决未知，报道当时的小米回应不能推断当前状态。",
+          "event_id": "xiaomi-india-sfio-20260909",
+          "kind": "媒体报道，监管原件未取得",
+          "source_urls": [
+            "https://www.reuters.com/business/retail-consumer/indias-serious-fraud-office-recommends-detailed-probe-into-xiaomis-business-2026-09-09/"
+          ],
+          "status": "unresolved"
+        },
+        {
+          "assessment": "为当事方自身情报报告的主张，不等于独立核验、法律责任或监管结论；小米回应未知，保持未知。",
+          "event_id": "xiaomi-anthropic-20260910",
+          "kind": "当事方指控，非裁决",
+          "source_urls": [
+            "https://www.anthropic.com/threat-intelligence-report-september-2026"
+          ],
+          "status": "unresolved"
+        },
+        {
+          "assessment": "论文性能为作者主张，本轮未复现，不能推导订单、收入或利润。",
+          "event_id": "xiaomi-cocktailasr-20260910",
+          "kind": "技术研究披露，商业影响未核验",
+          "source_urls": [
+            "https://arxiv.org/abs/2609.11274"
+          ],
+          "status": "context"
+        },
+        {
+          "assessment": "仅核对名称、代码、提交日期与股本变动栏目；未逐格核验全部表格，不能据此推断回购规模或不存在其他风险。",
+          "event_id": "xiaomi-disclosure-8135479",
+          "kind": "公司原始披露，已核对部分正文",
+          "source_urls": [
+            "https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF"
+          ],
+          "status": "context"
+        }
+      ],
+      "intelligence": {
+        "earnings_outlook": "本轮未完成财报原始披露、报告期、币种与单位核验，收入、利润、现金流、ROE及分红数据缺失，基本面方向无法判断；券商观点与产品新闻只代表事件观点，不能据此判定业绩改善。",
+        "latest_news": "",
+        "positive_catalysts": [],
+        "risk_alerts": [
+          "2026-09-09 路透报道印度SFIO建议对小米业务进一步调查；建议、主管部门批准、立案与裁决属不同阶段，本轮未取得监管原件，当前是否已立案或已有裁决未知",
+          "2026-09-10 Anthropic威胁情报报告将小米与蒸馏行为关联；属当事方调查主张，非独立核验或监管裁决，小米回应及后续法律状态本轮未核实",
+          "覆盖限制：本轮为有限公开信源检索，未完成全部公告正文与财报核验，无法断言不存在其他减持、处罚或业绩风险"
+        ],
+        "sentiment_summary": "产品交付与新机节奏带来事件面偏暖，但监管类未决事项与技术面弱势并存。"
+      },
+      "news_review": [
+        {
+          "assessment": "自动生成的行情报道，仅描述当日股价表现，不构成趋势确认。",
+          "event_id": "article-ff80d22781b41193"
+        },
+        {
+          "assessment": "交付节奏属事件催化，但订单与交付不等于已实现利润，需后续数据验证。",
+          "event_id": "article-474efe3ee3713444"
+        },
+        {
+          "assessment": "技术披露层面信息，商业转化未核验，对短期股价影响中性。",
+          "event_id": "xiaomi-cocktailasr-20260910"
+        },
+        {
+          "assessment": "券商观点与目标价属预测，非公司披露，不能作为基本面确认依据。",
+          "event_id": "xiaomi-clsa-skynomad-20260911"
+        },
+        {
+          "assessment": "供应链信息属产业链侧面印证，强度有限，不改变技术面判断。",
+          "event_id": "article-53dcefb4d70bb8a4"
+        }
+      ],
+      "phase_decision": {
+        "action_window": "非交易日观察",
+        "confidence_reason": "行情快照缺失、筹码不可用、财务未核验，仅日线与技术可用，故置信度只能为中",
+        "data_limitations": [
+          "realtime_quote缺失，无法核对盘中价格与资金流",
+          "筹码分布缺失，筹码结构与主力成本无法判断",
+          "基本面数据partial，报告期、币种、单位未核验"
+        ],
+        "immediate_action": "观察",
+        "next_check_time": "下一交易日港股开盘后及收盘前",
+        "phase_context": {
+          "phase": "non_trading"
+        },
+        "watch_conditions": [
+          "后续交易日能否收复MA5(26.62)并带动均线由空转多",
+          "MA10(27.22)能否被有效突破并站稳，否则反弹视为弱势",
+          "是否跌破9月11日低点25.44，跌破则趋势进一步走弱",
+          "监管类未决事项是否出现正式披露或监管原件"
+        ]
+      },
+      "signal_attribution": {
+        "fundamentals": 5,
+        "market_conditions": 20,
+        "news_sentiment": 20,
+        "strongest_bearish_signal": "MA5<MA10<MA20空头排列，MA5与MA10仍在下移",
+        "strongest_bullish_signal": "自下方接近MA5且乖离率处安全区间，缩量整理抛压有限",
+        "technical_indicators": 55
+      }
+    },
+    "data_sources": "",
+    "decision_type": "hold",
+    "error_message": null,
+    "fundamental_analysis": "本轮未完成财报原始披露、报告期、币种与单位核验，收入、利润、现金流、ROE、分红等数据缺失，基本面方向无法判断。券商评级与产品发布属事件观点，不能替代财务验证。",
+    "hot_topics": "增程式新车交付、折叠手机与旗舰平板、语音识别技术披露、印度监管相关报道",
+    "key_points": "空头排列未修复，价格自下方接近MA5，乖离-0.98%安全，缩量整理量能不足，监管类事项未决",
+    "ma_analysis": "",
+    "market_sentiment": "舆情整体中性偏暖，但主要来自券商预测与产品报道，缺乏已核验的财务或监管结论支撑。",
+    "market_snapshot": {
+      "amount": "29.70 亿元",
+      "amplitude": "4.71%",
+      "change_amount": "0.44",
+      "close": "26.36",
+      "date": "2026-09-11",
+      "high": "26.66",
+      "low": "25.44",
+      "open": "25.66",
+      "pct_chg": "1.70%",
+      "prev_close": "25.92",
+      "volume": "1.14 亿股"
+    },
+    "market_structure_context": null,
+    "medium_term_outlook": "中期1-2周关键在MA10(27.22)与MA20(27.39)能否被收复并使排列由空转多；在此之前中性偏弱，事件催化需量价配合才有效。",
+    "model_used": "deepseek-flash",
+    "name": "小米集团-W",
+    "news_evidence_present": false,
+    "news_result_count": null,
+    "news_result_count_known": true,
+    "news_summary": "",
+    "operation_advice": "观望",
+    "pattern_analysis": "上一交易日K线实体约0.70港元，上影约0.30港元，下影约0.22港元，实体占振幅约57%，属带上下影线的中阳，收盘略低于开盘价上方压力区，反映上方存在抛压。",
+    "report_language": "zh",
+    "report_quality_audit": null,
+    "risk_warning": "技术面为空头排列，反弹易受MA10(27.22)与MA20(27.39)压制；印度SFIO相关报道与Anthropic指控属未解决状态，是否立案或裁决未知；筹码与财务数据缺失，本报告无法覆盖减持、处罚等全部风险。",
+    "search_performed": true,
+    "sector_position": "公司横跨消费电子与智能电动汽车，产品线向高端与增程车型延伸，行业竞争与产能交付节奏是主要变量；具体份额与盈利数据本轮未核验。",
+    "sentiment_score": 46,
+    "short_term_outlook": "短期1-3日在25.44至27.22之间震荡概率较高，若不能有效收复MA5(26.62)，反弹视为技术性修复；跌破25.44则弱势加剧。",
+    "success": true,
+    "technical_analysis": "技术面偏弱：趋势强度25/100，趋势状态为空头排列；MACD处中性区域，RSI约43.6属震荡整理。价格26.36低于MA5(26.62)，且前一交易日收盘亦低于当日MA5，只能描述为自下方接近MA5，而非自上方缩量回踩。乖离率-0.98%仅表示价格距离均线较近，不代表无交易风险。",
+    "trend_analysis": "股价在26元附近震荡，反弹受制于下行的短期均线，均线系统仍发散向下，属空头排列下的弱势整理，尚未出现趋势反转的形态与量能配合。",
+    "trend_prediction": "震荡",
+    "volume_analysis": "成交量相对前一交易日为0.76倍，相对前五个完整交易日均量为0.72倍，量能收缩。缩量小涨说明抛压有限，但同样缺少放量突破的确认信号，量价关系不足以支持主动做多。"
+  },
+  "context": {
+    "today": {
+      "amount": 2969552900,
+      "close": 26.36,
+      "date": "2026-09-11",
+      "high": 26.66,
+      "low": 25.44,
+      "ma10": 27.22,
+      "ma20": 27.39,
+      "ma5": 26.62,
+      "open": 25.66,
+      "pct_chg": 1.6975308641975273,
+      "volume": 113533443,
+      "volume_ratio": 0.72
+    },
+    "yesterday": {
+      "amount": 3850950200,
+      "close": 25.92,
+      "date": "2026-09-10",
+      "high": 26.4,
+      "low": 25.68,
+      "ma10": 27.37,
+      "ma20": 27.35,
+      "ma5": 27.03,
+      "open": 26.04,
+      "pct_chg": -1.74374526156178,
+      "volume": 148663013,
+      "volume_ratio": 0.98
+    },
+    "volume_change_ratio": 0.76,
+    "hk_report_contract": {
+      "coverage": "有限公开信源；未解决风险跨新闻窗口保留。未完成全部公告正文及财报核验。",
+      "events": [
+        {
+          "company_response": "仅有路透报道当时的转述；当前回应未核实",
+          "id": "xiaomi-india-sfio-20260909",
+          "kind": "媒体报道，监管原件未取得",
+          "publication_precision": "second",
+          "published_at": "2026-09-09T09:59:37+00:00",
+          "reviewed_at": "2026-09-12T11:49:59+00:00",
+          "sources": [
+            {
+              "publisher_group": "Reuters",
+              "url": "https://www.reuters.com/business/retail-consumer/indias-serious-fraud-office-recommends-detailed-probe-into-xiaomis-business-2026-09-09/",
+              "verification": "公开检索摘录；正文直接访问401，监管备忘录未取得"
+            }
+          ],
+          "status": "unresolved",
+          "summary": "路透报道印度SFIO建议对小米业务进一步调查。建议、主管部门批准、立案与裁决是不同阶段。本轮未取得监管原件，当前是否已立案或已有裁决未知。报道所述小米回应未收到正式通知只代表报道当时，不可推断当前仍未收到。",
+          "symbol": "HK01810"
+        },
+        {
+          "company_response": "未知，未取得小米对应回应",
+          "id": "xiaomi-anthropic-20260910",
+          "kind": "当事方指控，非裁决",
+          "publication_precision": "day",
+          "published_at": "2026-09-10",
+          "reviewed_at": "2026-09-12T11:49:59+00:00",
+          "sources": [
+            {
+              "publisher_group": "Anthropic",
+              "url": "https://www.anthropic.com/threat-intelligence-report-september-2026",
+              "verification": "已直接取得当事方报告HTML并核对小米段落；不是独立确认"
+            }
+          ],
+          "status": "unresolved",
+          "summary": "Anthropic在其9月威胁情报报告中将小米与蒸馏行为关联。这是当事方自身调查主张，尚不等于独立核验、法律责任或监管裁决。报告同时指出相关观察不能说明小米将Claude回复提供给自身用户。小米回应及后续法律状态本轮未核实。",
+          "symbol": "HK01810"
+        },
+        {
+          "company_response": "论文为作者技术披露",
+          "id": "xiaomi-cocktailasr-20260910",
+          "kind": "技术研究披露，商业影响未核验",
+          "publication_precision": "minute",
+          "published_at": "2026-09-10T09:06:00+00:00",
+          "reviewed_at": "2026-09-12T10:42:59+00:00",
+          "sources": [
+            {
+              "publisher_group": "Xiaomi research authors",
+              "url": "https://arxiv.org/abs/2609.11274",
+              "verification": "已核对论文摘要、作者及提交时间"
+            }
+          ],
+          "status": "context",
+          "summary": "小米Xiaomi-CocktailASR-1论文已公开。实验性能属于作者主张，本轮未复现实验；不能推导已实现的订单、收入或利润。论文日期与媒体报道日期应分别保留。",
+          "symbol": "HK01810"
+        },
+        {
+          "company_response": "公司原始披露",
+          "id": "xiaomi-disclosure-8135479",
+          "kind": "公司原始披露，已核对部分正文",
+          "publication_precision": "day",
+          "published_at": "2026-09-10",
+          "reviewed_at": "2026-09-12T12:11:21.585279+00:00",
+          "sources": [
+            {
+              "publisher_group": "Xiaomi issuer disclosure",
+              "sha256": "582cac9a53b4a465429bd2e63cc6f448869e8798689d79213760b6f52c0f568a",
+              "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF",
+              "verification": "由小米官网嵌入公告目录链接取回PDF，核对首页及股本变动栏目。未逐格核验全部表格。"
+            }
+          ],
+          "status": "context",
+          "summary": "小米提交翌日披露报表。已核对公司名称、股票代码、2026年9月10日提交日期及股权激励所涉新股栏目。未将报表中的历史回购累计表当作当日回购，也未据此判断财报盈利。",
+          "symbol": "HK01810"
+        }
+      ],
+      "news_events": [
+        {
+          "event_id": "article-ff80d22781b41193",
+          "evidence_kind": "媒体报道（待原始披露复核）",
+          "published_at": "2026-09-11 08:33:00",
+          "source": "道琼斯",
+          "source_records": [
+            {
+              "source": "道琼斯",
+              "url": "https://news.futunn.com/post/79141202/xiaomi-stock-advances-1-7-in-hong-kong"
+            }
+          ],
+          "source_urls": [
+            "https://news.futunn.com/post/79141202/xiaomi-stock-advances-1-7-in-hong-kong"
+          ],
+          "summary": "[媒体报道（待原始披露复核）；公开摘要，非全文核验] This article was automatically generated by Dow Jones using technology from Automated Insights. Shares of Xiaomi Corp. rose 1.7% to 26.36 Hong Kong dollars on what proved to be an all-around grim",
+          "title": "Xiaomi Stock Advances 1.7% in Hong Kong"
+        },
+        {
+          "event_id": "article-474efe3ee3713444",
+          "evidence_kind": "媒体报道（待原始披露复核）",
+          "published_at": "2026-09-11 07:52:41",
+          "source": "AASTOCKS",
+          "source_records": [
+            {
+              "source": "AASTOCKS",
+              "url": "https://news.futunn.com/post/79135998/xiaomi-01810-hk-to-commence-nationwide-delivery-of-its-new"
+            }
+          ],
+          "source_urls": [
+            "https://news.futunn.com/post/79135998/xiaomi-01810-hk-to-commence-nationwide-delivery-of-its-new"
+          ],
+          "summary": "[媒体报道（待原始披露复核）；公开摘要，非全文核验] 小米-W(01810.HK)董事长兼首席执行官雷军宣布，集团新推出的增程式SUV车系「澎程」将于明日(12日)在全国75个城市开始交付。N70Pro、N70Max及N90Max售价分别为20.99万、23.99万及26.99万元人民币，而搭配原生电动升降顶舱的澎程N90Max探索版定价则是29.99万元人民币。",
+          "title": "小米(01810.HK)澎程系列新车明起全国交付"
+        },
+        {
+          "event_id": "xiaomi-cocktailasr-20260910",
+          "evidence_kind": "媒体报道；待原始披露核验",
+          "published_at": "2026-09-11 07:04:00",
+          "source": "《經濟通》新聞；原始技术论文交叉核对",
+          "source_records": [
+            {
+              "source": "《經濟通》新聞；原始技术论文交叉核对",
+              "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260911776"
+            }
+          ],
+          "source_urls": [
+            "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260911776"
+          ],
+          "summary": "[技术研究披露；商业影响待验证] 经济通9月11日报道小米Xiaomi-CocktailASR-1。原始论文于9月10日09:06 UTC提交，提出利用参考语音识别目标说话人的方法。模型性能属于作者实验主张，不能当成独立测评、已签订单或新增利润。",
+          "title": "小米语音识别技术发布：论文9月10日公开，媒体9月11日报道"
+        },
+        {
+          "event_id": "xiaomi-clsa-skynomad-20260911",
+          "evidence_kind": "观点/预测",
+          "published_at": "2026-09-11 04:34:00",
+          "source": "《經濟通》新聞",
+          "source_records": [
+            {
+              "source": "《經濟通》新聞",
+              "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260906618"
+            },
+            {
+              "source": "AASTOCKS",
+              "url": "https://news.futunn.com/post/79120347/clsa-xiaomi-01810-hk-secures-10000-orders-for-skynomad-series"
+            }
+          ],
+          "source_urls": [
+            "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260906618",
+            "https://news.futunn.com/post/79120347/clsa-xiaomi-01810-hk-secures-10000-orders-for-skynomad-series"
+          ],
+          "summary": "[观点/预测；公开摘要，非全文核验] 中信里昂維持小米(01810)「優於大市」評級，目標價35元。 中信里昂發表研究報告指出，小米於9月7日正式推出「澎程」汽車系列，涵蓋4款車型，主打商務與家庭用戶市場，且在開售4分鐘內即累積達1萬份訂單，預計2026年可交付約9萬輛。此外，小米亦同步推出首款摺疊手機及旗艦平板，進一步拓展高端產品組合。該行指出，公司優先考慮平均售價（ASP）和毛利率（GPM），而非出貨量。 報告預期，隨著新旗艦產品推出，小米的營收與利潤將於2026年第三季見底，並於第四季開始反彈。 *編者按：本文只供參考之用，並不構成要約、招攬或邀請、誘使、任何不論種類或形式之申述或訂立任何建議及推薦，讀者務請運用個人獨立思考能力自行作出投資決定，如因相關建議招致損失，概與《經濟通通訊社》、編者及作者無涉。 《經濟通通訊社11日專訊》",
+          "title": "《券商精點》中信里昂維持小米優於大市評級及目標價35元，料第三季利潤觸底"
+        },
+        {
+          "event_id": "article-53dcefb4d70bb8a4",
+          "evidence_kind": "媒体报道（待原始披露复核）",
+          "published_at": "2026-09-11 04:09:29",
+          "source": "MT Newswires",
+          "source_records": [
+            {
+              "source": "MT Newswires",
+              "url": "https://news.futunn.com/post/79127081/zhongce-rubber-to-supply-tires-for-xiaomi-s-pengcheng-n70"
+            }
+          ],
+          "source_urls": [
+            "https://news.futunn.com/post/79127081/zhongce-rubber-to-supply-tires-for-xiaomi-s-pengcheng-n70"
+          ],
+          "summary": "[媒体报道（待原始披露复核）；公开摘要，非全文核验] Zhongce Rubber（上交所：603049）周五向上海证券交易所提交的文件显示，该公司将为Xiaomi（港交所：1810）的Pengcheng N70车型供应其Arisun 1 Star轮胎。该消费",
+          "title": "Zhongce Rubber将为Xiaomi的Pengcheng N70车型供应轮胎"
+        }
+      ],
+      "required_risk_ids": [
+        "xiaomi-india-sfio-20260909",
+        "xiaomi-anthropic-20260910"
+      ],
+      "version": 1
+    },
+    "company_news_evidence": [
+      {
+        "event_id": "article-ff80d22781b41193",
+        "evidence_kind": "媒体报道（待原始披露复核）",
+        "published_at": "2026-09-11 08:33:00",
+        "source": "道琼斯",
+        "source_records": [
+          {
+            "source": "道琼斯",
+            "url": "https://news.futunn.com/post/79141202/xiaomi-stock-advances-1-7-in-hong-kong"
+          }
+        ],
+        "source_urls": [
+          "https://news.futunn.com/post/79141202/xiaomi-stock-advances-1-7-in-hong-kong"
+        ],
+        "summary": "[媒体报道（待原始披露复核）；公开摘要，非全文核验] This article was automatically generated by Dow Jones using technology from Automated Insights. Shares of Xiaomi Corp. rose 1.7% to 26.36 Hong Kong dollars on what proved to be an all-around grim",
+        "title": "Xiaomi Stock Advances 1.7% in Hong Kong"
+      },
+      {
+        "event_id": "article-474efe3ee3713444",
+        "evidence_kind": "媒体报道（待原始披露复核）",
+        "published_at": "2026-09-11 07:52:41",
+        "source": "AASTOCKS",
+        "source_records": [
+          {
+            "source": "AASTOCKS",
+            "url": "https://news.futunn.com/post/79135998/xiaomi-01810-hk-to-commence-nationwide-delivery-of-its-new"
+          }
+        ],
+        "source_urls": [
+          "https://news.futunn.com/post/79135998/xiaomi-01810-hk-to-commence-nationwide-delivery-of-its-new"
+        ],
+        "summary": "[媒体报道（待原始披露复核）；公开摘要，非全文核验] 小米-W(01810.HK)董事长兼首席执行官雷军宣布，集团新推出的增程式SUV车系「澎程」将于明日(12日)在全国75个城市开始交付。N70Pro、N70Max及N90Max售价分别为20.99万、23.99万及26.99万元人民币，而搭配原生电动升降顶舱的澎程N90Max探索版定价则是29.99万元人民币。",
+        "title": "小米(01810.HK)澎程系列新车明起全国交付"
+      },
+      {
+        "event_id": "xiaomi-cocktailasr-20260910",
+        "evidence_kind": "媒体报道；待原始披露核验",
+        "published_at": "2026-09-11 07:04:00",
+        "source": "《經濟通》新聞；原始技术论文交叉核对",
+        "source_records": [
+          {
+            "source": "《經濟通》新聞；原始技术论文交叉核对",
+            "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260911776"
+          }
+        ],
+        "source_urls": [
+          "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260911776"
+        ],
+        "summary": "[技术研究披露；商业影响待验证] 经济通9月11日报道小米Xiaomi-CocktailASR-1。原始论文于9月10日09:06 UTC提交，提出利用参考语音识别目标说话人的方法。模型性能属于作者实验主张，不能当成独立测评、已签订单或新增利润。",
+        "title": "小米语音识别技术发布：论文9月10日公开，媒体9月11日报道"
+      },
+      {
+        "event_id": "xiaomi-clsa-skynomad-20260911",
+        "evidence_kind": "观点/预测",
+        "published_at": "2026-09-11 04:34:00",
+        "source": "《經濟通》新聞",
+        "source_records": [
+          {
+            "source": "《經濟通》新聞",
+            "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260906618"
+          },
+          {
+            "source": "AASTOCKS",
+            "url": "https://news.futunn.com/post/79120347/clsa-xiaomi-01810-hk-secures-10000-orders-for-skynomad-series"
+          }
+        ],
+        "source_urls": [
+          "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260906618",
+          "https://news.futunn.com/post/79120347/clsa-xiaomi-01810-hk-secures-10000-orders-for-skynomad-series"
+        ],
+        "summary": "[观点/预测；公开摘要，非全文核验] 中信里昂維持小米(01810)「優於大市」評級，目標價35元。 中信里昂發表研究報告指出，小米於9月7日正式推出「澎程」汽車系列，涵蓋4款車型，主打商務與家庭用戶市場，且在開售4分鐘內即累積達1萬份訂單，預計2026年可交付約9萬輛。此外，小米亦同步推出首款摺疊手機及旗艦平板，進一步拓展高端產品組合。該行指出，公司優先考慮平均售價（ASP）和毛利率（GPM），而非出貨量。 報告預期，隨著新旗艦產品推出，小米的營收與利潤將於2026年第三季見底，並於第四季開始反彈。 *編者按：本文只供參考之用，並不構成要約、招攬或邀請、誘使、任何不論種類或形式之申述或訂立任何建議及推薦，讀者務請運用個人獨立思考能力自行作出投資決定，如因相關建議招致損失，概與《經濟通通訊社》、編者及作者無涉。 《經濟通通訊社11日專訊》",
+        "title": "《券商精點》中信里昂維持小米優於大市評級及目標價35元，料第三季利潤觸底"
+      },
+      {
+        "event_id": "article-53dcefb4d70bb8a4",
+        "evidence_kind": "媒体报道（待原始披露复核）",
+        "published_at": "2026-09-11 04:09:29",
+        "source": "MT Newswires",
+        "source_records": [
+          {
+            "source": "MT Newswires",
+            "url": "https://news.futunn.com/post/79127081/zhongce-rubber-to-supply-tires-for-xiaomi-s-pengcheng-n70"
+          }
+        ],
+        "source_urls": [
+          "https://news.futunn.com/post/79127081/zhongce-rubber-to-supply-tires-for-xiaomi-s-pengcheng-n70"
+        ],
+        "summary": "[媒体报道（待原始披露复核）；公开摘要，非全文核验] Zhongce Rubber（上交所：603049）周五向上海证券交易所提交的文件显示，该公司将为Xiaomi（港交所：1810）的Pengcheng N70车型供应其Arisun 1 Star轮胎。该消费",
+        "title": "Zhongce Rubber将为Xiaomi的Pengcheng N70车型供应轮胎"
+      }
+    ]
+  }
+}

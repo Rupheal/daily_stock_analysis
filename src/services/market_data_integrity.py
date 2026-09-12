@@ -267,9 +267,9 @@ def _audit_cross_section_claims(result, plan, basis, context):
 
 def _affirmative_claim(text, pattern):
     """Check local assertions; quoted prohibitions and explicit negation are not claims."""
-    for clause in re.split(r'[，,。；;\n]', text):
+    for clause in re.split(r'[，,。；;\n]|但是|但|然而|而是|不过|不過', text):
         for match in re.finditer(pattern, clause, re.I):
-            if not re.search(r'不能|不可|不应|不應|无法|無法|不代表|不等于|不等於|≠|不是|并非|並非', clause[:match.start()]):
+            if not re.search(r'不能|不可|不应|不應|无法|無法|不代表|不等于|不等於|≠|不是|并非|並非|而非|不构成|不構成', clause[:match.start()]):
                 return True
     return False
 
