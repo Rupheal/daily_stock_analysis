@@ -94,7 +94,7 @@ def compare_prices(primary, independent, target):
     return len(overlap)
 
 
-def prepare(root=Path('probe'), allow_partial_news=False):
+def prepare(root=Path('probe'), allow_partial_news=False, include_primary_evidence=False):
     """Reuse the same price gate; facts-only callers may disclose news gaps."""
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
@@ -192,6 +192,12 @@ def prepare(root=Path('probe'), allow_partial_news=False):
         checkpoint['tasks']['issuer'] = 'failed'
     atomic_json(root/'acceptance-queue.json', checkpoint)
     attach_report_contract(context, 'HK01810')
+    primary_evidence = None
+    if include_primary_evidence:
+        from src.services.xiaomi_primary_evidence import collect_primary_evidence
+        primary_evidence = collect_primary_evidence(root/'primary')
+        atomic_json(root/'primary-evidence.json', primary_evidence)
+        checkpoint['tasks']['primary_evidence'] = 'passed' if primary_evidence['passed'] else 'incomplete'
     atomic_json(root/'reviewed-evidence.json', context['hk_report_contract'])
     get_db().save_daily_data(df, 'HK01810', 'TencentFetcher / Yahoo cross-checked')
     audit = dict(passed=True, symbol='HK01810', prices_passed=True,
@@ -204,9 +210,14 @@ def prepare(root=Path('probe'), allow_partial_news=False):
         event_candidates=len(events), reviewed_group_count=sum(e['grouping_reviewed'] for e in events),
         industry_context_count=len(industry_context), company_news_evidence=context['company_news_evidence'],
         limitation='Known event families merged; unknown events are upper-bound candidates. Issuer listing verified; full disclosure bodies and financial periods remain incomplete.')
+    if primary_evidence is not None:
+        audit['verified_primary_evidence'] = primary_evidence
+        audit['limitation'] = 'Only reviewed primary fields are admitted separately; complete filings/news coverage and strategy validity remain unverified.'
     atomic_json(root/'preflight.json', audit)
     files = ['tencent_history.json', 'independent_history.json', 'news.json', 'issuer-feed-raw.json',
              'issuer-announcements.json', 'reviewed-evidence.json', 'preflight.json']
+    if primary_evidence is not None:
+        files.append('primary-evidence.json')
     manifest = {name: hashlib.sha256((root/name).read_bytes()).hexdigest()
                 for name in files if (root/name).is_file()}
     checkpoint.update(manifest=manifest, finished_at=datetime.now(timezone.utc).isoformat())
@@ -217,4 +228,7 @@ def prepare(root=Path('probe'), allow_partial_news=False):
 
 
 if __name__ == '__main__':
-    prepare()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--with-primary-evidence', action='store_true')
+    prepare(include_primary_evidence=parser.parse_args().with_primary_evidence)

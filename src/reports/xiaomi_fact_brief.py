@@ -100,6 +100,10 @@ def build_fact_brief(preflight, mode='snapshot', generated_at=None, expected_dat
             ['下影', f"{facts['lower_shadow']:.2f} 港元", 'min（开盘，收盘）− 最低'],
             ['全日高低差', f"{today['high']-today['low']:.2f} 港元", '最高 − 最低'],
             ['实体占高低差', f"{facts['body_fraction_of_range']*100:.2f}%" if facts['body_fraction_of_range'] is not None else '无法计算（高低相等）', '实体 ÷（最高 − 最低）']]})
+    primary = preflight.get('verified_primary_evidence') or {}
+    if primary:
+        from src.services.xiaomi_primary_evidence import render_primary_sections
+        sections.extend(render_primary_sections(primary))
     contract = preflight.get('hk_report_contract') or {}
     news, quarantined, seen = [], [], set()
     for event in contract.get('news_events', []):
@@ -125,7 +129,7 @@ def build_fact_brief(preflight, mode='snapshot', generated_at=None, expected_dat
     sections.append({'title': '近期公司报道与观点', 'paragraphs': [
         f"预检记录 {preflight.get('news_count', 0)} 篇公司文章、{len(preflight.get('origins', []))} 家原媒体；本页展示 {len(news)} 个候选事件。",
         '转载载体不另算出版机构；候选事件去重尚不完整，数量不代表独立确认。标题属于原媒体报道，不等于本程序核实全文。',
-        '财务数据未核验，基本面方向无法判断。有限检索不能证明没有利空。'], 'items': news})
+        ('仅补证表内财务字段已核对原件，其他字段保持未知。' if primary.get('financial_fields') else '财务数据未核验，基本面方向无法判断。') + '有限检索不能证明没有利空。'], 'items': news})
     risks = []
     for event in contract.get('events', []):
         if event.get('status') != 'unresolved':
@@ -146,7 +150,7 @@ def build_fact_brief(preflight, mode='snapshot', generated_at=None, expected_dat
                    'links': [{'label': '公司公告原件', 'url': _url(u)} for u in item['source_urls']]}
                   for item in issuer.get('items', [])]})
     limitations = ['本版只发布行情事实、新闻索引及风险证据状态；没有买卖指令、仓位、止损或预测概率。',
-        '盘中报价时间戳、全部公告正文、财报字段、事件去重泛化及策略有效性尚未全部验收。']
+        '盘中报价时间戳、全部公告正文、未列入补证的财报字段、事件去重泛化及策略有效性尚未全部验收。']
     if not news:
         limitations.append('近期公司新闻缺失或被隔离；不能将空列表解释为没有事件。')
     if not risks:

@@ -1,0 +1,360 @@
+{
+  "schema_version": 1,
+  "symbol": "HK01810",
+  "reviewed_at": "2026-09-12T15:42:58.432421+00:00",
+  "review_scope": "Only the explicitly listed table fields; no complete announcement or financial coverage claim",
+  "documents": [
+    {
+      "id": "xiaomi-results-2026h1",
+      "file": "financial-results.pdf",
+      "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4167752/HKEX-EPS_20260818_12288685_0.PDF",
+      "sha256": "b3270bb2e3e8e5a1c4aac485bb686b9ae97fc520414455e8fa557c3c9062ef45",
+      "published_date": "2026-08-18",
+      "publication_precision": "day",
+      "title": "Results for the three and six months ended June 30, 2026",
+      "issuer": "Xiaomi Corporation",
+      "financial_reporting": "Unaudited IAS 34 interim results; reviewed, not annual audited statements",
+      "tables": [
+        {
+          "page": 30,
+          "row_label": "Revenue",
+          "metric": "revenue",
+          "label_zh": "收入",
+          "currency": "CNY",
+          "unit": "thousand",
+          "unit_scale": 1000,
+          "columns": [
+            {
+              "period_start": "2026-04-01",
+              "period_end": "2026-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2025-04-01",
+              "period_end": "2025-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2026-01-01",
+              "period_end": "2026-06-30",
+              "period_kind": "half_year"
+            },
+            {
+              "period_start": "2025-01-01",
+              "period_end": "2025-06-30",
+              "period_kind": "half_year"
+            }
+          ],
+          "values": [
+            "108921609",
+            "115956091",
+            "208063227",
+            "227249428"
+          ],
+          "basis": "IFRS"
+        },
+        {
+          "page": 30,
+          "row_label": "Gross profit",
+          "metric": "gross_profit",
+          "label_zh": "毛利",
+          "currency": "CNY",
+          "unit": "thousand",
+          "unit_scale": 1000,
+          "columns": [
+            {
+              "period_start": "2026-04-01",
+              "period_end": "2026-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2025-04-01",
+              "period_end": "2025-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2026-01-01",
+              "period_end": "2026-06-30",
+              "period_kind": "half_year"
+            },
+            {
+              "period_start": "2025-01-01",
+              "period_end": "2025-06-30",
+              "period_kind": "half_year"
+            }
+          ],
+          "values": [
+            "21608918",
+            "26100958",
+            "43419038",
+            "51506868"
+          ],
+          "basis": "IFRS"
+        },
+        {
+          "page": 30,
+          "row_label": "Profit for the period",
+          "metric": "profit_for_period",
+          "label_zh": "期内利润",
+          "currency": "CNY",
+          "unit": "thousand",
+          "unit_scale": 1000,
+          "columns": [
+            {
+              "period_start": "2026-04-01",
+              "period_end": "2026-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2025-04-01",
+              "period_end": "2025-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2026-01-01",
+              "period_end": "2026-06-30",
+              "period_kind": "half_year"
+            },
+            {
+              "period_start": "2025-01-01",
+              "period_end": "2025-06-30",
+              "period_kind": "half_year"
+            }
+          ],
+          "values": [
+            "9463376",
+            "11873163",
+            "14197953",
+            "22765909"
+          ],
+          "basis": "IFRS"
+        },
+        {
+          "page": 30,
+          "row_label": "Owners of the Company",
+          "metric": "net_profit_parent",
+          "label_zh": "归属于公司拥有人的利润",
+          "currency": "CNY",
+          "unit": "thousand",
+          "unit_scale": 1000,
+          "columns": [
+            {
+              "period_start": "2026-04-01",
+              "period_end": "2026-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2025-04-01",
+              "period_end": "2025-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2026-01-01",
+              "period_end": "2026-06-30",
+              "period_kind": "half_year"
+            },
+            {
+              "period_start": "2025-01-01",
+              "period_end": "2025-06-30",
+              "period_kind": "half_year"
+            }
+          ],
+          "values": [
+            "9462405",
+            "11904405",
+            "14185525",
+            "22828726"
+          ],
+          "basis": "IFRS"
+        },
+        {
+          "page": 34,
+          "row_label": "Net cash generated from operating activities",
+          "metric": "operating_cash_flow",
+          "label_zh": "经营活动现金净额",
+          "currency": "CNY",
+          "unit": "thousand",
+          "unit_scale": 1000,
+          "columns": [
+            {
+              "period_start": "2026-01-01",
+              "period_end": "2026-06-30",
+              "period_kind": "half_year"
+            },
+            {
+              "period_start": "2025-01-01",
+              "period_end": "2025-06-30",
+              "period_kind": "half_year"
+            }
+          ],
+          "values": [
+            "2050234",
+            "28054740"
+          ],
+          "basis": "IFRS"
+        },
+        {
+          "page": 1,
+          "row_label": "Adjusted Net Profit",
+          "metric": "adjusted_net_profit",
+          "label_zh": "调整后净利润",
+          "currency": "CNY",
+          "unit": "million",
+          "unit_scale": 1000000,
+          "columns": [
+            {
+              "period_start": "2026-04-01",
+              "period_end": "2026-06-30",
+              "period_kind": "quarter"
+            },
+            {
+              "period_start": "2025-04-01",
+              "period_end": "2025-06-30",
+              "period_kind": "quarter"
+            },
+            null,
+            {
+              "period_start": "2026-01-01",
+              "period_end": "2026-03-31",
+              "period_kind": "quarter"
+            },
+            null
+          ],
+          "values": [
+            "6219.1",
+            "10830.7",
+            "-42.6",
+            "6072.1",
+            "2.4"
+          ],
+          "basis": "non-IFRS; issuer adjusted measure; rounded disclosure"
+        },
+        {
+          "page": 2,
+          "row_label": "Non-IFRS Measure: Adjusted Net Profit",
+          "metric": "adjusted_net_profit",
+          "label_zh": "调整后净利润",
+          "currency": "CNY",
+          "unit": "million",
+          "unit_scale": 1000000,
+          "columns": [
+            {
+              "period_start": "2026-01-01",
+              "period_end": "2026-06-30",
+              "period_kind": "half_year"
+            },
+            {
+              "period_start": "2025-01-01",
+              "period_end": "2025-06-30",
+              "period_kind": "half_year"
+            },
+            null
+          ],
+          "values": [
+            "12291.2",
+            "21506.3",
+            "-42.8"
+          ],
+          "basis": "non-IFRS; issuer adjusted measure; rounded disclosure"
+        }
+      ],
+      "statements": [
+        {
+          "id": "2026h1-interim-dividend",
+          "page": 46,
+          "anchor": "The Board has resolved not to declare an interim dividend for the six months ended June 30, 2026.",
+          "text_zh": "董事会决定不派截至2026年6月30日止六个月的中期股息。",
+          "scope_end": "2026-06-30"
+        }
+      ]
+    },
+    {
+      "id": "xiaomi-buyback-20260907",
+      "file": "issuer-20260907.pdf",
+      "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4178042/HKEX-EPS_20260907_12323459_0.PDF",
+      "sha256": "178789f1a2a85b5559389f1c1e9ee50dba1f3e3ed7ea2b07e61c5a8eadf67c2c",
+      "published_date": "2026-09-07",
+      "publication_precision": "day",
+      "title": "Next Day Disclosure Return",
+      "issuer": "Xiaomi Corporation",
+      "tables": [],
+      "buyback": {
+        "page": 6,
+        "trade_date": "2026-09-07",
+        "shares": 362000,
+        "highest_price_hkd": "27.58",
+        "lowest_price_hkd": "27.48",
+        "consideration_hkd": "9968611.2",
+        "section": "Section II A",
+        "purpose": "repurchased for cancellation",
+        "note": "Daily trade only; excludes mandate cumulative counts and Section I B historical uncancelled shares."
+      }
+    },
+    {
+      "id": "xiaomi-buyback-20260908",
+      "file": "issuer-20260908.pdf",
+      "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4178353/HKEX-EPS_20260908_12324883_0.PDF",
+      "sha256": "2958ed7ba6bad16e51891f9487c45d63cf81c0388a54dccbd8ecce24e575b721",
+      "published_date": "2026-09-08",
+      "publication_precision": "day",
+      "title": "Next Day Disclosure Return",
+      "issuer": "Xiaomi Corporation",
+      "tables": [],
+      "buyback": {
+        "page": 6,
+        "trade_date": "2026-09-08",
+        "shares": 3038600,
+        "highest_price_hkd": "27.1",
+        "lowest_price_hkd": "26.72",
+        "consideration_hkd": "82016848",
+        "section": "Section II A",
+        "purpose": "repurchased for cancellation",
+        "note": "Daily trade only; excludes mandate cumulative counts and Section I B historical uncancelled shares."
+      }
+    },
+    {
+      "id": "xiaomi-buyback-20260909",
+      "file": "issuer-20260909.pdf",
+      "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4179003/HKEX-EPS_20260909_12326398_0.PDF",
+      "sha256": "b1b63b2b8dc4f525e6d030bc18ed178384976055bb2956d60198fa7c766ba32a",
+      "published_date": "2026-09-09",
+      "publication_precision": "day",
+      "title": "Next Day Disclosure Return",
+      "issuer": "Xiaomi Corporation",
+      "tables": [],
+      "buyback": {
+        "page": 6,
+        "trade_date": "2026-09-09",
+        "shares": 1900000,
+        "highest_price_hkd": "26.38",
+        "lowest_price_hkd": "26.32",
+        "consideration_hkd": "50084768",
+        "section": "Section II A",
+        "purpose": "repurchased for cancellation",
+        "note": "Daily trade only; excludes mandate cumulative counts and Section I B historical uncancelled shares."
+      }
+    },
+    {
+      "id": "xiaomi-buyback-20260910",
+      "file": "issuer-20260910.pdf",
+      "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF",
+      "sha256": "582cac9a53b4a465429bd2e63cc6f448869e8798689d79213760b6f52c0f568a",
+      "published_date": "2026-09-10",
+      "publication_precision": "day",
+      "title": "Next Day Disclosure Return",
+      "issuer": "Xiaomi Corporation",
+      "tables": [],
+      "buyback": {
+        "page": 6,
+        "trade_date": "2026-09-10",
+        "shares": 1900000,
+        "highest_price_hkd": "25.98",
+        "lowest_price_hkd": "25.94",
+        "consideration_hkd": "49311972",
+        "section": "Section II A",
+        "purpose": "repurchased for cancellation",
+        "note": "Daily trade only; excludes mandate cumulative counts and Section I B historical uncancelled shares."
+      }
+    }
+  ]
+}

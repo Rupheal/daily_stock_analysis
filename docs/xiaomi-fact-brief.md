@@ -38,3 +38,7 @@ python scripts/run_xiaomi_fact_brief.py --preflight path/to/preflight.json --out
 ## 兼容与回滚
 
 没有修改AnalysisResult、API/Web/桌面端载荷或原有模型消费者；主模型预检 `prepare()` 默认严格行为保留。新增Python入口只调用已有预检并确定性渲染。撤回本次新增入口、报告模块和07流程改动即可回滚；不需改动原版main。本文为本WORK中文专项说明，无对应英文文件。本次为修复分支直接交付，未创建PR；运行artifact的HTML为可视证据，截图不入库。
+
+### 指定原件补证（研究goal）
+
+追加 `--with-primary-evidence` 可下载并验证已复核原件的SHA256、表格行和期间列，生成独立财务及每日回购表。旧财务聚合适配器仍隔离。仅指定字段通过，未完成全公告/全财报覆盖；失败源保留在分母及诊断中。原始PDF、抽取页、补证JSON及哈希随该次artifact保存。本次只更新中文专题文档，无对应英文版。

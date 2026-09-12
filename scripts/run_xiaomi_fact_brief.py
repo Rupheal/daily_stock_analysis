@@ -27,6 +27,7 @@ def main(argv=None):
     source.add_argument('--refresh', action='store_true', help='Fetch and cross-check the latest complete session')
     source.add_argument('--preflight', type=Path, help='Replay a saved JSON snapshot; never labelled fresh')
     parser.add_argument('--output-dir', type=Path, default=Path('reports/xiaomi-facts'))
+    parser.add_argument('--with-primary-evidence', action='store_true', help='Add reviewed primary disclosure fields to a fresh report')
     args = parser.parse_args(argv)
     run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     root = args.output_dir / run_id
@@ -36,7 +37,7 @@ def main(argv=None):
         if args.refresh:
             from scripts.prepare_xiaomi_acceptance import prepare
             from src.core.trading_calendar import get_effective_trading_date
-            audit = prepare(root / 'evidence', allow_partial_news=True)
+            audit = prepare(root / 'evidence', allow_partial_news=True, include_primary_evidence=args.with_primary_evidence)
             expected = str(get_effective_trading_date('hk'))
         else:
             audit = json.loads(args.preflight.read_text(encoding='utf-8'))

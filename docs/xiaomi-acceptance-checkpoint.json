@@ -266,6 +266,14 @@
       "paid_gate": "closed",
       "estimate_basis": "2026-09-12 official Flash off-peak pricing; input cache hit 0.02, miss 1, output 4 CNY per million tokens; reasoning included in output",
       "pricing_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    "research_goal_batch": {
+      "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
+      "actual_http_requests": 0,
+      "reserved_cny": "0",
+      "estimated_cost_cny": "0",
+      "actual_cost_cny": "0",
+      "history_retained": true
     }
   },
   "evidence_packages": [
@@ -357,18 +365,19 @@
   ],
   "runtime_transfer_status": "ATOMIC_EXTERNAL_CHECKPOINTS_AND_REVIEWED_RISK_LEDGER_IMPLEMENTED; CROSS_RUN_AUTOMATIC_RESUMPTION_NOT_IMPLEMENTED",
   "next_model_budget": {
-    "authorization_status": "PREVIOUS_SINGLE_REQUEST_CONSUMED; PAID_GATE_CLOSED; NEW_GOAL_IS_DRAFT_ONLY",
-    "remaining_http_requests": 0,
-    "proposed_after_goal_adoption": {
-      "max_requests": 2,
-      "target_cny": 1,
-      "ask_above_cny": 1.2,
-      "excludes": [
-        "bulk_stock_pool_model_calls",
-        "new_subscriptions",
-        "paid_data"
-      ]
-    }
+    "authorization_status": "ACCEPTED_USER_GOAL",
+    "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
+    "remaining_http_requests": 2,
+    "max_requests": 2,
+    "target_cny": "1.00",
+    "ask_above_cny": "1.20",
+    "reserved_cny": "0",
+    "excludes": [
+      "bulk_stock_pool_model_calls",
+      "new_subscriptions",
+      "paid_data"
+    ],
+    "paid_workflow_state": "closed_until_free_gate_passes"
   },
   "top3_enabled_by_this_task": false,
   "schedules_enabled_by_this_task": false,
@@ -410,7 +419,7 @@
     "semantic_original_approved": false,
     "validated_manual_fact_brief_available": true
   },
-  "updated_at_utc": "2026-09-12T15:18:50.912874+00:00",
+  "updated_at_utc": "2026-09-12T15:49:30.131654+00:00",
   "project_status": "FACT_BRIEF_V1_RELEASED; FULL_MODEL_NOT_APPROVED; STRATEGY_UNVALIDATED",
   "project_progress_path": "docs/dsa-project-progress.md",
   "next_actions_path": "docs/DSA_NEXT_ACTIONS.json",
@@ -434,6 +443,23 @@
     "status": "RELEASED_LIMITED_COVERAGE",
     "entry": "scripts/run_xiaomi_fact_brief.py",
     "documentation": "docs/xiaomi-fact-brief.md",
-    "browser_pixel_rendering": "not_verified_local_browser_binary_unavailable"
+    "browser_pixel_rendering": "not_verified_local_browser_binary_unavailable",
+    "preflight_recovery": {
+      "source": "original JSON text from completed job 103570388692 log",
+      "canonical_sha256_verified": true,
+      "local_json_reencoding_note": "Earlier JS reserialization changed integral float syntax. Values equal; raw original recovered before hash verification."
+    }
+  },
+  "research_goal": {
+    "accepted_at_recorded_utc": "2026-09-12T15:49:30.131654+00:00",
+    "resumed_head": "313f78f68362eaab928ff7c8112dc98207bd2225",
+    "status": "G2_PRIMARY_EVIDENCE_IMPLEMENTED_CLOUD_PENDING",
+    "local_tests_passed": 6,
+    "primary_pdf_verified": 5,
+    "primary_pdf_required": 5,
+    "financial_disclosed_cells_admitted": 23,
+    "derived_metrics": 13,
+    "evidence_registry": "docs/xiaomi-primary-evidence.json",
+    "note": "Fields/page review only, not all financial or announcement body coverage"
   }
 }

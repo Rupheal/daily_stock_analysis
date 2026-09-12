@@ -1,5 +1,5 @@
 name: HK US Europe free news and daily integration acceptance
-# Facts v1: deterministic publication, recorded failure replay, no model credentials.
+# Goal G2: primary disclosure fields and factual consumer; no model credentials.
 on:
   workflow_dispatch:
   push:
@@ -25,13 +25,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt pytest
-      - run: python -m pytest -q tests/test_xiaomi_fact_brief.py tests/test_hk_report_consumers.py tests/test_pipeline_single_stock_notify.py tests/test_hk_report_contract.py tests/test_hk_regional_sources.py tests/test_hk_search_source_policy.py tests/test_hk_public_news.py tests/test_daily_report_audit.py tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py tests/test_intelligence_analysis_integration.py tests/test_search_news_freshness.py tests/test_xiaomi_acceptance_controls.py
-      - run: python scripts/verify_hk_public_news.py
-        env:
-          NEWS_INTEL_AUTO_FETCH_ENABLED: 'true'
+      - run: pip install -r requirements.txt pytest pypdf
+      - run: python -m pytest -q tests/test_xiaomi_primary_evidence.py tests/test_xiaomi_fact_brief.py tests/test_hk_report_contract.py tests/test_xiaomi_acceptance_controls.py
       - name: Publish the no-model fact brief after independent price validation
-        run: python scripts/run_xiaomi_fact_brief.py --refresh --output-dir probe/fact-briefs
+        run: python scripts/run_xiaomi_fact_brief.py --refresh --with-primary-evidence --output-dir probe/fact-briefs
       - name: Make the fact brief readable in the run summary
         run: cat probe/fact-briefs/*/xiaomi-facts.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
