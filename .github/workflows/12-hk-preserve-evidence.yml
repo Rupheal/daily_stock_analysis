@@ -1,0 +1,50 @@
+name: HK preserve verified data artifacts through read-only export
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/12-hk-preserve-evidence.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34705950297
+          name: original-official-pool-data-and-replay
+          github-token: ${{ github.token }}
+          path: retained/O
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34705579721
+          pattern: native-data-*
+          github-token: ${{ github.token }}
+          path: retained/first-native
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34706757715
+          name: hk-research-history-and-tests
+          github-token: ${{ github.token }}
+          path: retained/history
+      - name: Export immutable original price tables and receipts, no secrets or environment
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64,gzip,hashlib,json,sqlite3
+          root=Path('retained')
+          for path in sorted(root.rglob('*')):
+              if not path.is_file():continue
+              if path.name=='native.log':continue
+              if path.suffix not in ['.db','.json','.csv']:continue
+              raw=path.read_bytes()
+              packed=gzip.compress(raw,mtime=0)
+              encoded=base64.b64encode(packed).decode()
+              name=str(path.relative_to(root))
+              print('EVIDENCE_FILE',json.dumps({'name':name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'encoding':'gzip+base64','chunks':(len(encoded)+31999)//32000}),flush=True)
+              for i in range(0,len(encoded),32000):
+                  print('EVIDENCE_CHUNK',json.dumps({'name':name,'index':i//32000,'data':encoded[i:i+32000]}),flush=True)
+          PY
