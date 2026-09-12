@@ -1,18 +1,18 @@
 {
   "schema_version": 2,
   "record_kind": "historical_acceptance_checkpoint_not_runtime_gate",
-  "recorded_at_utc": "2026-09-12T13:07:22.826877+00:00",
+  "recorded_at_utc": "2026-09-12T14:08:03.725Z",
   "symbol": "hk01810",
   "repository": "Rupheal/daily_stock_analysis",
   "branch": "fix/daily-data-integrity",
-  "parent_checkpoint_commit": "2276b4fcb939d3e6044c24e954a4073c29f03d46",
+  "parent_checkpoint_commit": "6bef9ff0e3699261cf22c8aacd61891be8cab173",
   "protected_baseline_main": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
   "overall_original_goal": "NOT_FULLY_ACCEPTED",
   "last_complete_session": "2026-09-11",
-  "last_model_input_at_utc": "2026-09-12T12:44:24+00:00",
-  "last_model_code": "46f1881bee7e804290977ec74cba4a961c396728",
-  "last_regression_code": "1773abf387fd16211f8213a849ce1b7bbd7b255a",
-  "latest_fixed_report_generation": "NOT_RUN_AUTHORIZED_REQUESTS_EXHAUSTED",
+  "last_model_input_at_utc": null,
+  "last_model_code": "c30dca17c18d9005542db4692e7ec133eae30600",
+  "last_regression_code": "14d46ddcee3d112e06e7eb977e6f0282402d6a85",
+  "latest_fixed_report_generation": "RAW_GENERATED_ONCE; POST_GENERATION_VALIDATOR_FIX_REPLAYED_WITHOUT_NEW_REQUEST",
   "market_data": {
     "historical_daily_comparison": "PASS_FOR_OBSERVED_WINDOW",
     "common_sessions": 126,
@@ -35,7 +35,7 @@
     "unresolved_risk_events": 2
   },
   "financial_mode": "UNVERIFIED_BLOCKS_WITHHELD",
-  "trading_report_release": "NO_GO",
+  "trading_report_release": "NO_GO_ORIGINAL_MODEL; MANUALLY_REVIEWED_FACT_BRIEF_ONLY",
   "investment_validity": "NOT_EVALUATED",
   "completion_percent": null,
   "runs": [
@@ -198,21 +198,64 @@
       "issuer_listings": 4,
       "new_model_report": "not_generated",
       "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34694901922"
+    },
+    {
+      "run_id": 34697756860,
+      "kind": "newly_authorized_single_followup",
+      "commit": "c30dca17c18d9005542db4692e7ec133eae30600",
+      "workflow_conclusion": "failure",
+      "model_http_requests": 1,
+      "tests_passed": 125,
+      "automated_report_review": "two_negation_false_positives",
+      "post_fix_raw_replay": "PASS_SELECTED_CHECKS_UNCHANGED_RAW",
+      "manual_report_review": "not_approved_ambiguous_technical_narrative_and_uncalibrated_forecast",
+      "estimated_cost_cny": "0.02877032",
+      "actual_cost_cny": null,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34697756860"
+    },
+    {
+      "run_id": 34698138162,
+      "kind": "followup_final_free_replay",
+      "commit": "14d46ddcee3d112e06e7eb977e6f0282402d6a85",
+      "workflow_conclusion": "success",
+      "model_http_requests": 0,
+      "tests_passed": 230,
+      "tests_failed": 0,
+      "warnings": 7,
+      "news_count": 6,
+      "publishers": 4,
+      "candidate_events": 5,
+      "common_sessions": 126,
+      "run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/34698138162"
     }
   ],
   "counts": {
-    "indexed_runs": 14,
-    "model_report_runs": 5,
+    "indexed_runs": 16,
+    "model_report_runs": 6,
     "approved_model_reports": 0,
-    "current_round_runs": 8,
-    "current_round_free_runs": 6,
-    "current_round_actual_model_http_requests": 2
+    "current_round_runs": 10,
+    "current_round_free_runs": 7,
+    "current_round_actual_model_http_requests": 3
   },
   "billing": {
     "entire_task_actual_cny": null,
     "entire_account_actual_cny": null,
     "previous_regional_and_followup_estimates_cny": "0.06713764",
     "current_round": {
+      "actual_http_requests": 3,
+      "target_budget_cny": "1.00",
+      "approval_threshold_cny": "1.20",
+      "reserved_cny": "1.20",
+      "estimated_cost_cny": "0.09728896",
+      "actual_cost_cny": null,
+      "authorization_exhausted": true,
+      "paid_gate": "closed",
+      "estimate_basis": "2026-09-12 official Flash off-peak pricing; input cache hit 0.02, miss 1, output 4 CNY per million tokens; reasoning included in output",
+      "pricing_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+      "additional_model_estimated_cost_cny": "0.02877032",
+      "additional_authorization_consumed": true
+    },
+    "prior_round_at_close": {
       "actual_http_requests": 2,
       "target_budget_cny": "1.00",
       "approval_threshold_cny": "1.20",
@@ -314,16 +357,14 @@
   ],
   "runtime_transfer_status": "ATOMIC_EXTERNAL_CHECKPOINTS_AND_REVIEWED_RISK_LEDGER_IMPLEMENTED; CROSS_RUN_AUTOMATIC_RESUMPTION_NOT_IMPLEMENTED",
   "next_model_budget": {
-    "authorization_status": "NOT_AUTHORIZED_THIS_ROUND; REQUIRES_NEW_USER_GOAL",
-    "proposed_maximum_http_requests": 1,
-    "proposed_conservative_budget_cny": "0.40",
-    "proposed_approval_threshold_cny": "0.48"
+    "authorization_status": "ADDITIONAL_SINGLE_REQUEST_CONSUMED; PAID_GATE_CLOSED",
+    "remaining_http_requests": 0
   },
   "top3_enabled_by_this_task": false,
   "schedules_enabled_by_this_task": false,
-  "last_model_input_time_precision": "second_from_log",
-  "latest_preflight_at_utc": "2026-09-12T12:55:18.044002+00:00",
-  "latest_free_test_summary": "221 passed, 7 warnings in 15.63s",
+  "last_model_input_time_precision": "Raw input guard passed; exact input timestamp retained in workflow log, not assigned from fetch time",
+  "latest_preflight_at_utc": "2026-09-12T14:05:01.075106+00:00",
+  "latest_free_test_summary": "230 passed, 7 warnings in 14.54s",
   "current_round_artifacts": [
     {
       "run_id": 34693409713,
@@ -350,5 +391,13 @@
       "digest_status": "GitHub metadata; complete remote ZIP not downloaded or independently rehashed this round"
     }
   ],
-  "report_path": "docs/xiaomi-final-bounded-acceptance.md"
+  "report_path": "docs/xiaomi-followup-acceptance.md",
+  "latest_followup": {
+    "model_run": 34697756860,
+    "free_run": 34698138162,
+    "raw_input_not_recreated": true,
+    "raw_output_unchanged_for_replay": true,
+    "semantic_original_approved": false,
+    "validated_manual_fact_brief_available": true
+  }
 }
