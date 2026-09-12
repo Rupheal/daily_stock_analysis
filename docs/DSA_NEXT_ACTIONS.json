@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "updated_at_utc": "2026-09-12T15:18:50.912874+00:00",
+  "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
+  "scope": "升级版DSA 港股中短交易",
+  "description": "Planning/resumption queue; not an installed scheduler",
+  "active_model_authorization": "NONE_REMAINING",
+  "completed": [
+    {
+      "id": "G1",
+      "title": "固定事实简报V1",
+      "run_id": 34700162747
+    }
+  ],
+  "next_actions": [
+    {
+      "id": "G2.1",
+      "priority": 0,
+      "title": "核验当前分析使用的小米公告正文及缺口",
+      "definition_of_done": "每份原件有时间/来源/哈希；区分已核正文与目录，不以部分目录宣称完整覆盖",
+      "status": "pending"
+    },
+    {
+      "id": "G2.2",
+      "priority": 0,
+      "title": "逐字段恢复实际参与分析的财务证据",
+      "definition_of_done": "字段对应原始披露、期间、币种、单位、是否估算；未核字段继续隔离",
+      "status": "pending"
+    },
+    {
+      "id": "G2.3",
+      "priority": 0,
+      "title": "补事件聚合、持续风险复核及缺失诊断",
+      "definition_of_done": "重复/跨语言/跨窗与新证据改变状态的真实反例通过；保留全部分母",
+      "status": "pending"
+    },
+    {
+      "id": "G3",
+      "priority": 1,
+      "title": "受约束的单股模型输出与真实消费者验收",
+      "definition_of_done": "已验证数据、执行字段一致、事实可追溯、语义复核及拟发布入口通过；模型调用需新授权",
+      "status": "partial"
+    },
+    {
+      "id": "G4",
+      "priority": 1,
+      "title": "U45与O全港股通独立覆盖及原生实例验收",
+      "definition_of_done": "冻结独立代码配置与候选池，真实运行和覆盖数/分母留档；不得以样本冒充O全池",
+      "status": "pending"
+    },
+    {
+      "id": "G5",
+      "priority": 2,
+      "title": "资金潮汐/宏观历史回放、时间外与因子对照",
+      "definition_of_done": "冻结规则、PIT证据与交易时点，可复算成本后指标，接受/拒绝/不足均有证据",
+      "status": "pending"
+    },
+    {
+      "id": "G6",
+      "priority": 3,
+      "title": "部署准备和未来观察交接",
+      "definition_of_done": "交付可审阅部署方案、失败恢复、费用及不可覆盖预测记录；正式启用另行批准",
+      "status": "pending"
+    }
+  ],
+  "operating_rules": {
+    "repeat_gate": "Only for changed code/data or a concrete unresolved risk",
+    "on_blocked": "Continue independent authorized work and retain blocked item",
+    "two_unsuccessful_fix_cycles": "Reassess architecture and use a verifiable bounded alternative",
+    "progress": "Completed mandatory items / frozen total; keep missing/waiting/failed in denominator",
+    "no_schedule_changes": true,
+    "no_orders": true
+  }
+}

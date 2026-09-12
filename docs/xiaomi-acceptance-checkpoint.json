@@ -5,7 +5,7 @@
   "symbol": "hk01810",
   "repository": "Rupheal/daily_stock_analysis",
   "branch": "fix/daily-data-integrity",
-  "parent_checkpoint_commit": "6bef9ff0e3699261cf22c8aacd61891be8cab173",
+  "parent_checkpoint_commit": "f8fc7f3b45a9053f04e3e215a8c77d79ea9a4b12",
   "protected_baseline_main": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
   "overall_original_goal": "NOT_FULLY_ACCEPTED",
   "last_complete_session": "2026-09-11",
@@ -309,13 +309,13 @@
     {
       "id": "HK-R02",
       "priority": "P0",
-      "status": "latest_provenance_fix_regression_passed_new_model_untested",
+      "status": "source_provenance_fixed; fact_product_excludes_model_claims; full_semantic_model_review_unapproved",
       "requirement": "No unsupported news absence, fundamental direction or nonexistent source claims"
     },
     {
       "id": "HK-E01",
       "priority": "P0",
-      "status": "consumer_rejection_replayed_full_browser_and_live_agent_unverified",
+      "status": "standalone_fact_cli_and_cloud_passed; legacy_consumers_separately_scoped; full_browser_and_live_agent_unverified",
       "requirement": "Final report and rejected-output behavior across applicable runtime and consumers"
     },
     {
@@ -357,14 +357,24 @@
   ],
   "runtime_transfer_status": "ATOMIC_EXTERNAL_CHECKPOINTS_AND_REVIEWED_RISK_LEDGER_IMPLEMENTED; CROSS_RUN_AUTOMATIC_RESUMPTION_NOT_IMPLEMENTED",
   "next_model_budget": {
-    "authorization_status": "ADDITIONAL_SINGLE_REQUEST_CONSUMED; PAID_GATE_CLOSED",
-    "remaining_http_requests": 0
+    "authorization_status": "PREVIOUS_SINGLE_REQUEST_CONSUMED; PAID_GATE_CLOSED; NEW_GOAL_IS_DRAFT_ONLY",
+    "remaining_http_requests": 0,
+    "proposed_after_goal_adoption": {
+      "max_requests": 2,
+      "target_cny": 1,
+      "ask_above_cny": 1.2,
+      "excludes": [
+        "bulk_stock_pool_model_calls",
+        "new_subscriptions",
+        "paid_data"
+      ]
+    }
   },
   "top3_enabled_by_this_task": false,
   "schedules_enabled_by_this_task": false,
   "last_model_input_time_precision": "Raw input guard passed; exact input timestamp retained in workflow log, not assigned from fetch time",
-  "latest_preflight_at_utc": "2026-09-12T14:05:01.075106+00:00",
-  "latest_free_test_summary": "230 passed, 7 warnings in 14.54s",
+  "latest_preflight_at_utc": "2026-09-12T14:46:32.269774+00:00",
+  "latest_free_test_summary": "244 passed, 7 warnings in 14.79s",
   "current_round_artifacts": [
     {
       "run_id": 34693409713,
@@ -399,5 +409,31 @@
     "raw_output_unchanged_for_replay": true,
     "semantic_original_approved": false,
     "validated_manual_fact_brief_available": true
+  },
+  "updated_at_utc": "2026-09-12T15:18:50.912874+00:00",
+  "project_status": "FACT_BRIEF_V1_RELEASED; FULL_MODEL_NOT_APPROVED; STRATEGY_UNVALIDATED",
+  "project_progress_path": "docs/dsa-project-progress.md",
+  "next_actions_path": "docs/DSA_NEXT_ACTIONS.json",
+  "goal_draft_path": "docs/dsa-research-goal.txt",
+  "fact_brief_v1": {
+    "code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
+    "workflow_run_id": 34700162747,
+    "workflow_job_id": 103570388692,
+    "tests": {
+      "passed": 244,
+      "warnings": 7,
+      "seconds": 14.79,
+      "new_fact_tests": 14
+    },
+    "data_prepared_at": "2026-09-12T14:46:32.269774+00:00",
+    "mode": "refresh",
+    "session": "2026-09-11",
+    "preflight_sha256_canonical": "9f00a346a95d622b7abd9a86599f273460edf4e543e2d1a225a93fdf0cb0cbda",
+    "model_http_requests": 0,
+    "release_scope": "Standalone HTML/Markdown/JSON fact brief; legacy free-form model consumers unchanged",
+    "status": "RELEASED_LIMITED_COVERAGE",
+    "entry": "scripts/run_xiaomi_fact_brief.py",
+    "documentation": "docs/xiaomi-fact-brief.md",
+    "browser_pixel_rendering": "not_verified_local_browser_binary_unavailable"
   }
 }
