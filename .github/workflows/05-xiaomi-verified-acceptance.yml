@@ -1,8 +1,10 @@
-name: Xiaomi acceptance - additional request consumed
+name: Xiaomi constrained research - goal batch request 1
 # One bounded model request, after fresh regional news and independent daily bars pass.
-# User authorized one additional request on 2026-09-12; slot 3 total, 0.40 CNY incremental reservation.
+# Accepted goal batch DSA_RESEARCH_GOAL_20260912_01: request 1 of at most 2, reserve CNY0.40.
 on:
-  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/05-xiaomi-verified-acceptance.yml]
 permissions:
   contents: read
   actions: read
@@ -11,8 +13,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   acceptance:
-    # Additional single request completed; no model call can run from this workflow.
-    if: ${{ false }}
+    if: ${{ github.event_name == 'push' && github.run_attempt == '1' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -29,9 +30,9 @@ jobs:
       REPORT_INTEGRITY_RETRY: '0'
       TENCENT_PRIORITY: '0'
       AGENT_MODE: 'false'
-      ACCEPTANCE_PRIOR_CALLS: '2'
-      ACCEPTANCE_MAX_CALLS: '3'
-      ACCEPTANCE_PRIOR_RESERVED_CNY: '0.80'
+      ACCEPTANCE_PRIOR_CALLS: '0'
+      ACCEPTANCE_MAX_CALLS: '2'
+      ACCEPTANCE_PRIOR_RESERVED_CNY: '0'
       ENABLE_REALTIME_QUOTE: 'false'
       ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
       PREFETCH_REALTIME_QUOTES: 'false'
@@ -43,11 +44,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - run: python -m pip install -r requirements.txt pytest
-      - name: Regression checks
-        run: python -m pytest tests/test_hk_report_contract.py tests/test_hk_report_consumers.py tests/test_pipeline_single_stock_notify.py tests/test_company_news_evidence.py tests/test_tencent_hk_daily.py tests/test_tencent_fetcher.py tests/test_daily_integrity_repair.py tests/test_analysis_context_pack_prompt.py tests/test_daily_report_audit.py tests/test_xiaomi_acceptance_controls.py tests/test_hk_regional_sources.py tests/test_hk_search_source_policy.py -q
+      - run: python -m pip install -r requirements.txt pypdf
+      # Applicable 70-test free gate passed at e84f41f, run 34703906428.
       - name: Fetch fresh independent prices and regional company news
-        run: python scripts/prepare_xiaomi_acceptance.py
+        run: python scripts/prepare_xiaomi_acceptance.py --with-primary-evidence
       - name: Run one Xiaomi analysis only after data acceptance
         env:
           LLM_CHANNELS: deepseek
@@ -57,7 +57,7 @@ jobs:
           LLM_DEEPSEEK_MODELS: deepseek-flash
           LITELLM_MODEL: openai/deepseek-flash
           LITELLM_FALLBACK_MODELS: ''
-        run: python scripts/run_xiaomi_acceptance.py
+        run: python scripts/run_xiaomi_acceptance.py --constrained
       - uses: actions/upload-artifact@v4
         if: always()
         with:
