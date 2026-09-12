@@ -94,8 +94,10 @@ def compare_prices(primary, independent, target):
     return len(overlap)
 
 
-def prepare():
-    root = Path('probe'); root.mkdir(exist_ok=True)
+def prepare(root=Path('probe'), allow_partial_news=False):
+    """Reuse the same price gate; facts-only callers may disclose news gaps."""
+    root = Path(root)
+    root.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc)
     checkpoint = {'run_id': os.getenv('GITHUB_RUN_ID', now.strftime('%Y%m%dT%H%M%SZ')),
         'commit': os.getenv('GITHUB_SHA'), 'started_at': now.isoformat(), 'model_http_requests': 0,
@@ -131,51 +133,71 @@ def prepare():
     validate_daily_context(context, target)
     checkpoint['tasks']['prices'] = 'passed'
     atomic_json(root/'acceptance-queue.json', checkpoint)
-    service = IntelligenceService()
-    news = refresh_company_news(service, 'hk01810', '小米集团-W', days=3)
-    reviewed = json.loads(Path('docs/xiaomi-reviewed-news.json').read_text())
-    reviewed_items, review_diagnostics = [], []
-    for item in reviewed:
-        published = datetime.fromisoformat(item['published_at'])
-        if published.tzinfo is None or not timedelta(0) <= now-published <= timedelta(days=3):
-            review_diagnostics.append({'url': item['url'], 'status': 'outside_current_window'})
-            continue
-        if not approved_news_origin(item):
-            raise ValueError('Reviewed news violates regional source policy')
-        reviewed_items.append(dict(source_id=None, source_name='Reviewed regional evidence',
-            source_type='public_web', scope_type='symbol', scope_value='HK01810', market='hk',
-            title=item['title'], summary=item['summary'], url=canonical_url(item['url']), source=item['source'],
-            published_at=published.astimezone(timezone.utc).replace(tzinfo=None),
-            fetched_at=now.replace(tzinfo=None), raw_payload=json.dumps(item, ensure_ascii=False)))
-    service.repo.upsert_items(reviewed_items)
-    all_items = news['items']
-    industry_context = [row for row in all_items if not related(row['title'], '', 'HK01810', '小米集团-W')]
-    items = {canonical_url(row['url']): row for row in all_items
-             if related(row['title'], '', 'HK01810', '小米集团-W')}
-    items.update({row['url']: row for row in reviewed_items})
-    origins = sorted({approved_news_origin(item) for item in items.values()})
-    (root/'news.json').write_text(json.dumps({'items': list(items.values()), 'origins': origins,
-        'diagnostics': news['diagnostics'], 'review_diagnostics': review_diagnostics,
-        'industry_context_items': industry_context, 'fetched_company_mentions': len(all_items)},
-        ensure_ascii=False, indent=2, default=str))
-    if len(items) < 3 or len(origins) < 2:
-        raise ValueError('Insufficient dated company evidence')
-    events = deduplicate_events(list(items.values()))
-    context['company_news_evidence'] = [{'event_id': e['event_id'], 'title': e['title'],
-        'summary': e['summary'], 'source': e['source'], 'published_at': str(e['published_at']),
-        'source_urls': e['event_source_urls'],
-        'source_records': e['event_source_records'],
-        'evidence_kind': (json.loads(e.get('raw_payload') or '{}').get('evidence_kind')
-                          or '媒体报道；待原始披露核验')} for e in events]
-    checkpoint['tasks']['news'] = 'passed_limited_coverage'
+    try:
+        service = IntelligenceService()
+        news = refresh_company_news(service, 'hk01810', '小米集团-W', days=3)
+        reviewed = json.loads(Path('docs/xiaomi-reviewed-news.json').read_text())
+        reviewed_items, review_diagnostics = [], []
+        for item in reviewed:
+            published = datetime.fromisoformat(item['published_at'])
+            if published.tzinfo is None or not timedelta(0) <= now-published <= timedelta(days=3):
+                review_diagnostics.append({'url': item['url'], 'status': 'outside_current_window'})
+                continue
+            if not approved_news_origin(item):
+                raise ValueError('Reviewed news violates regional source policy')
+            reviewed_items.append(dict(source_id=None, source_name='Reviewed regional evidence',
+                source_type='public_web', scope_type='symbol', scope_value='HK01810', market='hk',
+                title=item['title'], summary=item['summary'], url=canonical_url(item['url']), source=item['source'],
+                published_at=published.astimezone(timezone.utc).replace(tzinfo=None),
+                fetched_at=now.replace(tzinfo=None), raw_payload=json.dumps(item, ensure_ascii=False)))
+        service.repo.upsert_items(reviewed_items)
+        all_items = news['items']
+        industry_context = [row for row in all_items if not related(row['title'], '', 'HK01810', '小米集团-W')]
+        items = {canonical_url(row['url']): row for row in all_items
+                 if related(row['title'], '', 'HK01810', '小米集团-W')}
+        items.update({row['url']: row for row in reviewed_items})
+        origins = sorted({approved_news_origin(item) for item in items.values()})
+        (root/'news.json').write_text(json.dumps({'items': list(items.values()), 'origins': origins,
+            'diagnostics': news['diagnostics'], 'review_diagnostics': review_diagnostics,
+            'industry_context_items': industry_context, 'fetched_company_mentions': len(all_items)},
+            ensure_ascii=False, indent=2, default=str))
+        if (len(items) < 3 or len(origins) < 2) and not allow_partial_news:
+            raise ValueError('Insufficient dated company evidence')
+        events = deduplicate_events(list(items.values()))
+        context['company_news_evidence'] = [{'event_id': e['event_id'], 'title': e['title'],
+            'summary': e['summary'], 'source': e['source'], 'published_at': str(e['published_at']),
+            'source_urls': e['event_source_urls'],
+            'source_records': e['event_source_records'],
+            'evidence_kind': (json.loads(e.get('raw_payload') or '{}').get('evidence_kind')
+                              or '媒体报道；待原始披露核验')} for e in events]
+    except Exception as exc:
+        if not allow_partial_news:
+            raise
+        items, origins, events, industry_context = {}, [], [], []
+        context['company_news_evidence'] = []
+        atomic_json(root/'news.json', {'items': [], 'origins': [], 'status': 'failed',
+            'diagnostics': [{'stage': 'company_news', 'status': 'failed',
+                             'error': type(exc).__name__ + ': ' + str(exc)}]})
+    checkpoint['tasks']['news'] = 'passed_limited_coverage' if items else 'unavailable'
     atomic_json(root/'acceptance-queue.json', checkpoint)
-    issuer = fetch_issuer_announcements(now, root)
-    checkpoint['tasks']['issuer'] = 'listing_passed_body_incomplete'
+    try:
+        issuer = fetch_issuer_announcements(now, root)
+        checkpoint['tasks']['issuer'] = 'listing_passed_body_incomplete'
+    except Exception as exc:
+        if not allow_partial_news:
+            raise
+        issuer = {'items': [], 'coverage_complete': False,
+                  'status': 'failed', 'error': type(exc).__name__ + ': ' + str(exc)}
+        atomic_json(root/'issuer-announcements.json', issuer)
+        checkpoint['tasks']['issuer'] = 'failed'
     atomic_json(root/'acceptance-queue.json', checkpoint)
     attach_report_contract(context, 'HK01810')
     atomic_json(root/'reviewed-evidence.json', context['hk_report_contract'])
     get_db().save_daily_data(df, 'HK01810', 'TencentFetcher / Yahoo cross-checked')
-    audit = dict(passed=True, prepared_at=datetime.now(timezone.utc).isoformat(), target=target,
+    audit = dict(passed=True, symbol='HK01810', prices_passed=True,
+        component_status=dict(checkpoint['tasks']),
+        news_diagnostics=json.loads((root/'news.json').read_text()).get('diagnostics', []),
+        prepared_at=datetime.now(timezone.utc).isoformat(), target=target,
         overlap=overlap, today=today, yesterday=yesterday, news_count=len(items), origins=origins,
         facts=daily_consistency_facts(context), allowed_news_urls=list(items),
         hk_report_contract=context['hk_report_contract'], issuer_announcements=issuer,
@@ -185,11 +207,13 @@ def prepare():
     atomic_json(root/'preflight.json', audit)
     files = ['tencent_history.json', 'independent_history.json', 'news.json', 'issuer-feed-raw.json',
              'issuer-announcements.json', 'reviewed-evidence.json', 'preflight.json']
-    manifest = {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in files}
+    manifest = {name: hashlib.sha256((root/name).read_bytes()).hexdigest()
+                for name in files if (root/name).is_file()}
     checkpoint.update(manifest=manifest, finished_at=datetime.now(timezone.utc).isoformat())
     checkpoint['tasks']['manifest'] = 'passed'
     atomic_json(root/'acceptance-queue.json', checkpoint)
     print('PREFLIGHT', json.dumps(audit, ensure_ascii=False, default=str))
+    return audit
 
 
 if __name__ == '__main__':

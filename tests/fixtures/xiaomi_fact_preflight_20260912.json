@@ -1,0 +1,286 @@
+{
+  "event_candidates": 5,
+  "hk_report_contract": {
+    "coverage": "有限公开信源；未解决风险跨新闻窗口保留。未完成全部公告正文及财报核验。",
+    "events": [
+      {
+        "company_response": "仅有路透报道当时的转述；当前回应未核实",
+        "id": "xiaomi-india-sfio-20260909",
+        "kind": "媒体报道，监管原件未取得",
+        "publication_precision": "second",
+        "published_at": "2026-09-09T09:59:37+00:00",
+        "reviewed_at": "2026-09-12T11:49:59+00:00",
+        "sources": [
+          {
+            "publisher_group": "Reuters",
+            "url": "https://www.reuters.com/business/retail-consumer/indias-serious-fraud-office-recommends-detailed-probe-into-xiaomis-business-2026-09-09/",
+            "verification": "公开检索摘录；正文直接访问401，监管备忘录未取得"
+          }
+        ],
+        "status": "unresolved",
+        "summary": "路透报道印度SFIO建议对小米业务进一步调查。建议、主管部门批准、立案与裁决是不同阶段。本轮未取得监管原件，当前是否已立案或已有裁决未知。报道所述小米回应未收到正式通知只代表报道当时，不可推断当前仍未收到。",
+        "symbol": "HK01810"
+      },
+      {
+        "company_response": "未知，未取得小米对应回应",
+        "id": "xiaomi-anthropic-20260910",
+        "kind": "当事方指控，非裁决",
+        "publication_precision": "day",
+        "published_at": "2026-09-10",
+        "reviewed_at": "2026-09-12T11:49:59+00:00",
+        "sources": [
+          {
+            "publisher_group": "Anthropic",
+            "url": "https://www.anthropic.com/threat-intelligence-report-september-2026",
+            "verification": "已直接取得当事方报告HTML并核对小米段落；不是独立确认"
+          }
+        ],
+        "status": "unresolved",
+        "summary": "Anthropic在其9月威胁情报报告中将小米与蒸馏行为关联。这是当事方自身调查主张，尚不等于独立核验、法律责任或监管裁决。报告同时指出相关观察不能说明小米将Claude回复提供给自身用户。小米回应及后续法律状态本轮未核实。",
+        "symbol": "HK01810"
+      },
+      {
+        "company_response": "论文为作者技术披露",
+        "id": "xiaomi-cocktailasr-20260910",
+        "kind": "技术研究披露，商业影响未核验",
+        "publication_precision": "minute",
+        "published_at": "2026-09-10T09:06:00+00:00",
+        "reviewed_at": "2026-09-12T10:42:59+00:00",
+        "sources": [
+          {
+            "publisher_group": "Xiaomi research authors",
+            "url": "https://arxiv.org/abs/2609.11274",
+            "verification": "已核对论文摘要、作者及提交时间"
+          }
+        ],
+        "status": "context",
+        "summary": "小米Xiaomi-CocktailASR-1论文已公开。实验性能属于作者主张，本轮未复现实验；不能推导已实现的订单、收入或利润。论文日期与媒体报道日期应分别保留。",
+        "symbol": "HK01810"
+      },
+      {
+        "company_response": "公司原始披露",
+        "id": "xiaomi-disclosure-8135479",
+        "kind": "公司原始披露，已核对部分正文",
+        "publication_precision": "day",
+        "published_at": "2026-09-10",
+        "reviewed_at": "2026-09-12T12:11:21.585279+00:00",
+        "sources": [
+          {
+            "publisher_group": "Xiaomi issuer disclosure",
+            "sha256": "582cac9a53b4a465429bd2e63cc6f448869e8798689d79213760b6f52c0f568a",
+            "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF",
+            "verification": "由小米官网嵌入公告目录链接取回PDF，核对首页及股本变动栏目。未逐格核验全部表格。"
+          }
+        ],
+        "status": "context",
+        "summary": "小米提交翌日披露报表。已核对公司名称、股票代码、2026年9月10日提交日期及股权激励所涉新股栏目。未将报表中的历史回购累计表当作当日回购，也未据此判断财报盈利。",
+        "symbol": "HK01810"
+      }
+    ],
+    "news_events": [
+      {
+        "event_id": "article-ff80d22781b41193",
+        "evidence_kind": "媒体报道（待原始披露复核）",
+        "published_at": "2026-09-11 08:33:00",
+        "source": "道琼斯",
+        "source_records": [
+          {
+            "source": "道琼斯",
+            "url": "https://news.futunn.com/post/79141202/xiaomi-stock-advances-1-7-in-hong-kong"
+          }
+        ],
+        "source_urls": [
+          "https://news.futunn.com/post/79141202/xiaomi-stock-advances-1-7-in-hong-kong"
+        ],
+        "title": "Xiaomi Stock Advances 1.7% in Hong Kong"
+      },
+      {
+        "event_id": "article-474efe3ee3713444",
+        "evidence_kind": "媒体报道（待原始披露复核）",
+        "published_at": "2026-09-11 07:52:41",
+        "source": "AASTOCKS",
+        "source_records": [
+          {
+            "source": "AASTOCKS",
+            "url": "https://news.futunn.com/post/79135998/xiaomi-01810-hk-to-commence-nationwide-delivery-of-its-new"
+          }
+        ],
+        "source_urls": [
+          "https://news.futunn.com/post/79135998/xiaomi-01810-hk-to-commence-nationwide-delivery-of-its-new"
+        ],
+        "title": "小米(01810.HK)澎程系列新车明起全国交付"
+      },
+      {
+        "event_id": "xiaomi-cocktailasr-20260910",
+        "evidence_kind": "媒体报道；待原始披露核验",
+        "published_at": "2026-09-11 07:04:00",
+        "source": "《經濟通》新聞；原始技术论文交叉核对",
+        "source_records": [
+          {
+            "source": "《經濟通》新聞；原始技术论文交叉核对",
+            "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260911776"
+          }
+        ],
+        "source_urls": [
+          "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260911776"
+        ],
+        "title": "小米语音识别技术发布：论文9月10日公开，媒体9月11日报道"
+      },
+      {
+        "event_id": "xiaomi-clsa-skynomad-20260911",
+        "evidence_kind": "观点/预测",
+        "published_at": "2026-09-11 04:34:00",
+        "source": "《經濟通》新聞",
+        "source_records": [
+          {
+            "source": "《經濟通》新聞",
+            "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260906618"
+          },
+          {
+            "source": "AASTOCKS",
+            "url": "https://news.futunn.com/post/79120347/clsa-xiaomi-01810-hk-secures-10000-orders-for-skynomad-series"
+          }
+        ],
+        "source_urls": [
+          "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=20260906618",
+          "https://news.futunn.com/post/79120347/clsa-xiaomi-01810-hk-secures-10000-orders-for-skynomad-series"
+        ],
+        "title": "《券商精點》中信里昂維持小米優於大市評級及目標價35元，料第三季利潤觸底"
+      },
+      {
+        "event_id": "article-53dcefb4d70bb8a4",
+        "evidence_kind": "媒体报道（待原始披露复核）",
+        "published_at": "2026-09-11 04:09:29",
+        "source": "MT Newswires",
+        "source_records": [
+          {
+            "source": "MT Newswires",
+            "url": "https://news.futunn.com/post/79127081/zhongce-rubber-to-supply-tires-for-xiaomi-s-pengcheng-n70"
+          }
+        ],
+        "source_urls": [
+          "https://news.futunn.com/post/79127081/zhongce-rubber-to-supply-tires-for-xiaomi-s-pengcheng-n70"
+        ],
+        "title": "Zhongce Rubber将为Xiaomi的Pengcheng N70车型供应轮胎"
+      }
+    ],
+    "required_risk_ids": [
+      "xiaomi-india-sfio-20260909",
+      "xiaomi-anthropic-20260910"
+    ],
+    "version": 1
+  },
+  "industry_context_count": 2,
+  "issuer_announcements": {
+    "coverage_complete": false,
+    "feed_url": "https://asia.tools.euroland.com/tools/Pressreleases/Main/GetNews/",
+    "issuer_page": "https://ir.mi.com/news-events/announcements",
+    "items": [
+      {
+        "full_text_verified": false,
+        "id": "xiaomi-disclosure-8135479",
+        "kind": "公司公告目录；正文尚未自动核验，不能推断回购数量或不存在其他风险",
+        "publication_precision": "day",
+        "published_date": "2026-09-10",
+        "source_urls": [
+          "https://ea-cdn.eurolandir.com/press-releases-attachments/4179304/HKEX-EPS_20260910_12328210_0.PDF"
+        ],
+        "title": "Next Day Disclosure Return"
+      },
+      {
+        "full_text_verified": false,
+        "id": "xiaomi-disclosure-8135002",
+        "kind": "公司公告目录；正文尚未自动核验，不能推断回购数量或不存在其他风险",
+        "publication_precision": "day",
+        "published_date": "2026-09-09",
+        "source_urls": [
+          "https://ea-cdn.eurolandir.com/press-releases-attachments/4179003/HKEX-EPS_20260909_12326398_0.PDF"
+        ],
+        "title": "Next Day Disclosure Return"
+      },
+      {
+        "full_text_verified": false,
+        "id": "xiaomi-disclosure-8134069",
+        "kind": "公司公告目录；正文尚未自动核验，不能推断回购数量或不存在其他风险",
+        "publication_precision": "day",
+        "published_date": "2026-09-08",
+        "source_urls": [
+          "https://ea-cdn.eurolandir.com/press-releases-attachments/4178353/HKEX-EPS_20260908_12324883_0.PDF"
+        ],
+        "title": "Next Day Disclosure Return"
+      },
+      {
+        "full_text_verified": false,
+        "id": "xiaomi-disclosure-8133589",
+        "kind": "公司公告目录；正文尚未自动核验，不能推断回购数量或不存在其他风险",
+        "publication_precision": "day",
+        "published_date": "2026-09-07",
+        "source_urls": [
+          "https://ea-cdn.eurolandir.com/press-releases-attachments/4178042/HKEX-EPS_20260907_12323459_0.PDF"
+        ],
+        "title": "Next Day Disclosure Return"
+      }
+    ],
+    "listed_rows": 50,
+    "provider_total": 132,
+    "retrieved_at": "2026-09-12T14:04:41.696577+00:00",
+    "timezone_note": "仅使用公告显示日期，原始epoch时区语义未确认。"
+  },
+  "limitation": "Known event families merged; unknown events are upper-bound candidates. Issuer listing verified; full disclosure bodies and financial periods remain incomplete.",
+  "news_count": 6,
+  "origins": [
+    [
+      "AASTOCKS",
+      "HK"
+    ],
+    [
+      "Dow Jones",
+      "US"
+    ],
+    [
+      "ETNet",
+      "HK"
+    ],
+    [
+      "MT Newswires",
+      "US"
+    ]
+  ],
+  "overlap": 126,
+  "passed": true,
+  "prepared_at": "2026-09-12T14:05:01.075106+00:00",
+  "reviewed_group_count": 2,
+  "target": "2026-09-11",
+  "today": {
+    "amount": 2969552900,
+    "close": 26.36,
+    "date": "2026-09-11",
+    "high": 26.66,
+    "low": 25.44,
+    "ma10": 27.22,
+    "ma20": 27.39,
+    "ma5": 26.62,
+    "open": 25.66,
+    "pct_chg": 1.6975308641975273,
+    "volume": 113533443,
+    "volume_ratio": 0.72
+  },
+  "yesterday": {
+    "amount": 3850950200,
+    "close": 25.92,
+    "date": "2026-09-10",
+    "high": 26.4,
+    "low": 25.68,
+    "ma10": 27.37,
+    "ma20": 27.35,
+    "ma5": 27.03,
+    "open": 26.04,
+    "pct_chg": -1.74374526156178,
+    "volume": 148663013,
+    "volume_ratio": 0.98
+  },
+  "fixture_provenance": {
+    "run_id": 34698138162,
+    "kind": "Selected fields from the recorded preflight; article summaries excluded"
+  }
+}
