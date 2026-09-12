@@ -1,0 +1,40 @@
+name: HK free independent public daily data validation
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/daily-data-integrity]
+    paths: [.github/workflows/16-hk-free-pool-integrity.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  public-data-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34705950297
+          name: original-official-pool-data-and-replay
+          github-token: ${{ github.token }}
+          path: retained/O
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34705579721
+          name: native-data-U45_data_only
+          github-token: ${{ github.token }}
+          path: retained/U
+      - name: Public OHLCV only, no model keys or model outputs
+        run: python scripts/probe_hk_pool_daily_integrity.py --original-db retained/O/O-full/native-data.db --upgraded-db retained/U/U/native-data.db --repo . --output public-price-check --target 2026-09-11
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-pool-price-checks
+          path: public-price-check/
+          retention-days: 14
