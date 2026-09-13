@@ -49,6 +49,16 @@ def write_inputs(tmp_path):
     return paths
 
 
+def _all_keys(value):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            yield key
+            yield from _all_keys(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from _all_keys(child)
+
+
 def test_historical_pit_prediction_is_outcome_blind_and_append_only(tmp_path, monkeypatch):
     paths = write_inputs(tmp_path)
     monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
@@ -64,8 +74,11 @@ def test_historical_pit_prediction_is_outcome_blind_and_append_only(tmp_path, mo
     assert package["denominator"] == 3 and package["ranked_count"] == 3 and package["isolated_count"] == 0
     assert package["model_http_requests"] == 3
     assert [r["code"] for r in package["ranked"]] == ["HK02475", "HK00100", "HK06951"]
-    text = (out / "b3-historical-pit-prediction.json").read_text()
-    assert "discard_me" not in text and "prompt" not in text and "reasoning" not in text
+    persisted = json.loads((out / "b3-historical-pit-prediction.json").read_text())
+    forbidden = {"discard_me", "raw_response", "provider_response", "prompt", "messages", "reasoning", "analysis", "explanation"}
+    assert forbidden.isdisjoint(set(_all_keys(persisted)))
+    # Token accounting is permitted and must remain observable; it is not raw prompt content.
+    assert persisted["usage"]["prompt_tokens"] == 30
     ledgers = list((out / "prediction-ledger").glob("*.prediction.json"))
     assert len(ledgers) == 1
     record, digest = load_frozen_prediction(ledgers[0])
