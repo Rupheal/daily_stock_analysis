@@ -1,0 +1,120 @@
+name: Run005 V1 Sep7 historical PIT prediction freeze
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_v1_prediction_20260907_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: run005-v1-pred-20260907-paid
+  cancel-in-progress: false
+
+jobs:
+  freeze-prediction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify one-shot paid trigger
+        run: |
+          python - <<'PY'
+          import json, os
+          if os.environ.get('GITHUB_RUN_ATTEMPT') != '1':
+              raise SystemExit('paid workflow rerun prohibited; require new reviewed trigger')
+          t=json.load(open('run005_v1_prediction_20260907_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R1',
+            'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'input_workflow_run_id':34787266540,
+            'input_artifact_id':10326727922,
+            'input_artifact_digest':'sha256:288954e782b5f532fb7a19b0af6fb5708663784d6f152f7d6a11ee41556b12b7',
+            'input_sha256':'d83d80066322adc23d90f9c8708581742f05e940e9241a6e6ae8749aa5c1e8a1',
+            'pit_manifest_sha256':'b902a195a6d0900d0c08f74a6b3a74ae2303280767267ec2d6f15b1ce49e13d2',
+            'original_denominator':54,
+            'eligible_count':54,
+            'max_requests':54,
+            'max_cny':2.0,
+          }
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger contract mismatch:'+k)
+          assert t['outcome_data_authorized'] is False
+          assert t['raw_model_content_publication'] is False
+          assert t['auto_recharge'] is False
+          print('RUN005_V1_PRED_TRIGGER_OK')
+          PY
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+      - name: Test generic predictor before paid call
+        run: python -m pytest -q tests/test_run005_predict_anchor.py tests/test_dsa_prediction_ledger.py tests/test_dsa_ranking_envelope.py
+      - name: Download accepted Sep7 PIT input artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: run005-v1-input-SSE_REBAL_20260904_EFFECTIVE_20260907
+          path: input
+          run-id: 34787266540
+          github-token: ${{ github.token }}
+      - name: Reverify frozen input contract
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          d=pathlib.Path('input/run005-v1-input/SSE_REBAL_20260904_EFFECTIVE_20260907')
+          p=json.loads((d/'package-manifest.json').read_text())
+          r=json.loads((d/'pit-manifest-receipt.json').read_text())
+          f=json.loads((d/'pit-features.json').read_text())
+          assert p['original_denominator']==54 and p['eligible_count']==54 and p['isolated_count']==0
+          assert p['prediction_generated'] is False and p['outcome_data_fetched'] is False
+          assert p['input_sha256']=='d83d80066322adc23d90f9c8708581742f05e940e9241a6e6ae8749aa5c1e8a1'
+          assert p['manifest_sha256']=='b902a195a6d0900d0c08f74a6b3a74ae2303280767267ec2d6f15b1ce49e13d2'
+          assert r['pit_input_admissible'] is True and r['prediction_generated'] is False
+          assert f['input_sha256']==p['input_sha256']
+          print('RUN005_V1_INPUT_REVERIFIED', {'denominator':54,'eligible':54,'input':p['input_sha256']})
+          PY
+      - name: Execute authorized 54-security prediction freeze
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/run005_predict_anchor.py \
+            --input-dir 'input/run005-v1-input/SSE_REBAL_20260904_EFFECTIVE_20260907' \
+            --config docs/run004_b3_replay_config.json \
+            --output reports/run005-v1-pred-20260907 \
+            --run-id TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R1 \
+            --max-requests 54 --max-cny 2
+      - name: Verify frozen prediction boundary
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('reports/run005-v1-pred-20260907/historical-pit-prediction.json')
+          x=json.loads(p.read_text())
+          assert x['outcome_data_read'] is False
+          assert x['original_denominator']==54
+          assert x['ranked_count']+x['isolated_count']==54
+          assert x['model_http_requests']<=54 and x['cost']['estimated_peak_cny']<=2.0
+          forbidden={'raw_response','provider_response','prompt','messages','reasoning','analysis','explanation'}
+          def keys(v):
+              if isinstance(v,dict):
+                  for k,c in v.items(): yield k; yield from keys(c)
+              elif isinstance(v,list):
+                  for c in v: yield from keys(c)
+          if forbidden & set(keys(x)): raise SystemExit('unsafe raw model-content key persisted')
+          ledgers=list(pathlib.Path('reports/run005-v1-pred-20260907/prediction-ledger').glob('*.prediction.json'))
+          assert len(ledgers)==1
+          print('RUN005_V1_PREDICTION_FREEZE_OK', {'ranked':x['ranked_count'],'isolated':x['isolated_count'],'requests':x['model_http_requests'],'peak_estimate_cny':x['cost']['estimated_peak_cny'],'ranking_sha256':x['hashes']['ranking_sha256']})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-v1-prediction-20260907
+          path: reports/run005-v1-pred-20260907/
+          if-no-files-found: error
+          retention-days: 14
