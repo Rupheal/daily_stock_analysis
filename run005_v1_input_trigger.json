@@ -1,0 +1,11 @@
+{
+  "run_id": "TRI-DSA-VAL-20260913-005-V1-INPUT-R1",
+  "purpose": "Build free predecision PIT input packages for the five frozen Run005 V1 historical anchors.",
+  "paid_resources": false,
+  "prediction_authorized": false,
+  "outcome_data_authorized": false,
+  "frozen_original_denominator": 149,
+  "anchors_file": "docs/run005_v1_replay_anchors.json",
+  "model_config_id": "RUN004_B3_PRICEONLY_TECHNICAL_SCORER_V1",
+  "auto_recharge": false
+}
