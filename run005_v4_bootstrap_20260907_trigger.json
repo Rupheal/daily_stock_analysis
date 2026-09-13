@@ -1,0 +1,8 @@
+{
+  "run_id":"TRI-DSA-VAL-20260913-005-V4-BOOTSTRAP-20260907-R1",
+  "outcome_run_id":34788108594,
+  "outcome_artifact_id":10326983504,
+  "outcome_artifact_digest":"sha256:cd378ecf8bd8354e0832ad347888b229eefceba8582997c5900773009c07c103",
+  "reps":2000,
+  "paid_resources":false
+}
