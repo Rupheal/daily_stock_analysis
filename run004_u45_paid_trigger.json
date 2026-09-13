@@ -2,6 +2,8 @@
   "run_id": "TRI-DSA-DEV-20260913-004-U45",
   "authorization": "OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE",
   "authorized_at": "2026-09-13",
+  "trigger_revision": 2,
+  "prior_trigger_result": "FAILED_BEFORE_MODEL_STEP_ZERO_HTTP",
   "target": "2026-09-11",
   "model": "deepseek-v4-flash",
   "max_requests": 36,
