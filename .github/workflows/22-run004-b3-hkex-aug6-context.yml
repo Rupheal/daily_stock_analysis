@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - name: Fetch and print bounded quotation context only
+      - name: Fetch and print all bounded MINIMAX contexts
         run: |
           curl --fail --location --silent --show-error --max-time 60 'https://www.hkex.com.hk/eng/stat/smstat/dayquot/d260806e.htm' -o /tmp/page.htm
           python - <<'PY'
@@ -21,20 +21,13 @@ jobs:
           import re,html
           raw=Path('/tmp/page.htm').read_bytes().decode('latin1','ignore')
           text=re.sub(r'<[^>]+>','',html.unescape(raw)).replace('\r','')
-          positions=[]
-          start=0
+          positions=[]; start=0
           while True:
               i=text.find('MINIMAX-W',start)
-              if i<0:break
-              positions.append(i);start=i+1
+              if i<0: break
+              positions.append(i); start=i+1
           print('MINIMAX_OCCURRENCES',len(positions))
-          for i in positions[-3:]:
-              print('---CONTEXT---')
-              print(text[max(0,i-350):i+1000])
-          q=text.find('PRV.CLO./')
-          print('QUOTE_HEADER_INDEX',q)
-          if q>=0:
-              sec=text[q:]
-              for line in sec.splitlines():
-                  if re.match(r'^\s*100\s+',line): print('CODE100_LINE',repr(line))
+          for n,i in enumerate(positions,1):
+              print(f'---CONTEXT_{n}---')
+              print(text[max(0,i-500):i+1300])
           PY
