@@ -1,0 +1,127 @@
+name: Run005 V7 ablation prediction freeze
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_v7_ablation_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: run005-v7-ablation-paid
+  cancel-in-progress: false
+
+jobs:
+  freeze-ablation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify one-shot Owner authorization
+        run: |
+          python - <<'PY'
+          import json,os
+          if os.environ.get('GITHUB_RUN_ATTEMPT')!='1':
+              raise SystemExit('paid workflow rerun prohibited; require new reviewed trigger')
+          t=json.load(open('run005_v7_ablation_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-VAL-20260913-005-V7-ABLATION-R1',
+            'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'input_workflow_run_id':34787266540,
+            'input_artifact_id':10326727922,
+            'input_artifact_digest':'sha256:288954e782b5f532fb7a19b0af6fb5708663784d6f152f7d6a11ee41556b12b7',
+            'anchor_id':'SSE_REBAL_20260904_EFFECTIVE_20260907',
+            'original_denominator':54,
+            'variant_count':5,
+            'max_requests':270,
+            'max_cny':5.0,
+          }
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger contract mismatch:'+k)
+          assert t.get('outcome_data_authorized') is False
+          assert t.get('auto_recharge') is False
+          assert t.get('raw_model_content_publication') is False
+          print('RUN005_V7_TRIGGER_OK')
+          PY
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+      - name: Test V7 safeguards before paid calls
+        run: |
+          python -m pytest -q \
+            tests/test_run005_v7_ablation_predict.py \
+            tests/test_dsa_prediction_ledger.py \
+            tests/test_dsa_ranking_envelope.py
+      - name: Download frozen 54-security PIT input
+        uses: actions/download-artifact@v4
+        with:
+          name: run005-v1-input-SSE_REBAL_20260904_EFFECTIVE_20260907
+          path: input
+          run-id: 34787266540
+          github-token: ${{ github.token }}
+      - name: Reverify PIT input before paid calls
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          d=pathlib.Path('input/run005-v1-input/SSE_REBAL_20260904_EFFECTIVE_20260907')
+          p=json.loads((d/'package-manifest.json').read_text())
+          f=json.loads((d/'pit-features.json').read_text())
+          r=json.loads((d/'pit-manifest-receipt.json').read_text())
+          assert p['original_denominator']==54 and p['eligible_count']==54 and p['isolated_count']==0
+          assert p['prediction_generated'] is False and p['outcome_data_fetched'] is False
+          assert p['input_sha256']=='d83d80066322adc23d90f9c8708581742f05e940e9241a6e6ae8749aa5c1e8a1'
+          assert p['manifest_sha256']=='b902a195a6d0900d0c08f74a6b3a74ae2303280767267ec2d6f15b1ce49e13d2'
+          assert f['input_sha256']==p['input_sha256']
+          assert r['pit_input_admissible'] is True and r['prediction_generated'] is False
+          print('RUN005_V7_INPUT_REVERIFIED')
+          PY
+      - name: Execute authorized A1-A5 prediction freeze
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/run005_v7_ablation_predict.py \
+            --input-dir 'input/run005-v1-input/SSE_REBAL_20260904_EFFECTIVE_20260907' \
+            --config docs/run004_b3_replay_config.json \
+            --output reports/run005-v7-ablation \
+            --run-id TRI-DSA-VAL-20260913-005-V7-ABLATION-R1 \
+            --max-requests 270 --max-cny 5
+      - name: Verify frozen ablation boundary
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('reports/run005-v7-ablation/v7-ablation-predictions.json')
+          x=json.loads(p.read_text())
+          assert x['status']=='RUN005_V7_ABLATION_PREDICTIONS_FROZEN'
+          assert x['original_denominator']==54 and x['outcome_data_read'] is False
+          assert len(x['variants'])==5
+          assert x['model_http_requests']<=270 and x['cost']['estimated_peak_cny']<=5.0
+          for name,v in x['variants'].items():
+              assert v['original_denominator']==54
+              assert v['ranked_count']+v['isolated_count']==54
+              assert v['outcome_data_read'] is False
+          ledgers=list(pathlib.Path('reports/run005-v7-ablation/prediction-ledger').glob('*.prediction.json'))
+          assert len(ledgers)==5
+          forbidden={'raw_response','provider_response','prompt','messages','reasoning','analysis','explanation'}
+          def keys(v):
+              if isinstance(v,dict):
+                  for k,c in v.items(): yield k; yield from keys(c)
+              elif isinstance(v,list):
+                  for c in v: yield from keys(c)
+          if forbidden & set(keys(x)): raise SystemExit('unsafe raw model-content key persisted')
+          print('RUN005_V7_FREEZE_OK', {'requests':x['model_http_requests'],'peak_estimate_cny':x['cost']['estimated_peak_cny'],'ledgers':5})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-v7-ablation-predictions-r1
+          path: reports/run005-v7-ablation/
+          if-no-files-found: error
+          retention-days: 14
