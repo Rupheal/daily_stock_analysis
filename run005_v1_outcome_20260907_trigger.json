@@ -1,5 +1,7 @@
 {
-  "run_id":"TRI-DSA-VAL-20260913-005-V1-OUTCOME-20260907-R1",
+  "run_id":"TRI-DSA-VAL-20260913-005-V1-OUTCOME-20260907-R2",
+  "trigger_revision":2,
+  "prior_preoutcome_failed_run_id":34787963613,
   "prediction_run_id":34787648316,
   "prediction_artifact_id":10327197130,
   "prediction_artifact_digest":"sha256:a2752dcd70f8bb3df18bbf52618efa4936d258582ec305b22ac031d91ce44185",
