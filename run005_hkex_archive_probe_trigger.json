@@ -1,0 +1,5 @@
+{
+  "run_id":"TRI-DSA-VAL-20260913-005-V1-ARCHIVE-PROBE-R1",
+  "paid_resources":false,
+  "purpose":"Test whether retired official HKEX Daily Quotations pages are independently archived before requesting paid historical data."
+}
