@@ -1,0 +1,18 @@
+{
+  "run_id": "TRI-DSA-DEV-20260913-004-O660-R1",
+  "authorization": "OWNER_AUTHORIZED_AFTER_U45_ACCEPTANCE",
+  "authorized_at": "2026-09-13",
+  "trigger_revision": 1,
+  "u45_accepted_run_id": 34762648630,
+  "target": "2026-09-11",
+  "model": "deepseek-v4-flash",
+  "max_requests": 407,
+  "max_cny": 5.0,
+  "database_sha256": "f1b50fa459e229455fddadb6fbd23823199ec5ea4927d289f54ad683ed9a045b",
+  "integrity_sha256": "980bba55390fd356cd6c16f45c89e2aa6eb5cd4021c457d2d10f901a21d5b002",
+  "raw_model_content_publication": false,
+  "auto_recharge": false,
+  "new_paid_data": false,
+  "production_promotion": false,
+  "trading": false
+}
