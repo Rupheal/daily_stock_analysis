@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "cohort_id": "SSE_AUG5_ADDITIONS_PIT_2026-09-03_PREOPEN",
+  "decision_at": "2026-09-03T09:00:00+08:00",
+  "announcement_date": "2026-08-05",
+  "announcement_id": "中投信〔2026〕46号",
+  "announcement_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260805_10828027.shtml",
+  "effective_rule": "自下一港股通交易日起生效",
+  "effective_session": "2026-08-06",
+  "members": [
+    {"code":"00100","english_name":"MINIMAX-W"},
+    {"code":"02475","english_name":"LUXSHARE ICT"},
+    {"code":"06951","english_name":"CCTC"}
+  ],
+  "membership_continuity_checks": [
+    "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260806_10828124.shtml",
+    "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260813_10828848.shtml",
+    "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260826_10830040.shtml"
+  ],
+  "annual_trading_calendar_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20251222_10802519.shtml",
+  "price_window_start": "2026-08-05",
+  "price_window_end": "2026-09-02",
+  "price_sessions_expected": 21,
+  "price_source": "HKEX Main Board Daily Quotations",
+  "price_source_url_pattern": "https://www.hkex.com.hk/eng/stat/smstat/dayquot/dYYMMDDe.htm",
+  "governance": {
+    "later_2026_09_04_adjustment_used_to_define_cohort": false,
+    "future_membership_information_allowed": false,
+    "prediction_authorized_by_this_file": false,
+    "note": "The cohort is defined solely by an SSE notice published before the Sep3 pre-open decision timestamp. The Aug5 price bar may predate Southbound eligibility by one session but is market data for already-listed securities and may be used as lookback history."
+  }
+}
