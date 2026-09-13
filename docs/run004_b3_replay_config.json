@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "config_id": "RUN004_B3_PRICEONLY_TECHNICAL_SCORER_V1",
+  "frozen_before_prediction": true,
+  "prediction_executed_by_this_file": false,
+  "decision_at": "2026-09-03T09:00:00+08:00",
+  "input_cutoff": "2026-09-02T23:59:59+08:00",
+  "universe": "SSE_AUG5_ADDITIONS_PIT_2026-09-03_PREOPEN",
+  "members": ["00100","02475","06951"],
+  "market_data_source": "HKEX Main Board Daily Quotations",
+  "market_data_sessions": 21,
+  "market_data_window": ["2026-08-05","2026-09-02"],
+  "feature_definition": {
+    "close": "latest HKEX closing price through 2026-09-02",
+    "return_1d_pct": "close_t / close_t-1 - 1",
+    "return_5d_pct": "close_t / close_t-5 - 1",
+    "return_10d_pct": "close_t / close_t-10 - 1",
+    "return_20d_pct": "close_t / close_t-20 - 1",
+    "ma5": "mean of latest 5 closing prices",
+    "ma10": "mean of latest 10 closing prices",
+    "ma20": "mean of latest 20 closing prices",
+    "bias_ma5_pct": "close / ma5 - 1",
+    "bias_ma20_pct": "close / ma20 - 1",
+    "volume_ratio": "latest shares_traded / mean shares_traded over preceding 20 sessions",
+    "realized_vol20_ann_pct": "population standard deviation of 20 close-to-close percentage returns times sqrt(252)",
+    "position_in_20d_range": "(latest close - min low over latest 20 sessions) / (max high - min low over latest 20 sessions)"
+  },
+  "model_contract": {
+    "requested_model": "deepseek-v4-flash",
+    "temperature": 0,
+    "thinking": "disabled",
+    "max_tokens": 320,
+    "response_format": "json_object",
+    "score_semantics": "0-100 technical research-priority score; not a probability, expected return, price target, trading signal or recommendation",
+    "required_fields": ["score","stance","confidence","reason_codes"],
+    "extra_provider_json_keys": "discard_before_persistence",
+    "raw_provider_content_persisted": false,
+    "automatic_retry": 0
+  },
+  "allowed_reason_codes": ["trend_above_mas","trend_below_mas","mixed_ma_structure","positive_momentum","negative_momentum","high_realized_volatility","low_realized_volatility","volume_expansion","volume_contraction","near_recent_high","near_recent_low","insufficient_edge"],
+  "outcome_policy": {
+    "outcome_data_must_not_be_fetched_before_prediction_freeze": true,
+    "candidate_outcome_window": "2026-09-03 regular HKEX trading session after decision_at",
+    "outcome_not_part_of_model_input": true
+  }
+}
