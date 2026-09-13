@@ -1,0 +1,239 @@
+name: Run004 B3 Sep3 preopen PIT package
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run004_b3_preopen_pit_trigger.json]
+
+permissions:
+  contents: read
+
+jobs:
+  build-pit-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Verify precommitted trigger and config
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          t=json.load(open('run004_b3_preopen_pit_trigger.json'))
+          assert t['run_id']=='TRI-DSA-DEV-20260913-004-B3-PIT-R2'
+          assert t['decision_at']=='2026-09-03T09:00:00+08:00'
+          assert t['paid_resources'] is False and t['prediction_authorized'] is False
+          c=json.load(open('docs/run004_b3_replay_config.json'))
+          assert c['frozen_before_prediction'] is True and c['prediction_executed_by_this_file'] is False
+          assert c['decision_at']==t['decision_at']
+          print('PRECOMMIT_OK', hashlib.sha256(open('docs/run004_b3_replay_config.json','rb').read()).hexdigest())
+          PY
+
+      - name: Fetch and verify pre-decision SSE membership evidence
+        run: |
+          set -euo pipefail
+          mkdir -p reports/run004-b3-preopen/raw-sse reports/run004-b3-preopen/raw-hkex reports/run004-b3-preopen/raw-alfred
+          curl --fail --location --silent --show-error --max-time 60 'https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260805_10828027.shtml' -o reports/run004-b3-preopen/raw-sse/20260805-46.html
+          curl --fail --location --silent --show-error --max-time 60 'https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260806_10828124.shtml' -o reports/run004-b3-preopen/raw-sse/20260806-47.html
+          curl --fail --location --silent --show-error --max-time 60 'https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260813_10828848.shtml' -o reports/run004-b3-preopen/raw-sse/20260813-48.html
+          curl --fail --location --silent --show-error --max-time 60 'https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260826_10830040.shtml' -o reports/run004-b3-preopen/raw-sse/20260826-49.html
+          curl --fail --location --silent --show-error --max-time 60 'https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20251222_10802519.shtml' -o reports/run004-b3-preopen/raw-sse/2026-calendar.html
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,re
+          root=Path('reports/run004-b3-preopen/raw-sse')
+          def txt(p):
+              b=p.read_bytes()
+              for enc in ('utf-8','gb18030','latin1'):
+                  try:return b.decode(enc)
+                  except:pass
+          aug5=txt(root/'20260805-46.html')
+          for token in ('00100','02475','06951'):
+              assert token in aug5, token
+          continuity=[]
+          for f in ('20260806-47.html','20260813-48.html','20260826-49.html'):
+              s=txt(root/f)
+              absent={c:(c not in s) for c in ('00100','02475','06951')}
+              assert all(absent.values()), (f,absent)
+              continuity.append({'file':f,'cohort_codes_absent':absent,'sha256':hashlib.sha256((root/f).read_bytes()).hexdigest()})
+          cal=txt(root/'2026-calendar.html')
+          for token in ('9月25日','9月28日'):
+              assert token in cal
+          out={'aug5_notice_sha256':hashlib.sha256((root/'20260805-46.html').read_bytes()).hexdigest(),
+               'annual_calendar_sha256':hashlib.sha256((root/'2026-calendar.html').read_bytes()).hexdigest(),
+               'cohort_codes':['00100','02475','06951'],'continuity':continuity,
+               'effective_session':'2026-08-06','decision_at':'2026-09-03T09:00:00+08:00'}
+          Path('reports/run004-b3-preopen/sse-membership-evidence.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
+          print('SSE_MEMBERSHIP_PIT_OK',json.dumps({'members':3,'effective_session':'2026-08-06'}))
+          PY
+
+      - name: Fetch 21 official HKEX Daily Quotations through Sep2
+        run: |
+          set -euo pipefail
+          cat > /tmp/dates.txt <<'EOF'
+          2026-08-05
+          2026-08-06
+          2026-08-07
+          2026-08-10
+          2026-08-11
+          2026-08-12
+          2026-08-13
+          2026-08-14
+          2026-08-17
+          2026-08-18
+          2026-08-19
+          2026-08-20
+          2026-08-21
+          2026-08-24
+          2026-08-25
+          2026-08-26
+          2026-08-27
+          2026-08-28
+          2026-08-31
+          2026-09-01
+          2026-09-02
+          EOF
+          cp /tmp/dates.txt reports/run004-b3-preopen/sessions.txt
+          fetch_one() {
+            d="$1"; compact="${d//-/}"; yy="${compact:2}";
+            curl --fail --location --silent --show-error --retry 2 --max-time 90 \
+              "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d${yy}e.htm" \
+              -o "reports/run004-b3-preopen/raw-hkex/d${yy}e.htm"
+          }
+          export -f fetch_one
+          xargs -a /tmp/dates.txt -n1 -P4 bash -c 'fetch_one "$0"'
+          test $(find reports/run004-b3-preopen/raw-hkex -type f | wc -l) -eq 21
+          echo HKEX_21_PAGES_FETCHED
+
+      - name: Parse exact cohort bars and retain source hashes/snippets
+        run: |
+          python scripts/run004_parse_hkex_pit_quotes.py \
+            --input-dir reports/run004-b3-preopen/raw-hkex \
+            --cohort docs/run004_b3_aug5_pit_cohort.json \
+            --dates reports/run004-b3-preopen/sessions.txt \
+            --output reports/run004-b3-preopen/hkex-cohort-21bars.json
+
+      - name: Build deterministic precommitted features
+        run: |
+          python - <<'PY'
+          import json,math,hashlib,pathlib,statistics
+          root=pathlib.Path('reports/run004-b3-preopen')
+          x=json.load(open(root/'hkex-cohort-21bars.json'))
+          def ret(a,n): return (a[-1]/a[-1-n]-1)*100
+          features=[]
+          for code,rows in sorted(x['series'].items()):
+              closes=[r['closing'] for r in rows]; highs=[r['high'] for r in rows]; lows=[r['low'] for r in rows]; vols=[r['shares_traded'] for r in rows]
+              rs=[(b/a-1)*100 for a,b in zip(closes[:-1],closes[1:])]
+              ma5=sum(closes[-5:])/5; ma10=sum(closes[-10:])/10; ma20=sum(closes[-20:])/20
+              mean_prev20=sum(vols[:-1])/20
+              f={'code':code,'as_of':'2026-09-02','close':round(closes[-1],6),
+                 'return_1d_pct':round(ret(closes,1),6),'return_5d_pct':round(ret(closes,5),6),
+                 'return_10d_pct':round(ret(closes,10),6),'return_20d_pct':round(ret(closes,20),6),
+                 'ma5':round(ma5,6),'ma10':round(ma10,6),'ma20':round(ma20,6),
+                 'bias_ma5_pct':round((closes[-1]/ma5-1)*100,6),'bias_ma20_pct':round((closes[-1]/ma20-1)*100,6),
+                 'volume_ratio':round(vols[-1]/mean_prev20,6) if mean_prev20 else None,
+                 'realized_vol20_ann_pct':round(statistics.pstdev(rs)*math.sqrt(252),6),
+                 'position_in_20d_range':round((closes[-1]-min(lows[-20:]))/(max(highs[-20:])-min(lows[-20:])),6) if max(highs[-20:])>min(lows[-20:]) else None,
+                 'source':'HKEX Main Board Daily Quotations'}
+              f['feature_sha256']=hashlib.sha256(json.dumps(f,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+              features.append(f)
+          payload={'decision_at':'2026-09-03T09:00:00+08:00','input_cutoff':'2026-09-02T23:59:59+08:00','features':features}
+          payload['input_sha256']=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          (root/'pit-features.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2))
+          print('PIT_FEATURES_OK',json.dumps({'members':len(features),'input_sha256':payload['input_sha256']}))
+          PY
+
+      - name: Verify official no-key ALFRED vintage endpoint
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --max-time 90 'https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=CPIAUCSL&vintage_date=2020-01-15' -o reports/run004-b3-preopen/raw-alfred/cpi-2020-01-15.csv
+          curl --fail --location --silent --show-error --max-time 90 'https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=CPIAUCSL&vintage_date=2026-09-01' -o reports/run004-b3-preopen/raw-alfred/cpi-2026-09-01.csv
+          curl --fail --location --silent --show-error --max-time 90 'https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=DGS10&vintage_date=2026-09-01' -o reports/run004-b3-preopen/raw-alfred/dgs10-2026-09-01.csv
+          python - <<'PY'
+          import csv,hashlib,json,pathlib
+          root=pathlib.Path('reports/run004-b3-preopen/raw-alfred')
+          def sh(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          def rows(p):
+              rr=list(csv.reader(p.open()))
+              assert len(rr)>2 and len(rr[0])==2
+              return rr[0],{r[0]:r[1] for r in rr[1:] if len(r)>=2}
+          h1,a=rows(root/'cpi-2020-01-15.csv'); h2,b=rows(root/'cpi-2026-09-01.csv'); hd,d=rows(root/'dgs10-2026-09-01.csv')
+          assert '20200115' in h1[1].replace('-','') and '20260901' in h2[1].replace('-','') and '20260901' in hd[1].replace('-','')
+          common=sorted(set(a)&set(b)); diffs=[k for k in common if a[k] not in ('','.') and b[k] not in ('','.') and a[k]!=b[k]]
+          assert diffs, 'ALFRED vintage endpoint did not expose any revised CPI value'
+          valid_d=[k for k,v in d.items() if v not in ('','.')]
+          assert valid_d and max(valid_d)<='2026-09-01'
+          out={'endpoint':'https://alfred.stlouisfed.org/graph/alfredgraph.csv','no_api_key':True,
+               'cpi_old_vintage':'2020-01-15','cpi_old_sha256':sh(root/'cpi-2020-01-15.csv'),
+               'cpi_target_vintage':'2026-09-01','cpi_target_sha256':sh(root/'cpi-2026-09-01.csv'),
+               'common_observations':len(common),'revised_common_observations':len(diffs),'sample_revised_dates':diffs[:10],
+               'dgs10_target_vintage':'2026-09-01','dgs10_sha256':sh(root/'dgs10-2026-09-01.csv'),'dgs10_last_nonmissing_observation':max(valid_d),
+               'vintage_behavior_verified':True}
+          pathlib.Path('reports/run004-b3-preopen/alfred-vintage-evidence.json').write_text(json.dumps(out,indent=2))
+          print('ALFRED_VINTAGE_OK',json.dumps({'revised_common_observations':len(diffs),'dgs10_last':max(valid_d)}))
+          PY
+
+      - name: Build and fail-closed validate PIT input manifest
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib
+          from src.services.dsa_pit_manifest import validate_pit_manifest,canonical_hash
+          root=pathlib.Path('reports/run004-b3-preopen')
+          cohort=pathlib.Path('docs/run004_b3_aug5_pit_cohort.json')
+          config=pathlib.Path('docs/run004_b3_replay_config.json')
+          prices=root/'hkex-cohort-21bars.json'
+          def sh(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          cfg=json.load(open(config))
+          manifest={
+            'decision_at':'2026-09-03T09:00:00+08:00',
+            'universe':{
+              'universe_id':'SSE_AUG5_ADDITIONS_PIT_2026-09-03_PREOPEN',
+              'effective_at':'2026-08-06T09:00:00+08:00',
+              'available_at':'2026-08-06T08:00:00+08:00',
+              'content_sha256':sh(cohort),
+              'source':'SSE notice 中投信〔2026〕46号 dated 2026-08-05; effective next Southbound trading day'
+            },
+            'evidence':[
+              {'evidence_id':'HKEX_MAINBOARD_DAILY_QUOTES_20260805_20260902','available_at':'2026-09-03T08:00:00+08:00','content_sha256':sh(prices),'source':'HKEX Main Board Daily Quotations; daily issue basis, normally around 19:00 on each trading day; aggregate source pages hashed in payload','vintage_status':'verified_as_available_then'}
+            ],
+            'model_version':'RUN004_B3_PRICEONLY_TECHNICAL_SCORER_V1',
+            'config_sha256':sh(config)
+          }
+          receipt=validate_pit_manifest(manifest)
+          assert receipt['pit_input_admissible'] is True and receipt['prediction_generated'] is False
+          (root/'pit-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+          (root/'pit-manifest-receipt.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2))
+          print('PIT_MANIFEST_ADMISSIBLE',json.dumps({'manifest_sha256':receipt['manifest_sha256'],'prediction_generated':False}))
+          PY
+
+      - name: Build package manifest without future outcome data
+        run: |
+          python - <<'PY'
+          import pathlib,hashlib,json
+          root=pathlib.Path('reports/run004-b3-preopen')
+          files={}
+          for p in sorted(root.rglob('*')):
+              if p.is_file() and 'raw-hkex' not in str(p):
+                  files[str(p.relative_to(root))]=hashlib.sha256(p.read_bytes()).hexdigest()
+          out={'run_id':'TRI-DSA-DEV-20260913-004-B3-PIT-R2','decision_at':'2026-09-03T09:00:00+08:00',
+               'prediction_generated':False,'outcome_data_fetched':False,'paid_resources':False,
+               'files':files,'status':'PIT_INPUT_ADMISSIBLE_WAIT_PREDICTION_EXECUTION'}
+          (root/'package-manifest.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
+          print('B3_PREOPEN_PACKAGE_READY',json.dumps({'status':out['status'],'files':len(files)}))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run004-b3-preopen-pit-package
+          path: |
+            reports/run004-b3-preopen/*.json
+            reports/run004-b3-preopen/sessions.txt
+            reports/run004-b3-preopen/raw-sse/
+            reports/run004-b3-preopen/raw-alfred/
+          retention-days: 14
