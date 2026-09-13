@@ -1,0 +1,10 @@
+{
+  "run_id":"TRI-DSA-VAL-20260913-005-V4-UNCERTAINTY-R1",
+  "paid_resources":false,
+  "source_outcome_run_id":34788108594,
+  "source_artifact_id":10326983504,
+  "source_artifact_digest":"sha256:cd378ecf8bd8354e0832ad347888b229eefceba8582997c5900773009c07c103",
+  "bootstrap_seed":20260914,
+  "bootstrap_reps":5000,
+  "metric_scope":["dsa_spearman","dsa_pairwise_accuracy","top_k_lift_pp"]
+}
