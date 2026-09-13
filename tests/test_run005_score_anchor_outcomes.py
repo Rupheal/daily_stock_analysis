@@ -58,9 +58,11 @@ def test_outcome_harness_keeps_suspension_and_input_isolation(tmp_path):
     assert h['metrics']['comparable_ranked_count']==1
     assert h['metrics']['status_counts']['VALID_COMPARABLE']==1
     assert h['metrics']['status_counts']['SUSPENDED_OR_NO_OFFICIAL_CLOSE']==1
-    assert h['metrics']['status_counts']['NO_PIT_REFERENCE_FEATURE']==1
+    assert h['metrics']['status_counts']['OUTCOME_QUOTE_NOT_PRESENT']==1
     by={r['code']:r for r in h['rows']}
     assert by['HK06951']['prediction_state']=='ISOLATED'
+    assert by['HK06951']['prediction_isolation_reason']=='input_gate:INSUFFICIENT_21_PREDECISION_OFFICIAL_BARS'
+    assert by['HK06951']['reference_close'] is None
     assert by['HK06951']['forward_return_pct'] is None
     assert result['wait_maturity_horizons']==[3,5,10,20]
 
