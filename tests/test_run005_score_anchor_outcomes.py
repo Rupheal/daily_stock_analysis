@@ -37,7 +37,7 @@ def make_case(tmp_path):
     pred={"status":"HISTORICAL_PIT_REPLAY_FROZEN","outcome_data_read":False,"anchor_id":"A1","decision_at":"2026-09-07T09:00:00+08:00","original_denominator":3,"ranked":ranked,"isolated":isolated,"hashes":{"ranking_sha256":ranking_sha,"prediction_payload_sha256":payload_sha}}
     pred_path=tmp_path/'pred.json'; pred_path.write_text(json.dumps(pred))
     ledger_dir=tmp_path/'ledger'
-    ledger_record={"run_id":"TRI-DSA-VAL-TEST-PRED","generated_at":"2026-09-14T00:00:00+00:00","as_of":"2026-09-07T09:00:00+08:00","universe_sha256":"a"*64,"input_sha256":fp['input_sha256'],"model_version":"deepseek-v4-flash","config_sha256":"b"*64,"prediction_payload_sha256":payload_sha,"ranking_sha256":ranking_sha,"status":"HISTORICAL_PIT_REPLAY_FROZEN_BEFORE_OUTCOME_READ"}
+    ledger_record={"run_id":"TRI-DSA-VAL-TEST-PRED","generated_at":"2026-09-13T20:00:00+00:00","as_of":"2026-09-07T09:00:00+08:00","universe_sha256":"a"*64,"input_sha256":fp['input_sha256'],"model_version":"deepseek-v4-flash","config_sha256":"b"*64,"prediction_payload_sha256":payload_sha,"ranking_sha256":ranking_sha,"status":"HISTORICAL_PIT_REPLAY_FROZEN_BEFORE_OUTCOME_READ"}
     ledger_path=freeze_prediction(ledger_dir,ledger_record)
     return input_dir,pred_path,ledger_path
 
