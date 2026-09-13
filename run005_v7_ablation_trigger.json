@@ -1,0 +1,15 @@
+{
+  "run_id":"TRI-DSA-VAL-20260913-005-V7-ABLATION-R1",
+  "authorization":"OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE",
+  "input_workflow_run_id":34787266540,
+  "input_artifact_id":10326727922,
+  "input_artifact_digest":"sha256:288954e782b5f532fb7a19b0af6fb5708663784d6f152f7d6a11ee41556b12b7",
+  "anchor_id":"SSE_REBAL_20260904_EFFECTIVE_20260907",
+  "original_denominator":54,
+  "variant_count":5,
+  "max_requests":270,
+  "max_cny":5.0,
+  "outcome_data_authorized":false,
+  "raw_model_content_publication":false,
+  "auto_recharge":false
+}
