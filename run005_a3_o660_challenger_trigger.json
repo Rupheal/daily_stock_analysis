@@ -1,0 +1,16 @@
+{
+  "run_id":"TRI-DSA-VAL-20260913-005-A3-OOS-CHALLENGER-001",
+  "authorization":"OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE",
+  "base_champion_ranking_sha256":"13d8f0cf388b283414db60257bd155f5b302f56150d8808646637d5a35f995c6",
+  "target":"2026-09-11",
+  "original_denominator":660,
+  "eligible_count":407,
+  "isolated_count":253,
+  "max_requests":407,
+  "max_cny":3.0,
+  "challenger_id":"RUN005_A3_NO_VOLATILITY_OOS_CHALLENGER_V1",
+  "omitted_fields":["realized_vol20_ann_pct"],
+  "outcome_data_authorized":false,
+  "champion_replacement_authorized":false,
+  "auto_recharge":false
+}
