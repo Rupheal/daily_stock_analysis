@@ -42,7 +42,8 @@ def test_predictor_preserves_input_isolation_and_freezes_ledger(tmp_path, monkey
     assert result['isolated'][0]['source_stage']=='PIT_INPUT'
     assert result['model_http_requests']==1 and result['outcome_data_read'] is False
     assert result['ranking_envelope']['denominator']==2
-    assert result['ranking_envelope']['complete'] is True
+    assert result['ranking_envelope']['complete'] is False
+    assert result['ranking_envelope']['ranked'] + result['ranking_envelope']['isolated'] == 2
     text=(out/'historical-pit-prediction.json').read_text()
     assert '"extra"' not in text
     ledgers=list((out/'prediction-ledger').glob('*.prediction.json'))
@@ -60,4 +61,6 @@ def test_predictor_budget_guard_keeps_denominator(tmp_path, monkeypatch):
     result=execute(args,post_json=lambda *x: (_ for _ in ()).throw(AssertionError('must not call')))
     assert result['ranked_count']==0 and result['isolated_count']==2
     assert result['model_http_requests']==0
-    assert result['ranking_envelope']['denominator']==2 and result['ranking_envelope']['complete'] is True
+    assert result['ranking_envelope']['denominator']==2
+    assert result['ranking_envelope']['complete'] is False
+    assert result['ranking_envelope']['ranked'] + result['ranking_envelope']['isolated'] == 2
