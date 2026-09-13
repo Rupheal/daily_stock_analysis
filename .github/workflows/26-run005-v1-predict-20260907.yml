@@ -35,8 +35,10 @@ jobs:
               raise SystemExit('paid workflow rerun prohibited; require new reviewed trigger')
           t=json.load(open('run005_v1_prediction_20260907_trigger.json'))
           expected={
-            'run_id':'TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R1',
+            'run_id':'TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R2',
             'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'trigger_revision':2,
+            'prior_zero_http_run_id':34787497079,
             'input_workflow_run_id':34787266540,
             'input_artifact_id':10326727922,
             'input_artifact_digest':'sha256:288954e782b5f532fb7a19b0af6fb5708663784d6f152f7d6a11ee41556b12b7',
@@ -52,7 +54,7 @@ jobs:
           assert t['outcome_data_authorized'] is False
           assert t['raw_model_content_publication'] is False
           assert t['auto_recharge'] is False
-          print('RUN005_V1_PRED_TRIGGER_OK')
+          print('RUN005_V1_PRED_TRIGGER_OK', {'revision':2,'prior_zero_http_run':34787497079})
           PY
       - name: Install deterministic test dependencies
         run: python -m pip install pytest anyio fastapi httpx starlette
@@ -89,7 +91,7 @@ jobs:
             --input-dir 'input/run005-v1-input/SSE_REBAL_20260904_EFFECTIVE_20260907' \
             --config docs/run004_b3_replay_config.json \
             --output reports/run005-v1-pred-20260907 \
-            --run-id TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R1 \
+            --run-id TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R2 \
             --max-requests 54 --max-cny 2
       - name: Verify frozen prediction boundary
         run: |
@@ -114,7 +116,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: run005-v1-prediction-20260907
+          name: run005-v1-prediction-20260907-r2
           path: reports/run005-v1-pred-20260907/
           if-no-files-found: error
           retention-days: 14
