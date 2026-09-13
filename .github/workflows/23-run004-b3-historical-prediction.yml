@@ -37,8 +37,10 @@ jobs:
               raise SystemExit('paid workflow rerun prohibited; require a new reviewed trigger')
           t=json.load(open('run004_b3_prediction_trigger.json'))
           expected={
-            'run_id':'TRI-DSA-DEV-20260913-004-B3-PRED-R1',
+            'run_id':'TRI-DSA-DEV-20260913-004-B3-PRED-R2',
             'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'trigger_revision':2,
+            'prior_zero_http_run_id':34765601077,
             'input_workflow_run_id':34765446209,
             'input_artifact_id':10320895614,
             'input_artifact_digest':'sha256:32b5b723db4b72dfc1357a3a37c04d9bb9aa0a4cc407a16abe05b7e9506e4cae',
@@ -52,7 +54,7 @@ jobs:
           if t.get('outcome_data_authorized') is not False: raise SystemExit('outcome data must remain prohibited before freeze')
           if t.get('raw_model_content_publication') is not False: raise SystemExit('raw model content publication prohibited')
           if t.get('auto_recharge') is not False: raise SystemExit('auto recharge prohibited')
-          print('B3_PRED_TRIGGER_OK')
+          print('B3_PRED_TRIGGER_OK', {'revision':2,'prior_zero_http_run':34765601077})
           PY
 
       - name: Install deterministic test harness dependencies
@@ -72,8 +74,7 @@ jobs:
       - name: Verify frozen PIT input contract
         run: |
           python - <<'PY'
-          import json, hashlib
-          def sh(p): return hashlib.sha256(open(p,'rb').read()).hexdigest()
+          import json
           r=json.load(open('input/b3/pit-manifest-receipt.json'))
           f=json.load(open('input/b3/pit-features.json'))
           p=json.load(open('input/b3/package-manifest.json'))
@@ -95,7 +96,7 @@ jobs:
             --cohort docs/run004_b3_aug5_pit_cohort.json \
             --config docs/run004_b3_replay_config.json \
             --output reports/run004-b3-prediction \
-            --run-id TRI-DSA-DEV-20260913-004-B3-PRED-R1 \
+            --run-id TRI-DSA-DEV-20260913-004-B3-PRED-R2 \
             --max-requests 3 --max-cny 1
 
       - name: Verify frozen prediction contract
@@ -103,10 +104,15 @@ jobs:
           python - <<'PY'
           import json, pathlib
           p=pathlib.Path('reports/run004-b3-prediction/b3-historical-pit-prediction.json')
-          text=p.read_text()
-          for key in ('"raw_response"','"provider_response"','"prompt"','"messages"','"reasoning"','"analysis"','"explanation"'):
-              if key in text: raise SystemExit('unsafe key:'+key)
-          x=json.loads(text)
+          x=json.loads(p.read_text())
+          forbidden={'raw_response','provider_response','prompt','messages','reasoning','analysis','explanation'}
+          def keys(v):
+              if isinstance(v,dict):
+                  for k,c in v.items():
+                      yield k; yield from keys(c)
+              elif isinstance(v,list):
+                  for c in v: yield from keys(c)
+          if forbidden & set(keys(x)): raise SystemExit('unsafe raw model-content key persisted')
           assert x['status']=='HISTORICAL_PIT_REPLAY_FROZEN'
           assert x['outcome_data_read'] is False
           assert x['denominator']==3 and x['ranked_count']+x['isolated_count']==3
@@ -119,7 +125,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: run004-b3-historical-pit-prediction
+          name: run004-b3-historical-pit-prediction-r2
           path: reports/run004-b3-prediction/
           if-no-files-found: error
           retention-days: 14
