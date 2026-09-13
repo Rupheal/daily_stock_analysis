@@ -1,0 +1,14 @@
+{
+  "run_id": "TRI-DSA-DEV-20260913-004-B3-PRED-R1",
+  "authorization": "OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE",
+  "input_workflow_run_id": 34765446209,
+  "input_artifact_id": 10320895614,
+  "input_artifact_digest": "sha256:32b5b723db4b72dfc1357a3a37c04d9bb9aa0a4cc407a16abe05b7e9506e4cae",
+  "pit_manifest_sha256": "4a27ba4b71ab7f8a2aa30893a4862682d7e76f110444d57071c7874870c327df",
+  "input_sha256": "35e009115253f6a697bb1d45aab019712c03d2a85d6c58a1f3ada85af64fbb80",
+  "max_requests": 3,
+  "max_cny": 1.0,
+  "outcome_data_authorized": false,
+  "raw_model_content_publication": false,
+  "auto_recharge": false
+}
