@@ -1,0 +1,12 @@
+{
+  "run_id":"TRI-DSA-VAL-20260913-005-SHD-001",
+  "strategy_contract":"DSA-SHADOW-TOP3-LONG-V1",
+  "source_run_id":34763520903,
+  "source_artifact_id":10319444105,
+  "source_artifact_digest":"sha256:65f0e02b7815097f773ed80a8a235bc83b60ad8652830ca3750dc46f4097450c",
+  "ranking_sha256":"13d8f0cf388b283414db60257bd155f5b302f56150d8808646637d5a35f995c6",
+  "action_day":"2026-09-14",
+  "outcome_data_authorized":false,
+  "real_trade_authority":false,
+  "production_authority":false
+}
