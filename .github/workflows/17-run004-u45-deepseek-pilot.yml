@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   u45-safe-pilot:
+    if: ${{ github.run_attempt == 1 }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -31,8 +32,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install test dependency only
-        run: python -m pip install pytest
+      - name: Install deterministic test harness dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
 
       - name: Verify trigger authorization contract
         run: |
@@ -42,6 +43,7 @@ jobs:
           expected={
             'run_id':'TRI-DSA-DEV-20260913-004-U45',
             'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'trigger_revision':2,
             'max_requests':36,
             'max_cny':5.0,
             'target':'2026-09-11',
@@ -51,7 +53,7 @@ jobs:
           for k,v in expected.items():
               if t.get(k)!=v: raise SystemExit('trigger contract mismatch: '+k)
           if t.get('raw_model_content_publication') is not False: raise SystemExit('raw content publication must be false')
-          print('TRIGGER_CONTRACT_OK', {'run_id':t['run_id'],'max_requests':36,'max_cny':5.0})
+          print('TRIGGER_CONTRACT_OK', {'run_id':t['run_id'],'revision':2,'max_requests':36,'max_cny':5.0})
           PY
 
       - name: Run deterministic safety tests
