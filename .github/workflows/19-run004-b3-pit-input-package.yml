@@ -1,0 +1,140 @@
+name: Run004 B3 PIT input package
+
+on:
+  push:
+    branches:
+      - trident/run004-fullpool-pit
+    paths:
+      - run004_b3_pit_trigger.json
+
+permissions:
+  contents: read
+
+jobs:
+  b3-pit-input:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Verify trigger contract
+        run: |
+          python - <<'PY'
+          import json
+          t=json.load(open('run004_b3_pit_trigger.json'))
+          assert t == {
+            'run_id':'TRI-DSA-DEV-20260913-004-B3-INPUT-R1',
+            'decision_session':'2026-09-03',
+            'decision_at':'2026-09-03T20:30:00+08:00',
+            'paid_resources':False,
+            'prediction_authorized':False
+          }
+          print('B3_TRIGGER_OK')
+          PY
+
+      - name: Reconstruct Sep3 SSE effective-date universe
+        run: |
+          mkdir -p reports/run004-b3-pit/raw
+          python scripts/run004_build_sse_pit_universe.py \
+            --anchor docs/dsa-o-universe.json \
+            --adjustment docs/run004_sse_adjustment_20260904.json \
+            --output reports/run004-b3-pit/sse-universe-2026-09-03-reconstructed.json \
+            --decision-session 2026-09-03
+
+      - name: Fetch official HKEX Sep3 historical quotation pages
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --max-time 60 \
+            -A 'TRIDENT-Run004-PIT-Evidence/1.0' \
+            'https://www.hkex.com.hk/chi/stat/dmstat/dayrpt/dqec260903.htm' \
+            -o reports/run004-b3-pit/raw/hkex-mainboard-dqec260903.htm
+          curl --fail --location --silent --show-error --max-time 60 \
+            -A 'TRIDENT-Run004-PIT-Evidence/1.0' \
+            'https://www.hkex.com.hk/eng/stat/smstat/dayquot/GEM/e_G260903.htm' \
+            -o reports/run004-b3-pit/raw/hkex-gem-e_G260903.htm
+          test $(wc -c < reports/run004-b3-pit/raw/hkex-mainboard-dqec260903.htm) -gt 100000
+          test $(wc -c < reports/run004-b3-pit/raw/hkex-gem-e_G260903.htm) -gt 10000
+          grep -a -q '03 SEP 2026' reports/run004-b3-pit/raw/hkex-gem-e_G260903.htm
+          echo HKEX_SEP3_ARCHIVE_FETCH_OK
+
+      - name: Probe no-key FRED graph vintage compatibility
+        run: |
+          set -euo pipefail
+          BASE='https://fred.stlouisfed.org/graph/fredgraph.csv'
+          curl --fail --location --silent --show-error --max-time 60 \
+            "$BASE?id=DGS10&cosd=2026-08-20&coed=2026-09-01&vintage_date=2026-09-02&revision_date=2026-09-02" \
+            -o reports/run004-b3-pit/raw/dgs10-vintage-2026-09-02.csv
+          curl --fail --location --silent --show-error --max-time 60 \
+            "$BASE?id=CPIAUCSL&cosd=2019-01-01&coed=2019-12-01&vintage_date=2020-01-15&revision_date=2020-01-15" \
+            -o reports/run004-b3-pit/raw/cpi-vintage-2020-01-15.csv
+          curl --fail --location --silent --show-error --max-time 60 \
+            "$BASE?id=CPIAUCSL&cosd=2019-01-01&coed=2019-12-01&vintage_date=2026-09-02&revision_date=2026-09-02" \
+            -o reports/run004-b3-pit/raw/cpi-vintage-2026-09-02.csv
+          python - <<'PY'
+          import csv, hashlib, json, pathlib
+          root=pathlib.Path('reports/run004-b3-pit/raw')
+          def sh(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          d=root/'dgs10-vintage-2026-09-02.csv'
+          rows=list(csv.DictReader(d.open()))
+          assert rows and rows[-1]['observation_date'] <= '2026-09-01'
+          c1=root/'cpi-vintage-2020-01-15.csv'; c2=root/'cpi-vintage-2026-09-02.csv'
+          probe={
+            'dgs10_sha256':sh(d),
+            'dgs10_last_observation_date':rows[-1]['observation_date'],
+            'cpi_old_sha256':sh(c1),
+            'cpi_new_sha256':sh(c2),
+            'vintage_parameter_functionally_changes_revised_series': sh(c1)!=sh(c2)
+          }
+          (pathlib.Path('reports/run004-b3-pit')/'fred-no-key-probe.json').write_text(json.dumps(probe,indent=2))
+          print('FRED_NO_KEY_PROBE', json.dumps(probe))
+          PY
+
+      - name: Build PIT input status manifest
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, datetime
+          root=pathlib.Path('reports/run004-b3-pit')
+          raw=root/'raw'
+          def sh(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          universe=json.load(open(root/'sse-universe-2026-09-03-reconstructed.json'))
+          fred=json.load(open(root/'fred-no-key-probe.json'))
+          manifest={
+            'run_id':'TRI-DSA-DEV-20260913-004-B3-INPUT-R1',
+            'decision_at':'2026-09-03T20:30:00+08:00',
+            'prediction_generated':False,
+            'universe':{
+              'universe_id':universe['universe_id'],
+              'member_count':universe['member_count'],
+              'content_sha256':sh(root/'sse-universe-2026-09-03-reconstructed.json'),
+              'effective_membership_reconstructed':True,
+              'pit_available_then_snapshot_verified':False,
+              'status':'WAIT_ARCHIVED_AS_AVAILABLE_THEN_UNIVERSE_EVIDENCE'
+            },
+            'price_evidence':[
+              {'source':'HKEX','market':'MAIN_BOARD','date':'2026-09-03','url':'https://www.hkex.com.hk/chi/stat/dmstat/dayrpt/dqec260903.htm','content_sha256':sh(raw/'hkex-mainboard-dqec260903.htm'),'retrieved_now':True,'historical_dated_archive':True},
+              {'source':'HKEX','market':'GEM','date':'2026-09-03','url':'https://www.hkex.com.hk/eng/stat/smstat/dayquot/GEM/e_G260903.htm','content_sha256':sh(raw/'hkex-gem-e_G260903.htm'),'retrieved_now':True,'historical_dated_archive':True,'date_marker_verified':'03 SEP 2026'}
+            ],
+            'macro_vintage':{
+              'official_alfred_semantics_documented_externally':True,
+              'official_api_key_present_in_this_run':False,
+              'no_key_graph_probe':fred,
+              'status':'CANDIDATE_NO_KEY_PATH_REQUIRES_GOVERNANCE_CONFIRMATION' if fred['vintage_parameter_functionally_changes_revised_series'] else 'WAIT_FRED_API_KEY_OR_VERIFIED_ALFRED_DOWNLOAD'
+            },
+            'pit_input_package_status':'WAIT_PIT_UNIVERSE_AVAILABILITY_AND_MACRO_VINTAGE_CONFIRMATION',
+            'governance_note':'Later SSE adjustment is used only to reconstruct effective membership and is not treated as information available on Sep3. No prediction is generated in this package.'
+          }
+          (root/'pit-input-status.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+          print('B3_INPUT_STATUS', json.dumps({'universe_count':universe['member_count'],'macro_status':manifest['macro_vintage']['status'],'package_status':manifest['pit_input_package_status']}))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run004-b3-pit-input-package
+          path: reports/run004-b3-pit/
+          retention-days: 14
