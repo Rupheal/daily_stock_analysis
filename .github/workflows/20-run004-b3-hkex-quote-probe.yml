@@ -1,0 +1,28 @@
+name: Run004 B3 HKEX quote format probe
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run004_b3_hkex_quote_probe.json]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Fetch Sep3 English Main Board Daily Quotations
+        run: |
+          curl --fail --location --silent --show-error --max-time 60 \
+            'https://www.hkex.com.hk/eng/stat/smstat/dayquot/d260903e.htm' -o /tmp/d260903e.htm
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('/tmp/d260903e.htm').read_bytes().decode('latin1','ignore')
+          for needle in ('00100','02475','06951','MINIMAX','LUXSHARE'):
+              i=text.find(needle)
+              print('PROBE',needle,'INDEX',i)
+              if i>=0: print(text[max(0,i-700):i+1600])
+          print('BYTES',len(text.encode('latin1','ignore')))
+          PY
