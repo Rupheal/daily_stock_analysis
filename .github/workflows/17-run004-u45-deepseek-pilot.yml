@@ -1,0 +1,138 @@
+name: Run004 U45 safe DeepSeek pilot
+
+on:
+  push:
+    branches:
+      - trident/run004-fullpool-pit
+    paths:
+      - run004_u45_paid_trigger.json
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: run004-u45-paid-pilot
+  cancel-in-progress: false
+
+jobs:
+  u45-safe-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependency only
+        run: python -m pip install pytest
+
+      - name: Verify trigger authorization contract
+        run: |
+          python - <<'PY'
+          import json
+          t=json.load(open('run004_u45_paid_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-DEV-20260913-004-U45',
+            'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'max_requests':36,
+            'max_cny':5.0,
+            'target':'2026-09-11',
+            'database_sha256':'4de088566416b6535a931a62107303cbfe346ac673e04f8ee7a5c3b8f2b0e663',
+            'integrity_sha256':'ce758772e757cc12be7380a05c54c92ec5a248130f57429f4ec04bd8f69d4e91'
+          }
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger contract mismatch: '+k)
+          if t.get('raw_model_content_publication') is not False: raise SystemExit('raw content publication must be false')
+          print('TRIGGER_CONTRACT_OK', {'run_id':t['run_id'],'max_requests':36,'max_cny':5.0})
+          PY
+
+      - name: Run deterministic safety tests
+        run: python -m pytest -q tests/test_run004_u45_safe_deepseek.py tests/test_dsa_ranking_envelope.py tests/test_dsa_prediction_ledger.py
+
+      - name: Download frozen U45 native-data artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: native-data-U45_data_only
+          path: input/u45
+          run-id: 34705579721
+          github-token: ${{ github.token }}
+
+      - name: Download strict U45 independent-integrity artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: public-pool-price-checks
+          path: input/pool
+          run-id: 34709328183
+          github-token: ${{ github.token }}
+
+      - name: Verify immutable input hashes
+        run: |
+          echo '4de088566416b6535a931a62107303cbfe346ac673e04f8ee7a5c3b8f2b0e663  input/u45/U/native-data.db' | sha256sum -c -
+          echo 'ce758772e757cc12be7380a05c54c92ec5a248130f57429f4ec04bd8f69d4e91  input/pool/U-integrity.json' | sha256sum -c -
+
+      - name: No-model exact-input preflight
+        run: |
+          python scripts/run004_u45_safe_deepseek.py \
+            --db input/u45/U/native-data.db \
+            --universe docs/dsa-u-universe.json \
+            --integrity input/pool/U-integrity.json \
+            --output /tmp/run004-u45-preflight \
+            --target 2026-09-11 \
+            --model deepseek-v4-flash \
+            --run-id TRI-DSA-DEV-20260913-004-U45-PREFLIGHT \
+            --max-requests 36 --max-cny 5 --dry-run
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/run004-u45-preflight/u45-safe-ranking.json'))
+          assert x['denominator']==45 and x['ranked_count']==36 and x['isolated_count']==9
+          assert x['model_http_requests']==0
+          print('EXACT_INPUT_PREFLIGHT_OK', {'denominator':45,'eligible':36,'isolated':9})
+          PY
+
+      - name: Execute authorized U45 DeepSeek pilot
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/run004_u45_safe_deepseek.py \
+            --db input/u45/U/native-data.db \
+            --universe docs/dsa-u-universe.json \
+            --integrity input/pool/U-integrity.json \
+            --output reports/run004-u45-safe \
+            --target 2026-09-11 \
+            --model deepseek-v4-flash \
+            --run-id TRI-DSA-DEV-20260913-004-U45 \
+            --max-requests 36 --max-cny 5
+
+      - name: Verify public-safe artifact contract
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('reports/run004-u45-safe/u45-safe-ranking.json')
+          text=p.read_text()
+          for key in ('"raw_response"','"provider_response"','"prompt"','"messages"','"reasoning"'):
+              if key in text: raise SystemExit('unsafe key in artifact: '+key)
+          x=json.loads(text)
+          assert x['denominator']==45
+          assert x['ranked_count']+x['isolated_count']==45
+          assert x['cost']['estimated_peak_cny']<=5.0
+          assert x['model_http_requests']<=36
+          print('SAFE_ARTIFACT_OK', {'ranked':x['ranked_count'],'isolated':x['isolated_count'],'requests':x['model_http_requests'],'peak_estimate_cny':x['cost']['estimated_peak_cny'],'ranking_sha256':x['hashes']['ranking_sha256']})
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run004-u45-safe-ranking
+          path: |
+            reports/run004-u45-safe/u45-safe-ranking.json
+            reports/run004-u45-safe/manifest.json
+            reports/run004-u45-safe/prediction-ledger/*.prediction.json
+          if-no-files-found: error
+          retention-days: 14
