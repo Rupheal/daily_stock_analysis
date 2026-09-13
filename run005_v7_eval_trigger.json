@@ -1,0 +1,10 @@
+{
+  "run_id":"TRI-DSA-VAL-20260913-005-V7-EVAL-R1",
+  "ablation_run_id":34788818461,
+  "ablation_artifact_id":10327605739,
+  "ablation_artifact_digest":"sha256:bb4d82c31072edc8d6a75625eaf40c1e6c635b8e5bfe0d1595298e2053ed35de",
+  "outcome_run_id":34788108594,
+  "outcome_artifact_id":10326983504,
+  "outcome_artifact_digest":"sha256:cd378ecf8bd8354e0832ad347888b229eefceba8582997c5900773009c07c103",
+  "model_calls_authorized":false
+}
