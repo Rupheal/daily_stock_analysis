@@ -1,0 +1,90 @@
+name: Run005 live Shadow episode freeze
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_live_shadow_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  freeze-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: run004-o660-safe-ranking
+          path: input/o660
+          run-id: 34763520903
+          github-token: ${{ github.token }}
+      - name: Freeze V10-compliant live Shadow episode before market
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib,datetime,zoneinfo,os
+          if os.environ.get('GITHUB_RUN_ATTEMPT')!='1': raise SystemExit('rerun prohibited')
+          t=json.load(open('run005_live_shadow_trigger.json'))
+          assert t['run_id']=='TRI-DSA-VAL-20260913-005-SHD-001'
+          assert t['source_run_id']==34763520903 and t['source_artifact_id']==10319444105
+          assert t['source_artifact_digest']=='sha256:65f0e02b7815097f773ed80a8a235bc83b60ad8652830ca3750dc46f4097450c'
+          assert t['ranking_sha256']=='13d8f0cf388b283414db60257bd155f5b302f56150d8808646637d5a35f995c6'
+          assert t['strategy_contract']=='DSA-SHADOW-TOP3-LONG-V1'
+          assert t['action_day']=='2026-09-14' and t['outcome_data_authorized'] is False
+          p=pathlib.Path('input/o660/pool-safe-ranking.json')
+          x=json.loads(p.read_text())
+          assert x['denominator']==660 and x['ranked_count']==407 and x['isolated_count']==253
+          assert x['hashes']['ranking_sha256']==t['ranking_sha256']
+          now=datetime.datetime.now(datetime.timezone.utc).astimezone(zoneinfo.ZoneInfo('Asia/Hong_Kong'))
+          cutoff=datetime.datetime(2026,9,14,9,0,tzinfo=zoneinfo.ZoneInfo('Asia/Hong_Kong'))
+          if not now < cutoff: raise SystemExit('shadow freeze missed 09:00 HKT cutoff')
+          actionable=[r for r in x['ranked'] if r['stance']=='positive']
+          actionable.sort(key=lambda r:(-r['score'],r['code']))
+          selected=actionable[:3]
+          episode={
+            'schema_version':1,
+            'run_id':t['run_id'],
+            'strategy_contract':t['strategy_contract'],
+            'frozen_at':now.isoformat(),
+            'action_day':'2026-09-14',
+            'signal_available_before_0900_hkt':True,
+            'source_prediction':{
+              'run_id':x['run_id'],'generated_at':x['generated_at'],'as_of':x['as_of'],
+              'artifact_id':t['source_artifact_id'],'artifact_digest':t['source_artifact_digest'],
+              'ranking_sha256':x['hashes']['ranking_sha256'],'denominator':660,'ranked':407,'isolated':253,
+            },
+            'actionable_positive_count':len(actionable),
+            'selection_rule':'positive stance only; score descending; code ascending tie-break; first 3',
+            'selected':[{
+              'slot':i+1,'code':r['code'],'score':r['score'],'stance':r['stance'],'confidence':r['confidence'],
+              'source_rank':r['rank'],'result_sha256':r['result_sha256'],'target_nav_weight':1/3,
+              'entry_state':'WAIT_ACTION_DAY_OFFICIAL_CLOSE'
+            } for i,r in enumerate(selected)],
+            'cash_target_weight':1-len(selected)/3,
+            'entry_convention':'2026-09-14 official HKEX close, market-on-close research proxy',
+            'holding_rule':'hold 5 full subsequent HKEX trading sessions; exit at fifth subsequent official close',
+            'outcome_data_read':False,
+            'real_trade_authority':False,
+            'production_authority':False,
+          }
+          payload=json.dumps(episode,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
+          episode['episode_sha256']=hashlib.sha256(payload).hexdigest()
+          out=pathlib.Path('reports/run005-live-shadow'); out.mkdir(parents=True)
+          (out/'shadow-episode.json').write_text(json.dumps(episode,ensure_ascii=False,indent=2))
+          manifest={'run_id':episode['run_id'],'episode_sha256':episode['episode_sha256'],'selected_codes':[r['code'] for r in episode['selected']],'frozen_at':episode['frozen_at'],'outcome_data_read':False}
+          (out/'manifest.json').write_text(json.dumps(manifest,indent=2))
+          assert len(selected)<=3 and all(r['stance']=='positive' for r in selected)
+          print('RUN005_LIVE_SHADOW_FROZEN',json.dumps(manifest,separators=(',',':')))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-live-shadow-episode-001
+          path: reports/run005-live-shadow/
+          if-no-files-found: error
+          retention-days: 30
