@@ -1,0 +1,168 @@
+name: Run004 O660 safe DeepSeek pilot
+
+on:
+  push:
+    branches:
+      - trident/run004-fullpool-pit
+    paths:
+      - run004_o660_paid_trigger.json
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: run004-o660-paid-pilot
+  cancel-in-progress: false
+
+jobs:
+  o660-safe-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install deterministic test harness dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+
+      - name: Verify one-shot trigger authorization contract
+        run: |
+          python - <<'PY'
+          import json, os
+          if os.environ.get('GITHUB_RUN_ATTEMPT') != '1':
+              raise SystemExit('paid workflow rerun is prohibited; create a new reviewed trigger instead')
+          t=json.load(open('run004_o660_paid_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-DEV-20260913-004-O660-R1',
+            'authorization':'OWNER_AUTHORIZED_AFTER_U45_ACCEPTANCE',
+            'trigger_revision':1,
+            'u45_accepted_run_id':34762648630,
+            'max_requests':407,
+            'max_cny':5.0,
+            'target':'2026-09-11',
+            'database_sha256':'f1b50fa459e229455fddadb6fbd23823199ec5ea4927d289f54ad683ed9a045b',
+            'integrity_sha256':'980bba55390fd356cd6c16f45c89e2aa6eb5cd4021c457d2d10f901a21d5b002'
+          }
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger contract mismatch: '+k)
+          if t.get('raw_model_content_publication') is not False: raise SystemExit('raw content publication must be false')
+          if t.get('auto_recharge') is not False: raise SystemExit('auto recharge must be false')
+          print('O660_TRIGGER_CONTRACT_OK', {'run_id':t['run_id'],'max_requests':407,'max_cny':5.0})
+          PY
+
+      - name: Run deterministic regression tests
+        run: python -m pytest -q tests/test_run004_u45_safe_deepseek.py tests/test_run004_u45_safe_deepseek_v2.py tests/test_dsa_ranking_envelope.py tests/test_dsa_prediction_ledger.py
+
+      - name: Verify generic pool adapter contract
+        run: |
+          python - <<'PY'
+          import scripts.run004_pool_safe_deepseek as m
+          good={'score':61,'stance':'neutral','confidence':'medium','reason_codes':['mixed_ma_structure'],'discard_me':'never persist'}
+          assert m.validate_model_result(good)=={'score':61,'stance':'neutral','confidence':'medium','reason_codes':['mixed_ma_structure']}
+          try:
+              m.validate_model_result({'score':61,'stance':'neutral','confidence':'medium'})
+          except ValueError as exc:
+              assert str(exc)=='invalid_model_schema_missing_required'
+          else:
+              raise SystemExit('missing core field unexpectedly accepted')
+          print('GENERIC_POOL_ADAPTER_OK')
+          PY
+
+      - name: Download frozen O660 native-data artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: original-official-pool-data-and-replay
+          path: input/o660
+          run-id: 34705950297
+          github-token: ${{ github.token }}
+
+      - name: Download strict O660 independent-integrity artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: public-pool-price-checks
+          path: input/pool
+          run-id: 34709328183
+          github-token: ${{ github.token }}
+
+      - name: Verify immutable O660 input hashes
+        run: |
+          echo 'f1b50fa459e229455fddadb6fbd23823199ec5ea4927d289f54ad683ed9a045b  input/o660/O-full/native-data.db' | sha256sum -c -
+          echo '980bba55390fd356cd6c16f45c89e2aa6eb5cd4021c457d2d10f901a21d5b002  input/pool/O-integrity.json' | sha256sum -c -
+          python - <<'PY'
+          import json, hashlib
+          u=json.load(open('docs/dsa-o-universe.json'))
+          assert u['universe_id']=='O_SOUTHBOUND_BUY_SELL_2026-09-11'
+          assert u['effective_session']=='2026-09-11'
+          assert u['member_count']==660 and len(u['members'])==660
+          print('O660_UNIVERSE_OK', {'member_count':660,'file_sha256':hashlib.sha256(open('docs/dsa-o-universe.json','rb').read()).hexdigest()})
+          PY
+
+      - name: No-model exact O660 input preflight
+        run: |
+          python scripts/run004_pool_safe_deepseek.py \
+            --db input/o660/O-full/native-data.db \
+            --universe docs/dsa-o-universe.json \
+            --integrity input/pool/O-integrity.json \
+            --output /tmp/run004-o660-preflight \
+            --target 2026-09-11 --track O \
+            --model deepseek-v4-flash \
+            --run-id TRI-DSA-DEV-20260913-004-O660-PREFLIGHT \
+            --max-requests 407 --max-cny 5 --dry-run
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/run004-o660-preflight/pool-safe-ranking.json'))
+          assert x['denominator']==660 and x['ranked_count']==407 and x['isolated_count']==253
+          assert x['model_http_requests']==0
+          assert x['track']=='O'
+          print('O660_EXACT_INPUT_PREFLIGHT_OK', {'denominator':660,'eligible':407,'isolated':253})
+          PY
+
+      - name: Execute authorized O660 DeepSeek pilot
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/run004_pool_safe_deepseek.py \
+            --db input/o660/O-full/native-data.db \
+            --universe docs/dsa-o-universe.json \
+            --integrity input/pool/O-integrity.json \
+            --output reports/run004-o660-safe \
+            --target 2026-09-11 --track O \
+            --model deepseek-v4-flash \
+            --run-id TRI-DSA-DEV-20260913-004-O660-R1 \
+            --max-requests 407 --max-cny 5
+
+      - name: Verify public-safe artifact contract
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('reports/run004-o660-safe/pool-safe-ranking.json')
+          text=p.read_text()
+          for key in ('"raw_response"','"provider_response"','"prompt"','"messages"','"reasoning"','"analysis"','"explanation"'):
+              if key in text: raise SystemExit('unsafe key in artifact: '+key)
+          x=json.loads(text)
+          assert x['denominator']==660
+          assert x['ranked_count']+x['isolated_count']==660
+          assert x['cost']['estimated_peak_cny']<=5.0
+          assert x['model_http_requests']<=407
+          assert x['track']=='O'
+          print('O660_SAFE_ARTIFACT_OK', {'ranked':x['ranked_count'],'isolated':x['isolated_count'],'requests':x['model_http_requests'],'peak_estimate_cny':x['cost']['estimated_peak_cny'],'ranking_sha256':x['hashes']['ranking_sha256']})
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run004-o660-safe-ranking
+          path: |
+            reports/run004-o660-safe/pool-safe-ranking.json
+            reports/run004-o660-safe/manifest.json
+            reports/run004-o660-safe/prediction-ledger/*.prediction.json
+          if-no-files-found: error
+          retention-days: 14
