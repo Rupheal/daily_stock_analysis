@@ -1,0 +1,125 @@
+name: Run005 V1 Sep7 matured outcome scoring
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_v1_outcome_20260907_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  score-outcomes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify frozen outcome trigger
+        run: |
+          python - <<'PY'
+          import json, os
+          if os.environ.get('GITHUB_RUN_ATTEMPT') != '1':
+              raise SystemExit('rerun prohibited; require new reviewed trigger')
+          t=json.load(open('run005_v1_outcome_20260907_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-VAL-20260913-005-V1-OUTCOME-20260907-R1',
+            'prediction_run_id':34787648316,
+            'prediction_artifact_id':10327197130,
+            'prediction_artifact_digest':'sha256:a2752dcd70f8bb3df18bbf52618efa4936d258582ec305b22ac031d91ce44185',
+            'input_run_id':34787266540,
+            'input_artifact_id':10326727922,
+            'input_artifact_digest':'sha256:288954e782b5f532fb7a19b0af6fb5708663784d6f152f7d6a11ee41556b12b7',
+            'ranking_sha256':'3ecc0c5262f3f8b435398be92721fb4e9c1ab83775965f18276d6402364ed40f',
+            'original_denominator':54,
+            'metric_contract_commit':'21f1d934b7d2e4f601cd09ec5127547b2869f036',
+          }
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger contract mismatch:'+k)
+          assert t['mature_horizons']==[1,3,5] and t['wait_maturity_horizons']==[10,20]
+          print('RUN005_V1_OUTCOME_TRIGGER_OK')
+          PY
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+      - name: Test generic outcome harness before retrieval
+        run: python -m pytest -q tests/test_run005_score_anchor_outcomes.py tests/test_dsa_prediction_ledger.py
+      - name: Download frozen prediction artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: run005-v1-prediction-20260907-r2
+          path: input/pred
+          run-id: 34787648316
+          github-token: ${{ github.token }}
+      - name: Download accepted PIT input artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: run005-v1-input-SSE_REBAL_20260904_EFFECTIVE_20260907
+          path: input/data
+          run-id: 34787266540
+          github-token: ${{ github.token }}
+      - name: Reverify immutable parent before outcome retrieval
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=json.load(open('input/pred/historical-pit-prediction.json'))
+          assert p['status']=='HISTORICAL_PIT_REPLAY_FROZEN' and p['outcome_data_read'] is False
+          assert p['original_denominator']==54 and p['ranked_count']==54 and p['isolated_count']==0
+          assert p['hashes']['ranking_sha256']=='3ecc0c5262f3f8b435398be92721fb4e9c1ab83775965f18276d6402364ed40f'
+          ledgers=list(pathlib.Path('input/pred/prediction-ledger').glob('*.prediction.json'))
+          assert len(ledgers)==1
+          print('RUN005_V1_PARENT_PREDICTION_IMMUTABLE_OK', ledgers[0].name)
+          PY
+      - name: Fetch only matured official HKEX outcome pages
+        run: |
+          set -euo pipefail
+          mkdir -p input/outcomes
+          for d in 260907 260909 260911; do
+            curl --fail --location --silent --show-error --retry 2 --max-time 90 \
+              "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d${d}e.htm" \
+              -o "input/outcomes/d${d}e.htm"
+          done
+          test $(find input/outcomes -type f | wc -l) -eq 3
+          echo RUN005_V1_MATURED_OUTCOME_PAGES_OK
+      - name: Append denominator-preserving Reality Gap
+        run: |
+          LEDGER=$(find input/pred/prediction-ledger -name '*.prediction.json' | head -1)
+          python scripts/run005_score_anchor_outcomes.py \
+            --prediction input/pred/historical-pit-prediction.json \
+            --ledger "$LEDGER" \
+            --input-dir 'input/data/run005-v1-input/SSE_REBAL_20260904_EFFECTIVE_20260907' \
+            --quote-dir input/outcomes \
+            --horizons '1=2026-09-07,3=2026-09-09,5=2026-09-11' \
+            --wait-horizons '10,20' \
+            --output reports/run005-v1-outcome-20260907 \
+            --run-id TRI-DSA-VAL-20260913-005-V1-OUTCOME-20260907-R1 \
+            --outcome-id H1_H3_H5_MATURITY \
+            --metric-contract 'TRIDENT-Foundation@21f1d934b7d2e4f601cd09ec5127547b2869f036:DSA_RUN005_METRIC_CONTRACT_20260913.md'
+      - name: Verify denominator and maturity accounting
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('reports/run005-v1-outcome-20260907/run005-anchor-outcomes.json'))
+          assert x['original_denominator']==54
+          assert x['mature_horizons']==[1,3,5] and x['wait_maturity_horizons']==[10,20]
+          assert set(x['horizon_results'])=={'1','3','5'}
+          for h,v in x['horizon_results'].items():
+              m=v['metrics']
+              assert m['original_matured_denominator']==54
+              assert m['comparable_ranked_count'] + m['noncomparable_count']==54
+              assert sum(m['status_counts'].values())==54
+          print('RUN005_V1_OUTCOME_ACCOUNTING_OK', {'package_sha256':x['package_sha256']})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-v1-outcomes-20260907
+          path: reports/run005-v1-outcome-20260907/
+          if-no-files-found: error
+          retention-days: 14
