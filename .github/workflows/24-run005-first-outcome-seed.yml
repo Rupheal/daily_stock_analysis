@@ -1,0 +1,128 @@
+name: Run005 first post-freeze outcome seed
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_first_outcome_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  historical-outcome-seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Verify pre-outcome contract and trigger
+        run: |
+          python - <<'PY'
+          import json
+          t=json.load(open('run005_first_outcome_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-VAL-20260913-005-H135-R1',
+            'prediction_run_id':34765726902,
+            'prediction_artifact_id':10320371193,
+            'prediction_artifact_digest':'sha256:f35fe2bf0fdf2957edb40c1af08a54f1162e25fdc28594cac84c33f0daa73276',
+            'pit_input_run_id':34765446209,
+            'pit_input_artifact_id':10320895614,
+            'metric_contract_commit':'21f1d934b7d2e4f601cd09ec5127547b2869f036',
+          }
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger contract mismatch:'+k)
+          assert t.get('outcome_data_authorized') is True
+          assert t.get('mature_horizons')==[1,3,5]
+          assert t.get('wait_maturity_horizons')==[10,20]
+          print('RUN005_OUTCOME_TRIGGER_OK')
+          PY
+
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+      - name: Test outcome harness before retrieval
+        run: python -m pytest -q tests/test_run005_append_historical_outcomes.py tests/test_dsa_prediction_ledger.py
+
+      - name: Download frozen B3 prediction artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: run004-b3-historical-pit-prediction-r2
+          path: input/pred
+          run-id: 34765726902
+          github-token: ${{ github.token }}
+      - name: Download accepted B3 PIT input artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: run004-b3-preopen-pit-package
+          path: input/b3
+          run-id: 34765446209
+          github-token: ${{ github.token }}
+
+      - name: Verify immutable parent prediction before outcomes
+        run: |
+          python - <<'PY'
+          import json, pathlib, hashlib
+          pred=json.load(open('input/pred/b3-historical-pit-prediction.json'))
+          assert pred['outcome_data_read'] is False and pred['status']=='HISTORICAL_PIT_REPLAY_FROZEN'
+          assert pred['hashes']['ranking_sha256']=='fcf571e7f140e2df4bb0926e14940e062524d737c5bc991792fc8b7b398f5177'
+          ledgers=list(pathlib.Path('input/pred/prediction-ledger').glob('*.prediction.json'))
+          assert len(ledgers)==1
+          print('PARENT_PREDICTION_IMMUTABLE_OK', {'ledger':ledgers[0].name})
+          PY
+
+      - name: Fetch only matured official HKEX outcome pages
+        run: |
+          set -euo pipefail
+          mkdir -p input/outcomes
+          for d in 260903 260907 260909; do
+            curl --fail --location --silent --show-error --retry 2 --max-time 90 \
+              "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d${d}e.htm" \
+              -o "input/outcomes/d${d}e.htm"
+          done
+          test $(find input/outcomes -type f | wc -l) -eq 3
+          echo HKEX_MATURED_OUTCOME_PAGES_OK
+
+      - name: Append Reality Gap without mutating prediction
+        run: |
+          LEDGER=$(find input/pred/prediction-ledger -name '*.prediction.json' | head -1)
+          python scripts/run005_append_historical_outcomes.py \
+            --prediction input/pred/b3-historical-pit-prediction.json \
+            --ledger "$LEDGER" \
+            --features input/b3/pit-features.json \
+            --cohort docs/run004_b3_aug5_pit_cohort.json \
+            --quote-dir input/outcomes \
+            --horizons '1=2026-09-03,3=2026-09-07,5=2026-09-09' \
+            --output reports/run005-first-outcome \
+            --run-id TRI-DSA-VAL-20260913-005-H135-R1 \
+            --anchor-id SSE_AUG5_ADDITIONS_PIT_2026-09-03_PREOPEN \
+            --outcome-id H1_H3_H5_FIRST_MATURITY \
+            --metric-contract 'TRIDENT-Foundation@21f1d934b7d2e4f601cd09ec5127547b2869f036:DSA_RUN005_METRIC_CONTRACT_20260913.md'
+
+      - name: Verify maturity and append-only boundary
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          x=json.load(open('reports/run005-first-outcome/run005-historical-outcome-seed.json'))
+          assert x['mature_horizons']==[1,3,5]
+          assert x['wait_maturity_horizons']==[10,20]
+          assert x['accepted_progress_claim']=='NONE_BY_THIS_ARTIFACT_ALONE'
+          assert set(x['horizon_results'])=={'1','3','5'}
+          assert all(v['metrics']['n']==3 for v in x['horizon_results'].values())
+          assert pathlib.Path('input/pred/b3-historical-pit-prediction.json').exists()
+          print('RUN005_FIRST_OUTCOME_BOUNDARY_OK', {'package_sha256':x['package_sha256']})
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-first-outcome-seed
+          path: reports/run005-first-outcome/
+          if-no-files-found: error
+          retention-days: 14
