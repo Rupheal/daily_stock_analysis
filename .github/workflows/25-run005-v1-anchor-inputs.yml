@@ -1,0 +1,103 @@
+name: Run005 V1 historical PIT input expansion
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_v1_input_trigger.json]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify one-shot free trigger
+        run: |
+          python - <<'PY'
+          import json, os
+          if os.environ.get('GITHUB_RUN_ATTEMPT') != '1':
+              raise SystemExit('rerun prohibited; require new reviewed trigger')
+          t=json.load(open('run005_v1_input_trigger.json'))
+          assert t['run_id']=='TRI-DSA-VAL-20260913-005-V1-INPUT-R1'
+          assert t['paid_resources'] is False
+          assert t['prediction_authorized'] is False
+          assert t['outcome_data_authorized'] is False
+          assert t['frozen_original_denominator']==149
+          print('RUN005_V1_INPUT_TRIGGER_OK')
+          PY
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+      - name: Test denominator and PIT isolation harness
+        run: python -m pytest -q tests/test_run005_build_anchor_input.py tests/test_dsa_pit_manifest.py
+
+  build:
+    needs: tests
+    strategy:
+      fail-fast: false
+      matrix:
+        anchor:
+          - SSE_REBAL_20250307_EFFECTIVE_20250310
+          - SSE_REBAL_20250905_EFFECTIVE_20250908
+          - SSE_REBAL_20260306_EFFECTIVE_20260309
+          - SSE_REBAL_20260605_EFFECTIVE_20260608
+          - SSE_REBAL_20260904_EFFECTIVE_20260907
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Fetch only predecision official sources
+        run: |
+          python scripts/run005_fetch_anchor_sources.py \
+            --anchors docs/run005_v1_replay_anchors.json \
+            --anchor-id '${{ matrix.anchor }}' \
+            --output 'reports/run005-v1-source/${{ matrix.anchor }}' \
+            --timeout 60 --max-calendar-lookback 55
+      - name: Build fail-closed PIT input package
+        run: |
+          python scripts/run005_build_anchor_input.py \
+            --anchors docs/run005_v1_replay_anchors.json \
+            --anchor-id '${{ matrix.anchor }}' \
+            --source-dir 'reports/run005-v1-source/${{ matrix.anchor }}' \
+            --config docs/run004_b3_replay_config.json \
+            --output 'reports/run005-v1-input/${{ matrix.anchor }}'
+      - name: Verify denominator accounting and no outcomes
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          anchor='${{ matrix.anchor }}'
+          p=pathlib.Path('reports/run005-v1-input')/anchor/'package-manifest.json'
+          x=json.loads(p.read_text())
+          assert x['prediction_generated'] is False and x['outcome_data_fetched'] is False
+          assert x['pit_input_admissible'] is True
+          assert x['eligible_count'] + x['isolated_count'] == x['original_denominator']
+          c=json.loads((p.parent/'coverage.json').read_text())
+          assert c['denominator']==x['original_denominator']
+          assert c['eligible_count']==x['eligible_count'] and c['isolated_count']==x['isolated_count']
+          print('RUN005_V1_ANCHOR_INPUT_VERIFIED', {'anchor':anchor,'denominator':x['original_denominator'],'eligible':x['eligible_count'],'isolated':x['isolated_count'],'input_sha256':x['input_sha256'],'manifest_sha256':x['manifest_sha256']})
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: run005-v1-input-${{ matrix.anchor }}
+          path: |
+            reports/run005-v1-source/${{ matrix.anchor }}/source-fetch-receipt.json
+            reports/run005-v1-source/${{ matrix.anchor }}/sessions.txt
+            reports/run005-v1-input/${{ matrix.anchor }}/
+          if-no-files-found: warn
+          retention-days: 14
