@@ -13,7 +13,10 @@ import json
 import re
 from pathlib import Path
 
-LINE1 = re.compile(r"^\s*(?P<code>\d{1,5})\s+(?P<name>.+?)\s+(?P<cur>HKD|RMB|USD)\s+(?P<prev>[0-9.]+|-)\s+(?P<ask>[0-9.]+|-)\s+(?P<high>[0-9.]+|-)\s+(?P<shares>[0-9,]+|-)\s*$")
+# HKEX may prefix a quotation row with '*' (for example MINIMAX-W on 2026-08-06).
+# The marker is metadata, not part of the security code; all price/volume fields
+# remain subject to the same strict two-line parsing and required-field checks.
+LINE1 = re.compile(r"^\s*\*?\s*(?P<code>\d{1,5})\s+(?P<name>.+?)\s+(?P<cur>HKD|RMB|USD)\s+(?P<prev>[0-9.]+|-)\s+(?P<ask>[0-9.]+|-)\s+(?P<high>[0-9.]+|-)\s+(?P<shares>[0-9,]+|-)\s*$")
 LINE2 = re.compile(r"^\s*(?P<close>[0-9.]+|-)\s+(?P<bid>[0-9.]+|-)\s+(?P<low>[0-9.]+|-)\s+(?P<turnover>[0-9,]+|-)\s*$")
 TAG = re.compile(r"<[^>]+>")
 
