@@ -1,0 +1,60 @@
+name: Run005 HKEX historical page archive probe
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_hkex_archive_probe_trigger.json]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Probe Internet Archive for retired HKEX official quotation pages
+        run: |
+          set -euo pipefail
+          mkdir -p reports/run005-archive-probe
+          python - <<'PY'
+          import json, urllib.parse, urllib.request, pathlib, hashlib
+          targets={
+            '2025-09-05':'https://www.hkex.com.hk/eng/stat/smstat/dayquot/d250905e.htm',
+            '2026-06-05':'https://www.hkex.com.hk/eng/stat/smstat/dayquot/d260605e.htm',
+          }
+          out={}
+          for date,url in targets.items():
+              q='https://web.archive.org/cdx/search/cdx?'+urllib.parse.urlencode({
+                  'url':url,'output':'json','filter':'statuscode:200','fl':'timestamp,original,statuscode,digest','collapse':'digest'
+              })
+              req=urllib.request.Request(q,headers={'User-Agent':'TRIDENT-Run005-Archive-Probe/1.0'})
+              try:
+                  data=json.loads(urllib.request.urlopen(req,timeout=60).read())
+              except Exception as exc:
+                  out[date]={'original_url':url,'cdx_error':type(exc).__name__+':'+str(exc)[:120]}
+                  continue
+              rows=data[1:] if isinstance(data,list) and data else []
+              item={'original_url':url,'capture_count':len(rows),'captures':rows[-5:]}
+              if rows:
+                  ts=rows[-1][0]
+                  snap=f'https://web.archive.org/web/{ts}id_/{url}'
+                  try:
+                      b=urllib.request.urlopen(urllib.request.Request(snap,headers={'User-Agent':'TRIDENT-Run005-Archive-Probe/1.0'}),timeout=90).read()
+                      item.update({'selected_timestamp':ts,'snapshot_url':snap,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'has_quote_marker':b'PRV.CLO./' in b,'looks_like_hkex':b'HKEX' in b.upper() or b'HONG KONG' in b.upper()})
+                      pathlib.Path(f'reports/run005-archive-probe/{date}.htm').write_bytes(b)
+                  except Exception as exc:
+                      item['snapshot_error']=type(exc).__name__+':'+str(exc)[:120]
+              out[date]=item
+          pathlib.Path('reports/run005-archive-probe/probe.json').write_text(json.dumps(out,indent=2))
+          print('ARCHIVE_PROBE_RESULT',json.dumps(out,separators=(',',':')))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-hkex-archive-probe
+          path: reports/run005-archive-probe/
+          if-no-files-found: error
+          retention-days: 14
