@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source": "Shanghai Stock Exchange / China Investment Information Services",
+  "source_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260904_10831331.shtml",
+  "notice_id": "中投信〔2026〕50号",
+  "published_date": "2026-09-04",
+  "effective_rule": "effective from the next Southbound Stock Connect trading day",
+  "additions_count": 54,
+  "removals_count": 15,
+  "additions": ["00068","00340","00376","00600","00901","01021","01133","01191","01236","01286","01392","01440","01511","01609","01651","01672","01779","01866","01879","01956","02142","02225","02272","02335","02526","02553","02616","02632","02670","02672","02696","02697","02723","02726","02729","03277","03310","03355","03388","03625","03774","06106","06636","06656","06658","06675","06715","06872","06938","07630","07666","07688","09637","09888"],
+  "removals": ["00909","01475","01691","01773","02158","02255","02291","02410","02431","02562","02570","02582","02587","06603","06955"],
+  "governance": {
+    "use": "historical_effective_date_reconstruction_only",
+    "pit_input_admissible_at_2026_09_03": false,
+    "reason": "The notice was published after the 2026-09-03 decision timestamp. It may prove later effective-date transitions but must not be presented as information available to the historical model on 2026-09-03."
+  }
+}
