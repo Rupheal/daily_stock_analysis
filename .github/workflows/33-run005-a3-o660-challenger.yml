@@ -1,0 +1,128 @@
+name: Run005 A3 O660 live-OOS challenger freeze
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_a3_o660_challenger_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: run005-a3-o660-challenger-paid
+  cancel-in-progress: false
+
+jobs:
+  freeze-challenger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify premarket one-shot authorization
+        run: |
+          python - <<'PY'
+          import json,os,datetime,zoneinfo
+          if os.environ.get('GITHUB_RUN_ATTEMPT')!='1': raise SystemExit('paid rerun prohibited')
+          t=json.load(open('run005_a3_o660_challenger_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-VAL-20260913-005-A3-OOS-CHALLENGER-001',
+            'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'base_champion_ranking_sha256':'13d8f0cf388b283414db60257bd155f5b302f56150d8808646637d5a35f995c6',
+            'target':'2026-09-11','original_denominator':660,'eligible_count':407,'isolated_count':253,
+            'max_requests':407,'max_cny':3.0,'challenger_id':'RUN005_A3_NO_VOLATILITY_OOS_CHALLENGER_V1'}
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger mismatch:'+k)
+          assert t['omitted_fields']==['realized_vol20_ann_pct']
+          assert t['outcome_data_authorized'] is False and t['champion_replacement_authorized'] is False and t['auto_recharge'] is False
+          now=datetime.datetime.now(datetime.timezone.utc).astimezone(zoneinfo.ZoneInfo('Asia/Hong_Kong'))
+          if not now < datetime.datetime(2026,9,14,8,30,tzinfo=zoneinfo.ZoneInfo('Asia/Hong_Kong')):
+              raise SystemExit('insufficient premarket margin for challenger freeze')
+          print('RUN005_A3_OOS_TRIGGER_OK',now.isoformat())
+          PY
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+      - name: Test A3 safeguards before paid calls
+        run: |
+          python -m pytest -q tests/test_run005_o660_a3_challenger.py tests/test_dsa_prediction_ledger.py tests/test_dsa_ranking_envelope.py
+      - name: Download frozen O660 native-data artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: original-official-pool-data-and-replay
+          path: input/o660
+          run-id: 34705950297
+          github-token: ${{ github.token }}
+      - name: Download strict O660 integrity artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: public-pool-price-checks
+          path: input/pool
+          run-id: 34709328183
+          github-token: ${{ github.token }}
+      - name: Verify immutable source inputs
+        run: |
+          echo 'f1b50fa459e229455fddadb6fbd23823199ec5ea4927d289f54ad683ed9a045b  input/o660/O-full/native-data.db' | sha256sum -c -
+          echo '980bba55390fd356cd6c16f45c89e2aa6eb5cd4021c457d2d10f901a21d5b002  input/pool/O-integrity.json' | sha256sum -c -
+          python - <<'PY'
+          import json
+          u=json.load(open('docs/dsa-o-universe.json')); q=json.load(open('input/pool/O-integrity.json'))
+          assert u['member_count']==660 and q['denominator']==660
+          print('RUN005_A3_O660_INPUTS_OK')
+          PY
+      - name: No-model exact A3 preflight
+        run: |
+          python scripts/run005_o660_a3_challenger.py \
+            --db input/o660/O-full/native-data.db --universe docs/dsa-o-universe.json --integrity input/pool/O-integrity.json \
+            --output /tmp/run005-a3-preflight --target 2026-09-11 --track O --model deepseek-v4-flash \
+            --run-id TRI-DSA-VAL-20260913-005-A3-OOS-PREFLIGHT --max-requests 407 --max-cny 3 --dry-run
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/run005-a3-preflight/a3-o660-challenger.json'))
+          assert x['denominator']==660 and x['ranked_count']==407 and x['isolated_count']==253
+          assert x['model_http_requests']==0 and x['omitted_fields']==['realized_vol20_ann_pct']
+          assert x['champion_replaced'] is False and x['outcome_data_read'] is False
+          print('RUN005_A3_PREFLIGHT_OK')
+          PY
+      - name: Execute authorized A3 O660 challenger
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/run005_o660_a3_challenger.py \
+            --db input/o660/O-full/native-data.db --universe docs/dsa-o-universe.json --integrity input/pool/O-integrity.json \
+            --output reports/run005-a3-o660 --target 2026-09-11 --track O --model deepseek-v4-flash \
+            --run-id TRI-DSA-VAL-20260913-005-A3-OOS-CHALLENGER-001 --max-requests 407 --max-cny 3
+      - name: Verify challenger frozen before market and denominator intact
+        run: |
+          python - <<'PY'
+          import json,pathlib,datetime,zoneinfo
+          x=json.load(open('reports/run005-a3-o660/a3-o660-challenger.json'))
+          assert x['denominator']==660 and x['ranked_count']+x['isolated_count']==660
+          assert x['model_http_requests']<=407 and x['cost']['estimated_peak_cny']<=3.0
+          assert x['omitted_fields']==['realized_vol20_ann_pct'] and x['champion_replaced'] is False and x['outcome_data_read'] is False
+          generated=datetime.datetime.fromisoformat(x['generated_at']).astimezone(zoneinfo.ZoneInfo('Asia/Hong_Kong'))
+          if not generated < datetime.datetime(2026,9,14,9,0,tzinfo=zoneinfo.ZoneInfo('Asia/Hong_Kong')):
+              raise SystemExit('challenger freeze missed 09:00 HKT boundary')
+          ledgers=list(pathlib.Path('reports/run005-a3-o660/prediction-ledger').glob('*.prediction.json')); assert len(ledgers)==1
+          forbidden={'raw_response','provider_response','prompt','messages','reasoning','analysis','explanation'}
+          def keys(v):
+              if isinstance(v,dict):
+                  for k,c in v.items(): yield k; yield from keys(c)
+              elif isinstance(v,list):
+                  for c in v: yield from keys(c)
+          if forbidden & set(keys(x)): raise SystemExit('unsafe model-content key')
+          print('RUN005_A3_OOS_CHALLENGER_FROZEN',{'generated_hkt':generated.isoformat(),'ranked':x['ranked_count'],'isolated':x['isolated_count'],'requests':x['model_http_requests'],'peak_cny':x['cost']['estimated_peak_cny'],'ranking_sha256':x['hashes']['ranking_sha256']})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-a3-o660-oos-challenger-001
+          path: reports/run005-a3-o660/
+          if-no-files-found: error
+          retention-days: 30
