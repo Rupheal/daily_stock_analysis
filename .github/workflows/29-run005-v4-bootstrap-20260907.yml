@@ -1,0 +1,59 @@
+name: Run005 V4 Sep7 bootstrap uncertainty
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run005_v4_bootstrap_20260907_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify trigger
+        run: |
+          python - <<'PY'
+          import json
+          t=json.load(open('run005_v4_bootstrap_20260907_trigger.json'))
+          assert t['run_id']=='TRI-DSA-VAL-20260913-005-V4-BOOTSTRAP-20260907-R1'
+          assert t['outcome_run_id']==34788108594
+          assert t['outcome_artifact_id']==10326983504
+          assert t['outcome_artifact_digest']=='sha256:cd378ecf8bd8354e0832ad347888b229eefceba8582997c5900773009c07c103'
+          assert t['reps']==2000
+          print('RUN005_V4_BOOTSTRAP_TRIGGER_OK')
+          PY
+      - name: Install tests
+        run: python -m pip install pytest
+      - name: Test deterministic bootstrap
+        run: python -m pytest -q tests/test_run005_bootstrap_ranking_quality.py
+      - name: Download accepted outcome artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: run005-v1-outcomes-20260907-r3
+          path: input/outcome
+          run-id: 34788108594
+          github-token: ${{ github.token }}
+      - name: Run fixed-seed bootstrap
+        run: |
+          python scripts/run005_bootstrap_ranking_quality.py \
+            --input input/outcome/run005-anchor-outcomes.json \
+            --output reports/run005-v4-bootstrap-20260907.json \
+            --reps 2000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run005-v4-bootstrap-20260907
+          path: reports/run005-v4-bootstrap-20260907.json
+          if-no-files-found: error
+          retention-days: 14
