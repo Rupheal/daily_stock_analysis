@@ -1,0 +1,125 @@
+name: Run004 B3 historical PIT prediction freeze
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run004_b3_prediction_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: run004-b3-historical-prediction-paid
+  cancel-in-progress: false
+
+jobs:
+  freeze-prediction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Verify one-shot owner authorization
+        run: |
+          python - <<'PY'
+          import json, os
+          if os.environ.get('GITHUB_RUN_ATTEMPT') != '1':
+              raise SystemExit('paid workflow rerun prohibited; require a new reviewed trigger')
+          t=json.load(open('run004_b3_prediction_trigger.json'))
+          expected={
+            'run_id':'TRI-DSA-DEV-20260913-004-B3-PRED-R1',
+            'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
+            'input_workflow_run_id':34765446209,
+            'input_artifact_id':10320895614,
+            'input_artifact_digest':'sha256:32b5b723db4b72dfc1357a3a37c04d9bb9aa0a4cc407a16abe05b7e9506e4cae',
+            'pit_manifest_sha256':'4a27ba4b71ab7f8a2aa30893a4862682d7e76f110444d57071c7874870c327df',
+            'input_sha256':'35e009115253f6a697bb1d45aab019712c03d2a85d6c58a1f3ada85af64fbb80',
+            'max_requests':3,
+            'max_cny':1.0,
+          }
+          for k,v in expected.items():
+              if t.get(k)!=v: raise SystemExit('trigger contract mismatch:'+k)
+          if t.get('outcome_data_authorized') is not False: raise SystemExit('outcome data must remain prohibited before freeze')
+          if t.get('raw_model_content_publication') is not False: raise SystemExit('raw model content publication prohibited')
+          if t.get('auto_recharge') is not False: raise SystemExit('auto recharge prohibited')
+          print('B3_PRED_TRIGGER_OK')
+          PY
+
+      - name: Install deterministic test harness dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+
+      - name: Test historical predictor before paid call
+        run: python -m pytest -q tests/test_run004_b3_historical_pit_predict.py tests/test_dsa_prediction_ledger.py tests/test_dsa_ranking_envelope.py
+
+      - name: Download accepted PIT input artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: run004-b3-preopen-pit-package
+          path: input/b3
+          run-id: 34765446209
+          github-token: ${{ github.token }}
+
+      - name: Verify frozen PIT input contract
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          def sh(p): return hashlib.sha256(open(p,'rb').read()).hexdigest()
+          r=json.load(open('input/b3/pit-manifest-receipt.json'))
+          f=json.load(open('input/b3/pit-features.json'))
+          p=json.load(open('input/b3/package-manifest.json'))
+          assert r['pit_input_admissible'] is True and r['prediction_generated'] is False
+          assert r['manifest_sha256']=='4a27ba4b71ab7f8a2aa30893a4862682d7e76f110444d57071c7874870c327df'
+          assert f['input_sha256']=='35e009115253f6a697bb1d45aab019712c03d2a85d6c58a1f3ada85af64fbb80'
+          assert p['status']=='PIT_INPUT_ADMISSIBLE_WAIT_PREDICTION_EXECUTION'
+          assert p['prediction_generated'] is False and p['outcome_data_fetched'] is False
+          print('B3_PIT_INPUT_REVERIFIED', {'manifest':r['manifest_sha256'],'input':f['input_sha256']})
+          PY
+
+      - name: Execute authorized 3-security historical PIT prediction
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/run004_b3_historical_pit_predict.py \
+            --features input/b3/pit-features.json \
+            --receipt input/b3/pit-manifest-receipt.json \
+            --cohort docs/run004_b3_aug5_pit_cohort.json \
+            --config docs/run004_b3_replay_config.json \
+            --output reports/run004-b3-prediction \
+            --run-id TRI-DSA-DEV-20260913-004-B3-PRED-R1 \
+            --max-requests 3 --max-cny 1
+
+      - name: Verify frozen prediction contract
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('reports/run004-b3-prediction/b3-historical-pit-prediction.json')
+          text=p.read_text()
+          for key in ('"raw_response"','"provider_response"','"prompt"','"messages"','"reasoning"','"analysis"','"explanation"'):
+              if key in text: raise SystemExit('unsafe key:'+key)
+          x=json.loads(text)
+          assert x['status']=='HISTORICAL_PIT_REPLAY_FROZEN'
+          assert x['outcome_data_read'] is False
+          assert x['denominator']==3 and x['ranked_count']+x['isolated_count']==3
+          assert x['model_http_requests']<=3 and x['cost']['estimated_peak_cny']<=1.0
+          if x['ranked_count'] != 3: raise SystemExit('B3 requires all three precommitted members to rank; preserve failure and do not accept')
+          ledgers=list(pathlib.Path('reports/run004-b3-prediction/prediction-ledger').glob('*.prediction.json'))
+          assert len(ledgers)==1
+          print('B3_PREDICTION_FREEZE_OK', {'ranked':3,'requests':x['model_http_requests'],'peak_estimate_cny':x['cost']['estimated_peak_cny'],'ranking_sha256':x['hashes']['ranking_sha256']})
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run004-b3-historical-pit-prediction
+          path: reports/run004-b3-prediction/
+          if-no-files-found: error
+          retention-days: 14
