@@ -1,6 +1,8 @@
 {
-  "run_id": "TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R1",
+  "run_id": "TRI-DSA-VAL-20260913-005-V1-PRED-20260907-R2",
   "authorization": "OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE",
+  "trigger_revision": 2,
+  "prior_zero_http_run_id": 34787497079,
   "input_workflow_run_id": 34787266540,
   "input_artifact_id": 10326727922,
   "input_artifact_digest": "sha256:288954e782b5f532fb7a19b0af6fb5708663784d6f152f7d6a11ee41556b12b7",
