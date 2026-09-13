@@ -3,5 +3,6 @@
   "decision_at": "2026-09-03T09:00:00+08:00",
   "paid_resources": false,
   "prediction_authorized": false,
-  "outcome_data_authorized": false
+  "outcome_data_authorized": false,
+  "parser_revision": 2
 }
