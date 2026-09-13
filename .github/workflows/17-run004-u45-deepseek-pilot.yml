@@ -35,15 +35,18 @@ jobs:
       - name: Install deterministic test harness dependencies
         run: python -m pip install pytest anyio fastapi httpx starlette
 
-      - name: Verify trigger authorization contract
+      - name: Verify trigger authorization and prior-failure lineage
         run: |
           python - <<'PY'
           import json
           t=json.load(open('run004_u45_paid_trigger.json'))
           expected={
-            'run_id':'TRI-DSA-DEV-20260913-004-U45',
+            'run_id':'TRI-DSA-DEV-20260913-004-U45-R2',
             'authorization':'OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE',
-            'trigger_revision':2,
+            'trigger_revision':3,
+            'prior_paid_run_id':34762423533,
+            'prior_http_requests':36,
+            'prior_peak_estimate_cny':0.264381,
             'max_requests':36,
             'max_cny':5.0,
             'target':'2026-09-11',
@@ -53,11 +56,12 @@ jobs:
           for k,v in expected.items():
               if t.get(k)!=v: raise SystemExit('trigger contract mismatch: '+k)
           if t.get('raw_model_content_publication') is not False: raise SystemExit('raw content publication must be false')
-          print('TRIGGER_CONTRACT_OK', {'run_id':t['run_id'],'revision':2,'max_requests':36,'max_cny':5.0})
+          if t.get('repair')!='discard_extra_json_keys_require_core_four': raise SystemExit('repair contract mismatch')
+          print('TRIGGER_CONTRACT_OK', {'run_id':t['run_id'],'revision':3,'prior_run':34762423533,'max_requests':36,'max_cny':5.0})
           PY
 
-      - name: Run deterministic safety tests
-        run: python -m pytest -q tests/test_run004_u45_safe_deepseek.py tests/test_dsa_ranking_envelope.py tests/test_dsa_prediction_ledger.py
+      - name: Run deterministic safety and repair tests
+        run: python -m pytest -q tests/test_run004_u45_safe_deepseek.py tests/test_run004_u45_safe_deepseek_v2.py tests/test_dsa_ranking_envelope.py tests/test_dsa_prediction_ledger.py
 
       - name: Download frozen U45 native-data artifact
         uses: actions/download-artifact@v4
@@ -80,61 +84,61 @@ jobs:
           echo '4de088566416b6535a931a62107303cbfe346ac673e04f8ee7a5c3b8f2b0e663  input/u45/U/native-data.db' | sha256sum -c -
           echo 'ce758772e757cc12be7380a05c54c92ec5a248130f57429f4ec04bd8f69d4e91  input/pool/U-integrity.json' | sha256sum -c -
 
-      - name: No-model exact-input preflight
+      - name: No-model exact-input v2 preflight
         run: |
-          python scripts/run004_u45_safe_deepseek.py \
+          python scripts/run004_u45_safe_deepseek_v2.py \
             --db input/u45/U/native-data.db \
             --universe docs/dsa-u-universe.json \
             --integrity input/pool/U-integrity.json \
-            --output /tmp/run004-u45-preflight \
+            --output /tmp/run004-u45-preflight-v2 \
             --target 2026-09-11 \
             --model deepseek-v4-flash \
-            --run-id TRI-DSA-DEV-20260913-004-U45-PREFLIGHT \
+            --run-id TRI-DSA-DEV-20260913-004-U45-R2-PREFLIGHT \
             --max-requests 36 --max-cny 5 --dry-run
           python - <<'PY'
           import json
-          x=json.load(open('/tmp/run004-u45-preflight/u45-safe-ranking.json'))
+          x=json.load(open('/tmp/run004-u45-preflight-v2/u45-safe-ranking.json'))
           assert x['denominator']==45 and x['ranked_count']==36 and x['isolated_count']==9
           assert x['model_http_requests']==0
-          print('EXACT_INPUT_PREFLIGHT_OK', {'denominator':45,'eligible':36,'isolated':9})
+          print('EXACT_INPUT_PREFLIGHT_V2_OK', {'denominator':45,'eligible':36,'isolated':9})
           PY
 
-      - name: Execute authorized U45 DeepSeek pilot
+      - name: Execute authorized repaired U45 DeepSeek pilot
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
-          python scripts/run004_u45_safe_deepseek.py \
+          python scripts/run004_u45_safe_deepseek_v2.py \
             --db input/u45/U/native-data.db \
             --universe docs/dsa-u-universe.json \
             --integrity input/pool/U-integrity.json \
-            --output reports/run004-u45-safe \
+            --output reports/run004-u45-safe-v2 \
             --target 2026-09-11 \
             --model deepseek-v4-flash \
-            --run-id TRI-DSA-DEV-20260913-004-U45 \
+            --run-id TRI-DSA-DEV-20260913-004-U45-R2 \
             --max-requests 36 --max-cny 5
 
       - name: Verify public-safe artifact contract
         run: |
           python - <<'PY'
           import json, pathlib
-          p=pathlib.Path('reports/run004-u45-safe/u45-safe-ranking.json')
+          p=pathlib.Path('reports/run004-u45-safe-v2/u45-safe-ranking.json')
           text=p.read_text()
-          for key in ('"raw_response"','"provider_response"','"prompt"','"messages"','"reasoning"'):
+          for key in ('"raw_response"','"provider_response"','"prompt"','"messages"','"reasoning"','"analysis"','"explanation"'):
               if key in text: raise SystemExit('unsafe key in artifact: '+key)
           x=json.loads(text)
           assert x['denominator']==45
           assert x['ranked_count']+x['isolated_count']==45
           assert x['cost']['estimated_peak_cny']<=5.0
           assert x['model_http_requests']<=36
-          print('SAFE_ARTIFACT_OK', {'ranked':x['ranked_count'],'isolated':x['isolated_count'],'requests':x['model_http_requests'],'peak_estimate_cny':x['cost']['estimated_peak_cny'],'ranking_sha256':x['hashes']['ranking_sha256']})
+          print('SAFE_ARTIFACT_V2_OK', {'ranked':x['ranked_count'],'isolated':x['isolated_count'],'requests':x['model_http_requests'],'peak_estimate_cny':x['cost']['estimated_peak_cny'],'ranking_sha256':x['hashes']['ranking_sha256']})
           PY
 
       - uses: actions/upload-artifact@v4
         with:
-          name: run004-u45-safe-ranking
+          name: run004-u45-safe-ranking-v2
           path: |
-            reports/run004-u45-safe/u45-safe-ranking.json
-            reports/run004-u45-safe/manifest.json
-            reports/run004-u45-safe/prediction-ledger/*.prediction.json
+            reports/run004-u45-safe-v2/u45-safe-ranking.json
+            reports/run004-u45-safe-v2/manifest.json
+            reports/run004-u45-safe-v2/prediction-ledger/*.prediction.json
           if-no-files-found: error
           retention-days: 14
