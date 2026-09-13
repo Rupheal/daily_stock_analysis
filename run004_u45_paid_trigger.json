@@ -1,0 +1,15 @@
+{
+  "run_id": "TRI-DSA-DEV-20260913-004-U45",
+  "authorization": "OWNER_AUTHORIZED_EXISTING_DEEPSEEK_BALANCE",
+  "authorized_at": "2026-09-13",
+  "target": "2026-09-11",
+  "model": "deepseek-v4-flash",
+  "max_requests": 36,
+  "max_cny": 5.0,
+  "database_sha256": "4de088566416b6535a931a62107303cbfe346ac673e04f8ee7a5c3b8f2b0e663",
+  "integrity_sha256": "ce758772e757cc12be7380a05c54c92ec5a248130f57429f4ec04bd8f69d4e91",
+  "raw_model_content_publication": false,
+  "auto_recharge": false,
+  "new_paid_data": false,
+  "o660_authorized_by_this_trigger": false
+}
