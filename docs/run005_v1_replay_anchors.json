@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-VAL-20260913-005",
+  "purpose": "Predeclare V1 historical PIT replay anchors before broad prediction/outcome evaluation.",
+  "model_config_id": "RUN004_B3_PRICEONLY_TECHNICAL_SCORER_V1",
+  "metric_contract": "TRIDENT-Foundation@21f1d934b7d2e4f601cd09ec5127547b2869f036:control_room/DSA_RUN005_METRIC_CONTRACT_20260913.md",
+  "denominator_policy": "Every official SSE notice addition remains in its anchor denominator. A member lacking 21 complete predecision HKEX bars is isolated with an explicit reason and is never silently removed.",
+  "history_requirement": 21,
+  "decision_clock": "09:00:00+08:00 on the first expected effective Southbound trading session after each notice",
+  "outcome_policy": "For each anchor, prediction must be frozen and independently verified before any post-decision outcome page is retrieved by the outcome stage.",
+  "anchors": [
+    {
+      "anchor_id": "SSE_REBAL_20250307_EFFECTIVE_20250310",
+      "notice_date": "2025-03-07",
+      "decision_at": "2025-03-10T09:00:00+08:00",
+      "source_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20250307_10775449.shtml",
+      "expected_additions_count": 27,
+      "expected_additions": ["00041","00308","00697","00999","01318","02232","02410","02423","02431","02432","02460","02506","02507","02510","02522","02562","02570","02577","02582","02586","02587","02799","03931","03939","06086","06623","09985"]
+    },
+    {
+      "anchor_id": "SSE_REBAL_20250905_EFFECTIVE_20250908",
+      "notice_date": "2025-09-05",
+      "decision_at": "2025-09-08T09:00:00+08:00",
+      "source_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20250905_10790691.shtml",
+      "expected_additions_count": 20,
+      "expected_additions": ["00506","01333","01729","01783","02007","02276","02473","02589","02609","02610","02617","02629","02643","03677","06168","06603","06681","06993","09606","09678"]
+    },
+    {
+      "anchor_id": "SSE_REBAL_20260306_EFFECTIVE_20260309",
+      "notice_date": "2026-03-06",
+      "decision_at": "2026-03-09T09:00:00+08:00",
+      "source_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260306_10811051.shtml",
+      "expected_additions_count": 42,
+      "expected_additions": ["00023","00290","00470","00659","01384","01428","01681","02171","02477","02507","02565","02575","02583","02595","02627","02637","02652","02655","02656","02659","02661","02665","02685","02687","02692","02698","02788","02889","03317","03330","03393","03696","03698","03858","06090","06600","06651","06687","06809","07618","09887","09911"]
+    },
+    {
+      "anchor_id": "SSE_REBAL_20260605_EFFECTIVE_20260608",
+      "notice_date": "2026-06-05",
+      "decision_at": "2026-06-08T09:00:00+08:00",
+      "source_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260605_10820849.shtml",
+      "expected_additions_count": 6,
+      "expected_additions": ["01768","02513","02675","02706","06082","09903"]
+    },
+    {
+      "anchor_id": "SSE_REBAL_20260904_EFFECTIVE_20260907",
+      "notice_date": "2026-09-04",
+      "decision_at": "2026-09-07T09:00:00+08:00",
+      "source_url": "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20260904_10831331.shtml",
+      "expected_additions_count": 54,
+      "expected_additions": ["00068","00340","00376","00600","00901","01021","01133","01191","01236","01286","01392","01440","01511","01609","01651","01672","01779","01866","01879","01956","02142","02225","02272","02335","02526","02553","02616","02632","02670","02672","02696","02697","02723","02726","02729","03277","03310","03355","03388","03625","03774","06106","06636","06656","06658","06675","06715","06872","06938","07630","07666","07688","09637","09888"]
+    }
+  ],
+  "frozen_original_additions_denominator": 149,
+  "anti_cherry_pick": {
+    "remove_anchor_after_bad_result": false,
+    "remove_member_after_missing_history": false,
+    "change_model_after_seed_negative_evidence": false,
+    "read_outcome_before_prediction_freeze": false
+  }
+}
