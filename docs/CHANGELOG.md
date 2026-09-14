@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [改进] DSA新增Drive原始字节保存与恢复适配器、限定文件授权入口、合成云端准备工作流；O正式调用保持未启用，U缓存身份与整手复核独立推进。
+
 - [文档] DSA原始证据改为Google Drive优先，保留私密GitHub备选，解除U独立准备对O存储的等待；正式验收门槛不变。
 
 - [研究准备] 增加 O 原生单股私密主机预检与本地证据包装器，以及 U45 逐股来源诊断；不修改原生评分，不代表模型或模拟入场验收通过。

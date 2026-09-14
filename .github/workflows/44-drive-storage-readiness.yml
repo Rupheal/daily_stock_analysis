@@ -1,0 +1,60 @@
+name: Drive evidence readiness and synthetic restore
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/dsa_drive_*.py
+      - tests/test_dsa_drive_store.py
+      - .github/workflows/44-drive-storage-readiness.yml
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-writer
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest httpx
+      - run: python -m pytest --noconftest -q tests/test_dsa_drive_store.py
+      - name: Credential presence only; zero model requests
+        id: configuration
+        env:
+          DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+          DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+          DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+          DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json,os
+          names=['DSA_DRIVE_FOLDER_ID','DSA_DRIVE_CLIENT_ID','DSA_DRIVE_CLIENT_SECRET','DSA_DRIVE_REFRESH_TOKEN']
+          missing=[k for k in names if not os.environ.get(k)]
+          ready=not missing
+          print(json.dumps({'run_id':'TRI-DSA-EXEC-20260914-013','missing_configuration_names':missing,'model_requests':0,'runner_roundtrip':'NOT_YET_TESTED'}))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('ready='+str(ready).lower()+'\n')
+          PY
+      - name: Synthetic runner save, independent read and restore
+        if: steps.configuration.outputs.ready == 'true'
+        env:
+          DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+          DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+          DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+          DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+        run: |
+          mkdir -p /tmp/dsa-synthetic
+          python - <<'PY'
+          from pathlib import Path
+          Path('/tmp/dsa-synthetic/probe.json').write_bytes(b'{"synthetic":true}\r\n')
+          Path('/tmp/dsa-synthetic/probe.bin').write_bytes(bytes(range(256)))
+          PY
+          python scripts/dsa_drive_bundle.py --source /tmp/dsa-synthetic --run-id TRI-DSA-EXEC-20260914-013 --artifact-id ART-DSA-RUN013-RESTORE --receipt /tmp/dsa-drive-receipt.json
+      - name: No acceptance on missing configuration
+        if: steps.configuration.outputs.ready != 'true'
+        run: echo 'DRIVE_RUNNER_RESTORE_BLOCKED_CONFIGURATION; offline tests are not live acceptance'

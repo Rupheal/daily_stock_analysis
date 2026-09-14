@@ -285,7 +285,7 @@
       "binary_git_history_prohibited": true,
       "text_only_export_required": true
     },
-    "current_blocker": "Primary Drive route: runner authorization and byte-preserving save/read/SHA-256 not verified; U independent preparation is unblocked",
+    "current_blocker": "Run013 Drive OAuth runner credential presence and restore pending; U cached preparation 45 reviewed, 0 complete",
     "cloud_model_credential_present": true,
     "cloud_evidence_credential_present": false,
     "O_native_acceptance": false,
@@ -352,5 +352,36 @@
     "formal_acceptance_and_simulation_gates": "UNCHANGED",
     "model_requests_this_policy_update": 0,
     "scope": "routing, dependency policy and documentation only; no strategy acceptance"
+  },
+  "drive_run013": {
+    "run_id": "TRI-DSA-EXEC-20260914-013",
+    "scope": "Drive byte-preserving storage/restore engineering and cached U preparation",
+    "budget": {
+      "model_requests_planned_before_storage_acceptance": 0,
+      "new_paid_services": 0
+    },
+    "estimated_preparation_minutes": "20-35; owner OAuth time excluded",
+    "delivery_denominator": [
+      "program_alignment",
+      "runner_roundtrip",
+      "restore",
+      "O_native_single",
+      "U45_preparation"
+    ],
+    "offline_tests_passed": 22,
+    "runner_roundtrip": "PENDING_CREDENTIAL_CHECK",
+    "live_restore": "NOT_VERIFIED",
+    "O_native": "DISARMED",
+    "U_reviewed": 45,
+    "U_complete": 0,
+    "U_identity_lot_currency": 45,
+    "U_price_receipts_hash_verified": 45,
+    "U_positive_buy_eligibility": 44,
+    "U_denominator": 45,
+    "owner_setup": "docs/runtime/DRIVE_OWNER_SETUP.zh-CN.md",
+    "legacy_progress": "12/16 bounded items; strategy not validated",
+    "nas": "PENDING_SETUP",
+    "ssd_this_batch": "NO_COPY_OR_RESTORE_RECEIPT",
+    "canonical_journal_unchanged": true
   }
 }

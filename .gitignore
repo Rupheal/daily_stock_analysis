@@ -89,3 +89,7 @@ static/
 /apps/dsa-desktop/node_modules/
 /node_modules/
 docs/specs/
+
+# Local Drive OAuth bootstrap credentials (never archive or commit)
+dsa-drive-credentials.json
+client_secret_*.json
