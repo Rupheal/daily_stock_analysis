@@ -69,6 +69,32 @@ class DriveStore:
         if r.get('files') or r.get('nextPageToken'):
             raise StoreError('NATIVE_ARTIFACT_EXISTS_NO_REPEAT_MODEL')
 
+    def reserve_native_call(self, artifact_id, run_id, preflight_sha256, execution_id):
+        """Durable call intent under the existing single-writer serialization.
+
+        A claim is never an accepted model report. An existing claim always
+        requires reconciliation, even if the final artifact was not saved.
+        No automatic deletion, override, or exactly-once-provider claim.
+        """
+        checked_id(artifact_id); checked_id(run_id); checked_id(execution_id)
+        claim_id = checked_id(artifact_id + '-CLAIM')
+        if not re.fullmatch(r'[0-9a-f]{64}', preflight_sha256):
+            raise StoreError('INVALID_PREFLIGHT_HASH')
+        self.assert_absent(artifact_id)
+        self.assert_absent(claim_id)
+        data = json.dumps({
+            'schema': 'dsa-native-call-intent-v1',
+            'run_id': run_id, 'native_artifact_id': artifact_id,
+            'execution_id': execution_id, 'preflight_sha256': preflight_sha256,
+            'upstream_commit': '089d9d26d68f8b839ea5a74a3784e4402925f8b7',
+            'state': 'RESERVED_RECONCILE_BEFORE_ANY_REPEAT',
+            'model_acceptance': False,
+        }, sort_keys=True).encode()
+        receipt = self.put(claim_id, data, run_id)
+        if receipt.get('idempotent_reuse'):
+            raise StoreError('CLAIM_EXISTS_RECONCILE_NO_REPEAT_MODEL')
+        return receipt
+
     def private_meta(self, file_id, folder=False):
         m = self.request('GET', API + '/files/' + checked_id(file_id), params={
             'fields': 'id,mimeType,parents,trashed,version,size,capabilities(canShare,canAddChildren),permissions(type,role),appProperties'
@@ -86,7 +112,21 @@ class DriveStore:
 
     def recover(self, file_id, expected, out):
         before = self.private_meta(file_id)
-        data = self.request('GET', API + '/files/' + checked_id(file_id), params={'alt': 'media'}).content
+        version = before.get('version')
+        if not isinstance(version, str) or not version.isdigit():
+            raise StoreError('READBACK_VERSION_UNVERIFIED')
+        # Bound streamed bytes before allocation; a compressed response can expand.
+        parts = []
+        total = 0
+        with self.client.stream('GET', API + '/files/' + checked_id(file_id), params={'alt': 'media'}) as response:
+            if response.status_code != 200:
+                raise StoreError('DRIVE_HTTP_' + str(response.status_code))
+            for part in response.iter_bytes(chunk_size=64 * 1024):
+                total += len(part)
+                if total > LIMIT:
+                    raise StoreError('READBACK_TOO_LARGE')
+                parts.append(part)
+        data = b''.join(parts)
         after = self.private_meta(file_id)
         if before.get('version') != after.get('version') or digest(data) != expected or len(data) > LIMIT:
             raise StoreError('READBACK_HASH_OR_VERSION_MISMATCH')

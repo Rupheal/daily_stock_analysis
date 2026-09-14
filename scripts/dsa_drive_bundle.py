@@ -53,17 +53,31 @@ def bundle(source, run_id, artifact_id, source_time=None, retrieved_time=None, p
 
 
 def verify_bundle(data):
+    if not data or len(data) > LIMIT:
+        raise StoreError('RESTORE_TOO_LARGE')
     with zipfile.ZipFile(io.BytesIO(data)) as z, tempfile.TemporaryDirectory(prefix='dsa-bundle-restore-') as td:
-        names = z.namelist()
-        m = json.loads(z.read('MANIFEST.json'))
-        if len(set(names)) != len(names) or set(names) != {'MANIFEST.json'} | {f['path'] for f in m['files']}:
+        entries = z.infolist()
+        names = [entry.filename for entry in entries]
+        # Check the complete expanded size, including the manifest, before reading.
+        if sum(entry.file_size for entry in entries) > LIMIT:
+            raise StoreError('RESTORE_TOO_LARGE')
+        if len(set(names)) != len(names) or 'MANIFEST.json' not in names:
             raise StoreError('MANIFEST_FILE_SET_MISMATCH')
-        for f in m['files']:
+        m = json.loads(z.read('MANIFEST.json'))
+        rows = m.get('files') if isinstance(m, dict) else None
+        if not isinstance(rows, list) or not rows:
+            raise StoreError('MANIFEST_SCHEMA_INVALID')
+        if any(not isinstance(f, dict) or not isinstance(f.get('path'), str) for f in rows):
+            raise StoreError('MANIFEST_SCHEMA_INVALID')
+        paths = [f['path'] for f in rows]
+        if len(set(paths)) != len(paths) or 'MANIFEST.json' in paths or set(names) != {'MANIFEST.json'} | set(paths):
+            raise StoreError('MANIFEST_FILE_SET_MISMATCH')
+        for f in rows:
             name = f['path']
-            if '\\' in name or name.startswith('/') or any(p in ('..', '.', '') for p in name.split('/')):
+            if '\\' in name or ':' in name or name.startswith('/') or any(p in ('..', '.', '') for p in name.split('/')):
                 raise StoreError('UNSAFE_ARCHIVE_PATH')
-            if z.getinfo(name).file_size > LIMIT:
-                raise StoreError('RESTORE_TOO_LARGE')
+            if type(f.get('bytes')) is not int or f['bytes'] < 0 or not isinstance(f.get('sha256'), str):
+                raise StoreError('MANIFEST_SCHEMA_INVALID')
             b = z.read(name)
             if len(b) != f['bytes'] or hashlib.sha256(b).hexdigest() != f['sha256']:
                 raise StoreError('MANIFEST_HASH_MISMATCH')

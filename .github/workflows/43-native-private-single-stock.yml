@@ -97,7 +97,9 @@ jobs:
               with httpx.Client(timeout=30,follow_redirects=False) as c:
                   token=scoped_token(c)
                   c.headers['Authorization']='Bearer '+token
-                  DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']).assert_absent('ART-DSA-RUN013-NATIVE')
+                  store=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+                  store.assert_absent('ART-DSA-RUN013-NATIVE')
+                  store.assert_absent('ART-DSA-RUN013-NATIVE-CLAIM')
           except Exception:
               raise SystemExit('NATIVE_REPEAT_GATE_FAILED_NO_MODEL_CALL') from None
           PYCODE
@@ -143,7 +145,27 @@ jobs:
           mkdir -p /tmp/native-evidence
           python research/scripts/prepare_xiaomi_acceptance.py > /tmp/native-evidence/preflight-stdout.log 2> /tmp/native-evidence/preflight-stderr.log
           cp research/probe/preflight.json /tmp/native-evidence/preflight.json
+      - name: Persist one-call intent before native request
+        run: |
+          PYTHONPATH=research/scripts python - <<'PYCODE'
+          import hashlib,json,os,httpx
+          from pathlib import Path
+          from dsa_drive_store import DriveStore,scoped_token
+          try:
+              preflight=Path('research/probe/preflight.json').read_bytes()
+              execution='CI-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
+              with httpx.Client(timeout=30,follow_redirects=False) as c:
+                  c.headers['Authorization']='Bearer '+scoped_token(c)
+                  receipt=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']).reserve_native_call(
+                      'ART-DSA-RUN013-NATIVE','TRI-DSA-EXEC-20260914-013',
+                      hashlib.sha256(preflight).hexdigest(),execution)
+              Path('/tmp/native-evidence/call-intent-receipt.json').write_text(json.dumps(receipt))
+          except Exception:
+              raise SystemExit('CALL_INTENT_UNVERIFIED_RECONCILE_NO_MODEL_CALL') from None
+          print('DURABLE_CALL_INTENT_VERIFIED_NOT_MODEL_ACCEPTANCE')
+          PYCODE
       - name: One frozen-upstream native request with raw console capture
+        id: native_call
         env:
           LLM_CHANNELS: deepseek
           LLM_DEEPSEEK_PROTOCOL: openai
@@ -166,12 +188,8 @@ jobs:
           printf '{"run_id":"TRI-DSA-EXEC-20260914-013","native_process_exit_code":%s}\n' "$rc" > /tmp/native-evidence/process.json
           echo "$rc" > /tmp/native-evidence/process.rc
           exit 0
-      - name: Prepare bounded text-only private export
-        run: |
-          python research/scripts/dsa_prepare_private_text_export.py \
-            --source /tmp/native-evidence \
-            --output /tmp/native-export
       - name: Persist original byte archive to Drive and restore-verify
+        if: ${{ always() && (steps.native_call.outcome == 'success' || steps.native_call.outcome == 'failure') }}
         env:
           DSA_SENSITIVE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
@@ -187,10 +205,8 @@ jobs:
           from pathlib import Path
           summary=Path('/tmp/native-evidence/original-model/probe-summary.json')
           rc=int(Path('/tmp/native-evidence/process.rc').read_text().strip())
-          manifest=json.loads(Path('/tmp/native-export/private-export-manifest.json').read_text())
           out={'run_id':'TRI-DSA-EXEC-20260914-013','raw_text_evidence_private':True,
                'original_byte_bundle_on_drive':True,
-               'excluded_binary_paths':manifest.get('excluded_binary_paths',[]),
                'original_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7',
                'native_process_exit_code':rc,'native_acceptance_pending_manual_semantic_review':True}
           if summary.exists():

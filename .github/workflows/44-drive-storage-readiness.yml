@@ -4,7 +4,10 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - scripts/dsa_drive_*.py
-      - tests/test_dsa_drive_store.py
+      - tests/test_dsa_drive_*.py
+      - scripts/dsa_u_restore_audit.py
+      - tests/test_dsa_u_restore_audit.py
+      - tests/test_dsa_private_workflow_gates.py
       - .github/workflows/44-drive-storage-readiness.yml
 permissions:
   contents: read
@@ -22,8 +25,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - run: python -m pip install pytest httpx
-      - run: python -m pytest --noconftest -q tests/test_dsa_drive_store.py
+      - run: python -m pip install pytest httpx pyyaml
+      - run: python -m pytest --noconftest -q tests/test_dsa_drive_store.py tests/test_dsa_drive_recovery_regressions.py tests/test_dsa_u_restore_audit.py tests/test_dsa_private_workflow_gates.py
       - name: Credential presence only; zero model requests
         id: configuration
         env:

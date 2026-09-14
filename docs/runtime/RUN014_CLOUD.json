@@ -1,0 +1,8 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260914-014",
+  "state": "PENDING_CLOUD_RECEIPT",
+  "tests_passed": null,
+  "runner_restore_accepted": false,
+  "native_model_accepted": false,
+  "model_calls_authorized_by_this_record": false
+}
