@@ -152,12 +152,17 @@ jobs:
           printf '{"run_id":"TRI-DSA-EXEC-20260914-012","native_process_exit_code":%s}\n' "$rc" > /tmp/native-evidence/process.json
           echo "$rc" > /tmp/native-evidence/process.rc
           exit 0
-      - name: Persist all raw native evidence privately and hash-verify
+      - name: Prepare bounded text-only private export
+        run: |
+          python research/scripts/dsa_prepare_private_text_export.py \
+            --source /tmp/native-evidence \
+            --output /tmp/native-export
+      - name: Persist bounded text native evidence privately and hash-verify
         env:
           DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
         run: |
           python research/scripts/dsa_private_github_store.py \
-            --source /tmp/native-evidence \
+            --source /tmp/native-export \
             --destination-prefix evidence/dsa/native/TRI-DSA-EXEC-20260914-012/raw \
             --commit-prefix 'evidence(dsa): persist O native single-stock acceptance'
       - name: Publish sanitized acceptance metadata only
@@ -167,7 +172,10 @@ jobs:
           from pathlib import Path
           summary=Path('/tmp/native-evidence/original-model/probe-summary.json')
           rc=int(Path('/tmp/native-evidence/process.rc').read_text().strip())
-          out={'run_id':'TRI-DSA-EXEC-20260914-012','raw_evidence_private':True,
+          manifest=json.loads(Path('/tmp/native-export/private-export-manifest.json').read_text())
+          out={'run_id':'TRI-DSA-EXEC-20260914-012','raw_text_evidence_private':True,
+               'binary_files_copied':manifest.get('binary_files_copied'),
+               'excluded_binary_paths':manifest.get('excluded_binary_paths',[]),
                'original_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7',
                'native_process_exit_code':rc,'native_acceptance_pending_manual_semantic_review':True}
           if summary.exists():
