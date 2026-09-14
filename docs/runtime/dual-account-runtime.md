@@ -22,7 +22,7 @@
 
 通用字段：id、account(U/O)、at(带时区)、kind。id按模型、信号、事件生成，重跑相同id同内容为no-op，改变内容拒绝。journal为哈希父链，原始信号不可追写。
 
-- SIGNAL：signal含id/cutoff/available_at/scope=forward_simulation/passed/reason。通过时还须来源及哈希、covered/denominator、data_news_plan_verified、top3、next_session、valid_until；O须engine=original_native_dsa及冻结upstream_commit。U45/O独立官方并集，不得自造分数；本实现执行端要求全覆盖通过，部分覆盖仅观察。
+- SIGNAL：signal含id/cutoff/available_at/scope=forward_simulation/passed/reason。通过时还须来源及哈希、covered/denominator、data_news_plan_verified、top3、next_session、valid_until；O须engine=original_native_dsa及冻结upstream_commit。U45/O独立官方并集，不得自造分数；O全池排名必须全覆盖；U保留45分母且允许逐股验收通过的合格候选，其余隔离。
 - ENTRY：signal_id/code/quote/fee_cny/excluded。quote须raw价格、执行时间、HKD→CNY汇率及证据、整手及来源，验证first_eligible_price；日线模式须确认下一实际交易日open。较高名次被排除须给出证据。每信号最多一个新仓，已持仓跳过；不加仓。费用未知时不新开仓。
 - MARK：当前持仓逐一给可核验报价及汇率；缺标记不假算NAV。当前版采用同一估值时点，异步报价需上游先建立已验证的统一快照。
 - BAR：原始OHLC及开闭市时间、企业行动/停牌、汇率来源；每个价格区间仅处理一次。跳空止损按开盘更差价；日线止损与止盈同现先止损；达到首次止盈后无法判定保本线先后时保守退出并留痕。企业行动未实现的转换保留隔离，不虚构拆股或分红。

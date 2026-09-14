@@ -253,14 +253,14 @@
     "o_isolated": 22,
     "native_full_pool_passed": false,
     "runtime_document": "docs/runtime/dual-account-runtime.md",
-    "simulation_state": "deterministic_engine_tested; real_signal_WAIT; scheduled_integration_pending",
+    "simulation_state": "19 deterministic tests passed locally and cloud 34807828939; persisted U/O WAIT; four existing task prompts verified; next natural trigger pending",
     "next": [
-      "Persist unified private journal and attach existing automation prompts",
       "Verify next scheduled run appends the same journal",
       "Obtain accepted O native full-pool outputs and U news/capital/plan evidence",
       "Verify first eligible future simulated fill and mature weekly outcomes"
     ],
     "main_merge": false,
-    "real_orders": false
+    "real_orders": false,
+    "journal_name": "DSA_DUAL_ACCOUNT_JOURNAL.json"
   }
 }

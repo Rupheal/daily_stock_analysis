@@ -11,7 +11,7 @@ EV={'verified':True,'source':'synthetic-fixture','sha256':'a'*64}
 T0='2026-01-02T01:00:00+00:00';T1='2026-01-05T01:30:00+00:00';T2='2026-01-05T08:00:00+00:00'
 def signal(passed=True,account='U'):
     return {'id':'signal-'+account,'account':account,'at':T0,'kind':'SIGNAL','signal':{
-        **EV,'id':'morning','cutoff':T0,'available_at':T0,'scope':'forward_simulation','passed':passed,
+        **EV,'id':'morning','cutoff':T0,'available_at':T0,'scope':'forward_simulation','passed':passed,'valid_until':'2026-01-05T08:30:00+00:00',
         'covered':45,'denominator':45,'data_news_plan_verified':True,'next_session':'2026-01-05',
         'engine':'original_native_dsa','upstream_commit':'fixture-native',
         'top3':[{'code':'fixture','rank':1,'score':80,'industry':'fixture-industry','action':'BUY','buyable_verified':True}]}}
@@ -23,7 +23,7 @@ def bought():return append(append(new_journal(CFG),signal()),entry())
 def bar(o='10',h='10.7',l='10.1',c='10.5'):
     return {'id':'bar','account':'U','at':T2,'kind':'BAR','code':'fixture','fee_cny_by_exit':{'STOP':'0','TP1':'0','TP2':'0'},
             'bar':{**EV,'id':'day1','open_at':T1,'close_at':T2,'open':o,'high':h,'low':l,'close':c,
-                   'adjustment':'raw','corporate_actions_verified':True,'cny_per_hkd':'1','fx_evidence':{**EV,'at':T0}}}
+                   'adjustment':'raw','tradable':True,'volume':10000,'corporate_actions_verified':True,'cny_per_hkd':'1','fx_evidence':{**EV,'at':T0}}}
 
 def test_wait_and_duplicate_replay():
     j=append(new_journal(CFG),signal(False));j2=append(j,signal(False))

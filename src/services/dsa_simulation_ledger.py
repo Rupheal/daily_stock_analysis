@@ -115,13 +115,15 @@ def apply_command(state, config, cmd):
             raise ValueError('research/real scope cannot enter simulation')
         if s.get('passed'):
             evidence(s)
-            if s['covered'] != s['denominator'] or s['denominator'] <= 0:
+            if not 0 <= s['covered'] <= s['denominator'] or s['denominator'] <= 0 or (cmd['account']=='O' and s['covered']!=s['denominator']):
                 raise ValueError('incomplete coverage cannot be full-pool signal')
             if cmd['account'] == 'U' and s['denominator'] != config['u_denominator']:
                 raise ValueError('U universe mismatch')
             if cmd['account'] == 'O' and (s.get('engine') != 'original_native_dsa' or
                     s.get('upstream_commit') != config['o_upstream_commit']):
                 raise ValueError('custom adapter is not original DSA')
+            if not s.get('valid_until') or stamp(s['valid_until']) < stamp(s['available_at']):
+                raise ValueError('signal expiry required')
             if s.get('data_news_plan_verified') is not True:
                 raise ValueError('data/news/plan acceptance missing')
         a['signals'][s['id']] = {'original': s, 'filled': False, 'attempts': []}
@@ -231,6 +233,7 @@ def apply_command(state, config, cmd):
             loss = (Decimal(1)-dec(score)/dec(p['entry_score'])) if score is not None and p['entry_score'] and dec(p['entry_score'])>0 else Decimal(0)
             severe = p['outside10']>=2 or (loss>=dec(rules['severe_score_drop']) and rank>p['entry_rank']) or row.get('action')=='NO' or row.get('verified_material_negative') is True
             moderate = p['outside3']>=2 or loss>=dec(rules['moderate_score_drop'])
+            p['rank_severe']=severe
             if severe and p['stage']==2:
                 p['exit_pending']=True
                 p['exit_pending_at']=cmd['at']
@@ -255,6 +258,8 @@ def apply_command(state, config, cmd):
         if b.get('suspended'):
             record(a,cmd,'WAIT_SUSPENDED',code=code)
             return
+        if b.get('tradable') is not True or dec(b.get('volume',0)) <= 0:
+            raise ValueError('bar tradability unverified')
         o,h,l,c = (dec(b[k]) for k in ('open','high','low','close'))
         if not (0<l<=min(o,c)<=max(o,c)<=h):
             raise ValueError('invalid OHLC')
@@ -276,6 +281,9 @@ def apply_command(state, config, cmd):
                     reason=f'TP{stage+1}'
                     sell(a,cmd,p,qty,max(o,entry*(Decimal(1)+target)),fx,reason,fees.get(reason))
                     p['stage']+=1
+                    if p['stage']==2 and p.get('rank_severe'):
+                        p['exit_pending']=True
+                        p['exit_pending_at']=cmd['at']
                     # With daily bars, after TP1 a return to breakeven may have happened.
                     if l<=entry and code in a['positions']:
                         sell(a,cmd,p,p['qty'],entry,fx,'AMBIGUOUS_BREAKEVEN',fees.get('AMBIGUOUS_BREAKEVEN'))
@@ -355,6 +363,9 @@ def summary(journal):
                   'closed_trades':len(closed),
                   'win_rate':str(Decimal(wins)/len(closed)) if closed and a['fees_known'] else None,
                   'loss_rate':str(Decimal(losses)/len(closed)) if closed and a['fees_known'] else None,
+                  'average_win_cny':str(sum(v for v in closed.values() if v>0)/wins) if wins and a['fees_known'] else None,
+                  'average_loss_cny':str(sum(v for v in closed.values() if v<0)/losses) if losses and a['fees_known'] else None,
+                  'profit_factor':str(sum(v for v in closed.values() if v>0)/-sum(v for v in closed.values() if v<0)) if losses and a['fees_known'] else None,
                   'sampled_nav_max_drawdown':str(mdd) if a['nav_history'] and a['fees_known'] else None,
                   'nav_history':a['nav_history'],
                   'reason':'sampled NAV drawdown only; missing fees makes net metrics N/A',
