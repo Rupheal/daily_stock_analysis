@@ -1,0 +1,181 @@
+name: O native private single-stock acceptance
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/run012-private-native-arm.json
+permissions:
+  contents: read
+concurrency:
+  group: dsa-o-native-private-single-stock
+  cancel-in-progress: false
+jobs:
+  native-private:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Arm and credential gate; zero model requests
+        env:
+          EXISTING_MODEL_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          PRIVATE_EVIDENCE_KEY: ${{ secrets.DSA_EVIDENCE_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json, os
+          arm=json.load(open('research/docs/runtime/run012-private-native-arm.json'))
+          state={
+            'run_id':'TRI-DSA-EXEC-20260914-012',
+            'armed':arm.get('armed') is True,
+            'model_credential_present':bool(os.environ.get('EXISTING_MODEL_KEY')),
+            'private_evidence_credential_present':bool(os.environ.get('PRIVATE_EVIDENCE_KEY')),
+            'model_requests_before_gate':0,
+          }
+          print(json.dumps(state))
+          if not state['armed']:
+              raise SystemExit('RUN_NOT_ARMED')
+          if not state['model_credential_present']:
+              raise SystemExit('MODEL_CREDENTIAL_MISSING')
+          if not state['private_evidence_credential_present']:
+              raise SystemExit('PRIVATE_EVIDENCE_CREDENTIAL_MISSING')
+          PY
+      - run: pip install -r research/requirements.txt pytest httpx
+      - name: Runner-side private save/read/hash probe before any model call
+        env:
+          DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/runner-private-probe.json')
+          p.write_text(json.dumps({
+            'run_id':'TRI-DSA-EXEC-20260914-012',
+            'classification':'synthetic_no_model_content',
+            'payload':'RUNNER_PRIVATE_WRITE_READ_HASH_PROBE',
+            'contains_secrets':False,
+            'contains_raw_model_content':False,
+          },sort_keys=True)+'\n')
+          PY
+          python research/scripts/dsa_private_github_store.py \
+            --source /tmp/runner-private-probe.json \
+            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-EXEC-20260914-012-runner \
+            --commit-prefix 'test(dsa): verify runner private persistence'
+      - name: Read current DeepSeek balance without public disclosure
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          import json,os
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']
+          total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          report={
+            'run_id':'TRI-DSA-EXEC-20260914-012',
+            'balance_readable':True,
+            'currency':'CNY',
+            'total_balance':str(total),
+            'single_stock_cap_cny':'2',
+            'single_stock_affordable':bool(raw.get('is_available') and total>=Decimal('2')),
+            'prior_full_pool_peak_estimate_cny':'35.193540',
+            'prior_full_pool_estimate_affordable':bool(raw.get('is_available') and total>=Decimal('35.193540')),
+          }
+          open('/tmp/deepseek-balance-private.json','w').write(json.dumps(report,indent=2))
+          print(json.dumps({k:v for k,v in report.items() if k!='total_balance'}))
+          if not report['single_stock_affordable']:
+              raise SystemExit('CURRENT_BALANCE_NOT_SUFFICIENT_FOR_SINGLE_STOCK_CAP')
+          PY
+      - name: Persist balance privately before model call
+        env:
+          DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
+        run: |
+          python research/scripts/dsa_private_github_store.py \
+            --source /tmp/deepseek-balance-private.json \
+            --destination-prefix evidence/dsa/native/TRI-DSA-EXEC-20260914-012/preflight \
+            --commit-prefix 'evidence(dsa): persist private balance preflight'
+      - name: Frozen original data and observer regression
+        working-directory: research
+        run: python -m pytest -q tests/test_hk_budget_guard.py tests/test_hk_research_replay.py tests/test_hk_native_data_probe.py
+      - name: Fresh independent Xiaomi data gate
+        run: |
+          mkdir -p /tmp/native-evidence
+          python research/scripts/prepare_xiaomi_acceptance.py > /tmp/native-evidence/preflight-stdout.log 2> /tmp/native-evidence/preflight-stderr.log
+          cp research/probe/preflight.json /tmp/native-evidence/preflight.json
+      - name: One frozen-upstream native request with raw console capture
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          set +e
+          python research/scripts/run_hk_original_model_probe.py \
+            --checkout original \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --preflight research/probe/preflight.json \
+            --output /tmp/native-evidence/original-model \
+            --limit-cny 2 \
+            --carry-upper-cny 0.060156 \
+            > /tmp/native-evidence/native-stdout.log 2> /tmp/native-evidence/native-stderr.log
+          rc=$?
+          printf '{"run_id":"TRI-DSA-EXEC-20260914-012","native_process_exit_code":%s}\n' "$rc" > /tmp/native-evidence/process.json
+          echo "$rc" > /tmp/native-evidence/process.rc
+          exit 0
+      - name: Persist all raw native evidence privately and hash-verify
+        env:
+          DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
+        run: |
+          python research/scripts/dsa_private_github_store.py \
+            --source /tmp/native-evidence \
+            --destination-prefix evidence/dsa/native/TRI-DSA-EXEC-20260914-012/raw \
+            --commit-prefix 'evidence(dsa): persist O native single-stock acceptance'
+      - name: Publish sanitized acceptance metadata only
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          summary=Path('/tmp/native-evidence/original-model/probe-summary.json')
+          rc=int(Path('/tmp/native-evidence/process.rc').read_text().strip())
+          out={'run_id':'TRI-DSA-EXEC-20260914-012','raw_evidence_private':True,
+               'original_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7',
+               'native_process_exit_code':rc,'native_acceptance_pending_manual_semantic_review':True}
+          if summary.exists():
+              d=json.loads(summary.read_text())
+              reqs=d.get('budget',{}).get('requests',[])
+              out.update(model_http_requests=len(reqs),input_validated=d.get('input_validated'),
+                         usage_peak_estimate_cny=(reqs[-1].get('usage_peak_estimate_cny') if reqs else None),
+                         request_status=(reqs[-1].get('status') if reqs else None))
+          print(json.dumps(out))
+          if rc != 0:
+              raise SystemExit('NATIVE_PROCESS_FAILED_AFTER_PRIVATE_EVIDENCE_SAVE')
+          PY
