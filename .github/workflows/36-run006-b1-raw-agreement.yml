@@ -1,0 +1,65 @@
+name: Run006 B1 raw Yahoo Tencent agreement
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run006_b1_raw_agreement_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  raw-agreement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify free trigger and syntax
+        run: |
+          python - <<'PY'
+          import json,os,py_compile
+          if os.environ.get('GITHUB_RUN_ATTEMPT')!='1': raise SystemExit('rerun prohibited')
+          t=json.load(open('run006_b1_raw_agreement_trigger.json'))
+          assert t['run_id']=='TRI-DSA-DAT-20260914-006-R2-RAW-AGREEMENT'
+          assert t['paid_resources'] is False and t['model_calls_authorized'] is False
+          assert t['track_denominator']==132 and t['frozen_recovery_denominator']==253
+          py_compile.compile('scripts/run006_probe_raw_source_agreement.py',doraise=True)
+          print('RUN006_RAW_TRIGGER_OK')
+          PY
+      - run: pip install yfinance
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34709328183
+          name: public-pool-price-checks
+          github-token: ${{ github.token }}
+          path: input/integrity
+      - name: Probe raw source agreement
+        run: |
+          python scripts/run006_probe_raw_source_agreement.py \
+            --integrity input/integrity/O-integrity.json \
+            --output reports/run006-b1/raw-agreement.json \
+            --workers 8
+      - name: Verify accounting
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('reports/run006-b1/raw-agreement.json'))
+          assert x['track_denominator']==132 and len(x['rows'])==132
+          assert x['summary']['ok']+x['summary']['errors']==132
+          assert x['model_http_requests']==0 and x['paid_data_used'] is False
+          print('RUN006_RAW_ACCOUNTING_OK',x['summary'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run006-b1-raw-agreement
+          path: reports/run006-b1/
+          if-no-files-found: error
+          retention-days: 30
