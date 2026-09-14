@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > For user-friendly release highlights, see the [GitHub Releases](https://github.com/ZhuLinsen/daily_stock_analysis/releases) page.
 
 ## [Unreleased]
+
+- [新功能] 增加独立双模型模拟账本、不可覆盖命令和版本冲突恢复入口；原生O保持不变。
+- [测试] 增加模拟成交时序、止损、分批止盈、排名衰减和去重的离线验收。
 - [修复] 双轨公开日线核验识别原生腾讯来源并切换真实独立对照，复用既有资料；加入美港交易顺序回放并记录模型内容导出的权限边界。
 
 - [交付] 恢复并核验17份云端原始证据，复算U45/45与O657/660，记录4项零成交量及未解决研究门槛；保存本批费用与正式中文报告。
