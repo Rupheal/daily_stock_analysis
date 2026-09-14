@@ -6,9 +6,11 @@ on:
       - scripts/run_hk_original_private_probe.py
       - scripts/dsa_u_execution_audit.py
       - scripts/dsa_private_github_store.py
+      - scripts/dsa_prepare_private_text_export.py
       - tests/test_hk_original_private_probe.py
       - tests/test_dsa_u_execution_audit.py
       - tests/test_dsa_private_github_store.py
+      - tests/test_dsa_prepare_private_text_export.py
       - .github/workflows/42-native-private-readiness.yml
 permissions:
   contents: read
@@ -25,7 +27,7 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install pytest httpx
       - name: Synthetic offline checks only
-        run: python -m pytest --noconftest -q tests/test_hk_original_private_probe.py tests/test_hk_budget_guard.py tests/test_dsa_u_execution_audit.py tests/test_dsa_private_github_store.py
+        run: python -m pytest --noconftest -q tests/test_hk_original_private_probe.py tests/test_hk_budget_guard.py tests/test_dsa_u_execution_audit.py tests/test_dsa_private_github_store.py tests/test_dsa_prepare_private_text_export.py
       - name: Check existing connection presence without a model request
         env:
           EXISTING_MODEL_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
@@ -34,7 +36,7 @@ jobs:
           python - <<'PY'
           import json, os
           print(json.dumps({
-              'run_id': 'TRI-DSA-EXEC-20260914-011',
+              'run_id': 'TRI-DSA-EXEC-20260914-012-PREP',
               'existing_model_credential_present': bool(os.environ.get('EXISTING_MODEL_KEY')),
               'existing_evidence_credential_present': bool(os.environ.get('EXISTING_EVIDENCE_TOKEN')),
               'model_requests': 0,
