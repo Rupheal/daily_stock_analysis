@@ -1,0 +1,41 @@
+name: Native private execution preparation checks
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/run_hk_original_private_probe.py
+      - scripts/dsa_u_execution_audit.py
+      - tests/test_hk_original_private_probe.py
+      - tests/test_dsa_u_execution_audit.py
+      - .github/workflows/42-native-private-readiness.yml
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest httpx
+      - name: Synthetic offline checks only
+        run: python -m pytest --noconftest -q tests/test_hk_original_private_probe.py tests/test_hk_budget_guard.py tests/test_dsa_u_execution_audit.py
+      - name: Check existing connection presence without a model request
+        env:
+          EXISTING_MODEL_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json, os
+          print(json.dumps({
+              'run_id': 'TRI-DSA-EXEC-20260914-010',
+              'existing_model_credential_present': bool(os.environ.get('EXISTING_MODEL_KEY')),
+              'model_requests': 0,
+              'balance_checked': False,
+              'private_persistence': 'NO_VERIFIED_RUNNER_DESTINATION',
+              'native_acceptance': False
+          }))
+          PY

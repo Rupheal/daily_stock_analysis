@@ -262,5 +262,31 @@
     "main_merge": false,
     "real_orders": false,
     "journal_name": "DSA_DUAL_ACCOUNT_JOURNAL.json"
+  },
+  "native_execution_20260914": {
+    "run_id": "TRI-DSA-EXEC-20260914-010",
+    "priority": [
+      "O_native_execution_and_private_persistence",
+      "U_per_member_execution",
+      "conditional_simulation"
+    ],
+    "parent_runtime_commit": "6ac18ddc86a2a3011d056e2e9a5a9aa188d5f17f",
+    "run009": "local preparation only; 14 offline tests passed; no native call",
+    "run008": "34816572611 is research A0/A3 only; frozen predictions unchanged",
+    "current_blocker": "No verified private persistence destination accessible from existing GitHub runner",
+    "cloud_credential_presence": "pending zero-model-call workflow check",
+    "O_native_acceptance": false,
+    "U_execution_accepted": 0,
+    "U_denominator": 45,
+    "simulation": "NOT_ELIGIBLE_NO_QUALIFIED_SIGNAL",
+    "model_requests": 0,
+    "new_model_cost_cny": 0,
+    "progress_baseline": {
+      "bounded_legacy_items_passed": 12,
+      "bounded_legacy_denominator": 16,
+      "not_equivalent_to": "Run008 governance percentage or strategy effectiveness"
+    },
+    "git_commit_push_authorized_by_latest_user": true,
+    "main_and_schedules_unchanged": true
   }
 }
