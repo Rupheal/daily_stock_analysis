@@ -1,0 +1,10 @@
+{
+  "run_id":"TRI-DSA-DAT-20260914-006-R2-RAW-AGREEMENT",
+  "purpose":"Recheck all 132 adjusted-source disagreements using unadjusted Yahoo versus raw Tencent OHLCV before defining any recovery tolerance.",
+  "paid_resources":false,
+  "model_calls_authorized":false,
+  "frozen_recovery_denominator":253,
+  "track_denominator":132,
+  "source_integrity_run":34709328183,
+  "auto_recharge":false
+}
