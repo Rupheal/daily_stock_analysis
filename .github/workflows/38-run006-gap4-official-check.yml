@@ -1,0 +1,57 @@
+name: Run006 four provider gaps official check
+
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [run006_gap4_official_trigger.json]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  check-gap4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Verify free trigger and syntax
+        run: |
+          python - <<'PY'
+          import json,os,py_compile
+          if os.environ.get('GITHUB_RUN_ATTEMPT')!='1': raise SystemExit('rerun prohibited')
+          t=json.load(open('run006_gap4_official_trigger.json'))
+          assert t['run_id']=='TRI-DSA-DAT-20260914-006-R4-GAP4-OFFICIAL'
+          assert t['paid_resources'] is False and t['model_calls_authorized'] is False
+          assert t['track_denominator']==4
+          py_compile.compile('scripts/run006_gap4_official_check.py',doraise=True)
+          print('RUN006_GAP4_TRIGGER_OK')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34794761602
+          name: run006-b1-hkex-official-arbitration
+          github-token: ${{ github.token }}
+          path: input/hkex
+      - name: Check four gap names against official HKEX pages
+        run: |
+          python scripts/run006_gap4_official_check.py \
+            --hkex-pages input/hkex/hkex-pages \
+            --output reports/run006-b1/gap4-official.json
+      - name: Verify denominator
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('reports/run006-b1/gap4-official.json'))
+          assert x['track_denominator']==4 and len(x['rows'])==4
+          assert x['model_http_requests']==0 and x['paid_data_used'] is False
+          print('RUN006_GAP4_ACCOUNTING_OK')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run006-gap4-official-check
+          path: reports/run006-b1/
+          if-no-files-found: error
+          retention-days: 30
