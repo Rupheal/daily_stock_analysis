@@ -369,8 +369,8 @@
       "U45_preparation"
     ],
     "offline_tests_passed": 22,
-    "runner_roundtrip": "PENDING_CREDENTIAL_CHECK",
-    "live_restore": "NOT_VERIFIED",
+    "runner_roundtrip": "BLOCKED_MISSING_FOUR_DRIVE_SECRETS",
+    "live_restore": "SKIPPED_NOT_ACCEPTED",
     "O_native": "DISARMED",
     "U_reviewed": 45,
     "U_complete": 0,
@@ -382,6 +382,20 @@
     "legacy_progress": "12/16 bounded items; strategy not validated",
     "nas": "PENDING_SETUP",
     "ssd_this_batch": "NO_COPY_OR_RESTORE_RECEIPT",
-    "canonical_journal_unchanged": true
+    "canonical_journal_unchanged": true,
+    "cloud_preparation_run": 34862431389,
+    "cloud_drive_tests_passed": 18,
+    "cloud_disarmed_run": 34862431286,
+    "missing_configuration_names": [
+      "DSA_DRIVE_FOLDER_ID",
+      "DSA_DRIVE_CLIENT_ID",
+      "DSA_DRIVE_CLIENT_SECRET",
+      "DSA_DRIVE_REFRESH_TOKEN"
+    ],
+    "U_record_saved_private_drive": true,
+    "media_source_requests": 3,
+    "media_sources_received": 3,
+    "U_members_with_media_leads": 3,
+    "media_formal_acceptance": false
   }
 }
