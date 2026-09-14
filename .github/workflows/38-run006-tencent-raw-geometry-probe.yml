@@ -17,12 +17,12 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - name: Verify one-shot free execution boundary R2
+      - name: Verify one-shot free execution boundary R3
         run: |
           python - <<'PY'
           import os
           if os.environ.get('GITHUB_RUN_ATTEMPT')!='1': raise SystemExit('rerun prohibited')
-          print('RUN006_RAW_BOUNDARY_R2_OK', {'geometry_denominator':114,'original_recovery_denominator':253,'model_calls':0,'paid_data':0})
+          print('RUN006_RAW_BOUNDARY_R3_OK', {'geometry_denominator':114,'original_recovery_denominator':253,'model_calls':0,'paid_data':0})
           PY
       - uses: actions/download-artifact@v4
         with:
@@ -39,22 +39,22 @@ jobs:
           assert sum(1 for r in x['coverage'] if 'invalid_daily_geometry' in r.get('reason',''))==114
           print('RUN006_SOURCE_OK')
           PY
-      - name: Probe raw Tencent bars R2
+      - name: Probe unadjusted Tencent bars R3
         run: python scripts/run006_probe_tencent_raw_geometry.py --integrity input/pool/O-integrity.json --output reports/run006/tencent-raw-geometry.json
       - name: Verify diagnostic accounting
         run: |
           python - <<'PY'
           import json
           x=json.load(open('reports/run006/tencent-raw-geometry.json'))
-          assert x['run_id']=='TRI-DSA-DAT-20260914-006-GEOMETRY-TENCENT-RAW-R2'
+          assert x['run_id']=='TRI-DSA-DAT-20260914-006-GEOMETRY-TENCENT-RAW-R3'
           assert x['geometry_denominator']==114 and len(x['rows'])==114
           assert sum(x['classification_counts'].values())==114
           assert x['model_http_requests']==0 and x['paid_data_used'] is False and x['historical_inputs_rewritten'] is False
-          print('RUN006_RAW_PROBE_R2_OK',x['classification_counts'])
+          print('RUN006_RAW_PROBE_R3_OK',x['classification_counts'])
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: run006-tencent-raw-geometry-probe-r2
+          name: run006-tencent-raw-geometry-probe-r3
           path: reports/run006/tencent-raw-geometry.json
           if-no-files-found: error
           retention-days: 30
