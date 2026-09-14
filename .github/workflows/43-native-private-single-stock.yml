@@ -4,6 +4,7 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - docs/runtime/run012-private-native-arm.json
+      - .github/workflows/43-native-private-single-stock.yml
 permissions:
   contents: read
 concurrency:
