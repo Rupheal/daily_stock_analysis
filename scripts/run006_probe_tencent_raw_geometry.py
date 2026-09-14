@@ -52,8 +52,9 @@ def _extract_raw_rows(payload, code: str):
 
 def fetch_raw(code: str):
     code=canonical(code)
-    url="https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?"+urlencode({"param":code.lower()+",day,,,180"})
-    with urlopen(Request(url,headers={"User-Agent":"Mozilla/5.0","Referer":"https://finance.qq.com/"}),timeout=25) as resp:
+    # Tencent unadjusted daily bars use kline/kline with no qfq/hfq suffix.
+    url="https://web.ifzq.gtimg.cn/appstock/app/kline/kline?"+urlencode({"param":code.lower()+",day,,,180"})
+    with urlopen(Request(url,headers={"User-Agent":"Mozilla/5.0","Accept":"application/json,text/plain,*/*","Referer":"https://finance.qq.com/"}),timeout=25) as resp:
         raw=resp.read(2_000_000)
     payload,wire=_decode_payload(raw)
     rows=_extract_raw_rows(payload,code)
@@ -103,8 +104,8 @@ def main():
     counts={}
     for r in out: counts[r["classification"]]=counts.get(r["classification"],0)+1
     report={
-      "schema_version":3,
-      "run_id":"TRI-DSA-DAT-20260914-006-GEOMETRY-TENCENT-RAW-R3",
+      "schema_version":4,
+      "run_id":"TRI-DSA-DAT-20260914-006-GEOMETRY-TENCENT-RAW-R4",
       "generated_at":datetime.now(timezone.utc).isoformat(),
       "source_integrity_sha256":hashlib.sha256(a.integrity.read_bytes()).hexdigest(),
       "original_recovery_denominator":253,
@@ -118,6 +119,6 @@ def main():
     if len(out)!=114 or sum(counts.values())!=114: raise ValueError("diagnostic_accounting_failure")
     a.output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps(report,ensure_ascii=False,indent=2))
-    print("RUN006_TENCENT_RAW_GEOMETRY_PROBE_R3",json.dumps(counts,ensure_ascii=False),flush=True)
+    print("RUN006_TENCENT_RAW_GEOMETRY_PROBE_R4",json.dumps(counts,ensure_ascii=False),flush=True)
 
 if __name__=="__main__": main()
