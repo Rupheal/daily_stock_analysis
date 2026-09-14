@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DAT-20260914-006",
+  "contract_id": "RUN006_B1_HK_DAILY_RECOVERY_V1",
+  "frozen_at": "2026-09-14T04:15:00Z",
+  "scope": "future DSA O-track HK daily-data quality recovery only",
+  "source_denominator": 660,
+  "frozen_original_ranked": 407,
+  "frozen_original_isolated": 253,
+  "original_isolation_taxonomy": {
+    "invalid_daily_geometry": 114,
+    "independent_daily_disagreement": 132,
+    "missing_latest_session_or_21_bar_history": 7
+  },
+  "routing_rules": [
+    {
+      "when": "original provider passes 21-bar latest-session and OHLCV integrity gates",
+      "action": "KEEP_ORIGINAL_PROVIDER",
+      "reason": "no recovery required"
+    },
+    {
+      "when": "original provider fails OHLC geometry and Tencent unadjusted bar is valid on the exact failing session and Tencent qfq has >=21 ordered valid bars through target session",
+      "action": "USE_TENCENT_QFQ_FALLBACK",
+      "reason": "upstream geometry defect independently arbitrated"
+    },
+    {
+      "when": "adjusted Yahoo vs Tencent series disagree but Yahoo raw vs Tencent raw agree within the frozen raw-price diagnostic boundary and Tencent qfq has a valid 21-bar target-complete series",
+      "action": "USE_TENCENT_QFQ_FALLBACK",
+      "reason": "adjustment or rounding disagreement rather than raw-market disagreement"
+    },
+    {
+      "when": "Yahoo is missing target-complete 21-bar history but Tencent qfq supplies >=21 valid ordered bars through target session with actual target-session data",
+      "action": "USE_TENCENT_QFQ_FALLBACK",
+      "reason": "provider history gap"
+    },
+    {
+      "when": "Yahoo raw vs Tencent raw remain materially conflicting under the frozen diagnostic boundary",
+      "action": "RETAIN_ISOLATED_RAW_SOURCE_CONFLICT",
+      "reason": "do not choose a favorable provider without third-source arbitration"
+    },
+    {
+      "when": "Tencent history itself is stale before target or evidence indicates suspension/no-trade",
+      "action": "RETAIN_ISOLATED_STALE_OR_SUSPENDED",
+      "reason": "do not synthesize missing market sessions"
+    }
+  ],
+  "raw_agreement_boundary": {
+    "tight": "per OHLC field abs_diff <= max(HKD 0.01, 0.1% of price) over 21 overlapping sessions",
+    "loose": "per OHLC field abs_diff <= max(HKD 0.02, 0.2% of price) over 21 overlapping sessions",
+    "policy": "tight and loose categories are recoverable only because raw prices agree and Tencent qfq independently passes integrity; raw conflict remains isolated"
+  },
+  "feature_contract": {
+    "lookback_trading_sessions": 21,
+    "fields": ["close","return_1d_pct","return_5d_pct","return_10d_pct","return_20d_pct","ma5","ma10","ma20","bias_ma5_pct","bias_ma20_pct","volume_ratio","realized_vol20_ann_pct","position_in_20d_range","source"],
+    "fallback_source_label": "TencentFetcher:qfq"
+  },
+  "frozen_prediction_firewall": {
+    "run005_a0_oos_mutable": false,
+    "run005_a3_oos_mutable": false,
+    "retroactive_rerank_authorized": false,
+    "future_runs_only": true
+  },
+  "resource_boundary": {
+    "model_calls": 0,
+    "paid_data": false,
+    "work_codex_required": false
+  }
+}
