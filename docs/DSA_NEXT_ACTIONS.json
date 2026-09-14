@@ -274,7 +274,7 @@
     "run009": "local preparation only; 14 offline tests passed; no native call",
     "run008": "34816572611 is research A0/A3 only; frozen predictions unchanged",
     "current_blocker": "No verified private persistence destination accessible from existing GitHub runner",
-    "cloud_credential_presence": "pending zero-model-call workflow check",
+    "cloud_credential_presence": true,
     "O_native_acceptance": false,
     "U_execution_accepted": 0,
     "U_denominator": 45,
@@ -287,6 +287,10 @@
       "not_equivalent_to": "Run008 governance percentage or strategy effectiveness"
     },
     "git_commit_push_authorized_by_latest_user": true,
-    "main_and_schedules_unchanged": true
+    "main_and_schedules_unchanged": true,
+    "cloud_acceptance_run": 34838531501,
+    "cloud_test_count": 14,
+    "cloud_test_scope": "offline preparation only; not native model acceptance",
+    "accepted_preparation_commit": "dad30c99fa170ccbb900198a2441af6ceca72448"
   }
 }
