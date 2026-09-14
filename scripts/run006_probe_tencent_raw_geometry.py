@@ -27,21 +27,43 @@ def valid_geometry(row: dict) -> bool:
     return all(x.is_finite() for x in v.values()) and 0 < v["low"] <= min(v["open"],v["close"]) <= max(v["open"],v["close"]) <= v["high"] and v["volume"] >= 0
 
 
+def _extract_raw_rows(payload, code: str):
+    data=payload.get("data") if isinstance(payload,dict) else None
+    code=canonical(code).lower()
+    # Normal documented/observed keyed object shape.
+    if isinstance(data,dict):
+        item=data.get(code)
+        if isinstance(item,dict):
+            rows=item.get("day")
+            if isinstance(rows,list): return rows, "data.code.day"
+        if isinstance(data.get("day"),list): return data["day"], "data.day"
+    # Some responses expose a list container. Accept only explicit, inspectable shapes.
+    if isinstance(data,list):
+        if data and all(isinstance(x,list) for x in data):
+            return data, "data.rows"
+        for obj in data:
+            if not isinstance(obj,dict): continue
+            item=obj.get(code)
+            if isinstance(item,dict) and isinstance(item.get("day"),list):
+                return item["day"], "data[].code.day"
+            if isinstance(obj.get("day"),list):
+                return obj["day"], "data[].day"
+    raise ValueError("raw_day_missing_or_unrecognized_payload_shape")
+
+
 def fetch_raw(code: str):
     code=canonical(code)
     url="https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?"+urlencode({"param":code.lower()+",day,,,180"})
     with urlopen(Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=25) as resp:
         raw=resp.read(2_000_000)
     payload=json.loads(raw)
-    item=payload.get("data",{}).get(code.lower()) or {}
-    rows=item.get("day")
-    if not isinstance(rows,list):
-        raise ValueError("raw_day_missing")
+    rows,shape=_extract_raw_rows(payload,code)
     parsed=[]
     for r in rows:
-        if len(r)<6: continue
+        if not isinstance(r,list) or len(r)<6: continue
         parsed.append({"date":str(r[0]),"open":r[1],"close":r[2],"high":r[3],"low":r[4],"volume":r[5]})
-    return url, hashlib.sha256(raw).hexdigest(), parsed
+    if not parsed: raise ValueError("raw_day_rows_empty_after_parse")
+    return url, hashlib.sha256(raw).hexdigest(), parsed, shape
 
 
 def main():
@@ -53,7 +75,7 @@ def main():
     assert src["track"]=="O" and src["denominator"]==660
     targets=[]
     for r in src["coverage"]:
-        if r.get("reason","").endswith("invalid_daily_geometry") or "invalid_daily_geometry" in r.get("reason",""):
+        if "invalid_daily_geometry" in r.get("reason",""):
             if not r.get("invalid_bar") or not r["invalid_bar"].get("date"):
                 raise ValueError("geometry_isolate_missing_public_row")
             targets.append(r)
@@ -63,10 +85,10 @@ def main():
         code=canonical(r["code"]); day=r["invalid_bar"]["date"]
         rec={"code":code,"failing_date":day,"frozen_invalid_bar":r["invalid_bar"]}
         try:
-            url,sha,rows=fetch_raw(code)
+            url,sha,rows,shape=fetch_raw(code)
             by={x["date"]:x for x in rows}
             bar=by.get(day)
-            rec.update(url=url,response_sha256=sha,raw_session_count=len(rows))
+            rec.update(url=url,response_sha256=sha,raw_session_count=len(rows),payload_shape=shape)
             if bar is None:
                 rec.update(classification="TENCENT_RAW_SESSION_MISSING",raw_bar=None)
             elif not valid_geometry(bar):
@@ -74,7 +96,7 @@ def main():
             else:
                 rec.update(classification="TENCENT_RAW_VALID_ALTERNATIVE",raw_bar=bar)
         except Exception as exc:
-            rec.update(classification="TENCENT_RAW_FETCH_OR_PARSE_FAILURE",error=type(exc).__name__+":"+str(exc)[:160])
+            rec.update(classification="TENCENT_RAW_FETCH_OR_PARSE_FAILURE",error=type(exc).__name__+":"+str(exc)[:200])
         with lock: out.append(rec)
     with ThreadPoolExecutor(max_workers=8) as pool:
         list(pool.map(one,targets))
@@ -82,8 +104,8 @@ def main():
     counts={}
     for r in out: counts[r["classification"]]=counts.get(r["classification"],0)+1
     report={
-      "schema_version":1,
-      "run_id":"TRI-DSA-DAT-20260914-006-GEOMETRY-TENCENT-RAW-R1",
+      "schema_version":2,
+      "run_id":"TRI-DSA-DAT-20260914-006-GEOMETRY-TENCENT-RAW-R2",
       "generated_at":datetime.now(timezone.utc).isoformat(),
       "source_integrity_sha256":hashlib.sha256(a.integrity.read_bytes()).hexdigest(),
       "original_recovery_denominator":253,
@@ -97,6 +119,6 @@ def main():
     if len(out)!=114 or sum(counts.values())!=114: raise ValueError("diagnostic_accounting_failure")
     a.output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps(report,ensure_ascii=False,indent=2))
-    print("RUN006_TENCENT_RAW_GEOMETRY_PROBE",json.dumps(counts,ensure_ascii=False),flush=True)
+    print("RUN006_TENCENT_RAW_GEOMETRY_PROBE_R2",json.dumps(counts,ensure_ascii=False),flush=True)
 
 if __name__=="__main__": main()
