@@ -15,7 +15,7 @@ def signal(passed=True,account='U'):
         'covered':45,'denominator':45,'data_news_plan_verified':True,'next_session':'2026-01-05',
         'engine':'original_native_dsa','upstream_commit':'fixture-native',
         'top3':[{'code':'fixture','rank':1,'score':80,'industry':'fixture-industry','action':'BUY','buyable_verified':True}]}}
-def quote():return {**EV,'at':T1,'price':'10','cny_per_hkd':'1','fx_evidence':{**EV,'at':T0},'tradable':True,
+def quote():return {**EV,'price_time':T1,'time_semantics':'VERIFIED_SESSION_OPEN','at':T1,'price':'10','cny_per_hkd':'1','fx_evidence':{**EV,'at':T0},'tradable':True,
                    'adjustment':'raw','first_eligible_price_verified':True,'mode':'daily_open','next_session_verified':True,
                    'session':'2026-01-05','lot_size':100,'lot_verified':True}
 def entry():return {'id':'entry','account':'U','at':T1,'kind':'ENTRY','signal_id':'morning','code':'fixture','quote':quote(),'fee_cny':'0'}
@@ -111,3 +111,7 @@ def test_overlapping_daily_bar_rejected():
 
 def test_independent_account_balance():
     j=bought();assert replay(j)['O']['cash']=='300000' and not replay(j)['O']['positions']
+
+def test_retrieved_timestamp_cannot_be_execution_timestamp():
+    e=entry();e['quote']['price_time']=T0
+    with pytest.raises(ValueError,match='source price_time'):append(append(new_journal(CFG),signal()),e)

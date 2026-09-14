@@ -1,0 +1,24 @@
+{
+  "checkpoint_id": "TRI-DSA-VAL-20260914-008-RECEIPT",
+  "parent_checkpoint": "TRIDENT Run005/Run006 plus fix/dual-account-runtime-20260914@6ac18ddc86a2a3011d056e2e9a5a9aa188d5f17f",
+  "run_id": "TRI-DSA-VAL-20260914-008",
+  "workflow_run_id": 34816572611,
+  "execution_commit": "87162c941d6201993ef7e7d8e60bc233fc2088b1",
+  "artifact_id": 10337300274,
+  "artifact_sha256": "621a78fa3aff28adeccd97d69aa3fb5554849885d6c6e6495e1cd14e5f360054",
+  "status": "RESEARCH_PAIR_FROZEN_AWAIT_FUTURE_OUTCOMES",
+  "scope": "O-universe custom technical research; NOT original native DSA; NOT U; NOT shadow trading authority",
+  "coverage": {"official_current_denominator":660,"feature_ready":637,"A0_ranked":637,"A0_isolated":23,"A3_ranked":634,"A3_isolated":26},
+  "cost": {"requests":1274,"conservative_estimate_cny":2.074794,"actual_invoice_cny":null,"auto_recharge":false},
+  "future_reference_not_before": "2026-09-15T01:30:00+00:00",
+  "next_actions": [
+    {"id":"R008-FUTURE", "status":"WAIT_FUTURE", "action":"Only after eligible real timestamped reference prices exist, append prospective h1/h3/h5/h10/h20 outcomes. Do not rescore, rerank, replace missing rows or retrofit the baseline."},
+    {"id":"R008-FAILURES", "status":"ISOLATED", "action":"Retain 19 source conflicts, 3 stale/suspended and 02922 unverified new-code history. A3 schema failures 00522/02692/06818 remain frozen failures; any repair requires another newly preregistered run."},
+    {"id":"SHADOW-JOURNAL", "status":"TRANSIENT_BLOCKED_502", "action":"Materialize latest canonical dual-account journal, verify parent hash, then replay deterministically. Two attempts failed this run; no journal mutation or fills occurred."},
+    {"id":"NATIVE-O", "status":"NOT_COMPLETED", "action":"Research-priority score is not bullishness. Preserve original stance, never relabel this custom scorer as original DSA. Independent original-native O full-pool acceptance remains separate."},
+    {"id":"PRICE-INTEGRATION", "status":"TESTED_NOT_DEPLOYED", "action":"Source-time parser and stricter simulation quote gate are on the research branch. Existing AM/PM execution adoption and first eligible price/FX/fees/lot verification remain unverified. No scheduler changes authorized this run."},
+    {"id":"RUN005", "status":"UNCHANGED", "action":"Keep V2/V9 future windows pending; V11 NOT_ELIGIBLE. Preserve negative evidence and old A0/A3 frozen outputs. New V8 classification does not establish independent regime robustness."},
+    {"id":"BILLING", "status":"UNVERIFIED_ACTUAL", "action":"Reconcile provider billing against request receipts when available; never label estimate as actual debit."}
+  ],
+  "prohibitions": ["main modifications","production promotion","real orders","broker connection","scheduler changes","Run005 outcome rewriting","automatic recharge"]
+}

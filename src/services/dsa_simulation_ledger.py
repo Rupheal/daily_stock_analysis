@@ -53,6 +53,8 @@ def record(a, cmd, kind, **kw):
 
 def quote_price(q, at):
     evidence(q)
+    if q.get('price_time') != q.get('at') or q.get('time_semantics') not in ('PROVIDER_PRICE_TIME', 'VERIFIED_SESSION_OPEN'):
+        raise ValueError('source price_time required; retrieval time cannot replace it')
     if stamp(q['at']) > stamp(at) or q.get('tradable') is not True:
         raise ValueError('future/nontradable quote')
     if q.get('adjustment') != 'raw':
