@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [文档] DSA原始证据改为Google Drive优先，保留私密GitHub备选，解除U独立准备对O存储的等待；正式验收门槛不变。
+
 - [研究准备] 增加 O 原生单股私密主机预检与本地证据包装器，以及 U45 逐股来源诊断；不修改原生评分，不代表模型或模拟入场验收通过。
 
 - [新功能] 增加独立双模型模拟账本、不可覆盖命令和版本冲突恢复入口；原生O保持不变。

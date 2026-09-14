@@ -5,14 +5,25 @@
     "limit": "actual verified available DeepSeek CNY balance",
     "old_8_cny_or_2_requests_limit": false,
     "auto_recharge": false,
-    "historical_ledger_refs": [34704104399, 34707511466],
+    "historical_ledger_refs": [
+      34704104399,
+      34707511466
+    ],
     "readiness_run": 34708338449,
-    "excludes": ["new_subscriptions", "paid_data", "unrelated_model_experiments"],
+    "excludes": [
+      "new_subscriptions",
+      "paid_data",
+      "unrelated_model_experiments"
+    ],
     "paid_workflow_state": "new full-pool workflow not started; public raw model-content export remains prohibited; private text-evidence bridge prepared"
   },
   "active_model_authorization": "DSA_FUNDED_DUAL_20260912",
   "completed": [
-    {"id": "G1", "run_id": 34700162747, "title": "固定事实简报V1"}
+    {
+      "id": "G1",
+      "run_id": 34700162747,
+      "title": "固定事实简报V1"
+    }
   ],
   "delivery": {
     "files_verified": 53,
@@ -24,62 +35,143 @@
   "description": "Historical research queue plus 2026-09-14 closure override; consult actual latest runs and docs/runtime/RUN012.zh-CN.md",
   "fixed_progress": "12/16 closed within named bounded legacy scopes; strategy unverified; Run012 engineering bridge separately passed",
   "frozen_acceptance_items": [
-    {"id": "G1", "status": "passed", "title": "已交付固定事实V1"},
-    {"id": "G2.1", "status": "passed", "title": "指定公告原件与字段"},
-    {"id": "G2.2", "status": "passed", "title": "财务字段期间/币种/单位/原件核对"},
-    {"id": "G2.3", "status": "passed_bounded_scope", "title": "事件分组及跨窗风险复核"},
-    {"id": "G3.1", "status": "passed_bounded_scope", "title": "受约束输出离线与最终消费者"},
-    {"id": "G3.2", "status": "passed_bounded_scope", "title": "真实单股HTTP及语义复核"},
-    {"id": "G4.1", "status": "passed_identity_and_data_coverage; 44/45 Southbound eligible, all45 retained", "title": "U45身份与覆盖清单"},
-    {"id": "G4.2", "status": "passed_snapshot_N660_asof_2026-09-11", "title": "O官方全港股通并集N"},
-    {"id": "G4.3", "status": "partial_O_single_model_and_U36/45_O407/660_independent_history; full_model_pending", "title": "独立原生运行及失败分母"},
-    {"id": "G4.4", "status": "passed_measured_cost_plan; funded_urgent_goal_authorized", "title": "全池付费运行具体方案"},
-    {"id": "G5.1", "status": "passed_inherited_rules_freeze; numeric_weights_undefined", "title": "冻结既有资金潮汐/宏观规则"},
-    {"id": "G5.2", "status": "partial_347_clock_ordered_archival_pairs; historical_PIT_still_unverified", "title": "历史时点回放证据"},
-    {"id": "G5.3", "status": "waiting_future_actual_HK_sessions; original_observation_frozen", "title": "时间外观察"},
-    {"id": "G5.4", "status": "not_estimable_missing_full_PIT_trade_contract", "title": "基准与因子移除对照"},
-    {"id": "G6.1", "status": "passed_bounded_delivery_report_reproduction_costs_53_files_verified", "title": "中文报告/复现/费用交付"},
-    {"id": "G6.2", "status": "passed_preparation_and_waiting_handoff_no_deployment", "title": "部署准备及等待交接"}
+    {
+      "id": "G1",
+      "status": "passed",
+      "title": "已交付固定事实V1"
+    },
+    {
+      "id": "G2.1",
+      "status": "passed",
+      "title": "指定公告原件与字段"
+    },
+    {
+      "id": "G2.2",
+      "status": "passed",
+      "title": "财务字段期间/币种/单位/原件核对"
+    },
+    {
+      "id": "G2.3",
+      "status": "passed_bounded_scope",
+      "title": "事件分组及跨窗风险复核"
+    },
+    {
+      "id": "G3.1",
+      "status": "passed_bounded_scope",
+      "title": "受约束输出离线与最终消费者"
+    },
+    {
+      "id": "G3.2",
+      "status": "passed_bounded_scope",
+      "title": "真实单股HTTP及语义复核"
+    },
+    {
+      "id": "G4.1",
+      "status": "passed_identity_and_data_coverage; 44/45 Southbound eligible, all45 retained",
+      "title": "U45身份与覆盖清单"
+    },
+    {
+      "id": "G4.2",
+      "status": "passed_snapshot_N660_asof_2026-09-11",
+      "title": "O官方全港股通并集N"
+    },
+    {
+      "id": "G4.3",
+      "status": "partial_O_single_model_and_U36/45_O407/660_independent_history; full_model_pending",
+      "title": "独立原生运行及失败分母"
+    },
+    {
+      "id": "G4.4",
+      "status": "passed_measured_cost_plan; funded_urgent_goal_authorized",
+      "title": "全池付费运行具体方案"
+    },
+    {
+      "id": "G5.1",
+      "status": "passed_inherited_rules_freeze; numeric_weights_undefined",
+      "title": "冻结既有资金潮汐/宏观规则"
+    },
+    {
+      "id": "G5.2",
+      "status": "partial_347_clock_ordered_archival_pairs; historical_PIT_still_unverified",
+      "title": "历史时点回放证据"
+    },
+    {
+      "id": "G5.3",
+      "status": "waiting_future_actual_HK_sessions; original_observation_frozen",
+      "title": "时间外观察"
+    },
+    {
+      "id": "G5.4",
+      "status": "not_estimable_missing_full_PIT_trade_contract",
+      "title": "基准与因子移除对照"
+    },
+    {
+      "id": "G6.1",
+      "status": "passed_bounded_delivery_report_reproduction_costs_53_files_verified",
+      "title": "中文报告/复现/费用交付"
+    },
+    {
+      "id": "G6.2",
+      "status": "passed_preparation_and_waiting_handoff_no_deployment",
+      "title": "部署准备及等待交接"
+    }
   ],
   "full_pool_model_authorized": true,
   "last_verified_native_run": 34705950297,
   "next_actions": [
     {
       "definition_of_done": "每份原件有时间/来源/哈希；区分已核正文与目录，不以部分目录宣称完整覆盖",
-      "id": "G2.1", "priority": 0, "run_id": 34703482717,
-      "status": "passed_bounded_reviewed_scope", "title": "核验当前分析使用的小米公告正文及缺口"
+      "id": "G2.1",
+      "priority": 0,
+      "run_id": 34703482717,
+      "status": "passed_bounded_reviewed_scope",
+      "title": "核验当前分析使用的小米公告正文及缺口"
     },
     {
       "definition_of_done": "字段对应原始披露、期间、币种、单位、是否估算；未核字段继续隔离",
-      "id": "G2.2", "priority": 0, "run_id": 34703482717,
-      "status": "passed_bounded_reviewed_scope", "title": "逐字段恢复实际参与分析的财务证据"
+      "id": "G2.2",
+      "priority": 0,
+      "run_id": 34703482717,
+      "status": "passed_bounded_reviewed_scope",
+      "title": "逐字段恢复实际参与分析的财务证据"
     },
     {
       "definition_of_done": "重复/跨语言/跨窗与新证据改变状态的真实反例通过；保留全部分母",
-      "id": "G2.3", "priority": 0, "run_id": 34703906428,
-      "status": "passed_current_reviewed_scope", "title": "补事件聚合、持续风险复核及缺失诊断"
+      "id": "G2.3",
+      "priority": 0,
+      "run_id": 34703906428,
+      "status": "passed_current_reviewed_scope",
+      "title": "补事件聚合、持续风险复核及缺失诊断"
     },
     {
       "definition_of_done": "已验证数据、执行字段一致、事实可追溯、语义复核及拟发布入口通过；本批最多2次，先免费验收",
-      "id": "G3", "priority": 1, "run_id": 34704104399,
-      "status": "passed_limited_constrained_observation", "title": "受约束的单股模型输出与真实消费者验收"
+      "id": "G3",
+      "priority": 1,
+      "run_id": 34704104399,
+      "status": "passed_limited_constrained_observation",
+      "title": "受约束的单股模型输出与真实消费者验收"
     },
     {
-      "definition_of_done": "先完成 O 冻结上游单股原生调用、私密文本证据保存/读回/哈希和人工语义复核；再冻结当期官方沪深港股通可买并集并完成 O 全池；之后才启动 U45 正式逐股执行验收",
-      "id": "G4", "priority": 1,
-      "status": "private_destination_verified; runner_bridge_engineering_passed; waiting_owner_scoped_cross_repo_secret; O_native_acceptance_false; U_execution_0_of_45",
+      "definition_of_done": "先完成 O 冻结上游单股原生调用、私密文本证据保存/读回/哈希和人工语义复核；再冻结当期官方沪深港股通可买并集并完成 O 全池；之后才启动 U45 正式逐股执行验收；最新覆盖：U独立数据准备不等待O，Drive为首选原件目的地，正式验收门槛不变",
+      "id": "G4",
+      "priority": 1,
+      "status": "Drive_primary_runner_authorization_and_roundtrip_pending; U_independent_preparation_unblocked; Run012_GitHub_bridge_retained_as_fallback",
       "title": "U45与O全港股通独立覆盖及原生实例验收"
     },
     {
       "definition_of_done": "冻结规则、PIT证据与交易时点，可复算成本后指标，接受/拒绝/不足均有证据",
-      "id": "G5", "priority": 2,
+      "id": "G5",
+      "priority": 2,
       "status": "descriptive_clock_replay_completed; full_PIT_and_future_windows_pending",
       "title": "资金潮汐/宏观历史回放、时间外与因子对照"
     },
     {
       "definition_of_done": "交付可审阅部署方案、失败恢复、费用及不可覆盖预测记录；正式启用另行批准",
-      "evidence": "docs/dsa-resumption-handoff.md", "id": "G6", "priority": 3,
-      "status": "passed_preparation_and_delivery_only", "title": "部署准备和未来观察交接"
+      "evidence": "docs/dsa-resumption-handoff.md",
+      "id": "G6",
+      "priority": 3,
+      "status": "passed_preparation_and_delivery_only",
+      "title": "部署准备和未来观察交接"
     }
   ],
   "operating_rules": {
@@ -90,16 +182,17 @@
     "repeat_gate": "Only for changed code/data or a concrete unresolved risk",
     "two_unsuccessful_fix_cycles": "Reassess architecture and use a verifiable bounded alternative",
     "existing_dsa_prompt_updates_authorized": true,
-    "schedule_note": "2026-09-14 user authorizes prompt synchronization only; preserve times"
+    "schedule_note": "2026-09-14 user authorizes prompt synchronization only; preserve times",
+    "u_preparation_requires_o_acceptance": false
   },
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-14T11:54:00Z",
+  "updated_at_utc": "2026-09-14T14:17:33.697Z",
   "user_directive_override": {
     "priority": "urgent",
     "path": "docs/dsa-urgent-user-directive.md",
-    "instruction": "User has recharged DeepSeek and authorizes necessary continued research calls; prioritize Monday pre-open deliverables; previous small-budget pause rules superseded for necessary DeepSeek work. Preserve actual usage/history and do not start duplicate runs.",
+    "instruction": "User has recharged DeepSeek and authorizes necessary continued research calls; prioritize Monday pre-open deliverables; previous small-budget pause rules superseded for necessary DeepSeek work. Preserve actual usage/history and do not start duplicate runs. Latest user override: Google Drive primary raw evidence; private GitHub fallback; NAS future backup only; U independent data preparation proceeds while O storage waits. Formal signal/simulation gates unchanged.",
     "receipt": "read_and_applied; public raw-content disclosure remains prohibited; private bounded text-evidence path prepared"
   },
   "budget_history": [
@@ -107,7 +200,11 @@
       "ask_above_cny": "1.20",
       "authorization_status": "ACCEPTED_USER_GOAL",
       "batch_id": "DSA_RESEARCH_GOAL_20260912_01",
-      "excludes": ["bulk_stock_pool_model_calls", "new_subscriptions", "paid_data"],
+      "excludes": [
+        "bulk_stock_pool_model_calls",
+        "new_subscriptions",
+        "paid_data"
+      ],
       "max_requests": 2,
       "paid_workflow_state": "closed_after_request_1",
       "remaining_http_requests": 1,
@@ -128,8 +225,16 @@
   "latest_price_research": {
     "run_id": 34709328183,
     "session": "2026-09-11",
-    "U": {"passed": 36, "denominator": 45, "isolated": 9},
-    "O": {"passed": 407, "denominator": 660, "isolated": 253},
+    "U": {
+      "passed": 36,
+      "denominator": 45,
+      "isolated": 9
+    },
+    "O": {
+      "passed": 407,
+      "denominator": 660,
+      "isolated": 253
+    },
     "scope": "21 observed daily OHLCV comparisons and retained-history geometry; not full corporate-action or model validation",
     "model_http_requests": 0
   },
@@ -162,7 +267,11 @@
   },
   "native_execution_20260914": {
     "run_id": "TRI-DSA-EXEC-20260914-012",
-    "priority": ["O_native_execution_and_private_persistence", "U_per_member_execution", "conditional_simulation"],
+    "priority": [
+      "O_native_execution_and_private_persistence",
+      "U_per_member_execution",
+      "conditional_simulation"
+    ],
     "parent_runtime_commit": "6ac18ddc86a2a3011d056e2e9a5a9aa188d5f17f",
     "run008": "34816572611 is research A0/A3 only; frozen predictions unchanged",
     "run009": "local preparation/source diagnostics only; no new native acceptance call",
@@ -176,7 +285,7 @@
       "binary_git_history_prohibited": true,
       "text_only_export_required": true
     },
-    "current_blocker": "DSA_EVIDENCE_TOKEN is not configured in Rupheal/daily_stock_analysis Actions secrets; this is the sole owner action required before arming Run012",
+    "current_blocker": "Primary Drive route: runner authorization and byte-preserving save/read/SHA-256 not verified; U independent preparation is unblocked",
     "cloud_model_credential_present": true,
     "cloud_evidence_credential_present": false,
     "O_native_acceptance": false,
@@ -204,18 +313,44 @@
       "not_equivalent_to": "Run008 governance percentage, Run012 engineering completion, or strategy effectiveness"
     },
     "user_action_required": {
-      "secret_name": "DSA_EVIDENCE_TOKEN",
-      "credential_type": "fine-grained GitHub personal access token",
-      "repository_access": ["Rupheal/TRIDENT-Foundation"],
-      "repository_permissions": {"Contents": "Read and write"},
-      "do_not_grant": ["daily_stock_analysis repository access", "Actions administration", "other repositories", "account-wide broad permissions"],
-      "destination": "Rupheal/daily_stock_analysis > Settings > Secrets and variables > Actions > Repository secrets",
-      "token_must_not_be_shared_in_chat": true,
-      "new_service_cost": 0
+      "status": "prior GitHub token instructions now fallback only; determine exact Drive authorization setup before owner request",
+      "fallback_previous": {
+        "secret_name": "DSA_EVIDENCE_TOKEN",
+        "credential_type": "fine-grained GitHub personal access token",
+        "repository_access": [
+          "Rupheal/TRIDENT-Foundation"
+        ],
+        "repository_permissions": {
+          "Contents": "Read and write"
+        },
+        "do_not_grant": [
+          "daily_stock_analysis repository access",
+          "Actions administration",
+          "other repositories",
+          "account-wide broad permissions"
+        ],
+        "destination": "Rupheal/daily_stock_analysis > Settings > Secrets and variables > Actions > Repository secrets",
+        "token_must_not_be_shared_in_chat": true,
+        "new_service_cost": 0
+      }
     },
     "git_commit_push_authorized_by_latest_user": true,
     "main_and_schedules_unchanged": true,
     "latest_engineering_commit": "f9d88c69e8e7cce457c8bd51fcbbff64ab3cc536",
-    "latest_checkpoint_commit": "8fad8409b0570f3361e4cff40985d4d9b7176481"
+    "latest_checkpoint_commit": "8fad8409b0570f3361e4cff40985d4d9b7176481",
+    "prior_run012_blocker": "DSA_EVIDENCE_TOKEN is not configured in Rupheal/daily_stock_analysis Actions secrets; this is the sole owner action required before arming Run012"
+  },
+  "storage_and_preparation_override_20260914": {
+    "authorization": "ACCEPTED_LATEST_USER_IMMEDIATE_ADJUSTMENT",
+    "primary_raw_evidence_store": "Google Drive; TRIDENT_BACKUP/DSA_PRIVATE_EVIDENCE",
+    "drive_folder_permission_check": "connector metadata: not shared; owner only",
+    "drive_runner_roundtrip_verified": false,
+    "private_github_fallback": "Preserve Run011/Run012; optional fallback, not primary dependency",
+    "nas": "future independent backup; not connected; not prerequisite",
+    "u_independent_preparation_can_proceed": true,
+    "u_preparation_requires_o_acceptance": false,
+    "formal_acceptance_and_simulation_gates": "UNCHANGED",
+    "model_requests_this_policy_update": 0,
+    "scope": "routing, dependency policy and documentation only; no strategy acceptance"
   }
 }
