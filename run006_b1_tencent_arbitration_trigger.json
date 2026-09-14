@@ -1,0 +1,10 @@
+{
+  "run_id":"TRI-DSA-DAT-20260914-006-R1-TENCENT-ARBITRATION",
+  "purpose":"Arbitrate all 114 Yahoo geometry isolates plus 7 history-gap isolates using Tencent raw/day and qfq public K-lines without mutating frozen OOS data.",
+  "paid_resources":false,
+  "model_calls_authorized":false,
+  "frozen_recovery_denominator":253,
+  "track_denominator":121,
+  "source_integrity_run":34709328183,
+  "auto_recharge":false
+}
