@@ -1,0 +1,11 @@
+{
+  "run_id": "TRI-DSA-DAT-20260914-006-R1-GEOMETRY-PROBE",
+  "purpose": "Diagnose all frozen Yahoo invalid_daily_geometry isolates using raw versus auto-adjusted refetches without repairing bars.",
+  "paid_resources": false,
+  "model_calls_authorized": false,
+  "frozen_recovery_denominator": 253,
+  "geometry_denominator": 114,
+  "source_native_run": 34705950297,
+  "source_integrity_run": 34709328183,
+  "auto_recharge": false
+}
