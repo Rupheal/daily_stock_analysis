@@ -9,6 +9,7 @@ import httpx
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dsa_drive_store import DriveStore, StoreError, LIMIT, digest
 from dsa_drive_bundle import verify_bundle
 from test_dsa_drive_store import Fake
