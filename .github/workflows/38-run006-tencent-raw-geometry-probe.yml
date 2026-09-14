@@ -1,4 +1,4 @@
-name: Run006 raw disagreement diagnostic
+name: Run006 missing-history diagnostic
 on:
   push:
     branches: [trident/run004-fullpool-pit]
@@ -7,9 +7,9 @@ permissions:
   contents: read
   actions: read
 jobs:
-  raw-disagreement-probe:
+  missing-history-probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
         with:
@@ -17,14 +17,13 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - name: Verify one-shot free execution boundary R6
+      - name: Verify one-shot free execution boundary R7
         run: |
           python - <<'PY'
           import os
           if os.environ.get('GITHUB_RUN_ATTEMPT')!='1': raise SystemExit('rerun prohibited')
-          print('RUN006_DISAGREEMENT_BOUNDARY_R6_OK', {'disagreement_denominator':132,'original_recovery_denominator':253,'model_calls':0,'paid_data':0})
+          print('RUN006_MISSING_BOUNDARY_R7_OK', {'missing_denominator':7,'original_recovery_denominator':253,'model_calls':0,'paid_data':0})
           PY
-      - run: pip install yfinance
       - uses: actions/download-artifact@v4
         with:
           run-id: 34709328183
@@ -37,25 +36,25 @@ jobs:
           import json
           x=json.load(open('input/pool/O-integrity.json'))
           assert x['track']=='O' and x['denominator']==660 and x['isolated']==253
-          assert sum(1 for r in x['coverage'] if r.get('reason')=='independent_daily_disagreement')==132
+          assert sum(1 for r in x['coverage'] if 'missing_latest_session_or_21_bar_history' in r.get('reason',''))==7
           print('RUN006_SOURCE_OK')
           PY
-      - name: Compare Yahoo raw vs Tencent raw R6
-        run: python scripts/run006_probe_tencent_raw_geometry.py --integrity input/pool/O-integrity.json --output reports/run006/raw-disagreement-r6.json
+      - name: Diagnose final seven isolates R7
+        run: python scripts/run006_probe_tencent_raw_geometry.py --integrity input/pool/O-integrity.json --output reports/run006/missing-history-r7.json
       - name: Verify diagnostic accounting
         run: |
           python - <<'PY'
           import json
-          x=json.load(open('reports/run006/raw-disagreement-r6.json'))
-          assert x['run_id']=='TRI-DSA-DAT-20260914-006-DISAGREEMENT-RAW-R6'
-          assert x['disagreement_denominator']==132 and len(x['rows'])==132
-          assert sum(x['classification_counts'].values())==132
+          x=json.load(open('reports/run006/missing-history-r7.json'))
+          assert x['run_id']=='TRI-DSA-DAT-20260914-006-MISSING-HISTORY-R7'
+          assert x['missing_history_denominator']==7 and len(x['rows'])==7
+          assert sum(x['classification_counts'].values())==7
           assert x['model_http_requests']==0 and x['paid_data_used'] is False and x['historical_inputs_rewritten'] is False
-          print('RUN006_RAW_DISAGREEMENT_R6_OK',x['classification_counts'])
+          print('RUN006_MISSING_HISTORY_R7_OK',x['classification_counts'])
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: run006-raw-disagreement-r6
-          path: reports/run006/raw-disagreement-r6.json
+          name: run006-missing-history-r7
+          path: reports/run006/missing-history-r7.json
           if-no-files-found: error
           retention-days: 30
