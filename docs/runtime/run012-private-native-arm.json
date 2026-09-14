@@ -1,0 +1,9 @@
+{
+  "schema": "dsa-private-native-arm-v1",
+  "run_id": "TRI-DSA-EXEC-20260914-012",
+  "armed": false,
+  "reason": "Preparation only. Do not make a model request until DSA_EVIDENCE_TOKEN is configured and runner-side private persistence is verified.",
+  "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "target_private_repository": "Rupheal/TRIDENT-Foundation",
+  "target_private_branch": "research/dsa-private-evidence-20260914"
+}
