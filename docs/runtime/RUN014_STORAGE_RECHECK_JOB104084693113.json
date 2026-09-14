@@ -1,0 +1,69 @@
+{
+  "schema": "dsa-storage-recheck-v1",
+  "run_id": "TRI-DSA-STORAGE-VERIFY-RUN014-R2",
+  "parent_receipt": "docs/runtime/RUN014_CLOUD.json",
+  "scope": "Fresh credential/readiness check using existing storage-only workflow; not native-model acceptance",
+  "code_commit": "b51bdb73b8d05cdd0dcb6b09eb91552ee8d67cd0",
+  "workflow": ".github/workflows/44-drive-storage-readiness.yml",
+  "workflow_run_id": 34866889749,
+  "previous_job_id": 104052842668,
+  "recheck_job_id": 104084693113,
+  "evidence_observed_utc": "2026-09-14T17:43:19.9845318Z",
+  "provider_timestamp_policy": "Retain original GitHub UTC timestamp; do not replace with conversation date",
+  "checks": {
+    "existing_regression_passed": 40,
+    "existing_regression_denominator": 40,
+    "new_unique_tests_added": 0,
+    "pytest_seconds": 0.53,
+    "configuration_check_executed": true,
+    "runtime_secrets_all_visible": false,
+    "real_storage_step": "SKIPPED",
+    "independent_read": "NOT_EXECUTED",
+    "sha256_roundtrip": "NOT_EXECUTED",
+    "disk_restore": "NOT_EXECUTED"
+  },
+  "missing_at_runner": [
+    "DSA_DRIVE_FOLDER_ID",
+    "DSA_DRIVE_CLIENT_ID",
+    "DSA_DRIVE_CLIENT_SECRET",
+    "DSA_DRIVE_REFRESH_TOKEN"
+  ],
+  "credential_scope_note": "Observed empty environment values in this job; does not prove secrets are absent in every GitHub scope.",
+  "acceptance": "BLOCKED_CONFIGURATION_NOT_PASSED",
+  "workflow_green_is_storage_acceptance": false,
+  "native_arm": false,
+  "native_arm_blob": "4266237a2d00bdbf5a3b8fe1620c97992591bce3",
+  "O_native_calls_this_recheck": 0,
+  "progress": {
+    "storage_stages_passed": 0,
+    "storage_stages_denominator": 4,
+    "storage_stage_definition": [
+      "real_save",
+      "independent_read",
+      "sha256_match",
+      "disk_restore_per_file_hash"
+    ],
+    "fixed_legacy_passed": 12,
+    "fixed_legacy_denominator": 16,
+    "fixed_legacy_percent": 75,
+    "legacy_progress_changed": false,
+    "strategy_acceptance": "NOT_EVALUATED"
+  },
+  "resources": {
+    "storage_job_retries": 1,
+    "deepseek_requests": 0,
+    "deepseek_tokens": 0,
+    "deepseek_incremental_cost_cny": 0,
+    "balance_queried": false,
+    "actions_actual_billed_cost": "NOT_OBSERVABLE",
+    "new_subscriptions": 0,
+    "topups": 0,
+    "scheduled_task_changes": 0,
+    "ledger_writes": 0,
+    "simulated_fills": 0
+  },
+  "next_required_action": "Owner must make four existing Drive OAuth settings visible as repository Actions Secrets. Never paste values in chat. Recheck storage-only flow after configuration change; do not arm O before actual save/read/hash/restore PASS.",
+  "log_endpoint": "https://api.github.com/repos/Rupheal/daily_stock_analysis/actions/jobs/104084693113/logs",
+  "logs_retrieved_with": "GitHub.fetch_workflow_job_logs",
+  "changes": "Append-only sanitized status receipt; no runtime code, native-arm, main, frozen-results, accounts, or schedules changed."
+}
