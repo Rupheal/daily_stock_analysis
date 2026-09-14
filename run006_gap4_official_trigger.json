@@ -1,0 +1,9 @@
+{
+  "run_id":"TRI-DSA-DAT-20260914-006-R4-GAP4-OFFICIAL",
+  "purpose":"Check the four provider-only history gaps against archived official HKEX pages and Tencent qfq before recovery.",
+  "paid_resources":false,
+  "model_calls_authorized":false,
+  "track_denominator":4,
+  "source_hkex_run":34794761602,
+  "auto_recharge":false
+}
