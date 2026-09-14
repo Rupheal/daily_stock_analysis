@@ -1,0 +1,94 @@
+name: Run006 B1 recovery counterfactual acceptance
+on:
+  push:
+    branches: [trident/run004-fullpool-pit]
+    paths: [.github/workflows/39-run006-recovery-counterfactual.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  recovery-counterfactual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: .
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify zero-model recovery boundary
+        run: |
+          python - <<'PY'
+          import os,json
+          if os.environ.get('GITHUB_RUN_ATTEMPT')!='1': raise SystemExit('rerun prohibited')
+          c=json.load(open('docs/run006_b1_recovery_contract.json'))
+          assert c['source_denominator']==660 and c['frozen_original_isolated']==253
+          assert c['frozen_prediction_firewall']['retroactive_rerank_authorized'] is False
+          print('RUN006_COUNTERFACTUAL_BOUNDARY_OK')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34705950297
+          name: original-official-pool-data-and-replay
+          path: input/o660
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34709328183
+          name: public-pool-price-checks
+          path: input/integrity
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34804819754
+          name: run006-tencent-qfq-recovery-r5
+          path: evidence/r5
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34804906297
+          name: run006-raw-disagreement-r6
+          path: evidence/r6
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 34805084679
+          name: run006-missing-history-r7
+          path: evidence/r7
+          github-token: ${{ github.token }}
+      - name: Execute deterministic 660-name counterfactual
+        run: |
+          DB=$(find input/o660 -name native-data.db | grep 'O-full' | head -1)
+          INTEGRITY=$(find input/integrity -name O-integrity.json | head -1)
+          R5=$(find evidence/r5 -name '*.json' | head -1)
+          R6=$(find evidence/r6 -name '*.json' | head -1)
+          R7=$(find evidence/r7 -name '*.json' | head -1)
+          test -n "$DB" && test -n "$INTEGRITY" && test -n "$R5" && test -n "$R6" && test -n "$R7"
+          python scripts/run006_recovery_counterfactual.py \
+            --db "$DB" --universe docs/dsa-o-universe.json --integrity "$INTEGRITY" \
+            --r5 "$R5" --r6 "$R6" --r7 "$R7" --contract docs/run006_b1_recovery_contract.json \
+            --output reports/run006/recovery-counterfactual-r8.json
+      - name: Verify acceptance accounting
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('reports/run006/recovery-counterfactual-r8.json'))
+          assert x['denominator']==660
+          assert x['original_ready']==407 and x['recovered_ready']==231
+          assert x['total_feature_ready']==638 and x['retained_isolated']==22
+          assert x['total_feature_ready']+x['retained_isolated']==660
+          assert not x['errors'] and x['model_http_requests']==0 and x['paid_data_used'] is False
+          assert x['outcome_data_read'] is False and x['frozen_predictions_rewritten'] is False and x['run005_a0_a3_unchanged'] is True
+          assert len(x['rows'])==638 and len({r['code'] for r in x['rows']})==638
+          print('RUN006_RECOVERY_ACCEPTANCE_OK', {'coverage_pct':x['coverage_pct'],'feature_input_sha256':x['feature_input_sha256']})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run006-recovery-counterfactual-r8
+          path: reports/run006/recovery-counterfactual-r8.json
+          if-no-files-found: error
+          retention-days: 30
