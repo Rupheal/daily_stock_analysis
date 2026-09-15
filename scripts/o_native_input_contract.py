@@ -1,18 +1,20 @@
-"""Deterministic O-native observer contract; never calls a model or provider.
+"""Deterministic O-native observer contract; never imports or mutates frozen ``src``.
 
-The preflight must already have passed the independent HK price/volume gate.
-This helper validates the exact native context presented to the frozen analyzer
-without modifying frozen upstream source, prompts, scoring or model transport.
+This helper deliberately contains the already-accepted calibration constants and
+minimal reconciliation math locally.  The prior implementation imported
+``src.services.hk_volume_reconciliation`` before the frozen checkout was placed
+at the front of ``sys.path``; that could pre-load the research fork's ``src``
+package and contaminate the supposedly original-native process.  Keeping this
+observer standalone preserves the frozen upstream module namespace.
 """
 from __future__ import annotations
 
-from src.services.hk_volume_reconciliation import (
-    CALIBRATION_RUN_ID,
-    LATEST_SESSION_MAX_RELATIVE_DEVIATION,
-    PriceVolumeReconciliationError,
-    reconcile_volume_pairs,
-    validate_ohlc_pairs,
-)
+import math
+
+CALIBRATION_RUN_ID = 34983641578
+LATEST_SESSION_MAX_RELATIVE_DEVIATION = 0.00170985
+OHLC_ABSOLUTE_TOLERANCE = 0.005
+UNIT_SEMANTICS = 'same-scale empirically verified; no 100x/0.01x pattern in calibration'
 
 
 class NativeInputContractError(ValueError):
@@ -21,6 +23,16 @@ class NativeInputContractError(ValueError):
 
 def _day(value):
     return str(value)[:10]
+
+
+def _finite(value, code):
+    try:
+        x = float(value)
+    except (TypeError, ValueError):
+        raise NativeInputContractError(code) from None
+    if not math.isfinite(x):
+        raise NativeInputContractError(code)
+    return x
 
 
 def validate_native_input(preflight, context):
@@ -42,29 +54,38 @@ def validate_native_input(preflight, context):
         raise NativeInputContractError('PREFLIGHT_VOLUME_CALIBRATION_UNVERIFIED')
     if reconciliation.get('latest_session_max_relative_deviation') != LATEST_SESSION_MAX_RELATIVE_DEVIATION:
         raise NativeInputContractError('PREFLIGHT_VOLUME_BOUND_UNVERIFIED')
-    if reconciliation.get('unit_semantics') != 'same-scale empirically verified; no 100x/0.01x pattern in calibration':
+    if reconciliation.get('unit_semantics') != UNIT_SEMANTICS:
         raise NativeInputContractError('PREFLIGHT_VOLUME_UNIT_SEMANTICS_UNVERIFIED')
 
     expected = baseline.get('ohlc', baseline)
-    try:
-        validate_ohlc_pairs((key, native.get(key), expected.get(key)) for key in ('open','high','low','close'))
-    except PriceVolumeReconciliationError as exc:
-        raise NativeInputContractError('NATIVE_' + str(exc)) from None
+    for key in ('open', 'high', 'low', 'close'):
+        left = _finite(native.get(key), 'NATIVE_PRICE_NONFINITE_' + key.upper())
+        right = _finite(expected.get(key), 'NATIVE_PRICE_NONFINITE_' + key.upper())
+        if abs(left - right) > OHLC_ABSOLUTE_TOLERANCE:
+            raise NativeInputContractError('NATIVE_PRICE_DISAGREEMENT_' + key.upper())
 
-    expected_volume = baseline.get('volume', expected.get('volume'))
-    try:
-        volume = reconcile_volume_pairs(
-            [(target, native.get('volume'), expected_volume)],
-            target,
-            corporate_action_dates=(),
-            unit_semantics_verified=True,
-        )
-    except PriceVolumeReconciliationError as exc:
-        raise NativeInputContractError('NATIVE_' + str(exc)) from None
+    left = _finite(native.get('volume'), 'NATIVE_VOLUME_NONFINITE')
+    right = _finite(baseline.get('volume', expected.get('volume')), 'NATIVE_VOLUME_NONFINITE')
+    if left < 0 or right < 0:
+        raise NativeInputContractError('NATIVE_VOLUME_NONFINITE')
+    if left == 0 or right == 0:
+        if left != right:
+            raise NativeInputContractError('NATIVE_VOLUME_ZERO_SEMANTICS_MISMATCH')
+        deviation = 0.0
+        status = 'exact'
+    else:
+        deviation = abs(left / right - 1.0)
+        if left == right:
+            status = 'exact'
+        elif deviation <= LATEST_SESSION_MAX_RELATIVE_DEVIATION:
+            status = 'bounded_provider_reconciliation'
+        else:
+            raise NativeInputContractError('NATIVE_VOLUME_LATEST_OUTSIDE_CALIBRATED_BOUND')
+
     return {
         'validated': True,
         'target': target,
-        'volume_status': volume.get('latest_session_status'),
-        'volume_relative_deviation': volume.get('latest_session_relative_deviation'),
+        'volume_status': status,
+        'volume_relative_deviation': deviation,
         'calibration_run_id': CALIBRATION_RUN_ID,
     }
