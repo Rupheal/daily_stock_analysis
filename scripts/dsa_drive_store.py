@@ -128,8 +128,12 @@ class DriveStore:
                 parts.append(part)
         data = b''.join(parts)
         after = self.private_meta(file_id)
-        if before.get('version') != after.get('version') or digest(data) != expected or len(data) > LIMIT:
-            raise StoreError('READBACK_HASH_OR_VERSION_MISMATCH')
+        # Byte integrity is the hard content gate. Provider version stability is
+        # a distinct concurrency/metadata gate and must never mask a hash failure.
+        if digest(data) != expected:
+            raise StoreError('READBACK_HASH_MISMATCH')
+        if before.get('version') != after.get('version'):
+            raise StoreError('READBACK_VERSION_CHANGED')
         with Path(out).open('xb') as f:
             f.write(data)
         return after
