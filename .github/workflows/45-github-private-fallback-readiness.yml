@@ -9,13 +9,13 @@ permissions:
 jobs:
   verify-fallback:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     env:
       DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
       ENV_FILE: /dev/null
       TZ: Asia/Hong_Kong
       PYTHONUNBUFFERED: '1'
-      PYTHONPATH: .
+      PYTHONPATH: research
       BACKTEST_ENABLED: 'false'
       AGENT_MODE: 'false'
       NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
@@ -25,19 +25,21 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          path: research
           persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - run: python -m pip install -r requirements.txt pytest httpx
+      - run: python -m pip install -r research/requirements.txt pytest httpx
       - name: Store regression tests
+        working-directory: research
         run: python -m pytest -q tests/test_dsa_private_github_store.py
       - name: Credential gate; zero model requests
         run: |
           python - <<'PY'
           import json, os
           state={
-            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-004',
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-005',
             'evidence_credential_present':bool(os.environ.get('DSA_EVIDENCE_TOKEN')),
             'model_requests':0,
             'balance_checked':False,
@@ -54,29 +56,38 @@ jobs:
           from pathlib import Path
           p=Path('/tmp/dsa-github-fallback-probe.json')
           p.write_text(json.dumps({
-            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-004',
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-005',
             'classification':'synthetic_no_model_content',
-            'purpose':'verify commit-pinned public-runner to private-TRIDENT save/read/hash',
+            'purpose':'verify formal-layout public-runner to private-TRIDENT save/read/hash',
             'contains_secrets':False,
             'contains_raw_model_content':False,
             'nonce':str(time.time_ns()),
           },sort_keys=True)+'\n')
           PY
-          python scripts/dsa_private_github_store.py \
+          python research/scripts/dsa_private_github_store.py \
             --source /tmp/dsa-github-fallback-probe.json \
-            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-STORAGE-FALLBACK-20260915-004-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-STORAGE-FALLBACK-20260915-005-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
             --repository Rupheal/TRIDENT-Foundation \
             --branch research/dsa-private-evidence-20260914 \
-            --commit-prefix 'evidence(dsa): verify commit-pinned private GitHub fallback'
-      - name: Xiaomi strict preflight diagnosis; zero model requests
+            --commit-prefix 'evidence(dsa): verify formal-layout private GitHub fallback'
+      - name: Xiaomi strict preflight in formal checkout layout; zero model requests
         run: |
+          rm -rf research/probe
+          python research/scripts/prepare_xiaomi_acceptance.py > /tmp/xiaomi-preflight-stdout.log 2> /tmp/xiaomi-preflight-stderr.log
+          test -s research/probe/preflight.json
           python - <<'PY'
+          import json
           from pathlib import Path
-          from scripts.prepare_xiaomi_acceptance import prepare
-          try:
-              prepare(root=Path('/tmp/xiaomi-preflight-diagnostic'))
-          except Exception as exc:
-              print('XIAOMI_PREFLIGHT_FAILURE', type(exc).__name__, str(exc))
-              raise SystemExit(1)
-          print('XIAOMI_PREFLIGHT_PASS')
+          p=Path('research/probe/preflight.json')
+          d=json.loads(p.read_text())
+          print(json.dumps({
+            'preflight_exists':True,
+            'passed':d.get('passed'),
+            'symbol':d.get('symbol'),
+            'prices_passed':d.get('prices_passed'),
+            'target':d.get('target'),
+            'model_requests':0,
+          }))
+          if d.get('passed') is not True or d.get('symbol')!='HK01810' or d.get('prices_passed') is not True:
+              raise SystemExit('STRICT_XIAOMI_PREFLIGHT_NOT_ACCEPTED')
           PY
