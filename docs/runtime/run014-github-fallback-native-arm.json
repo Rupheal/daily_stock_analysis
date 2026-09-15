@@ -1,0 +1,11 @@
+{
+  "schema": "dsa-private-native-arm-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-014-GHFB",
+  "armed": false,
+  "reason": "Google Drive remains primary. Use private GitHub only as verified fallback after runner save/read/hash passed in Actions run 34939084715.",
+  "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "target_private_repository": "Rupheal/TRIDENT-Foundation",
+  "target_private_branch": "research/dsa-private-evidence-20260914",
+  "storage_backend": "private_github_fallback",
+  "fallback_preflight_run_id": 34939084715
+}
