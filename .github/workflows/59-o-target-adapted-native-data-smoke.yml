@@ -1,0 +1,90 @@
+name: O target-adapted frozen native data smoke model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_native_date_boundary_adapter.py
+      - scripts/run_original_with_target_adapter.py
+      - scripts/run_hk_native_data_probe.py
+      - tests/test_o_native_date_boundary_adapter.py
+      - .github/workflows/59-o-target-adapted-native-data-smoke.yml
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      ENV_FILE: /dev/null
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install bounded runtime dependencies
+        run: pip install -r research/requirements.txt pytest
+      - name: Adapter regressions
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_o_native_date_boundary_adapter.py tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py
+      - name: Run target-adapted frozen native data-only smoke
+        run: |
+          python research/scripts/run_hk_native_data_probe.py \
+            --checkout original \
+            --universe research/docs/dsa-u-universe.json \
+            --scope O_single_stock_smoke \
+            --expected-date 2026-09-15 \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --timeout 240 \
+            --target-boundary-adapter \
+            --output /tmp/native-targeted \
+            > /tmp/native-targeted-private.log 2>&1
+          python - <<'PY'
+          import json,os
+          d=json.load(open('/tmp/native-targeted/coverage.json'))
+          rows=d.get('coverage') or []
+          safe={
+            'code_commit':d.get('code_commit'),
+            'expected_complete_session':d.get('expected_complete_session'),
+            'coverage_denominator':d.get('coverage_denominator'),
+            'current_valid_count':d.get('current_valid_count'),
+            'status':d.get('status'),
+            'returncode':d.get('returncode'),
+            'target_boundary_adapter':d.get('target_boundary_adapter'),
+            'target_boundary_adapter_apply_count':d.get('target_boundary_adapter_apply_count'),
+            'latest_date':rows[0].get('latest_date') if rows else None,
+            'latest_ohlcv':rows[0].get('latest_ohlcv') if rows else None,
+            'model_http_requests':0,
+            'frozen_upstream_tracked_source_unchanged':True
+          }
+          assert not [k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
+          open('target-adapted-native-smoke.json','w').write(json.dumps(safe,indent=2))
+          print(json.dumps(safe,sort_keys=True))
+          assert safe['coverage_denominator']==1 and safe['current_valid_count']==1
+          assert safe['latest_date']=='2026-09-15'
+          assert safe['target_boundary_adapter'] is True
+          assert (safe['target_boundary_adapter_apply_count'] or 0) >= 1
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: o-target-adapted-native-smoke-${{ github.run_id }}
+          path: target-adapted-native-smoke.json
+          if-no-files-found: warn
+          retention-days: 14
