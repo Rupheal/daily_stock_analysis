@@ -9,12 +9,12 @@ from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime, timezone
 import io
 import json
-from pathlib import Path
 import re
-import sys
+
+import pandas as pd
 
 from prepare_xiaomi_acceptance import prepare, REPO_ROOT
-from data_provider.tencent_fetcher import _extract_kline_rows
+from data_provider.tencent_fetcher import TencentFetcher, _extract_kline_rows
 from src.core.trading_calendar import get_effective_trading_date
 
 ROOT = REPO_ROOT / "probe-diagnostic"
@@ -72,26 +72,74 @@ def _price_metadata():
         out["target"] = target
     except Exception:
         target = None
+    primary, independent = None, None
     p = ROOT / "tencent_history.json"
     if p.exists():
         try:
             raw = json.loads(p.read_text())
             rows = _extract_kline_rows(raw.get("result", {}), symbol="hk01810")
-            dates = sorted(str(r.get("date")) for r in rows if r.get("date") and (not target or str(r.get("date")) <= target))
-            out["primary_rows"] = len(dates)
-            out["primary_last"] = dates[-1] if dates else None
+            fetcher = TencentFetcher()
+            frame = pd.DataFrame(rows)
+            primary = fetcher._normalize_data(frame, "HK01810")
+            primary["date"] = pd.to_datetime(primary["date"]).dt.strftime("%Y-%m-%d")
+            if target:
+                primary = primary[primary["date"] <= target]
+            primary = primary.sort_values("date")
+            out["primary_rows"] = len(primary)
+            out["primary_last"] = primary.iloc[-1]["date"] if len(primary) else None
+            out["primary_volume_semantics"] = "Tencent HK kline row[5], repository parser treats as shares"
+            out["primary_adjustment"] = "qfq"
         except Exception:
             out["primary_metadata"] = "unavailable"
     q = ROOT / "independent_history.json"
     if q.exists():
         try:
             raw = json.loads(q.read_text())
-            rows = raw.get("result", [])
-            dates = sorted(str(r.get("date"))[:10] for r in rows if r.get("date") and (not target or str(r.get("date"))[:10] <= target))
-            out["independent_rows"] = len(dates)
-            out["independent_last"] = dates[-1] if dates else None
+            independent = pd.DataFrame(raw.get("result", []))
+            if not independent.empty:
+                independent["date"] = pd.to_datetime(independent["date"]).dt.strftime("%Y-%m-%d")
+                if target:
+                    independent = independent[independent["date"] <= target]
+                independent = independent.sort_values("date")
+            out["independent_rows"] = len(independent)
+            out["independent_last"] = independent.iloc[-1]["date"] if len(independent) else None
+            out["independent_volume_semantics"] = "Yahoo history Volume field"
+            out["independent_adjustment"] = "auto_adjust=True"
         except Exception:
             out["independent_metadata"] = "unavailable"
+    if primary is not None and independent is not None and not primary.empty and not independent.empty:
+        try:
+            keep = [c for c in ("date", "open", "high", "low", "close", "volume") if c in independent.columns]
+            overlap = primary[["date", "open", "high", "low", "close", "volume"]].merge(
+                independent[keep], on="date", suffixes=("_tencent", "_yahoo"), validate="one_to_one")
+            out["overlap_rows"] = len(overlap)
+            if len(overlap):
+                for field in ("open", "high", "low", "close"):
+                    left = pd.to_numeric(overlap[field + "_tencent"], errors="coerce")
+                    right = pd.to_numeric(overlap[field + "_yahoo"], errors="coerce")
+                    out[field + "_max_abs_diff"] = round(float((left - right).abs().max()), 6)
+                tv = pd.to_numeric(overlap["volume_tencent"], errors="coerce")
+                yv = pd.to_numeric(overlap["volume_yahoo"], errors="coerce")
+                valid = tv.notna() & yv.notna() & (yv != 0)
+                ratios = (tv[valid] / yv[valid]).astype(float)
+                out["volume_valid_rows"] = int(valid.sum())
+                out["volume_exact_match_rows"] = int(((tv[valid] - yv[valid]).abs() == 0).sum())
+                out["volume_mismatch_rows"] = int(valid.sum() - ((tv[valid] - yv[valid]).abs() == 0).sum())
+                if len(ratios):
+                    out["volume_ratio_median_tencent_over_yahoo"] = round(float(ratios.median()), 6)
+                    out["volume_ratio_min"] = round(float(ratios.min()), 6)
+                    out["volume_ratio_max"] = round(float(ratios.max()), 6)
+                    out["volume_ratio_latest"] = round(float(ratios.iloc[-1]), 6)
+                    out["volume_ratio_near_1_rows"] = int(((ratios - 1).abs() <= 0.000001).sum())
+                    out["volume_ratio_near_100_rows"] = int(((ratios - 100).abs() <= 0.0001).sum())
+                    out["volume_ratio_near_0_01_rows"] = int(((ratios - 0.01).abs() <= 0.000001).sum())
+                split_col = next((c for c in independent.columns if str(c).lower() == "stock splits"), None)
+                if split_col:
+                    split_map = independent[["date", split_col]].copy()
+                    split_map[split_col] = pd.to_numeric(split_map[split_col], errors="coerce").fillna(0)
+                    out["independent_nonzero_split_rows"] = int((split_map[split_col] != 0).sum())
+        except Exception:
+            out["overlap_metadata"] = "unavailable"
     return out
 
 
@@ -105,7 +153,7 @@ def main():
         tasks = _tasks()
         stage = _stage(tasks)
         report = {
-            "schema": "dsa-xiaomi-preflight-diagnostic-v1",
+            "schema": "dsa-xiaomi-preflight-diagnostic-v2",
             "passed": False,
             "stage": stage,
             "code": _classify(stage, exc),
@@ -120,7 +168,7 @@ def main():
         print(json.dumps(report, sort_keys=True))
         return 1
     report = {
-        "schema": "dsa-xiaomi-preflight-diagnostic-v1",
+        "schema": "dsa-xiaomi-preflight-diagnostic-v2",
         "passed": bool(result.get("passed")),
         "stage": "complete",
         "code": "PREFLIGHT_PASS",
