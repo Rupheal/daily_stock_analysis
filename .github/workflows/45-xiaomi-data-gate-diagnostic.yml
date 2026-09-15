@@ -1,0 +1,49 @@
+name: Xiaomi preflight sanitized data-only diagnostic
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/diagnose_xiaomi_acceptance.py
+      - scripts/prepare_xiaomi_acceptance.py
+      - .github/workflows/45-xiaomi-data-gate-diagnostic.yml
+permissions:
+  contents: read
+concurrency:
+  group: dsa-xiaomi-preflight-diagnostic
+  cancel-in-progress: false
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      MAX_WORKERS: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Assert O is disarmed and no model key is exposed
+        run: |
+          python - <<'PY'
+          import json,os
+          arm=json.load(open('docs/runtime/run012-private-native-arm.json'))
+          assert arm.get('armed') is False, 'O_MUST_REMAIN_DISARMED'
+          assert not os.environ.get('DEEPSEEK_API_KEY'), 'MODEL_KEY_MUST_NOT_BE_EXPOSED'
+          print('{"o_disarmed":true,"model_key_exposed":false,"model_requests":0}')
+          PY
+      - name: Install deterministic data dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run sanitized Xiaomi preflight diagnostic only
+        run: python scripts/diagnose_xiaomi_acceptance.py
