@@ -1,0 +1,73 @@
+name: O semantic handoff 003 guarded queue publication
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [.github/workflows/o-semantic-handoff-003-publish-queue.yml]
+permissions:
+  contents: write
+jobs:
+  queue-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 1
+      - name: Update shared JSON only if expected prior checkpoint is unchanged
+        run: |
+          python - <<'PY'
+          import pathlib,json,hashlib,datetime,copy
+          path=pathlib.Path('docs/DSA_NEXT_ACTIONS.json');raw=path.read_bytes()
+          blob=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          assert blob=='d888c9f16f76d8e12e1a3b423767d3bb166f4a95', 'CONCURRENT_QUEUE_CHANGE_DO_NOT_OVERWRITE'
+          q=json.loads(raw);before=copy.deepcopy(q)
+          receipt='docs/runtime/O_SEMANTIC_HANDOFF_003_RESULT.json'
+          r=json.loads(pathlib.Path(receipt).read_text())
+          assert r['validation']['cloud']['run_id']==35035814474
+          assert r['validation']['cloud']['failed']==0 and r['validation']['local']['failed']==0
+          q.setdefault('execution_checkpoint_history',[]).append(q['current_execution'])
+          q['current_execution']={
+            'run_id':r['run_id'],'receipt':receipt,'authoritative_for_current_execution':True,
+            'state':r['state'],'source_commit_tested':r['source_commit_tested'],
+            'existing_execution':35002627787,'existing_execution_target':'2026-09-15',
+            'opening_check':'IMPLEMENTED; saved original still contains a real opening-direction contradiction',
+            'news_count_correction':'Previous true+null error was a false positive for frozen native tri-state; explicitly NOT_SEARCHED, not numeric zero. Raw fields unchanged.',
+            'news_handoff':'Implemented before native context-pack build; offline exact formatter consumed four preserved records once; paid workflows not enabled.',
+            'capture_stages':'Analyzer return and pipeline-final metadata now recorded separately for future approved runs',
+            'tests':r['validation'],'new_model_http_requests':0,
+            'original_output_semantic_verdict':'NO_GO','single_successor_provider_slot_consumed':True,
+            'old_native_nonbuy_result_preserved':True,'original_input_output_immutable':True,
+            'o_single_stock_accepted':False,'o_full_pool_accepted':False,'runtime_activated':False,
+            'known_boundaries':r['known_boundaries'],'next':r['next'],
+            'prior_false_positive_is_superseded_not_deleted':True,
+            'no_schedule_change':True,'no_main_merge':True,'strategy_progress_credit':0,
+            'platform_tokens_credits_fees':'UNKNOWN'}
+          q['description']='Current execution: O semantic/news handoff 003 implemented and model-free tests passed. Prior native true+null news-count finding corrected from frozen source semantics. Original CHILD2 opening contradiction remains NO_GO; no new provider call or runtime activation.'
+          q['updated_at_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          for item in q['next_actions']:
+            if item['id']=='G4':
+              item['status']='SEMANTIC_HANDOFF_003_OFFLINE_PASS; ORIGINAL_OUTPUT_NO_GO; COUNT_FALSE_POSITIVE_CORRECTED; NO_NEW_PROVIDER_CALL; U_PREPARATION_UNBLOCKED'
+              item['current_receipt']=receipt
+          allowed={'current_execution','execution_checkpoint_history','description','updated_at_utc','next_actions'}
+          assert all(q[k]==v for k,v in before.items() if k not in allowed)
+          assert all(a==b for a,b in zip(before['next_actions'],q['next_actions']) if a['id']!='G4')
+          path.write_text(json.dumps(q,ensure_ascii=False,separators=(',',':'))+'\n')
+          out=pathlib.Path('queue-publication');out.mkdir()
+          (out/'DSA_NEXT_ACTIONS.json').write_bytes(path.read_bytes())
+          (out/'receipt.json').write_text(json.dumps({'parent_queue_blob':blob,'updated_queue_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'preserved_history':True,'model_requests':0,'runtime_activated':False},indent=2))
+          PY
+      - name: Append queue commit without force or other changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/DSA_NEXT_ACTIONS.json
+          git commit -m 'docs(dsa): advance queue to tested semantic handoff 003 and correct prior count semantics [skip ci]'
+          git push origin HEAD:fix/native-private-execution-20260914
+          git rev-parse HEAD > queue-publication/commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: o-semantic-handoff-003-queue-${{ github.run_id }}
+          path: queue-publication/
+          if-no-files-found: error
+          retention-days: 14
