@@ -29,6 +29,7 @@ def test_target_adapter_injects_frozen_rule(monkeypatch, tmp_path):
     assert receipt['rule_version'] == targeted.RULE_VERSION
     assert receipt['yahoo_retrieval_boundary'] == '2026-09-16'
     assert receipt['yahoo_end_semantics'] == 'exclusive'
+    assert receipt['yahoo_repair_enabled'] is True
     assert receipt['model_http_requests'] == 0
 
 
@@ -47,7 +48,7 @@ def test_target_adapter_fails_if_preflight_does_not_use_frozen_target(monkeypatc
         raise AssertionError('contract mismatch must fail closed')
 
 
-def test_bounded_yahoo_history_replaces_period_with_explicit_exclusive_end():
+def test_bounded_yahoo_history_replaces_period_with_explicit_exclusive_end_and_repair():
     expected = datetime(2026, 9, 15, tzinfo=timezone.utc).date()
     got = targeted._bounded_history_kwargs(expected, {
         'period': '6mo',
@@ -58,6 +59,7 @@ def test_bounded_yahoo_history_replaces_period_with_explicit_exclusive_end():
     assert 'period' not in got
     assert got['start'] == '2026-02-27'
     assert got['end'] == '2026-09-16'
+    assert got['repair'] is True
     assert got['auto_adjust'] is True
     assert got['actions'] is True
     assert got['timeout'] == 20
