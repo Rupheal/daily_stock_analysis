@@ -114,20 +114,25 @@ jobs:
           db.close()
           if not row: raise SystemExit('NATIVE_BAR_MISSING')
           native_date=str(row[0])[:10]; native=[float(x) for x in row[1:]]
-          t=requests.get('https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get',params={'param':'hk01810,day,,,5,qfq'},timeout=20).json()
+          # Use the same accepted 180-bar Tencent query used by Xiaomi preflight.
+          t=requests.get('https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get',params={'param':'hk01810,day,,,180,qfq'},timeout=20).json()
           rows=((t.get('data') or {}).get('hk01810') or {}).get('qfqday') or []
           target=next((r for r in rows if str(r[0])[:10]=='2026-09-15'),None)
-          if not target: raise SystemExit('TARGET_TENCENT_BAR_MISSING')
+          if not target:
+              dates=sorted(str(r[0])[:10] for r in rows if isinstance(r,list) and r)
+              print(json.dumps({'model_requests':0,'target_row_present':False,'returned_rows':len(rows),'latest_returned_date':dates[-1] if dates else None,'raw_prices_disclosed':False},sort_keys=True))
+              raise SystemExit('TARGET_TENCENT_BAR_MISSING')
           tv=[float(target[1]),float(target[3]),float(target[4]),float(target[2]),float(target[5])]
           pdiffs=[abs(native[i]-tv[i]) for i in range(4)]
           vol_rel=abs(native[4]/tv[4]-1.0) if native[4] and tv[4] else (0.0 if native[4]==tv[4] else None)
           out={
-            'model_requests':0,'native_recorded_date':native_date,'independent_target_date':'2026-09-15',
+            'model_requests':0,'target_row_present':True,
+            'native_recorded_date':native_date,'independent_target_date':'2026-09-15',
             'date_offset_days':(datetime.fromisoformat('2026-09-15')-datetime.fromisoformat(native_date)).days,
             'ohlc_max_abs_diff':max(pdiffs),'ohlc_same_within_0_005':max(pdiffs)<=0.005,
             'volume_relative_diff':vol_rel,
-            'volume_same_within_calibrated_latest_bound':vol_rel is not None and vol_rel<=0.00170985,
-            'same_bar_fingerprint':max(pdiffs)<=0.005 and vol_rel is not None and vol_rel<=0.00170985,
+            'volume_same_within_calibrated_latest_bound':vol_rel is not None and vol_rel<=0.001709849536610119,
+            'same_bar_fingerprint':max(pdiffs)<=0.005 and vol_rel is not None and vol_rel<=0.001709849536610119,
             'raw_prices_disclosed':False,
           }
           print(json.dumps(out,sort_keys=True))
