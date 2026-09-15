@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
+  "state": "STRICT_PREFLIGHT_BLOCKED_YAHOO_TARGET_CLOSE_NONFINITE",
+  "latest_verified_asof_utc": "2026-09-15T16:41:28.356669+00:00",
+  "target_session": "2026-09-15",
+  "target_rule": "O_NATIVE_TARGET_SESSION_RULE_v1",
+  "target_rule_consumed": true,
+  "provider_end_exclusive": "2026-09-16",
+  "strict_preflight_passed": false,
+  "first_failure_code": "PRICE_NONFINITE_OPEN",
+  "failure_type": "PriceVolumeReconciliationError",
+  "precise_fields": {
+    "Tencent_normalized": {"rows": 180, "latest_session": "2026-09-15", "nonfinite_open_high_low_close_volume": [0, 0, 0, 0, 0]},
+    "Yahoo_yfinance_auto_adjust_true": {"rows": 125, "latest_session": "2026-09-15", "failed_session": "2026-09-15", "open": "NaN", "high": "NaN", "low": "NaN", "close": "NaN", "volume_nonfinite_count": 0, "other_sessions_with_nonfinite_OHLC": 0},
+    "Yahoo_explicit_boundary_auto_adjust_false_diagnostic": {"start": "2026-09-08", "end_exclusive": "2026-09-16", "target_rows": 1, "target_open_high_low": "FINITE", "target_close": "NaN", "target_adj_close": "NaN", "repair": false, "keepna": true, "accepted_as_replacement_input": false},
+    "Yahoo_explicit_boundary_auto_adjust_true_diagnostic": {"target_open_high_low_close": "NaN", "repair": false, "accepted_as_replacement_input": false}
+  },
+  "interpretation": "Exact observed boundary is Yahoo data returned by yfinance. Missing unadjusted Close/Adj Close persists under explicit target+1 end; auto-adjusted OHLC all become nonfinite. This does not by itself identify whether Yahoo's raw endpoint or library transformation first introduced the missing Close.",
+  "component_verdicts": {"target": "PASS", "prices": "FAIL", "news": "NOT_RUN_BLOCKED_BY_PRICE", "issuer": "NOT_RUN_BLOCKED_BY_PRICE", "native_data_smoke": "NOT_RUN", "model_request": "NOT_RUN"},
+  "receipts": [
+    {"workflow_run": 34995746100, "source_commit": "1cdc28d41f0d61f8ee8bb28caa88d61d05830d25", "artifact_id": 10406614379, "artifact_sha256": "5bb806c9aedcac6d37fd22e33ab1057c6bfaae1fcc70c8bdf5daee2f5fd558a8", "strict_preflight": "FAIL"},
+    {"workflow_run": 34996463223, "source_commit": "595a96a47f51084dd1f595768fa50af2a696d737", "artifact_id": 10408196315, "artifact_sha256": "52161769e87c8d2a2111106b725950ccdefa7cf0b2cca8765a9f227628fa692d", "strict_preflight": "FAIL", "job_id": 104473834372}
+  ],
+  "artifact_readback": {"both_zip_digests_match": true, "each_available_payload_files_hash_verified": 22, "each_manifest_listed_but_upload_excluded_hidden_workflow_files": 11, "diagnostic_JSON_hash_verified": true, "not_a_complete_repository_backup": true},
+  "engineering_changes": ["Field/source/session/type diagnostics with no mutation or dropped rows", "Explicit raw/adjusted bounded comparison, diagnostic only", "Strict complete preflight; no allow-partial-news acceptance", "Final workflow gate fails on data-preflight failure instead of reporting green solely because target adapter worked"],
+  "local_new_unit_tests": {"passed": 6, "failed": 0, "scope": "synthetic diagnostic tests only"},
+  "successor_authority": {"owner_already_authorized": true, "authorization_file": "docs/runtime/run018-zero-http-recovery-authorization.json", "maximum_successor_http_requests": 1, "new_authorization_created": false, "can_request_now": false, "reason": "Strict data preflight failed; retain all original gates and reconcile canonical plus child evidence before any later call"},
+  "next": [
+    "Recover finite target-session Close/Adj Close from the same accepted independent source, or prove and test a source-faithful parsing repair; do not forward-fill, use Tencent as Yahoo, drop target row, roll back target or enable price repair silently.",
+    "Then rerun strict model-free target preflight; validate news/issuer rather than marking the unexecuted stages failed or passed.",
+    "Only after strict preflight, exact-session frozen-native smoke, observer contract, current affordability, fresh Drive roundtrip and canonical/child reconciliation all pass, continue the existing authorized at-most-one append-only O-native successor; no repeat approval for the same scope.",
+    "If a newer complete XHKG session exists, expire the old recovery target; never carry its claim silently into a different session."
+  ],
+  "no_change": {"ohlc_tolerance": true, "volume_contract": true, "frozen_upstream": true, "canonical_claim_and_native_artifact": true, "U_O_universe": true, "Run005_Run008": true, "schedules": true, "main": true},
+  "model_http_requests_this_run": 0,
+  "paid_data_purchases": 0,
+  "platform_tokens_credits_fees": "UNKNOWN",
+  "runtime_activated": false,
+  "o_single_stock_accepted": false,
+  "strategy_progress_credit": 0
+}
