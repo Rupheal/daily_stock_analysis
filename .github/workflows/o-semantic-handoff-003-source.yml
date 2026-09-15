@@ -1,0 +1,49 @@
+name: O semantic handoff 003 pinned source only
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [.github/workflows/o-semantic-handoff-003-source.yml]
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          ref: 944e9355d8f7de3e1f4a45b40bf35278f95ed92b
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - name: Bundle public source bytes only without imports or external calls
+        run: |
+          python - <<'PY'
+          import pathlib,subprocess,json,hashlib,shutil
+          out=pathlib.Path('source-receipt');out.mkdir()
+          receipts={}
+          for name,expected in [('original','089d9d26d68f8b839ea5a74a3784e4402925f8b7'),('research','944e9355d8f7de3e1f4a45b40bf35278f95ed92b')]:
+              root=pathlib.Path(name)
+              got=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+              assert got==expected
+              tracked=subprocess.check_output(['git','ls-files'],cwd=root,text=True).splitlines()
+              chosen=[p for p in tracked if (name=='original' and p.endswith('.py') and (p.startswith('src/') or p=='main.py')) or (name=='research' and (p in ['scripts/run_hk_original_model_probe.py','scripts/o_single_output_fact_check.py','scripts/prepare_xiaomi_acceptance.py','docs/DSA_NEXT_ACTIONS.json','docs/dsa-content-export-boundary.md','tests/test_o_single_output_fact_check.py'] or ('semantic' in p and p.startswith(('tests/','docs/runtime/')))))]
+              receipts[name]={'commit':got,'paths':chosen}
+              for p in chosen:
+                  target=out/name/p;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(root/p,target)
+          (out/'SOURCE_RECEIPT.json').write_text(json.dumps({'sources':receipts,'model_requests':0,'source_only':True},indent=2))
+          hashes={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()}
+          (out/'SHA256SUMS.json').write_text(json.dumps(hashes,indent=2))
+          print(json.dumps({'files':len(hashes),'model_requests':0,'private_inputs_included':False}))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: o-semantic-handoff-003-pinned-source
+          path: source-receipt/
+          if-no-files-found: error
+          retention-days: 14
