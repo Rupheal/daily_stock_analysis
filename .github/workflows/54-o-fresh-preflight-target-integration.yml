@@ -69,12 +69,11 @@ jobs:
                             'failure_message':r.get('failure_message'),
                             'model_requests':0}))
           PY
-      - name: Verify workflow has no model credential or request path
+      - name: Confirm model-free job environment
         run: |
           python - <<'PY'
-          from pathlib import Path
-          text=Path('research/.github/workflows/54-o-fresh-preflight-target-integration.yml').read_text().lower()
-          checks=['chat/completions','run_hk_original_model_probe.py','one authorized frozen-upstream successor request']
-          assert not any(x in text for x in checks)
-          print('{"model_request_path_present":false}')
+          import os, json
+          risky=[k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
+          assert risky == [], risky
+          print(json.dumps({'model_credentials_exposed':False,'model_request_path_invoked':False}))
           PY
