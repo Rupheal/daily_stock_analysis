@@ -1,0 +1,57 @@
+{
+  "run_id": "TRI-DSA-DEV-20260916-CAPTURE-STAGE-004",
+  "status": "PASS_BOUNDED_CAPTURE_STAGE_ACCEPTANCE_ONLY",
+  "completed_at_utc": "2026-09-15T23:27:23.113798+00:00",
+  "initial_head_read": "ef05f3299bd8765350c06b4e1509249bd69b24f1",
+  "concurrent_semantic_handoff_003_preserved": true,
+  "historical_execution": {
+    "workflow_run": 35002627787,
+    "commit": "c75c8496410cd33a151d659add7c83ce92bdd1cd",
+    "observer_blob_sha": "ec7612f8cf994b92ffda4e3fdac4575e79208408",
+    "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+    "private_bundle_sha256": "768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
+    "manifest_files_verified": 18,
+    "manifest_mismatches": 0,
+    "zip_crc": "PASS",
+    "raw_evidence_mutated_or_published": false,
+    "historical_child2_reclassified_as_pass": false
+  },
+  "public_source_restore": {
+    "workflow_run": 35033960267,
+    "artifact_id": 10423020582,
+    "sha256": "a36c4d9781cff581a63e966f5c9c225a6a3167a39e0d0da915188f2a6aa623c8",
+    "manifest_files_verified": 248,
+    "manifest_mismatches": 0
+  },
+  "capture_stage": {
+    "version": "O_CAPTURE_STAGE_PROVENANCE_v1",
+    "stage": "ANALYZER_RETURN_BEFORE_PIPELINE_ANNOTATION",
+    "saved_count_status": "UNKNOWN_AT_CAPTURE_STAGE",
+    "saved_result_canonical_sha256": "f8885d938b7fc98b6ed0e395d1aaac95c471c67ccaa3989a9615f892b9dce8a4",
+    "source_lines": {"observer_analyze_call": 99, "observer_result_write": 101, "observer_return": 103, "pipeline_analyze_call": 843, "pipeline_count_annotation": 854},
+    "known_null_not_automatically_a_model_error": true,
+    "final_pipeline_count_independently_proven": false,
+    "existing_semantic_findings_overridden": false,
+    "meaning": "The saved snapshot precedes final pipeline metadata. Keep raw fields unchanged and do not infer the final search count from them."
+  },
+  "tests": {
+    "local": {"passed": 22, "failed": 0, "errors": 0},
+    "cloud": {"workflow_run": 35035574413, "commit": "348dc5506b4a3ec66b3ccfc6d313f82db87c14ec", "passed": 22, "failed": 0, "errors": 0, "skipped": 0},
+    "cloud_artifact_id": 10422588438,
+    "cloud_artifact_sha256": "244ab552e532922e103710a707dd35a9b5f11a9f41e2f0de6b4cdc41afc5e5e3",
+    "cloud_manifest_files_verified": 11,
+    "first_ci_failure_retained": {"run": 35035472285, "passed": 5, "errors": 17, "reason": "Historical observer hash was compared with concurrently updated live observer. Corrected by separate historical fixture checkout, not by weakening hash checks."},
+    "initial_59_test_parallel_candidate": "LOCAL_ONLY_SUPERSEDED_NOT_COMMITTED"
+  },
+  "bounded_progress": {"completed": 4, "denominator": 4, "percent": 100, "scope": "restore; stage proof; tests; append-only handoff", "not_overall_project_progress": true},
+  "legacy_fixed_progress_unchanged": {"passed": 12, "denominator": 16, "percent": 75, "not_strategy_effectiveness": true},
+  "resources": {"new_model_requests": 0, "paid_data_calls": 0, "new_work_or_codex_tasks": 0, "ci_runs": 2, "model_request_cost_cny": 0, "actions_actual_charge": "UNKNOWN", "platform_tokens_credits_cost": "UNKNOWN"},
+  "boundaries": {"main_merges": 0, "schedule_changes": 0, "authoritative_journal_writes": 0, "simulated_fills": 0, "real_orders": 0, "runtime_activated": false, "new_provider_slot_granted": false, "formal_acceptance_increased": false},
+  "queue_snapshot": {"source_commit": "348dc5506b4a3ec66b3ccfc6d313f82db87c14ec", "blob_sha": "d888c9f16f76d8e12e1a3b423767d3bb166f4a95", "bytes": 17765, "overwritten": false, "policy": "Additive receipt only; do not overwrite concurrent shared queue from an older snapshot."},
+  "next_actions": [
+    "Reconcile the shared SEMANTIC-HANDOFF-003 implementation and its own CI; do not duplicate or overwrite that work.",
+    "Check the updated observer for final-pipeline capture-stage evidence before deciding whether an additive hook is needed. Historical stage proof does not certify the new observer.",
+    "Keep CHILD2 immutable and blocked for verified output contradictions. This receipt grants no replacement or repeat model request.",
+    "Retain U45 denominator and independent preparation; formal U acceptance and simulated entries are not credited by this run."
+  ]
+}
