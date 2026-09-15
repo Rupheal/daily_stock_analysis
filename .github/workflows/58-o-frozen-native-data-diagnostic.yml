@@ -1,0 +1,78 @@
+name: O frozen native target coverage diagnostic model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/58-o-frozen-native-data-diagnostic.yml
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      ENV_FILE: /dev/null
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install runtime dependencies
+        run: pip install -r research/requirements.txt
+      - name: Run exact frozen native data-only smoke without model credentials
+        run: |
+          python research/scripts/run_hk_native_data_probe.py \
+            --checkout original \
+            --universe research/docs/dsa-u-universe.json \
+            --scope O_single_stock_smoke \
+            --expected-date 2026-09-15 \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --timeout 240 \
+            --output /tmp/native-diag \
+            > /tmp/native-diag-private.log 2>&1
+          python - <<'PY'
+          import json,os
+          d=json.load(open('/tmp/native-diag/coverage.json'))
+          assert not [k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
+          rows=[]
+          for r in d.get('coverage',[]):
+              rows.append({k:r.get(k) for k in ('code','status','bars','latest_date','latest_ohlcv','native_log_mentions_code')})
+          safe={
+            'code_commit':d.get('code_commit'),
+            'expected_complete_session':d.get('expected_complete_session'),
+            'coverage_denominator':d.get('coverage_denominator'),
+            'current_valid_count':d.get('current_valid_count'),
+            'status':d.get('status'),
+            'returncode':d.get('returncode'),
+            'timeout':d.get('timeout',False),
+            'coverage':rows,
+            'model_credentials_provided':d.get('model_credentials_provided'),
+            'model_analysis_enabled':d.get('model_analysis_enabled'),
+            'model_http_requests':0
+          }
+          open('native-coverage-sanitized.json','w').write(json.dumps(safe,indent=2))
+          print(json.dumps(safe,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: o-frozen-native-data-diagnostic-${{ github.run_id }}
+          path: native-coverage-sanitized.json
+          if-no-files-found: error
+          retention-days: 14
