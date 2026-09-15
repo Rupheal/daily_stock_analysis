@@ -55,12 +55,60 @@ jobs:
           rc=$?
           echo "$rc" > /tmp/o-native-session-probe.rc
           exit 0
+      - name: Attribute native provider path without raw log disclosure
+        run: |
+          python - <<'PY'
+          import json,sqlite3
+          from pathlib import Path
+          text=Path('/tmp/o-native-session-private.log').read_text(errors='replace').lower()
+          aliases={
+            'EfinanceFetcher':['efinancefetcher','efinance'],
+            'AkshareFetcher':['aksharefetcher','akshare'],
+            'PytdxFetcher':['pytdxfetcher','pytdx'],
+            'TushareFetcher':['tusharefetcher','tushare'],
+            'BaostockFetcher':['baostockfetcher','baostock'],
+            'YfinanceFetcher':['yfinancefetcher','yfinance','yahoo'],
+            'TencentFetcher':['tencentfetcher','tencent'],
+            'LongbridgeFetcher':['longbridgefetcher','longbridge'],
+            'FutuFetcher':['futufetcher','futu'],
+            'TickflowFetcher':['tickflowfetcher','tickflow'],
+          }
+          mentions={}; first={}
+          for name,tokens in aliases.items():
+              positions=[]; count=0
+              for token in tokens:
+                  count += text.count(token)
+                  pos=text.find(token)
+                  if pos >= 0: positions.append(pos)
+              if count:
+                  mentions[name]=count; first[name]=min(positions)
+          order=[name for name,_ in sorted(first.items(),key=lambda kv:kv[1])]
+          db=sqlite3.connect('/tmp/o-native-session/native-data.db')
+          columns=[r[1] for r in db.execute('PRAGMA table_info(stock_daily)').fetchall()]
+          source_col=next((c for c in ('source','data_source','provider') if c in columns),None)
+          source_class='not_stored'
+          if source_col:
+              raw=db.execute(f"SELECT {source_col} FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 1",('hk01810',)).fetchone()
+              value=str(raw[0]).lower() if raw and raw[0] is not None else ''
+              source_class='unknown'
+              for name,tokens in aliases.items():
+                  if any(t in value for t in tokens): source_class=name; break
+          db.close()
+          print(json.dumps({
+            'model_requests':0,
+            'provider_mentions':mentions,
+            'provider_first_mention_order':order,
+            'stock_daily_source_column_present':bool(source_col),
+            'stored_source_class':source_class,
+            'raw_native_log_disclosed':False,
+            'raw_stored_source_disclosed':False,
+          },sort_keys=True))
+          PY
       - name: Compare native final bar with independently dated target session
         run: |
           python - <<'PY'
-          import json,sqlite3,requests,math
-          from datetime import datetime,timezone
-          # Native bar stays private; only comparison facts are emitted.
+          import json,sqlite3,requests
+          from datetime import datetime
           db=sqlite3.connect('/tmp/o-native-session/native-data.db')
           row=db.execute("SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 1",('hk01810',)).fetchone()
           db.close()
@@ -70,17 +118,13 @@ jobs:
           rows=((t.get('data') or {}).get('hk01810') or {}).get('qfqday') or []
           target=next((r for r in rows if str(r[0])[:10]=='2026-09-15'),None)
           if not target: raise SystemExit('TARGET_TENCENT_BAR_MISSING')
-          # Tencent HK row order: date,open,close,high,low,volume.
           tv=[float(target[1]),float(target[3]),float(target[4]),float(target[2]),float(target[5])]
           pdiffs=[abs(native[i]-tv[i]) for i in range(4)]
           vol_rel=abs(native[4]/tv[4]-1.0) if native[4] and tv[4] else (0.0 if native[4]==tv[4] else None)
           out={
-            'model_requests':0,
-            'native_recorded_date':native_date,
-            'independent_target_date':'2026-09-15',
+            'model_requests':0,'native_recorded_date':native_date,'independent_target_date':'2026-09-15',
             'date_offset_days':(datetime.fromisoformat('2026-09-15')-datetime.fromisoformat(native_date)).days,
-            'ohlc_max_abs_diff':max(pdiffs),
-            'ohlc_same_within_0_005':max(pdiffs)<=0.005,
+            'ohlc_max_abs_diff':max(pdiffs),'ohlc_same_within_0_005':max(pdiffs)<=0.005,
             'volume_relative_diff':vol_rel,
             'volume_same_within_calibrated_latest_bound':vol_rel is not None and vol_rel<=0.00170985,
             'same_bar_fingerprint':max(pdiffs)<=0.005 and vol_rel is not None and vol_rel<=0.00170985,
