@@ -2,8 +2,9 @@
 
 This adapter does not alter the preflight's price/news/issuer gates. It only
 replaces the legacy target-date resolver with O_NATIVE_TARGET_SESSION_RULE_v1
-for the duration of the call, then verifies that the produced preflight target
-matches the frozen rule. No model credentials are used here.
+for the duration of the call. A target receipt is persisted before the original
+preflight starts, so downstream data/news failures cannot obscure which frozen
+target was actually consumed. No model credentials are used here.
 """
 from __future__ import annotations
 
@@ -16,10 +17,28 @@ import prepare_xiaomi_acceptance as base
 from o_target_session_contract import RULE_VERSION, resolve_target_session
 
 
+def _write_receipt(path: Path, value: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False))
+
+
 def prepare_targeted(root=None, allow_partial_news=False, include_primary_evidence=False):
     evaluated_at = datetime.now(timezone.utc)
     resolved = resolve_target_session(evaluated_at)
     expected = resolved.target_session
+    root_path = Path(root) if root is not None else base.REPO_ROOT / "probe"
+    receipt_path = root_path / "target-session-receipt.json"
+
+    receipt = {
+        "rule_version": RULE_VERSION,
+        "evaluated_at": evaluated_at.isoformat(),
+        "target_session": expected.isoformat(),
+        "preflight_target": None,
+        "target_match": None,
+        "status": "TARGET_RESOLVED_BEFORE_PREFLIGHT",
+        "model_http_requests": 0,
+    }
+    _write_receipt(receipt_path, receipt)
 
     original_resolver = base.get_effective_trading_date
 
@@ -37,25 +56,33 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
             allow_partial_news=allow_partial_news,
             include_primary_evidence=include_primary_evidence,
         )
+    except Exception as exc:
+        receipt.update(
+            status="PREFLIGHT_FAILED_AFTER_TARGET_RESOLUTION",
+            failure_type=type(exc).__name__,
+            failure_message=str(exc),
+        )
+        _write_receipt(receipt_path, receipt)
+        raise
     finally:
         base.get_effective_trading_date = original_resolver
 
     actual = str(audit.get("target"))
     if actual != expected.isoformat():
+        receipt.update(
+            preflight_target=actual,
+            target_match=False,
+            status="PREFLIGHT_TARGET_SESSION_CONTRACT_MISMATCH",
+        )
+        _write_receipt(receipt_path, receipt)
         raise ValueError("PREFLIGHT_TARGET_SESSION_CONTRACT_MISMATCH")
 
-    receipt = {
-        "rule_version": RULE_VERSION,
-        "evaluated_at": evaluated_at.isoformat(),
-        "target_session": expected.isoformat(),
-        "preflight_target": actual,
-        "target_match": True,
-        "model_http_requests": 0,
-    }
-    root_path = Path(root) if root is not None else base.REPO_ROOT / "probe"
-    (root_path / "target-session-receipt.json").write_text(
-        json.dumps(receipt, indent=2, ensure_ascii=False)
+    receipt.update(
+        preflight_target=actual,
+        target_match=True,
+        status="PREFLIGHT_COMPLETED_TARGET_MATCH",
     )
+    _write_receipt(receipt_path, receipt)
     return audit, receipt
 
 
