@@ -1,0 +1,39 @@
+{
+  "schema": "dsa-run-cost-progress-ledger-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-015",
+  "accepted_progress": [
+    "Reconciled repository state beyond Run014 and detected a newer private-GitHub fallback arm at commit 220aa36beab640b762690e59364582d9b846bb66.",
+    "Disarmed that fallback at commit 9ef3dd1b0c44054ccca79fdf8fdf2d44538405b7 so it cannot bypass the Owner's new Drive-first Run015 gate.",
+    "Verified prior fallback readiness run 34940874768 had zero model requests, passed synthetic private save/read/hash and strict Xiaomi preflight; retained as fallback evidence only, not Drive acceptance.",
+    "Confirmed latest Drive storage recheck remains BLOCKED_CONFIGURATION_NOT_PASSED with 0/4 real storage stages accepted.",
+    "Persisted U45 verified aggregate state and evidence-gap/recovery manifests without fabricating missing row-level private source data.",
+    "Frozen append-only PIT/OOS record schema and future ablation design without using future outcomes."
+  ],
+  "resource_ledger": {
+    "deepseek_model_requests": 0,
+    "deepseek_tokens": 0,
+    "incremental_deepseek_cost_cny": 0,
+    "paid_market_data_requests": 0,
+    "new_subscriptions": 0,
+    "auto_recharge": 0,
+    "real_orders": 0,
+    "simulation_fills": 0,
+    "journal_writes": 0,
+    "scheduled_task_changes": 0,
+    "main_merge": false,
+    "force_push": false,
+    "github_actions_billed_cost": "NOT_OBSERVABLE",
+    "chatgpt_compute_cost": "NOT_OBSERVABLE"
+  },
+  "progress_denominators": {
+    "fixed_legacy_passed": 12,
+    "fixed_legacy_total": 16,
+    "fixed_legacy_percent": 75,
+    "O_new_native_acceptance": 0,
+    "U_formal_native_acceptance": 0,
+    "U_denominator": 45,
+    "U_complete_preparation": 0,
+    "new_genuine_OOS_outcomes": 0
+  },
+  "worth_it": "YES_FOR_GOVERNANCE_AND_RECOVERY: prevented an armed fallback path from violating the new Drive-first directive and froze reproducible future-evaluation contracts without spending model budget. No strategy-effectiveness progress is claimed."
+}
