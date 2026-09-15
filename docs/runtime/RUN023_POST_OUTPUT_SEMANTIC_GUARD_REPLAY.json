@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-023",
+  "scope": "offline post-output semantic/factual replay only; no model, market API, broker, or runtime activation",
+  "source_child_artifact": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2",
+  "source_private_bundle_sha256": "768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
+  "source_private_raw_content_published": false,
+  "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1",
+  "ci": {
+    "workflow_run": 35033881836,
+    "result": "PASS",
+    "deterministic_tests_passed": 19,
+    "deterministic_tests_denominator": 19,
+    "model_credentials_present": false
+  },
+  "child2_offline_replay": {
+    "semantic_verdict": "NO_GO",
+    "triggered_semantic_guards": ["SEM-001", "SEM-002", "SEM-003"],
+    "sem_001": {
+      "status": "TRIGGERED",
+      "codes": ["SEM001_LIVE_PRICE_FIELD_WITHOUT_REALTIME_QUOTE", "SEM001_LIVE_PRICE_LABEL_WITHOUT_REALTIME_QUOTE"],
+      "finding_paths": [
+        "dashboard.data_perspective.price_position.current_price",
+        "dashboard.core_conclusion.position_advice.has_position",
+        "dashboard.battle_plan.action_checklist[1]",
+        "ma_analysis"
+      ]
+    },
+    "sem_002": {
+      "status": "TRIGGERED",
+      "codes": ["SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_MISSING_CONTEXT"],
+      "finding_paths": ["dashboard.battle_plan.action_checklist[3]", "news_summary"]
+    },
+    "sem_003": {
+      "status": "TRIGGERED",
+      "codes": ["SEM003_UNSUPPORTED_INDEX_FACT_WITHOUT_SEARCH"],
+      "finding_paths": ["sector_position"]
+    },
+    "additional_block_findings": [
+      {
+        "code": "OPEN_GAP_DIRECTION_CONTRADICTION",
+        "severity": "BLOCK",
+        "paths": ["pattern_analysis", "context.today.open", "context.yesterday.close"]
+      },
+      {
+        "code": "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
+        "severity": "BLOCK",
+        "paths": ["news_result_count_known", "news_result_count"]
+      }
+    ],
+    "additional_nonblock_findings": [
+      {
+        "code": "PREFLIGHT_NEWS_NOT_DELIVERED_TO_NATIVE_INPUT",
+        "severity": "INTEGRATION_GAP"
+      },
+      {
+        "code": "FINANCIAL_PERIOD_PRIMARY_LINEAGE_INCOMPLETE",
+        "severity": "LIMITATION"
+      }
+    ]
+  },
+  "governance": {
+    "original_child2_bytes_mutated": false,
+    "repeat_model_request_permitted": false,
+    "new_model_requests": 0,
+    "new_model_tokens": 0,
+    "new_model_cost_cny": 0,
+    "o_full_pool_permitted": false,
+    "top3_permitted": false,
+    "g4_3_formal_credit": false
+  },
+  "next_action": "Fix deterministic post-output contract handling for the two BLOCK findings and the three SEM conditions, then replay the preserved Child2 output offline again. Do not call the model again."
+}
