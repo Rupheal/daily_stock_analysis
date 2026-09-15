@@ -1,0 +1,43 @@
+{
+  "schema": "dsa-pit-oos-record-v1",
+  "status": "FROZEN_DESIGN_ONLY",
+  "frozen_by_run": "TRI-DSA-EXEC-20260915-015",
+  "purpose": "Append-only point-in-time prediction record. Future labels must remain PENDING until the corresponding Hong Kong trading-session horizon has matured.",
+  "required_prediction_fields": [
+    "record_id",
+    "system",
+    "security_id",
+    "ticker_at_anchor",
+    "anchor_time",
+    "universe_version",
+    "universe_hash",
+    "available_time_cutoff",
+    "model_version",
+    "rule_version",
+    "input_hash",
+    "output",
+    "rank",
+    "signal",
+    "score",
+    "evidence_refs",
+    "created_at",
+    "future_label_status"
+  ],
+  "future_label_status_initial": "PENDING",
+  "future_horizons_trading_days": [1, 3, 5, 10, 20],
+  "future_label_fields": {
+    "1D": null,
+    "3D": null,
+    "5D": null,
+    "10D": null,
+    "20D": null
+  },
+  "rules": [
+    "Prediction payload is immutable after freeze.",
+    "Future outcomes are append-only and must not overwrite the original prediction.",
+    "No future label may be filled before its Hong Kong trading-session horizon matures.",
+    "Missing or unavailable point-in-time input stays missing; current data must not be backfilled into historical anchors.",
+    "A0 Champion and any Challenger records must remain distinguishable by model_version and rule_version.",
+    "Failed, WAIT and non-qualified predictions remain in the denominator and may not be deleted after outcomes mature."
+  ]
+}
