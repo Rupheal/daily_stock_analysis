@@ -1,7 +1,9 @@
 """One authentic original-DSA analysis with an external budget/data observer.
 
 Original source, prompts, scoring and response remain unchanged. Outputs are
-diagnostics pending manual review, not approved full-pool rankings.
+diagnostics pending manual review, not approved full-pool rankings.  For the
+explicitly authorized Run018 recovery, the wrapper may apply the bounded Yahoo
+target-session retrieval adapter outside the frozen upstream checkout.
 """
 import argparse
 from datetime import datetime, timezone
@@ -16,6 +18,7 @@ from urllib.parse import urlparse
 
 from hk_budget_guard import ResearchBudget, decode_usage
 from o_native_input_contract import NativeInputContractError, validate_native_input
+from o_native_date_boundary_adapter import patched_yahoo_target_boundary
 
 
 def main():
@@ -26,6 +29,7 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--limit-cny', required=True)
     parser.add_argument('--carry-upper-cny', required=True)
+    parser.add_argument('--target-boundary-adapter', action='store_true')
     args = parser.parse_args()
     checkout, root, preflight_path = args.checkout.resolve(), args.output.resolve(), args.preflight.resolve()
     if os.getenv('GITHUB_ACTIONS') and (os.getenv('GITHUB_RUN_ATTEMPT') != '1' or os.getenv('GITHUB_EVENT_NAME') != 'push'):
@@ -38,6 +42,9 @@ def main():
     preflight = json.loads(preflight_path.read_text())
     if preflight.get('passed') is not True or preflight.get('symbol', '').upper() != 'HK01810':
         raise ValueError('A passed Xiaomi preflight is required')
+    target_session = str(preflight.get('target') or '')
+    if args.target_boundary_adapter and not target_session:
+        raise ValueError('Target-session adapter requires a frozen preflight target')
     os.environ['DATABASE_PATH'] = str(root/'original-data.db')
     os.chdir(checkout)
     sys.path.insert(0, str(checkout))
@@ -50,6 +57,7 @@ def main():
                             max_requests=1, model=model, host=urlparse(base).hostname)
     validated = False
     validation_receipt = None
+    adapter_applied_count = 0
     original_analyze, original_send = GeminiAnalyzer.analyze, httpx.Client.send
     original_async_send = httpx.AsyncClient.send
     def analyze(instance, context, *a, **kw):
@@ -57,7 +65,6 @@ def main():
         try:
             validation_receipt = validate_native_input(preflight, context)
         except NativeInputContractError as exc:
-            # Fixed semantic codes only; no raw provider payload is exposed.
             raise ValueError(str(exc)) from None
         validated = True
         (root/'original-input.json').write_text(json.dumps({'context':context,'news_context':kw.get('news_context',a[0] if a else None)},ensure_ascii=False,default=str))
@@ -84,7 +91,12 @@ def main():
     try:
         sys.argv=['main.py','--stocks','hk01810','--no-notify','--no-market-review','--force-run','--workers','1']
         with patch.object(GeminiAnalyzer,'analyze',analyze), patch.object(httpx.Client,'send',send), patch.object(httpx.AsyncClient,'send',async_send):
-            status = native_main()
+            if args.target_boundary_adapter:
+                with patched_yahoo_target_boundary(target_session) as applied:
+                    status = native_main()
+                    adapter_applied_count = applied['count']
+            else:
+                status = native_main()
     except Exception as exc:
         error = type(exc).__name__+': '+str(exc)
     finally:
@@ -94,6 +106,9 @@ def main():
                 'input_validated':validated,'input_validation_receipt':validation_receipt,
                 'scope':'O single Xiaomi native analysis; not O660 ranking',
                 'preflight_sha256':hashlib.sha256(preflight_path.read_bytes()).hexdigest(),
+                'target_boundary_adapter':bool(args.target_boundary_adapter),
+                'target_boundary_adapter_scope':'Yahoo retrieval boundary/materialization only' if args.target_boundary_adapter else None,
+                'target_boundary_adapter_apply_count':adapter_applied_count,
                 'process_status':status,'error':error,'budget':budget.state,'manual_approved':False,
                 'O_denominator':660,'U_denominator':45,'trading_release':'pending_manual_review'}
         (root/'probe-summary.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,default=str))
