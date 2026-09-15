@@ -9,7 +9,9 @@ from __future__ import annotations
 from decimal import Decimal, InvalidOperation
 import re
 
-GUARD_VERSION = 'O_POST_OUTPUT_SEMANTIC_GUARDS_v1'
+from o_semantic_handoff_contract import opening_check, news_count_state
+
+GUARD_VERSION = 'O_POST_OUTPUT_SEMANTIC_GUARDS_v1.1'
 
 
 def numeric(value):
@@ -107,22 +109,14 @@ def check_saved_output(preflight, original_input, result):
         findings.append({'code':'INPUT_TARGET_MISMATCH','severity':'BLOCK','paths':['context.date','context.today.date']})
     else:
         passed.append('TARGET_MATCH')
-    o, prev = numeric(today.get('open')), numeric(yesterday.get('close'))
-    text = str(result.get('pattern_analysis') or '')
-    up_claim = bool(re.search(r'高开|开盘[^。；\n]{0,50}高于前收', text))
-    down_claim = bool(re.search(r'低开|开盘[^。；\n]{0,50}低于前收', text))
-    if o is None or prev is None:
-        findings.append({'code':'OPEN_GAP_UNVERIFIABLE','severity':'BLOCK','paths':['context.today.open','context.yesterday.close']})
-    elif (up_claim and o <= prev) or (down_claim and o >= prev):
-        findings.append({'code':'OPEN_GAP_DIRECTION_CONTRADICTION','severity':'BLOCK','paths':['pattern_analysis','context.today.open','context.yesterday.close']})
-    else:
-        passed.append('OPEN_GAP_NOT_CONTRADICTED')
-    if result.get('news_result_count_known') is True:
-        count=result.get('news_result_count')
-        if isinstance(count,bool) or not isinstance(count,int) or count<0:
-            findings.append({'code':'NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER','severity':'BLOCK','paths':['news_result_count_known','news_result_count']})
-        else:
-            passed.append('NEWS_COUNT_METADATA_CONSISTENT')
+    opening = opening_check(original_input, result)
+    findings.extend(opening['findings'])
+    if not opening['findings']:
+        passed.append('OPEN_GAP_NOT_CONTRADICTED_IN_RECOGNIZED_CLAIMS')
+    news_state = news_count_state(result)
+    findings.extend(news_state['findings'])
+    if not news_state['findings']:
+        passed.append('NATIVE_NEWS_TRISTATE_CONSISTENT')
     count=numeric(preflight.get('news_count'))
     if count is not None and count>0 and original_input.get('news_context') in (None,'') and not ctx.get('company_news_evidence'):
         findings.append({'code':'PREFLIGHT_NEWS_NOT_DELIVERED_TO_NATIVE_INPUT','severity':'INTEGRATION_GAP','paths':['preflight.news_count','original_input.news_context','context.company_news_evidence']})
@@ -143,4 +137,6 @@ def check_saved_output(preflight, original_input, result):
             'semantic_verdict':verdict,'checks_passed':passed,'findings':findings,
             'triggered_semantic_guards':triggered_guards,
             'new_model_requests':0,'native_data_mutated':False,
+            'opening_facts_sidecar':opening['facts'],'news_state_sidecar':news_state,
+            'opening_claims_unassessed':opening['unassessed'],
             'o_full_pool_accepted':False,'runtime_activated':False}
