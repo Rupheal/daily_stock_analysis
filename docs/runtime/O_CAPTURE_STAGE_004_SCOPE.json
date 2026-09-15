@@ -1,0 +1,19 @@
+{
+  "run_id": "TRI-DSA-DEV-20260916-CAPTURE-STAGE-004",
+  "scope": "Successor-workspace takeover: independent capture-stage provenance for existing CHILD2 evidence; additive diagnostics only.",
+  "parent_execution": 35002627787,
+  "parent_private_bundle_sha256": "768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
+  "initial_branch_head_read": "ef05f3299bd8765350c06b4e1509249bd69b24f1",
+  "concurrent_increment_preserved": "bbf7d8d6ece9137a6955620fde87c635b46cd6ea and later branch children",
+  "complements_not_replaces": "TRI-DSA-DEV-20260916-SEMANTIC-HANDOFF-003",
+  "candidate_duplication_avoided": "An initial 59-test local candidate was not committed after the shared handoff implementation appeared. Only the distinct capture-stage increment is submitted here.",
+  "bounded_delivery_denominator": 4,
+  "bounded_deliveries": ["source and private archive verification", "capture-stage source proof and real saved-metadata diagnostic", "22 local and cloud deterministic tests", "append-only checkpoint and reproducible handoff"],
+  "resource_route": "local deterministic Python plus one model-free CI run; no Work/Codex delegation",
+  "budget_before_ci": {"model_requests": 0, "paid_data_calls": 0, "new_subscriptions": 0, "ci_job_timeout_minutes": 5, "actions_actual_charge": "UNKNOWN", "platform_tokens_credits_cost": "UNKNOWN"},
+  "preserved": ["frozen original source and prompts", "existing semantic guards", "SEMANTIC-HANDOFF-003 implementation", "CHILD2 raw evidence", "Run005/Run008 predictions", "main", "scheduled tasks", "authoritative simulation journals"],
+  "model_requests_authorized": 0,
+  "runtime_activated": false,
+  "formal_strategy_progress_credit": 0,
+  "shared_queue_rule": "Read latest bytes and SHA before any append. Never replace a current queue with the earlier pinned-source snapshot."
+}
