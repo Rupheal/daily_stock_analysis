@@ -1,0 +1,352 @@
+name: O zero-HTTP recovery successor
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/run018-zero-http-recovery-authorization.json
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-writer
+  cancel-in-progress: false
+jobs:
+  successor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      RECOVERY_RUN_ID: TRI-DSA-EXEC-20260915-018
+      RECOVERY_CHILD_ID: ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Explicit owner authorization and frozen-state gate
+        run: |
+          python - <<'PY'
+          import json, os, subprocess
+          auth=json.load(open('research/docs/runtime/run018-zero-http-recovery-authorization.json'))
+          arm=json.load(open('research/docs/runtime/run012-private-native-arm.json'))
+          assert auth.get('authorized') is True, 'RECOVERY_NOT_OWNER_AUTHORIZED'
+          assert auth.get('maximum_successor_http_requests') == 1, 'RECOVERY_REQUEST_CAP_NOT_ONE'
+          assert auth.get('canonical_claim_native_must_remain') is True
+          assert auth.get('append_only_child_required') is True
+          assert auth.get('frozen_upstream') == '089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert arm.get('armed') is False, 'CANONICAL_O_MUST_REMAIN_DISARMED_DURING_RECOVERY'
+          got=subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()
+          assert got == auth['frozen_upstream'], 'FROZEN_UPSTREAM_MISMATCH'
+          assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
+          print(json.dumps({'owner_recovery_authorized':True,'maximum_successor_http_requests':1,
+                            'canonical_o_disarmed':True,'frozen_upstream_verified':True,
+                            'model_requests_before_gates':0}))
+          PY
+
+      - name: Wait for natural HK date boundary so frozen Yahoo end can include 2026-09-15
+        run: |
+          python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          from pathlib import Path
+          target=datetime(2026,9,16,0,3,tzinfo=ZoneInfo('Asia/Hong_Kong'))
+          now=datetime.now(ZoneInfo('Asia/Hong_Kong'))
+          seconds=max(0,int((target-now).total_seconds()))
+          if seconds > 5400:
+              raise SystemExit('RECOVERY_WAIT_WINDOW_TOO_EARLY')
+          Path('/tmp/recovery-wait-seconds').write_text(str(seconds))
+          print({'wait_seconds':seconds,'model_requests':0})
+          PY
+          sleep "$(cat /tmp/recovery-wait-seconds)"
+          test "$(date +%F)" = "2026-09-16" || (echo HK_DATE_BOUNDARY_NOT_REACHED && exit 1)
+
+      - name: Install deterministic and frozen runtime dependencies
+        run: pip install -r research/requirements.txt pytest httpx
+
+      - name: Observer and zero-HTTP recovery regressions
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py tests/test_o_zero_http_recovery_policy.py
+
+      - name: Reconcile canonical private evidence and apply owner authorization
+        run: |
+          PYTHONPATH=research/scripts python research/scripts/reconcile_o_native_private.py > /tmp/canonical-reconciliation.json
+          PYTHONPATH=research/scripts python - <<'PY'
+          import json
+          from o_zero_http_recovery_policy import classify_zero_http_recovery
+          r=json.load(open('/tmp/canonical-reconciliation.json'))
+          p=classify_zero_http_recovery(r,owner_authorized=True)
+          assert p['state']=='AUTHORIZED_ONE_SUCCESSOR_ATTEMPT'
+          assert p['request_authorized'] is True and p['maximum_successor_http_requests']==1
+          assert p['canonical_claim_must_remain'] and p['canonical_native_artifact_must_remain']
+          assert r.get('model_http_requests')==0
+          print(json.dumps({'recovery_policy':p['state'],'canonical_sha_verified':r.get('archive_sha_verified'),
+                            'canonical_restore_verified':r.get('bundle_manifest_restore_verified'),
+                            'canonical_model_http_requests':0,'raw_private_content_disclosed':False}))
+          PY
+
+      - name: Fresh unique Drive save independent-read SHA restore gate
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          Path('/tmp/run018-drive-probe.json').write_text(json.dumps({
+            'run_id':'TRI-DSA-EXEC-20260915-018','classification':'synthetic_no_model_content',
+            'payload':'RUN018_RECOVERY_FRESH_DRIVE_PROBE','contains_secrets':False,
+            'contains_raw_model_content':False},sort_keys=True)+'\n')
+          PY
+          PROBE_ID="ART-DSA-RUN018-RECOVERY-PROBE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py \
+            --source /tmp/run018-drive-probe.json \
+            --run-id "$RECOVERY_RUN_ID" \
+            --artifact-id "$PROBE_ID" \
+            --receipt /tmp/run018-drive-probe-receipt.json
+
+      - name: Fresh complete Xiaomi independent preflight
+        run: |
+          mkdir -p /tmp/recovery-evidence
+          python research/scripts/prepare_xiaomi_acceptance.py > /tmp/recovery-evidence/preflight-stdout.log 2> /tmp/recovery-evidence/preflight-stderr.log
+          cp research/probe/preflight.json /tmp/recovery-evidence/preflight.json
+          python - <<'PY'
+          import json
+          d=json.load(open('research/probe/preflight.json'))
+          assert d.get('passed') is True and d.get('prices_passed') is True
+          assert d.get('symbol','').upper()=='HK01810'
+          assert str(d.get('target'))=='2026-09-15', 'RECOVERY_PREFLIGHT_TARGET_CHANGED'
+          s=d.get('component_status') or {}
+          assert s.get('prices')=='passed'
+          assert s.get('news')=='passed_limited_coverage'
+          assert s.get('issuer')=='listing_passed_body_incomplete'
+          print(json.dumps({'preflight_passed':True,'target':d.get('target'),
+                            'prices':s.get('prices'),'news':s.get('news'),'issuer':s.get('issuer'),
+                            'model_requests':0}))
+          PY
+
+      - name: Frozen-native same-window data-only smoke
+        run: |
+          python research/scripts/run_hk_native_data_probe.py \
+            --checkout original \
+            --universe research/docs/dsa-u-universe.json \
+            --scope O_single_stock_smoke \
+            --expected-date 2026-09-15 \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --timeout 240 \
+            --output /tmp/run018-native-data \
+            > /tmp/run018-native-data-private.log 2>&1
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/run018-native-data/coverage.json'))
+          rows=d.get('coverage') or []
+          assert d.get('code_commit')=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1
+          assert len(rows)==1 and str(rows[0].get('latest_date'))=='2026-09-15'
+          print(json.dumps({'frozen_native_data_only_passed':True,'latest_date':'2026-09-15',
+                            'coverage_denominator':1,'current_valid_count':1,'model_requests':0,
+                            'raw_native_log_disclosed':False}))
+          PY
+
+      - name: Observer exact-session OHLC volume contract against frozen native DB
+        run: |
+          PYTHONPATH=research python - <<'PY'
+          import json, sqlite3, sys
+          sys.path.insert(0,'research/scripts')
+          from o_native_input_contract import validate_native_input
+          p=json.load(open('research/probe/preflight.json'))
+          db=sqlite3.connect('/tmp/run018-native-data/native-data.db')
+          row=db.execute("SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 1",('hk01810',)).fetchone()
+          db.close()
+          assert row
+          context={'today':dict(zip(('date','open','high','low','close','volume'),row))}
+          receipt=validate_native_input(p,context)
+          assert receipt.get('validated') is True and receipt.get('target')=='2026-09-15'
+          print(json.dumps({'observer_contract_passed':True,'target':receipt.get('target'),
+                            'volume_status':receipt.get('volume_status'),
+                            'calibration_run_id':receipt.get('calibration_run_id'),
+                            'model_requests':0}))
+          PY
+
+      - name: Confirm successor child and child claim absent
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import os,httpx
+          from dsa_drive_store import DriveStore,scoped_token
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c)
+              s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              s.assert_absent(os.environ['RECOVERY_CHILD_ID'])
+              s.assert_absent(os.environ['RECOVERY_CHILD_ID']+'-CLAIM')
+          print('{"successor_child_absent":true,"successor_claim_absent":true,"model_requests":0}')
+          PY
+
+      - name: Read current DeepSeek balance privately and require one-call affordability
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          import json,os
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']
+          total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          report={'run_id':os.environ['RECOVERY_RUN_ID'],'balance_readable':True,'currency':'CNY',
+                  'total_balance':str(total),'single_stock_cap_cny':'2',
+                  'single_stock_affordable':bool(raw.get('is_available') and total>=Decimal('2'))}
+          open('/tmp/deepseek-balance-before-private.json','w').write(json.dumps(report,indent=2))
+          print(json.dumps({'balance_readable':True,'currency':'CNY','single_stock_cap_cny':'2',
+                            'single_stock_affordable':report['single_stock_affordable'],'model_requests':0}))
+          if not report['single_stock_affordable']:
+              raise SystemExit('CURRENT_BALANCE_NOT_SUFFICIENT_FOR_SINGLE_STOCK_CAP')
+          PY
+
+      - name: Persist private balance receipt before successor request
+        run: |
+          BID="ART-DSA-RUN018-RECOVERY-BALANCE-BEFORE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py \
+            --source /tmp/deepseek-balance-before-private.json \
+            --run-id "$RECOVERY_RUN_ID" \
+            --artifact-id "$BID" \
+            --receipt /tmp/run018-balance-before-receipt.json
+
+      - name: Persist successor durable call intent under append-only child ID
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import hashlib,json,os,httpx
+          from pathlib import Path
+          from dsa_drive_store import DriveStore,scoped_token
+          preflight=Path('research/probe/preflight.json').read_bytes()
+          execution='CI-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c)
+              receipt=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']).reserve_native_call(
+                  os.environ['RECOVERY_CHILD_ID'],os.environ['RECOVERY_RUN_ID'],
+                  hashlib.sha256(preflight).hexdigest(),execution)
+          Path('/tmp/recovery-evidence/call-intent-receipt.json').write_text(json.dumps(receipt))
+          print('RECOVERY_DURABLE_CHILD_CALL_INTENT_VERIFIED_NOT_MODEL_ACCEPTANCE')
+          PY
+
+      - name: One authorized frozen-upstream successor request
+        id: successor_call
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          set +e
+          python research/scripts/run_hk_original_model_probe.py \
+            --checkout original \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --preflight research/probe/preflight.json \
+            --output /tmp/recovery-evidence/original-model \
+            --limit-cny 2 \
+            --carry-upper-cny 0.060156 \
+            > /tmp/recovery-evidence/native-stdout.log 2> /tmp/recovery-evidence/native-stderr.log
+          rc=$?
+          printf '{"run_id":"TRI-DSA-EXEC-20260915-018","native_process_exit_code":%s}\n' "$rc" > /tmp/recovery-evidence/process.json
+          echo "$rc" > /tmp/recovery-evidence/process.rc
+          exit 0
+
+      - name: Persist successor raw bytes to append-only child and restore-verify
+        if: ${{ always() && (steps.successor_call.outcome == 'success' || steps.successor_call.outcome == 'failure') }}
+        env:
+          DSA_SENSITIVE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python research/scripts/dsa_drive_bundle.py \
+            --source /tmp/recovery-evidence \
+            --run-id "$RECOVERY_RUN_ID" \
+            --artifact-id "$RECOVERY_CHILD_ID" \
+            --receipt /tmp/recovery-child-drive-receipt.json
+
+      - name: Read post-call balance privately and publish sanitized usage metadata
+        if: ${{ always() && (steps.successor_call.outcome == 'success' || steps.successor_call.outcome == 'failure') }}
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          from pathlib import Path
+          import json,os
+          before=json.load(open('/tmp/deepseek-balance-before-private.json'))
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']
+          after=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          prior=Decimal(before['total_balance'])
+          delta=(prior-after) if after>=0 and prior>=0 else None
+          private={'run_id':os.environ['RECOVERY_RUN_ID'],'currency':'CNY','total_balance':str(after),
+                   'observed_balance_delta_cny':str(delta) if delta is not None else None}
+          open('/tmp/deepseek-balance-after-private.json','w').write(json.dumps(private,indent=2))
+          summary=Path('/tmp/recovery-evidence/original-model/probe-summary.json')
+          out={'raw_private_content_disclosed':False,'observed_balance_delta_cny':private['observed_balance_delta_cny']}
+          if summary.exists():
+              d=json.loads(summary.read_text()); reqs=((d.get('budget') or {}).get('requests') or [])
+              out['model_http_requests']=len(reqs); out['input_validated']=d.get('input_validated')
+              if reqs:
+                  u=reqs[-1].get('usage') or {}
+                  out['prompt_tokens']=u.get('prompt_tokens'); out['completion_tokens']=u.get('completion_tokens')
+                  out['total_tokens']=u.get('total_tokens'); out['request_status']=reqs[-1].get('status')
+                  out['usage_peak_estimate_cny']=reqs[-1].get('usage_peak_estimate_cny')
+          print(json.dumps(out,sort_keys=True))
+          PY
+          AID="ART-DSA-RUN018-RECOVERY-BALANCE-AFTER-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py \
+            --source /tmp/deepseek-balance-after-private.json \
+            --run-id "$RECOVERY_RUN_ID" \
+            --artifact-id "$AID" \
+            --receipt /tmp/run018-balance-after-receipt.json
+
+      - name: Sanitized successor acceptance metadata only
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rc=int(Path('/tmp/recovery-evidence/process.rc').read_text().strip())
+          summary=Path('/tmp/recovery-evidence/original-model/probe-summary.json')
+          out={'run_id':'TRI-DSA-EXEC-20260915-018','child_artifact_id':'ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD1',
+               'canonical_claim_native_preserved':True,'append_only_child_saved_and_restored':True,
+               'raw_text_evidence_private':True,'frozen_original_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7',
+               'native_process_exit_code':rc,'manual_semantic_review_required':True}
+          if summary.exists():
+              d=json.loads(summary.read_text()); reqs=((d.get('budget') or {}).get('requests') or [])
+              out['model_http_requests']=len(reqs); out['input_validated']=d.get('input_validated')
+              if reqs:
+                  u=reqs[-1].get('usage') or {}
+                  out['prompt_tokens']=u.get('prompt_tokens'); out['completion_tokens']=u.get('completion_tokens')
+                  out['total_tokens']=u.get('total_tokens'); out['request_status']=reqs[-1].get('status')
+                  out['usage_peak_estimate_cny']=reqs[-1].get('usage_peak_estimate_cny')
+          print(json.dumps(out,sort_keys=True))
+          if out.get('model_http_requests',0) > 1:
+              raise SystemExit('SUCCESSOR_REQUEST_CAP_VIOLATED')
+          if rc != 0:
+              raise SystemExit('RECOVERY_NATIVE_PROCESS_FAILED_AFTER_PRIVATE_CHILD_SAVE')
+          PY
