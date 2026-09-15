@@ -1,0 +1,30 @@
+{
+  "schema": "dsa-u45-recovery-manifest-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-015",
+  "denominator": 45,
+  "authoritative_inherited_sources": [
+    "docs/runtime/RUN013.zh-CN.md",
+    "docs/runtime/RUN014.zh-CN.md",
+    "docs/runtime/RUN014_CLOUD.json"
+  ],
+  "private_original_expected": true,
+  "private_original_location_class": "owner-only Drive evidence area",
+  "private_original_retrieved_this_run": false,
+  "drive_search_observation": "DSA_PRIVATE_EVIDENCE folder is visible to the connected Drive account, but current connector search did not return the U45 preparation original by title or folder-parent query. This is not proof of deletion or absence.",
+  "reconstruction_policy": "DO_NOT_RECONSTRUCT_45_ROWS_FROM_CHAT_OR_AGGREGATES",
+  "verified_aggregate_state": {
+    "reviewed": 45,
+    "identity_consistent": 45,
+    "source_clock_consistent": 45,
+    "buy_eligibility_positive_2026_09_14": 44,
+    "isolated_ticker": "09618",
+    "complete_preparation": 0,
+    "formal_execution_accepted": 0
+  },
+  "recovery_next": [
+    "Make the four existing DSA_DRIVE OAuth values visible to repository Actions Secrets without exposing them in chat.",
+    "Run workflow 44 and require real save, independent read, SHA-256 match and disk restore PASS.",
+    "Recover the original U45 preparation artifact by its provider ID/version from the authorized private storage path.",
+    "Only after original row-level bytes are recovered may a 45-row preparation table be amended or refreshed."
+  ]
+}
