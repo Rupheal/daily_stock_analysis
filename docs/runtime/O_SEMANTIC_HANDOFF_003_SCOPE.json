@@ -1,0 +1,17 @@
+{
+  "run_id":"TRI-DSA-DEV-20260916-SEMANTIC-HANDOFF-003",
+  "parent_review":"TRI-DSA-EXEC-20260916-PREFLIGHT-002",
+  "parent_branch_commit":"944e9355d8f7de3e1f4a45b40bf35278f95ed92b",
+  "source_execution":35002627787,
+  "scope":["deterministic opening-direction and arithmetic checks","known-news-count consistency and explicit unknown projection","versioned preflight evidence to existing frozen-native news_context entry, offline prompt-consumption test only","targeted tests and shared queue/receipts"],
+  "denominator":4,
+  "concurrency_note":"Preserve the main workspace SEM-001/002/003 guards. Implement this bounded increment in separate helper/test paths; re-read current checker and queue before integrating. Do not overwrite concurrent changes.",
+  "native_policy":"Frozen original source and prompt template unchanged. Existing CHILD2 raw evidence and non-buy result immutable; additional evidence is a separately versioned future input, not a historical rewrite.",
+  "native_new_http_requests_authorized":0,
+  "runtime_activated":false,
+  "paid_data_calls_authorized":0,
+  "automatic_semantic_pass_promotion":false,
+  "resource_route":"local Python deterministic checks and bounded GitHub model-free CI; no Work/Codex",
+  "platform_tokens_credits_cost":"UNKNOWN",
+  "queue_update_after_tests":true
+}
