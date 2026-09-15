@@ -15,6 +15,7 @@ class Fake:
         self.data = b''; self.props = {}; self.posts = 0
         self.public = False; self.corrupt = False; self.duplicate = False
         self.file_versions = []
+        self.head_revisions = []
 
     def handle(self, r):
         if r.method == 'POST':
@@ -34,11 +35,17 @@ class Fake:
         version = '1'
         if not folder and self.file_versions:
             version = self.file_versions.pop(0)
-        return httpx.Response(200, json={'id': 'folder' if folder else 'saved', 'version': version,
+        head_revision = None if folder else 'rev-1'
+        if not folder and self.head_revisions:
+            head_revision = self.head_revisions.pop(0)
+        payload = {'id': 'folder' if folder else 'saved', 'version': version,
             'parents': [] if folder else ['folder'],
             'mimeType': 'application/vnd.google-apps.folder' if folder else 'application/octet-stream',
             'capabilities': {'canShare': True, 'canAddChildren': True},
-            'permissions': [{'type': 'anyone' if self.public else 'user', 'role': 'owner'}]})
+            'permissions': [{'type': 'anyone' if self.public else 'user', 'role': 'owner'}]}
+        if head_revision is not None:
+            payload['headRevisionId'] = head_revision
+        return httpx.Response(200, json=payload)
 
 
 @pytest.fixture
@@ -53,16 +60,21 @@ def test_bytes_and_idempotence(store):
     data = b'\x00\xfforiginal\r\n'
     r = s.put('ART-1', data, 'RUN-1')
     assert r['sha256'] == digest(data) and r['save_read_hash_restore']
+    assert r['head_revision_id'] == 'rev-1'
     assert s.put('ART-1', data, 'RUN-1')['idempotent_reuse']
     assert f.posts == 1
 
 
-def test_fresh_version_can_settle_without_relaxing_post_read_gate(store, monkeypatch):
+def test_server_version_can_change_when_content_revision_and_hash_are_stable(store, monkeypatch):
     s, f = store
     monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
-    f.file_versions = ['1', '2', '2', '2']
+    # The blob content revision stays fixed while Drive's broader server version
+    # advances across metadata reads. This is audit information, not content drift.
+    f.file_versions = ['1', '2', '3']
+    f.head_revisions = ['rev-1', 'rev-1', 'rev-1']
     r = s.put('ART-1', b'original', 'RUN-1')
-    assert r['version'] == '2'
+    assert r['version'] == '3'
+    assert r['head_revision_id'] == 'rev-1'
     assert r['save_read_hash_restore'] is True
 
 
