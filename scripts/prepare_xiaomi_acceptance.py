@@ -15,6 +15,11 @@ from src.services.hk_company_news import approved_news_origin, refresh_company_n
 from src.services.intelligence_service import IntelligenceService
 from src.services.market_data_integrity import daily_consistency_facts, validate_daily_context
 from src.services.hk_report_contract import attach_report_contract, deduplicate_events
+from src.services.hk_volume_reconciliation import (
+    reconcile_volume_pairs,
+    validate_latest_session,
+    validate_ohlc_pairs,
+)
 from src.storage import get_db
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -78,21 +83,48 @@ def fetch_issuer_announcements(now, root):
     return result
 
 
-def compare_prices(primary, independent, target):
-    """Require the same complete session, finite fields and 60 overlapping bars."""
-    import numpy as np
-    if len(primary) < 60 or independent.empty or primary.iloc[-1]['date'] != target or independent.iloc[-1]['date'] != target:
+def compare_prices(primary, independent, target, return_diagnostics=False):
+    """Require same session, strict OHLC, exact history volume and calibrated latest volume.
+
+    Historical volume remains exact-only. The latest session alone may use the
+    evidence-bounded provider reconciliation rule calibrated in Actions Run
+    34983641578; the calibration added no discretionary margin.
+    """
+    if len(primary) < 60 or independent.empty:
         raise ValueError('Incomplete latest session/history coverage')
+    validate_latest_session(primary.iloc[-1]['date'], independent.iloc[-1]['date'], target)
     overlap = primary.merge(independent, on='date', suffixes=('_tencent', '_yahoo'), validate='one_to_one')
     if len(overlap) < 60:
         raise ValueError('Insufficient independent overlap')
-    for field in ('open', 'high', 'low', 'close', 'volume'):
-        left, right = overlap[field+'_tencent'], overlap[field+'_yahoo']
-        if not np.isfinite(left).all() or not np.isfinite(right).all():
-            raise ValueError('Missing independent values: ' + field)
-        tolerance = 0 if field == 'volume' else 0.005
-        if ((left-right).abs() > tolerance).any():
-            raise ValueError('Independent source disagreement: ' + field)
+
+    for field in ('open', 'high', 'low', 'close'):
+        validate_ohlc_pairs(
+            (field, left, right)
+            for left, right in zip(overlap[field+'_tencent'], overlap[field+'_yahoo'])
+        )
+
+    corporate_action_dates = set()
+    for action_field in ('stock splits', 'dividends', 'capital gains'):
+        if action_field not in overlap.columns:
+            continue
+        values = pd.to_numeric(overlap[action_field], errors='coerce').fillna(0.0)
+        corporate_action_dates.update(overlap.loc[values != 0.0, 'date'].astype(str).tolist())
+
+    volume_diagnostics = reconcile_volume_pairs(
+        zip(overlap['date'], overlap['volume_tencent'], overlap['volume_yahoo']),
+        target,
+        corporate_action_dates=corporate_action_dates,
+        unit_semantics_verified=True,
+    )
+    diagnostics = {
+        'overlap_sessions': len(overlap),
+        'ohlc_absolute_tolerance': 0.005,
+        'volume_rule': 'historical_exact_latest_calibrated_bound',
+        'corporate_action_sessions_in_overlap': len(corporate_action_dates),
+        'volume': volume_diagnostics,
+    }
+    if return_diagnostics:
+        return len(overlap), diagnostics
     return len(overlap)
 
 
@@ -133,7 +165,7 @@ def prepare(root=None, allow_partial_news=False, include_primary_evidence=False)
     (root/'independent_history.json').write_text(json.dumps({'retrieved_at': datetime.now(timezone.utc).isoformat(),
         'provider': 'Yahoo via yfinance', 'adjustment': 'auto_adjust=True (splits/dividends)',
         'result': yahoo.to_dict('records')}, ensure_ascii=False, default=str))
-    overlap = compare_prices(df, yahoo, target)
+    overlap, price_reconciliation = compare_prices(df, yahoo, target, return_diagnostics=True)
     today, yesterday = df.iloc[-1].to_dict(), df.iloc[-2].to_dict()
     context = {'today': today, 'yesterday': yesterday,
                'volume_change_ratio': round(today['volume']/yesterday['volume'], 2)}
@@ -211,7 +243,8 @@ def prepare(root=None, allow_partial_news=False, include_primary_evidence=False)
         component_status=dict(checkpoint['tasks']),
         news_diagnostics=json.loads((root/'news.json').read_text()).get('diagnostics', []),
         prepared_at=datetime.now(timezone.utc).isoformat(), target=target,
-        overlap=overlap, today=today, yesterday=yesterday, news_count=len(items), origins=origins,
+        overlap=overlap, price_reconciliation=price_reconciliation,
+        today=today, yesterday=yesterday, news_count=len(items), origins=origins,
         facts=daily_consistency_facts(context), allowed_news_urls=list(items),
         hk_report_contract=context['hk_report_contract'], issuer_announcements=issuer,
         event_candidates=len(events), reviewed_group_count=sum(e['grouping_reviewed'] for e in events),
