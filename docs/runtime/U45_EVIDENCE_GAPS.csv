@@ -1,0 +1,11 @@
+gap_class,status,count_or_scope,effect,recovery_condition
+official_trading_status,OPEN,denominator_45,blocks_complete_preparation,"recover row-level private source and add official current trading/suspension evidence"
+corporate_actions_adjustment,OPEN,denominator_45,blocks_price-basis acceptance,"verify splits/dividends/corporate actions and adjustment provenance per stock"
+volume_unit_price_basis,OPEN,denominator_45,blocks comparable execution inputs,"independent evidence for volume unit and price basis per stock"
+current_official_announcements,OPEN,denominator_45,blocks current-event completeness,"official issuer/HKEX announcement evidence with source and available_time"
+news_media_to_official_closure,OPEN,media clues only,does not pass news evidence,"link media clues to original announcement where applicable"
+capital_flow,OPEN,denominator_45,blocks upgraded-model evidence completeness,"restore/collect permitted current capital-flow evidence with timestamp"
+company_plan_capital_fee_events,OPEN,denominator_45,blocks event/plan evidence,"verify current company plans/capital actions/fee-related events"
+trade_plan_and_fees,OPEN,denominator_45,blocks execution-readiness,"restore defined trade-plan and fee inputs"
+buy_eligibility_09618,ISOLATED,1,blocks current U trade eligibility for 09618,"refresh official current SSE/SZSE buy eligibility; retain U45 membership"
+row_level_private_original,CONNECTOR_BLOCKED,45,"prevents truthful 45-row reconstruction in this run","recover original private U45 preparation artifact through authorized storage path"
