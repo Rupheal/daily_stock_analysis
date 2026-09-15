@@ -15,5 +15,13 @@
   "fallback_model_permitted": false,
   "automatic_recharge_permitted": false,
   "main_merge_permitted": false,
-  "manual_semantic_review_required_after_private_restore": true
+  "manual_semantic_review_required_after_private_restore": true,
+  "engineering_attempt_history": {
+    "prior_successor_run": 34989320785,
+    "prior_successor_model_http_requests": 0,
+    "repaired_model_free_preflight_run": 34996864782,
+    "repaired_model_free_preflight_passed": true,
+    "authorization_slot_consumed_before_resume": false,
+    "note": "This metadata does not allocate a second model request. The original Owner-authorized maximum remains one, and previous failed attempts stopped before provider/model HTTP."
+  }
 }
