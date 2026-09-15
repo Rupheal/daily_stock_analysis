@@ -53,14 +53,13 @@ def test_windows_drive_path_rejected():
         verify_bundle(archive([('C:payload', b'x')]))
 
 
-def test_missing_drive_version_never_verifies(tmp_path):
-    f = Fake()
-    f.data = b'x'
+def test_missing_drive_version_never_verifies(tmp_path, monkeypatch):
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    f = Fake(); f.data = b'x'
     def handle(r):
         response = f.handle(r)
         if r.url.params.get('alt') != 'media' and not r.url.path.endswith('/files'):
-            payload = response.json()
-            payload.pop('version', None)
+            payload = response.json(); payload.pop('version', None)
             return httpx.Response(200, json=payload)
         return response
     with httpx.Client(transport=httpx.MockTransport(handle)) as c:
@@ -69,7 +68,8 @@ def test_missing_drive_version_never_verifies(tmp_path):
     assert not (tmp_path / 'restored').exists()
 
 
-def test_streaming_oversize_rejected_before_file_write(tmp_path):
+def test_streaming_oversize_rejected_before_file_write(tmp_path, monkeypatch):
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
     f = Fake(); f.data = b'x' * (LIMIT + 1)
     with httpx.Client(transport=httpx.MockTransport(f.handle)) as c:
         with pytest.raises(StoreError, match='READBACK_TOO_LARGE'):
@@ -77,29 +77,24 @@ def test_streaming_oversize_rejected_before_file_write(tmp_path):
     assert not (tmp_path / 'restored').exists()
 
 
-def test_version_change_rejected_distinctly(tmp_path):
-    f = Fake(); f.data = b'x'; reads = []
-    def handle(r):
-        response = f.handle(r)
-        if r.url.params.get('alt') != 'media':
-            reads.append(1); p = response.json(); p['version'] = str(len(reads))
-            return httpx.Response(200, json=p)
-        return response
-    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+def test_version_change_rejected_distinctly(tmp_path, monkeypatch):
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    f = Fake(); f.data = b'x'
+    # Pre-read metadata settles at v1; the post-media metadata moves to v2.
+    f.file_versions = ['1', '1', '2']
+    with httpx.Client(transport=httpx.MockTransport(f.handle)) as c:
         with pytest.raises(StoreError, match='READBACK_VERSION_CHANGED'):
             DriveStore(c, 'folder').recover('saved', digest(b'x'), tmp_path / 'restored')
     assert not (tmp_path / 'restored').exists()
 
 
-def test_hash_mismatch_takes_priority_over_version_change(tmp_path):
-    f = Fake(); f.data = b'good'; reads = []
-    def handle(r):
-        response = f.handle(r)
-        if r.url.params.get('alt') == 'media':
-            return httpx.Response(200, content=b'corrupt')
-        reads.append(1); p = response.json(); p['version'] = str(len(reads))
-        return httpx.Response(200, json=p)
-    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+def test_hash_mismatch_takes_priority_over_version_change(tmp_path, monkeypatch):
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    f = Fake(); f.data = b'good'; f.corrupt = True
+    # Settle at v1 before media; media bytes are corrupt and version also moves
+    # afterwards. The hard byte-integrity gate must be reported first.
+    f.file_versions = ['1', '1', '2']
+    with httpx.Client(transport=httpx.MockTransport(f.handle)) as c:
         with pytest.raises(StoreError, match='READBACK_HASH_MISMATCH'):
             DriveStore(c, 'folder').recover('saved', digest(b'good'), tmp_path / 'restored')
     assert not (tmp_path / 'restored').exists()
