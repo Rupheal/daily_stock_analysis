@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "review_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-002",
+  "parent_review_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
+  "parent_branch_commit_read": "249dcb959451246bf6e24e9cff6aeffbed284e41",
+  "state": "O_NATIVE_EXECUTION_AND_PRIVATE_RESTORE_PASS_OUTPUT_SEMANTIC_NO_GO",
+  "scope": "Close the already requested exact-field/preflight/single-stock acceptance work using the latest existing run. No new model request and no general audit.",
+  "existing_execution": {
+    "workflow_run": 35002627787,
+    "job_id": 104494498836,
+    "source_commit": "c75c8496410cd33a151d659add7c83ce92bdd1cd",
+    "completed_at_utc": "2026-09-15T17:43:15Z",
+    "target_session": "2026-09-15",
+    "strict_preflight_at_utc": "2026-09-15T17:41:45.840011+00:00",
+    "strict_preflight": "PASS_EXISTING_CONTRACT",
+    "target_rule": "O_NATIVE_TARGET_SESSION_RULE_v1",
+    "target_match": true,
+    "yahoo_end_exclusive": "2026-09-16",
+    "yahoo_repair_enabled": true,
+    "repair_disclosure": "Existing main-workspace materialization change retained and independently cross-checked; not proof the old unrepaired Yahoo data became valid.",
+    "frozen_native_same_session_smoke": "PASS",
+    "observer_input_validated": true,
+    "original_module_origins_verified": true,
+    "original_tracked_source_unchanged": true,
+    "target_boundary_adapter_apply_count": 1,
+    "model_http_requests": 1,
+    "request_status": "response_received",
+    "native_process_exit_code": 0,
+    "canonical_claim_native_and_predecessor_preserved": true,
+    "append_only_child_saved_and_restored": true,
+    "child_artifact_id": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2",
+    "prompt_tokens": 4687,
+    "completion_tokens": 6753,
+    "total_tokens": 11440,
+    "usage_peak_estimate_cny": "0.063398",
+    "observed_balance_delta_cny": "0.00",
+    "actual_account_charge_cny": null
+  },
+  "independent_readback": {
+    "sanitized_artifact_id": 10409803411,
+    "sanitized_zip_sha256": "1a4c9ee0a43eb70fdf1a9e957b0f6866b333d972f6c5cee001cf70d786f19cdb",
+    "sanitized_digest_match": true,
+    "private_archive_sha256_computed_on_download": "768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
+    "private_manifest_files_verified": 18,
+    "private_manifest_mismatches": 0,
+    "zip_crc": "PASS",
+    "private_input_result_request_body_and_provider_response_read": true,
+    "public_raw_model_content_exported": false
+  },
+  "semantic_review": {
+    "status": "COMPLETED_NO_GO",
+    "scope": "Input/output arithmetic, result metadata, evidence handoff and explicit limitations; not strategy performance or complete issuer financial validation.",
+    "blocking_findings": [
+      {"code":"OPEN_GAP_DIRECTION_CONTRADICTION","paths":["pattern_analysis","context.today.open","context.yesterday.close"],"meaning":"Reported opening-gap direction contradicts the numeric native input."},
+      {"code":"NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER","paths":["news_result_count_known","news_result_count"],"meaning":"Known-count flag has no valid integer count; unknown must not be represented as known."}
+    ],
+    "integration_gap": {"code":"PREFLIGHT_NEWS_NOT_DELIVERED_TO_NATIVE_INPUT","paths":["preflight.news_count","original_input.news_context","context.company_news_evidence"],"meaning":"Preflight evidence availability is not proof of native prompt consumption. Missing native news is disclosed by the output, not treated as zero real-world news."},
+    "remaining_limitation": {"code":"FINANCIAL_PERIOD_PRIMARY_LINEAGE_INCOMPLETE","path":"context.fundamental_context.earnings.data.financial_report","meaning":"Full period type and primary disclosure linkage not established; not a claim that the raw financial numbers were externally disproved."},
+    "native_nonbuy_action_preserved": true,
+    "original_result_rewritten": false,
+    "o_single_stock_formally_accepted": false,
+    "o_full_pool_accepted": false
+  },
+  "authorization": {
+    "existing_owner_authorization_retained": true,
+    "single_successor_provider_slot_consumed": true,
+    "additional_requests_under_same_slot": 0,
+    "no_repeat_approval_requested_for_completed_scope": true,
+    "no_second_provider_call_to_replace_unfavorable_output": true
+  },
+  "next_actions": [
+    "Stop treating historical Yahoo NaN, adapter apply_count=0 or missing Drive Secrets as the current blocker. Reuse completed CHILD2 raw evidence.",
+    "Preserve CHILD2 output as a failed semantic sample; use deterministic report checks to isolate arithmetic and known-count metadata contradictions without rewriting original evidence.",
+    "Trace the exact preflight-to-native news handoff and period/primary-source tags offline. Preserve frozen original model/prompt boundaries; any proposed adaptation must be explicit and versioned.",
+    "Do not run O full pool, claim U45 accepted, write simulated fills or activate Shadow from the successful workflow badge. No additional provider request is authorized by this receipt."
+  ],
+  "narrow_regression_tests": {"passed":10,"failed":0,"scope":"Synthetic deterministic factual/metadata checker; actual saved output independently returns NO_GO"},
+  "new_actions_this_resume": {"model_http_requests":0,"paid_market_data_calls":0,"Work_Codex_tasks":0,"authoritative_journal_writes":0,"new_orders":0,"schedule_changes":0,"main_merges":0},
+  "platform_tokens_credits_fees":"UNKNOWN",
+  "runtime_activated": false,
+  "legacy_accepted_progress_unchanged": true,
+  "strategy_progress_credit": 0
+}
