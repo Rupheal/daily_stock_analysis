@@ -24,7 +24,7 @@ jobs:
       PYTHONPATH: research
       LITELLM_LOCAL_MODEL_COST_MAP: 'true'
       BACKTEST_ENABLED: 'false'
-      AGENT_MODE: 'false'
+      AGENT_MODE: false
       REPORT_INTEGRITY_RETRY: '0'
       MAX_WORKERS: '1'
       NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
@@ -53,44 +53,56 @@ jobs:
           python - <<'PY'
           import json, os, subprocess
           auth=json.load(open('research/docs/runtime/run018-zero-http-recovery-authorization.json'))
+          identity=json.load(open('research/docs/runtime/run018-recovery-target-identity.json'))
           arm=json.load(open('research/docs/runtime/run012-private-native-arm.json'))
           assert auth.get('authorized') is True, 'RECOVERY_NOT_OWNER_AUTHORIZED'
           assert auth.get('maximum_successor_http_requests') == 1, 'RECOVERY_REQUEST_CAP_NOT_ONE'
           assert auth.get('canonical_claim_native_must_remain') is True
           assert auth.get('append_only_child_required') is True
           assert auth.get('frozen_upstream') == '089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert identity.get('roll_forward_permitted') is False
+          assert identity.get('target_rule_version_for_successor') == 'O_NATIVE_TARGET_SESSION_RULE_v1'
           assert arm.get('armed') is False, 'CANONICAL_O_MUST_REMAIN_DISARMED_DURING_RECOVERY'
           got=subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()
           assert got == auth['frozen_upstream'], 'FROZEN_UPSTREAM_MISMATCH'
           assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
           print(json.dumps({'owner_recovery_authorized':True,'maximum_successor_http_requests':1,
                             'canonical_o_disarmed':True,'frozen_upstream_verified':True,
-                            'model_requests_before_gates':0}))
+                            'recovery_identity_loaded':True,'model_requests_before_gates':0}))
           PY
-
-      - name: Wait for natural HK date boundary so frozen Yahoo end can include 2026-09-15
-        run: |
-          python - <<'PY'
-          from datetime import datetime
-          from zoneinfo import ZoneInfo
-          from pathlib import Path
-          target=datetime(2026,9,16,0,3,tzinfo=ZoneInfo('Asia/Hong_Kong'))
-          now=datetime.now(ZoneInfo('Asia/Hong_Kong'))
-          seconds=max(0,int((target-now).total_seconds()))
-          if seconds > 5400:
-              raise SystemExit('RECOVERY_WAIT_WINDOW_TOO_EARLY')
-          Path('/tmp/recovery-wait-seconds').write_text(str(seconds))
-          print({'wait_seconds':seconds,'model_requests':0})
-          PY
-          sleep "$(cat /tmp/recovery-wait-seconds)"
-          test "$(date +%F)" = "2026-09-16" || (echo HK_DATE_BOUNDARY_NOT_REACHED && exit 1)
 
       - name: Install deterministic and frozen runtime dependencies
         run: pip install -r research/requirements.txt pytest httpx
 
+      - name: Resolve frozen O target session and enforce immutable recovery identity
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from o_target_session_contract import RULE_VERSION, resolve_target_session
+          identity=json.load(open('research/docs/runtime/run018-recovery-target-identity.json'))
+          resolved=resolve_target_session(datetime.now(timezone.utc))
+          target=resolved.target_session.isoformat()
+          claimed=str(identity['claimed_target_session'])
+          if target != claimed:
+              raise SystemExit('RECOVERY_TARGET_EXPIRED_NEW_COMPLETED_SESSION')
+          Path('/tmp/o-frozen-target-session').write_text(target)
+          Path('/tmp/o-target-session-receipt.json').write_text(json.dumps({
+              'rule_version':RULE_VERSION,
+              'resolved_target_session':target,
+              'claimed_target_session':claimed,
+              'recovery_target_eligible':True,
+              'model_requests':0
+          },indent=2))
+          print(json.dumps({'rule_version':RULE_VERSION,'resolved_target_session':target,
+                            'claimed_target_session':claimed,'recovery_target_eligible':True,
+                            'model_requests':0}))
+          PY
+
       - name: Observer and zero-HTTP recovery regressions
         working-directory: research
-        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py tests/test_o_zero_http_recovery_policy.py
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py tests/test_o_zero_http_recovery_policy.py tests/test_o_target_session_contract.py tests/test_prepare_xiaomi_acceptance_targeted.py
 
       - name: Reconcile canonical private evidence and apply owner authorization
         run: |
@@ -126,45 +138,57 @@ jobs:
             --artifact-id "$PROBE_ID" \
             --receipt /tmp/run018-drive-probe-receipt.json
 
-      - name: Fresh complete Xiaomi independent preflight
+      - name: Fresh complete Xiaomi independent preflight using frozen target-session rule
         run: |
           mkdir -p /tmp/recovery-evidence
-          python research/scripts/prepare_xiaomi_acceptance.py > /tmp/recovery-evidence/preflight-stdout.log 2> /tmp/recovery-evidence/preflight-stderr.log
+          python research/scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/recovery-evidence/preflight-stdout.log 2> /tmp/recovery-evidence/preflight-stderr.log
           cp research/probe/preflight.json /tmp/recovery-evidence/preflight.json
+          cp research/probe/target-session-receipt.json /tmp/recovery-evidence/target-session-receipt.json
           python - <<'PY'
           import json
+          from pathlib import Path
           d=json.load(open('research/probe/preflight.json'))
+          tr=json.load(open('research/probe/target-session-receipt.json'))
+          expected=Path('/tmp/o-frozen-target-session').read_text().strip()
+          assert tr.get('rule_version')=='O_NATIVE_TARGET_SESSION_RULE_v1'
+          assert tr.get('status')=='PREFLIGHT_COMPLETED_TARGET_MATCH'
+          assert tr.get('target_match') is True
           assert d.get('passed') is True and d.get('prices_passed') is True
           assert d.get('symbol','').upper()=='HK01810'
-          assert str(d.get('target'))=='2026-09-15', 'RECOVERY_PREFLIGHT_TARGET_CHANGED'
+          assert str(d.get('target'))==expected==str(tr.get('target_session'))==str(tr.get('preflight_target')),
+          'RECOVERY_PREFLIGHT_TARGET_CONTRACT_MISMATCH'
           s=d.get('component_status') or {}
           assert s.get('prices')=='passed'
           assert s.get('news')=='passed_limited_coverage'
           assert s.get('issuer')=='listing_passed_body_incomplete'
           print(json.dumps({'preflight_passed':True,'target':d.get('target'),
+                            'target_rule_version':tr.get('rule_version'),
                             'prices':s.get('prices'),'news':s.get('news'),'issuer':s.get('issuer'),
                             'model_requests':0}))
           PY
 
       - name: Frozen-native same-window data-only smoke
         run: |
+          TARGET_SESSION="$(cat /tmp/o-frozen-target-session)"
           python research/scripts/run_hk_native_data_probe.py \
             --checkout original \
             --universe research/docs/dsa-u-universe.json \
             --scope O_single_stock_smoke \
-            --expected-date 2026-09-15 \
+            --expected-date "$TARGET_SESSION" \
             --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
             --timeout 240 \
             --output /tmp/run018-native-data \
             > /tmp/run018-native-data-private.log 2>&1
           python - <<'PY'
           import json
+          from pathlib import Path
+          target=Path('/tmp/o-frozen-target-session').read_text().strip()
           d=json.load(open('/tmp/run018-native-data/coverage.json'))
           rows=d.get('coverage') or []
           assert d.get('code_commit')=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
           assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1
-          assert len(rows)==1 and str(rows[0].get('latest_date'))=='2026-09-15'
-          print(json.dumps({'frozen_native_data_only_passed':True,'latest_date':'2026-09-15',
+          assert len(rows)==1 and str(rows[0].get('latest_date'))==target
+          print(json.dumps({'frozen_native_data_only_passed':True,'latest_date':target,
                             'coverage_denominator':1,'current_valid_count':1,'model_requests':0,
                             'raw_native_log_disclosed':False}))
           PY
@@ -173,16 +197,18 @@ jobs:
         run: |
           PYTHONPATH=research python - <<'PY'
           import json, sqlite3, sys
+          from pathlib import Path
           sys.path.insert(0,'research/scripts')
           from o_native_input_contract import validate_native_input
           p=json.load(open('research/probe/preflight.json'))
+          target=Path('/tmp/o-frozen-target-session').read_text().strip()
           db=sqlite3.connect('/tmp/run018-native-data/native-data.db')
           row=db.execute("SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 1",('hk01810',)).fetchone()
           db.close()
           assert row
           context={'today':dict(zip(('date','open','high','low','close','volume'),row))}
           receipt=validate_native_input(p,context)
-          assert receipt.get('validated') is True and receipt.get('target')=='2026-09-15'
+          assert receipt.get('validated') is True and str(receipt.get('target'))==target
           print(json.dumps({'observer_contract_passed':True,'target':receipt.get('target'),
                             'volume_status':receipt.get('volume_status'),
                             'calibration_run_id':receipt.get('calibration_run_id'),
