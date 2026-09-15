@@ -54,7 +54,7 @@ jobs:
           PYTHONPATH=scripts python - <<'PY'
           import hashlib,json,os,httpx
           from dsa_drive_store import DriveStore,scoped_token,API
-          artifacts=['ART-DSA-RUN013-PROBE','ART-DSA-RUN013-RESTORE']
+          artifacts=['ART-DSA-RUN013-PROBE','ART-DSA-RUN013-RESTORE','ART-DSA-STORAGE-34978665852-1']
           with httpx.Client(timeout=30,follow_redirects=False) as c:
               c.headers['Authorization']='Bearer '+scoped_token(c)
               store=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
