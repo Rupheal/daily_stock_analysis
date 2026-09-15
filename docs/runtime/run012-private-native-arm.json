@@ -1,8 +1,8 @@
 {
   "schema": "dsa-private-native-arm-v1",
   "run_id": "TRI-DSA-EXEC-20260914-013",
-  "armed": false,
-  "reason": "Disarmed after GitHub Actions Run 34977724113 failed before any model request at runner-side Drive probe with READBACK_HASH_OR_VERSION_MISMATCH. Diagnose 43/44 storage behavior first; no model retry until a fresh storage-only probe passes save/read/hash/restore and claim state is reconciled.",
+  "armed": true,
+  "reason": "One bounded O-native acceptance is armed after storage-only Run 34979881950 passed tests, clean native/claim reconciliation, DeepSeek single-stock affordability, and a fresh unique save/read/SHA/restore roundtrip. Exactly one canonical native call is permitted; durable claim must persist before model request and raw bytes must persist/restore before semantic acceptance.",
   "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
   "target_private_repository": "Rupheal/TRIDENT-Foundation",
   "target_private_branch": "research/dsa-private-evidence-20260914",
