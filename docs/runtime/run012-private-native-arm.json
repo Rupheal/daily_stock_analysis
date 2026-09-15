@@ -1,8 +1,8 @@
 {
   "schema": "dsa-private-native-arm-v1",
   "run_id": "TRI-DSA-EXEC-20260914-013",
-  "armed": true,
-  "reason": "One bounded O-native acceptance is armed after storage-only Run 34979881950 passed tests, clean native/claim reconciliation, DeepSeek single-stock affordability, and a fresh unique save/read/SHA/restore roundtrip. Exactly one canonical native call is permitted; durable claim must persist before model request and raw bytes must persist/restore before semantic acceptance.",
+  "armed": false,
+  "reason": "Disarmed after Run 34979977268 passed storage/repeat/balance/regression gates but failed at Fresh independent Xiaomi data gate before durable claim and before any model request. Diagnose and repair the data gate first; no rerun or model request until the preflight is accepted.",
   "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
   "target_private_repository": "Rupheal/TRIDENT-Foundation",
   "target_private_branch": "research/dsa-private-evidence-20260914",
