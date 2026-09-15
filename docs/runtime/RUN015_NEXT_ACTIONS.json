@@ -1,0 +1,51 @@
+{
+  "schema": "dsa-run015-next-actions-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-015",
+  "status": "DRIVE_BLOCKED_O_NATIVE_NOT_STARTED_U_PREP_OPEN",
+  "priority": [
+    {
+      "id": "P0_DRIVE44",
+      "action": "Make the four existing DSA_DRIVE OAuth settings visible as repository Actions Secrets, then execute workflow 44 storage-only acceptance.",
+      "acceptance": "real_save PASS + independent_read PASS + sha256_match PASS + disk_restore_per_file_hash PASS",
+      "gate": "O native model calls remain prohibited until all four pass."
+    },
+    {
+      "id": "P0_O_SINGLE",
+      "action": "After Drive44 PASS, perform exactly one necessary frozen O-native single-stock acceptance call with CLAIM reconciliation and Drive persistence/readback.",
+      "acceptance": "PASS/PASS_WITH_CONDITIONS/FAIL/BLOCKED only; raw evidence private; semantic review recorded."
+    },
+    {
+      "id": "P0_U45_RECOVERY",
+      "action": "Recover original row-level U45 preparation artifact from authorized private storage by provider ID/version and append missing evidence per row; do not reconstruct from aggregates.",
+      "acceptance": "45-row source recovered with hashes; complete/partial/isolated/failed denominators disclosed."
+    },
+    {
+      "id": "P1_O_CURRENT_UNIVERSE",
+      "action": "Only after O-single acceptance, freeze the current official SSE/SZSE Stock Connect HK buyable union; keep N660 as historical 2026-09-11 snapshot.",
+      "acceptance": "N_current, mapped, isolated, failed, sources, anchor_time, hash, version."
+    },
+    {
+      "id": "P1_O_FULL_POOL",
+      "action": "Execute frozen O native logic on the accepted current universe only after single-stock acceptance and storage pass.",
+      "acceptance": "attempted/success/fail/data-isolated/model-isolated/saved/save-fail denominators before Top3/Top10."
+    },
+    {
+      "id": "P1_U_NATIVE",
+      "action": "When each U member meets minimum evidence input requirements, execute U formal native model independently from O.",
+      "acceptance": "success/fail/isolated/qualified over denominator 45; independent Top3/Top10 only when comparable."
+    },
+    {
+      "id": "P1_OOS_FREEZE",
+      "action": "At the next genuinely pre-outcome eligible O anchor with accepted current inputs/universe, freeze A0 Champion and A3_NO_VOLATILITY Challenger records using DSA_PIT_OOS_RECORD_SCHEMA_v1.json.",
+      "acceptance": "future labels PENDING; no result-based tuning; 1/3/5/10/20 trading-day outcomes appended only after maturity."
+    }
+  ],
+  "do_not_do": [
+    "Do not re-arm private GitHub fallback to bypass Drive-first sequencing without a newer explicit Owner directive.",
+    "Do not call O native model while Drive44 is not accepted.",
+    "Do not fabricate a current O universe from N660.",
+    "Do not fabricate 45 U rows from aggregate receipts.",
+    "Do not create Top3 from incomplete or non-comparable pools.",
+    "Do not write simulated fills without a qualified signal and recovered authoritative Journal."
+  ]
+}
