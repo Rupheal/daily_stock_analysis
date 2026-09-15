@@ -1,0 +1,37 @@
+name: HK volume cross-provider calibration
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/diagnose_xiaomi_volume_direct.py
+      - scripts/calibrate_hk_volume_cross_provider.py
+      - .github/workflows/46-hk-volume-calibration.yml
+permissions:
+  contents: read
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Assert O disarmed and no model credential exposed
+        run: |
+          python - <<'PY'
+          import json,os
+          arm=json.load(open('docs/runtime/run012-private-native-arm.json'))
+          assert arm.get('armed') is False, 'O_MUST_REMAIN_DISARMED'
+          assert not os.environ.get('DEEPSEEK_API_KEY'), 'MODEL_KEY_MUST_NOT_BE_EXPOSED'
+          print('{"o_disarmed":true,"model_key_exposed":false,"model_requests":0}')
+          PY
+      - name: Direct Xiaomi volume semantics reread
+        run: python scripts/diagnose_xiaomi_volume_direct.py
+      - name: Cross-sectional HK volume calibration
+        run: python scripts/calibrate_hk_volume_cross_provider.py
