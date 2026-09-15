@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
+  "state": "TRUE_FROZEN_NATIVE_INPUT_PASS_ZERO_HTTP_CHILD_RECONCILIATION_REQUIRED",
+  "prior_failure": "docs/runtime/PREFLIGHT_FIELDS_20260916_001_CHILD_RECONCILIATION.json",
+  "namespace_proof": {"workflow_run": 35001349747, "commit": "6e5a88d0c137a11a6198fcb6ae4319c801548346", "job_id": 104490224028, "result": "PASS", "completed_at_utc": "2026-09-15T17:28:43Z"},
+  "true_original_dry_input": {"workflow_run": 35001171210, "commit": "d7a3cfcbb6b0335efd5d831b8b7287e9ccd27781", "artifact_id": 10409254892, "archive_sha256": "6d9cc6df89c14818ae0dc889a8d5af1f53cd98d7e17f87c9adf3c934126c7746", "download_digest_verified": true, "analyzer_under_frozen_checkout": true, "main_under_frozen_checkout": true, "reached_original_analyzer": true, "input_validated": true, "target": "2026-09-15", "context_date": "2026-09-15", "adapter_apply_count": 1, "model_http_requests": 0, "native_main_status": 1, "native_main_status_explanation": "Intentional stop before provider in input-only probe, not a completed model analysis", "news_context_present": false, "native_news_absence_not_filled_from_U": true},
+  "original_frozen_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "namespace_fixed_by_main_workspace": true,
+  "self_matching_workflow_guard_fixed_by_this_diagnostic_work": true,
+  "canonical_and_child1_must_remain": true,
+  "existing_total_successor_http_budget": 1,
+  "observed_successor_http_used": 0,
+  "no_new_owner_authorization_requested": true,
+  "next": "Read-only reconcile original canonical and every existing child intent/result. Continue the same remaining at-most-one actual provider request only under a new append-only CHILD2 identity after all fresh gates; abort on any used or uncertain provider slot or any other pending child. Never overwrite CHILD1 or rerun a used workflow attempt.",
+  "coordination": "Shared branch is active; reuse any newer child2 continuation rather than creating a parallel request. Existing dsa-drive-evidence-writer concurrency and absence guards must be retained.",
+  "o_single_stock_accepted": false,
+  "runtime_activated": false,
+  "request_authorized_by_this_receipt": false
+}
