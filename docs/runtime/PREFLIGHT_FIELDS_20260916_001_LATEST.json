@@ -1,7 +1,7 @@
 {
   "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
   "record_type": "CURRENT_EXECUTION_POINTER_NOT_A_NEW_AUTHORIZATION",
-  "state": "CHILD2_TECHNICAL_PASS_POST_OUTPUT_NO_GO",
+  "state": "POST_OUTPUT_CONTRACT_REPAIRED_CHILD2_IMMUTABLE_FAIL",
   "target_session": "2026-09-15",
   "bounded_pass_receipts": {
     "strict_preflight": 34996864782,
@@ -9,7 +9,17 @@
     "actual_frozen_module_origins": 35001349747,
     "true_original_analyzer_input_only": 35001171210,
     "child2_successor": 35002627787,
-    "post_output_guard_ci": 35033881836
+    "post_output_guard_ci": 35033881836,
+    "formal_post_output_contract_ci": 35034531474
+  },
+  "post_output_contract": {
+    "version": "O_POST_OUTPUT_CONTRACT_v1",
+    "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1",
+    "implementation": "scripts/o_post_output_contract.py",
+    "contract_tests": "31/31 PASS",
+    "model_credentials_present_in_ci": false,
+    "new_model_requests": 0,
+    "replay_receipt": "docs/runtime/RUN024_POST_OUTPUT_CONTRACT_REPLAY.json"
   },
   "child2": {
     "workflow_run": 35002627787,
@@ -21,13 +31,23 @@
     "native_process_exit_code": 0,
     "private_child_saved_read_hashed_restored": true,
     "raw_request_response_result_present": true,
-    "post_output_semantic_verdict": "NO_GO",
-    "acceptance_receipt": "docs/runtime/O_SINGLE_NATIVE_ACCEPTANCE.json",
-    "offline_replay_receipt": "docs/runtime/RUN023_POST_OUTPUT_SEMANTIC_GUARD_REPLAY.json"
+    "formal_post_output_promotion_gate": "BLOCK",
+    "acceptance_receipt": "docs/runtime/O_SINGLE_NATIVE_ACCEPTANCE.json"
   },
-  "triggered_semantic_guards": ["SEM-001", "SEM-002", "SEM-003"],
-  "blocking_findings": ["OPEN_GAP_DIRECTION_CONTRADICTION", "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER"],
-  "other_findings": ["PREFLIGHT_NEWS_NOT_DELIVERED_TO_NATIVE_INPUT", "FINANCIAL_PERIOD_PRIMARY_LINEAGE_INCOMPLETE"],
+  "deterministic_facts": {
+    "opening_gap": "GAP_DOWN",
+    "open": "27.1200008392334",
+    "previous_close": "27.15999984741211",
+    "news_result_count_known": true,
+    "news_result_count": null
+  },
+  "formal_blockers": [
+    "OPEN_GAP_DIRECTION_CONTRADICTION",
+    "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
+    "SEM-001",
+    "SEM-002",
+    "SEM-003"
+  ],
   "o_single_stock_acceptance": "FAIL",
   "fixed_legacy_acceptance": "12/16",
   "g4_3_formal_credit": false,
@@ -37,5 +57,5 @@
   "real_orders": 0,
   "schedules_changed": false,
   "main_merged": false,
-  "next": "Repair deterministic post-output contract handling for the two BLOCK findings and SEM-001/002/003, then replay the preserved Child2 bytes offline only. Do not call the model again."
+  "next": "Use O_POST_OUTPUT_CONTRACT_v1 as the fail-closed gate on the next independently authorized O-native output. Do not rewrite or rerun Child2; its failure is preserved as calibration evidence."
 }
