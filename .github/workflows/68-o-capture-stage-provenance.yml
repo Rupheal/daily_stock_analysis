@@ -1,0 +1,65 @@
+name: O capture-stage provenance model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_capture_stage_provenance.py
+      - tests/test_o_capture_stage_provenance.py
+      - .github/workflows/68-o-capture-stage-provenance.yml
+permissions:
+  contents: read
+jobs:
+  capture-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pytest only
+        run: pip install pytest
+      - name: Run isolated provenance tests without native imports or model calls
+        env:
+          DSA_FROZEN_ANALYZER_SOURCE: ${{ github.workspace }}/original/src/analyzer.py
+          DSA_FROZEN_PIPELINE_SOURCE: ${{ github.workspace }}/original/src/core/pipeline.py
+          DSA_OBSERVER_SOURCE: ${{ github.workspace }}/research/scripts/run_hk_original_model_probe.py
+        run: |
+          mkdir -p proof
+          python -m pytest --noconftest -q research/tests/test_o_capture_stage_provenance.py --junitxml=proof/tests.xml
+      - name: Save bounded public code and sanitized receipt only
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,shutil,subprocess,sys
+          root=pathlib.Path('research');out=pathlib.Path('proof')
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k]
+          assert not forbidden, 'UNEXPECTED_MODEL_OR_DRIVE_CREDENTIAL'
+          sys.path.insert(0,str(root/'scripts'))
+          from o_capture_stage_provenance import prove_capture_stage
+          receipt=prove_capture_stage(pathlib.Path('original/src/analyzer.py').read_bytes(),pathlib.Path('original/src/core/pipeline.py').read_bytes(),(root/'scripts/run_hk_original_model_probe.py').read_bytes())
+          receipt.update(run_id='TRI-DSA-DEV-20260916-CAPTURE-STAGE-004',source_commit=os.environ['GITHUB_SHA'],workflow_run=os.environ['GITHUB_RUN_ID'],model_requests=0,runtime_activated=False)
+          (out/'SOURCE_PROOF.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          paths=['docs/DSA_NEXT_ACTIONS.json','docs/runtime/O_CAPTURE_STAGE_004_SCOPE.json','scripts/o_capture_stage_provenance.py','tests/test_o_capture_stage_provenance.py','scripts/o_semantic_handoff_contract.py','scripts/o_single_output_fact_check.py','scripts/o_post_output_contract.py','tests/test_o_single_output_fact_check.py','tests/test_o_post_output_contract.py','tests/test_o_semantic_handoff_contract.py']
+          for name in paths:
+              source=root/name
+              if source.is_file():
+                  target=out/'research'/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
+          hashes={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()}
+          (out/'SHA256SUMS.json').write_text(json.dumps(hashes,indent=2)+'\n')
+          print(json.dumps({'model_requests':0,'runtime_activated':False,'public_source_files_only':True,'source_commit':os.environ['GITHUB_SHA']}))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: o-capture-stage-004-model-free-proof
+          path: proof/
+          if-no-files-found: error
+          retention-days: 14
