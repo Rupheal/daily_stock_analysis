@@ -1,0 +1,48 @@
+{
+  "schema": "dsa-drive-storage-acceptance-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-017",
+  "branch": "fix/native-private-execution-20260914",
+  "workflow": ".github/workflows/44-drive-storage-readiness.yml",
+  "workflow_run_id": 34979881950,
+  "workflow_job_id": 104417113686,
+  "code_commit": "9f3d9e22f3132d5311d6f6b293afd3225a3cbef0",
+  "secrets_presence": {
+    "present": 4,
+    "denominator": 4,
+    "values_disclosed": false
+  },
+  "deterministic_tests": {
+    "passed": 46,
+    "denominator": 46
+  },
+  "historical_read_only_diagnosis": {
+    "accepted": true,
+    "artifacts_verified": 3,
+    "note": "Two Run013 artifacts plus the previously failed fresh artifact were later independently readable with matching SHA-256 and stable provider version."
+  },
+  "fresh_unique_roundtrip": {
+    "real_save": "PASS",
+    "version_stabilized": "PASS",
+    "independent_read": "PASS",
+    "sha256_match": "PASS",
+    "manifest_verify": "PASS",
+    "disk_restore": "PASS",
+    "per_file_hash": "PASS",
+    "version_after_read_unchanged": "PASS",
+    "owner_only_permission": "PASS",
+    "model_requests": 0
+  },
+  "core_storage_stages": {
+    "save": "PASS",
+    "readback": "PASS",
+    "hash": "PASS",
+    "restore": "PASS",
+    "passed": 4,
+    "denominator": 4
+  },
+  "acceptance": "PASS",
+  "o_native_model_accepted": false,
+  "o_native_model_requests_at_storage_acceptance": 0,
+  "privacy": "Public receipt contains only sanitized identifiers/status; no OAuth secret, folder id, private Drive file id, token, or raw evidence bytes.",
+  "next_gate": "Reconcile CLAIM/call-intent/final artifact state and require model-free Xiaomi preflight PASS before any one-shot O native request."
+}
