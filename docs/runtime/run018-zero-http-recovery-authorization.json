@@ -1,0 +1,19 @@
+{
+  "schema": "dsa-o-zero-http-recovery-authorization-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-018",
+  "authorized": true,
+  "authorization_basis": "Explicit Owner authorization in chat on 2026-09-15 after canonical private reconciliation proved zero provider HTTP requests and RECOVERABLE_BUT_NOT_AUTHORIZED state.",
+  "maximum_successor_http_requests": 1,
+  "canonical_claim_native_must_remain": true,
+  "append_only_child_required": true,
+  "fresh_preflight_required": true,
+  "frozen_native_same_session_required": true,
+  "fresh_drive_save_read_sha_restore_required": true,
+  "current_balance_affordability_required": true,
+  "observer_contract_required": true,
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "fallback_model_permitted": false,
+  "automatic_recharge_permitted": false,
+  "main_merge_permitted": false,
+  "manual_semantic_review_required_after_private_restore": true
+}
