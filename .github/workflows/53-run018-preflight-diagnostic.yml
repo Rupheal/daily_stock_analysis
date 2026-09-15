@@ -1,0 +1,100 @@
+name: Run018 bounded preflight diagnostic (no model)
+on:
+  push:
+    branches: [fix/run018-preflight-diagnostic-20260916]
+    paths: [.github/workflows/53-run018-preflight-diagnostic.yml]
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-writer
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONPATH: research
+      PYTHONUNBUFFERED: '1'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: f66e35aedefed1476334e9648b93a86d711b10c0
+          path: research
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install identical preflight dependencies
+        run: pip install -r research/requirements.txt pytest httpx
+      - name: Capture fresh preflight outcome without exposing a model key
+        id: preflight
+        run: |
+          mkdir -p /tmp/dsa-preflight-diagnostic/evidence
+          python - <<'PY'
+          import contextlib, datetime, json, os, pathlib, runpy, shutil, traceback
+          root=pathlib.Path('/tmp/dsa-preflight-diagnostic/evidence')
+          report={'parent_workflow_run':34989320785,'source_commit':'f66e35aedefed1476334e9648b93a86d711b10c0',
+                  'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  'model_http_requests':0,'maximum_model_http_requests':0,'native_call_intents_created':0,
+                  'source_logic_modified':False,'original_failure_bytes_recovered':False,
+                  'classification':'NEW_DIAGNOSTIC_NOT_RECONSTRUCTION_OF_PREVIOUS_STDERR'}
+          assert not os.environ.get('DEEPSEEK_API_KEY') and not os.environ.get('LLM_DEEPSEEK_API_KEY')
+          with (root/'stdout.log').open('w') as out,(root/'stderr.log').open('w') as err:
+              with contextlib.redirect_stdout(out),contextlib.redirect_stderr(err):
+                  try:
+                      module=runpy.run_path('research/scripts/prepare_xiaomi_acceptance.py')
+                      result=module['prepare']()
+                      report['preflight_completed']=True
+                      report['target']=result.get('target')
+                      report['component_status']=result.get('component_status',{})
+                  except Exception as exc:
+                      report['preflight_completed']=False
+                      report['exception_type']=type(exc).__name__
+                      report['exception_message']=str(exc)
+                      traceback.print_exc()
+          probe=pathlib.Path('research/probe')
+          if probe.exists():
+              shutil.copytree(probe,root/'probe',dirs_exist_ok=True)
+              queue=probe/'acceptance-queue.json'
+              if queue.exists():
+                  report['queue_observed']=json.loads(queue.read_text())
+          report['finished_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          (root/'diagnostic.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          safe={k:report[k] for k in ('parent_workflow_run','source_commit','started_at','finished_at',
+                                    'model_http_requests','maximum_model_http_requests','native_call_intents_created',
+                                    'source_logic_modified','original_failure_bytes_recovered','classification','preflight_completed')}
+          safe['exception_type']=report.get('exception_type')
+          safe['private_artifact_id']='ART-DSA-RUN018-PREFLIGHT-DIAG-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
+          pathlib.Path('/tmp/dsa-preflight-diagnostic/sanitized.json').write_text(json.dumps(safe,indent=2)+'\n')
+          print(json.dumps(safe))
+          PY
+      - name: Save diagnostics privately and independently read/hash/restore
+        if: ${{ always() && steps.preflight.outcome == 'success' }}
+        run: |
+          python research/scripts/dsa_drive_bundle.py \
+            --source /tmp/dsa-preflight-diagnostic/evidence \
+            --run-id TRI-DSA-SHD-20260915-001 \
+            --artifact-id "ART-DSA-RUN018-PREFLIGHT-DIAG-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --receipt /tmp/dsa-preflight-diagnostic/private-save-receipt.json
+      - name: Retain sanitized receipt only
+        if: ${{ always() && steps.preflight.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: run018-preflight-diagnostic-sanitized
+          path: /tmp/dsa-preflight-diagnostic/sanitized.json
+          retention-days: 14
