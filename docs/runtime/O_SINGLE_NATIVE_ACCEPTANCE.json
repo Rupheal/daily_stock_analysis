@@ -1,14 +1,16 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "run_id": "TRI-DSA-EXEC-20260915-018",
-  "review_run": "TRI-DSA-EXEC-20260916-022",
+  "review_run": "TRI-DSA-EXEC-20260916-023",
   "target": "HK01810",
   "target_session": "2026-09-15",
   "workflow_run": 35002627787,
   "child_artifact_id": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2",
   "frozen_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
-  "status": "PASS_WITH_CONDITIONS",
+  "prior_status": "PASS_WITH_CONDITIONS",
+  "status": "FAIL",
   "technical_execution": {
+    "status": "PASS",
     "input_validated": true,
     "original_module_origins_verified": true,
     "model_http_requests": 1,
@@ -31,58 +33,64 @@
     "usage_peak_estimate_cny": "0.063398",
     "actual_account_charge_cny": null
   },
-  "semantic_review": {
-    "stock_identity": "PASS",
-    "target_session_handling": "PASS_WITH_CONDITION",
-    "technical_data_consistency": "PASS",
-    "fundamental_data_consistency": "PASS",
-    "news_missingness_handling": "PASS_WITH_CONDITION",
-    "json_parse_and_structure": "PASS",
-    "universe_scope": "PASS",
-    "unsupported_external_fact_control": "PASS_WITH_CONDITION",
-    "overall": "PASS_WITH_CONDITIONS"
+  "deterministic_post_output_audit": {
+    "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1",
+    "replay_receipt": "docs/runtime/RUN023_POST_OUTPUT_SEMANTIC_GUARD_REPLAY.json",
+    "ci_workflow_run": 35033881836,
+    "ci_tests": "19/19 PASS",
+    "semantic_verdict": "NO_GO",
+    "block_findings": [
+      {
+        "code": "OPEN_GAP_DIRECTION_CONTRADICTION",
+        "paths": ["pattern_analysis", "context.today.open", "context.yesterday.close"]
+      },
+      {
+        "code": "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
+        "paths": ["news_result_count_known", "news_result_count"]
+      }
+    ],
+    "triggered_semantic_guards": ["SEM-001", "SEM-002", "SEM-003"],
+    "sem_conditions": [
+      {
+        "id": "SEM-001",
+        "required_contract": "When realtime_quote is missing, latest completed-session close must not be labeled or populated as live current price."
+      },
+      {
+        "id": "SEM-002",
+        "required_contract": "When native news context is missing, do not assert absence of adverse news/announcements."
+      },
+      {
+        "id": "SEM-003",
+        "required_contract": "When search_performed=false, do not add external company/index facts absent from frozen evidence."
+      }
+    ],
+    "other_findings": [
+      "PREFLIGHT_NEWS_NOT_DELIVERED_TO_NATIVE_INPUT",
+      "FINANCIAL_PERIOD_PRIMARY_LINEAGE_INCOMPLETE"
+    ]
   },
-  "conditions": [
-    {
-      "id": "SEM-001",
-      "severity": "medium",
-      "finding": "Realtime quote was explicitly missing, but the generated report repeatedly called the prior completed-session close 26.50 '现价' and populated dashboard.data_perspective.price_position.current_price=26.5.",
-      "required_contract": "When realtime_quote_missing, label the value as prior completed-session close / latest reusable daily close and do not present it as live current price."
-    },
-    {
-      "id": "SEM-002",
-      "severity": "medium",
-      "finding": "News context was missing, but one checklist item said '未见近3日利空公告'. The same report elsewhere correctly said news data was unavailable and major negatives could not be fully screened.",
-      "required_contract": "When news_context_missing, do not claim absence of negative news/announcements; state that major adverse events cannot be fully ruled out."
-    },
-    {
-      "id": "SEM-003",
-      "severity": "low",
-      "finding": "The report stated Xiaomi is one of the Hang Seng Tech Index constituents/weights, but that fact was not present in the frozen request evidence and search_performed=false.",
-      "required_contract": "Do not add external company/index facts that are absent from the frozen evidence when search_performed=false."
-    }
-  ],
   "non_findings": [
     "No stock identity mismatch",
     "No target-session roll-forward",
-    "No fabricated chip metrics",
-    "No fabricated realtime quote source",
     "No duplicate provider request",
     "No fallback model",
-    "No evidence of model/request/storage integrity failure"
+    "No model/request/storage integrity failure"
   ],
   "decision": {
     "repeat_model_request_permitted": false,
     "o_full_pool_permitted_by_this_receipt": false,
     "top3_permitted_by_this_receipt": false,
-    "g4_3_formal_credit": "PENDING_SEMANTIC_CONTRACT_FIX_OR_AUDITOR_ACCEPTANCE_OF_CONDITIONAL_PASS",
-    "next_action": "Implement deterministic semantic-output guards for SEM-001/002/003 and validate them against the preserved Child2 result; do not call the model again."
+    "g4_3_formal_credit": false,
+    "fixed_legacy_acceptance": "12/16",
+    "next_action": "Repair deterministic post-output contract handling for the two BLOCK findings and SEM-001/002/003, then replay the preserved Child2 bytes offline again. Do not call the model again."
   },
   "review_basis": {
     "private_raw_bundle_restored": true,
     "request_body_reviewed": true,
     "provider_response_reviewed": true,
     "original_result_reviewed": true,
-    "preflight_reviewed": true
+    "preflight_reviewed": true,
+    "private_raw_bundle_sha256": "768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
+    "raw_private_content_published": false
   }
 }
