@@ -1,0 +1,81 @@
+name: O frozen YFinance end-date boundary diagnostic
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/49-o-frozen-yfinance-boundary.yml
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Assert O disarmed and no model credential exposed
+        run: |
+          python - <<'PY'
+          import json,os
+          arm=json.load(open('research/docs/runtime/run012-private-native-arm.json'))
+          assert arm.get('armed') is False, 'O_MUST_REMAIN_DISARMED'
+          assert not os.environ.get('DEEPSEEK_API_KEY')
+          assert not os.environ.get('LLM_DEEPSEEK_API_KEY')
+          print('{"o_disarmed":true,"model_key_exposed":false,"model_requests":0}')
+          PY
+      - name: Install frozen runtime
+        run: python -m pip install -r research/requirements.txt
+      - name: Test frozen YFinance end-date boundary and public provider windows
+        env:
+          PYTHONPATH: original
+        run: |
+          python - <<'PY'
+          import json,sys,requests
+          from pathlib import Path
+          sys.path.insert(0,str(Path('original').resolve()))
+          from data_provider.yfinance_fetcher import YfinanceFetcher
+          f=YfinanceFetcher()
+          out={'model_requests':0,'frozen_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7','raw_prices_disclosed':False}
+          for label,end in [('end_target','2026-09-15'),('end_plus_one','2026-09-16')]:
+              try:
+                  raw=f._fetch_raw_data('hk01810','2026-07-01',end)
+                  norm=f._normalize_data(raw,'hk01810')
+                  dates=[]
+                  if 'date' in norm.columns:
+                      dates=[str(x)[:10] for x in norm['date'].tolist()]
+                  out[label]={'rows':len(norm),'latest_date':max(dates) if dates else None,'end_argument':end,'status':'ok'}
+              except Exception as exc:
+                  out[label]={'rows':0,'latest_date':None,'end_argument':end,'status':'failed','error_type':type(exc).__name__}
+          # Ticker.history period path used by the independent preflight.
+          try:
+              import yfinance as yf
+              h=yf.Ticker('1810.HK').history(period='6mo',auto_adjust=True,actions=True,timeout=20)
+              dates=[str(x)[:10] for x in h.index]
+              out['ticker_history_period']={'rows':len(h),'latest_date':max(dates) if dates else None,'status':'ok'}
+          except Exception as exc:
+              out['ticker_history_period']={'rows':0,'latest_date':None,'status':'failed','error_type':type(exc).__name__}
+          # Compare Tencent short vs long count without raw payload disclosure.
+          for bars in (5,180):
+              try:
+                  r=requests.get('https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get',params={'param':f'hk01810,day,,,{bars},qfq'},timeout=20)
+                  p=r.json(); rows=((p.get('data') or {}).get('hk01810') or {}).get('qfqday') or []
+                  dates=[str(x[0])[:10] for x in rows if isinstance(x,list) and x]
+                  out[f'tencent_{bars}']={'rows':len(rows),'latest_date':max(dates) if dates else None,'http_status':r.status_code,'status':'ok'}
+              except Exception as exc:
+                  out[f'tencent_{bars}']={'rows':0,'latest_date':None,'status':'failed','error_type':type(exc).__name__}
+          print(json.dumps(out,sort_keys=True))
+          PY
