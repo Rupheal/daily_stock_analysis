@@ -1,0 +1,43 @@
+{
+  "schema": "dsa-o-target-session-rule-freeze-v1",
+  "status": "FROZEN_MODEL_FREE",
+  "rule_version": "O_NATIVE_TARGET_SESSION_RULE_v1",
+  "market": "XHKG",
+  "timezone": "Asia/Hong_Kong",
+  "authoritative_definition": "latest XHKG session whose regular close is complete at evaluation_time_hkt",
+  "midnight_alone_advances_target": false,
+  "preopen_advances_target": false,
+  "intraday_advances_target": false,
+  "new_regular_close_advances_target": true,
+  "provider_boundary_is_target": false,
+  "yfinance_end_semantics": "exclusive; use target_session + 1 calendar day only as retrieval boundary",
+  "provider_lag_policy": "TARGET_DATA_NOT_MATURE; do not roll target backward",
+  "run_target_mutability": "immutable within controlled run",
+  "recovery_policy": "original target remains eligible only while latest_completed_session equals original target; after a newer completed session it expires and cannot silently roll forward",
+  "current_case": {
+    "evaluation_time_hkt": "2026-09-16T00:03:00+08:00",
+    "resolved_target_session": "2026-09-15",
+    "reason": "crossed calendar midnight but no new XHKG regular session had completed"
+  },
+  "files": [
+    "docs/runtime/O_NATIVE_TARGET_SESSION_RULE_v1.md",
+    "scripts/o_target_session_contract.py",
+    "tests/test_o_target_session_contract.py",
+    ".github/workflows/53-o-target-session-contract.yml"
+  ],
+  "model_http_requests": 0,
+  "deepseek_tokens": 0,
+  "deepseek_incremental_cost_cny": 0,
+  "ci": {
+    "first_run_id": 34993387353,
+    "target_session_tests": "PASS",
+    "target_session_test_count": 10,
+    "first_run_final_status": "FAIL_ONLY_IN_SELF_REFERENTIAL_NO_MODEL_STATIC_CHECK",
+    "static_check_logic_fixed_commit": "e42239724c98addb5b22f3d1572d375c371fd9ef"
+  },
+  "does_not_authorize_model_request": true,
+  "does_not_modify_main": true,
+  "does_not_modify_top3": true,
+  "does_not_modify_o_full_pool": true,
+  "does_not_modify_u": true
+}
