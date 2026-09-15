@@ -1,0 +1,72 @@
+name: O Run018 true-original input dry probe
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/64-run018-original-input-dry-probe.yml
+permissions:
+  contents: read
+jobs:
+  dry-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      ENV_FILE: /dev/null
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r research/requirements.txt
+      - name: Build fresh accepted preflight without model credentials
+        run: |
+          PYTHONPATH=research python research/scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/preflight.log
+          python - <<'PY'
+          import json
+          p=json.load(open('research/probe/preflight.json'))
+          assert p.get('passed') is True and p.get('prices_passed') is True and str(p.get('target'))=='2026-09-15'
+          print('{"fresh_preflight":true,"target":"2026-09-15","model_http_requests":0}')
+          PY
+      - name: Run true-original dry probe and stop before provider
+        run: |
+          PYTHONPATH=research/scripts python research/scripts/run_hk_original_input_dry_probe.py \
+            --checkout original \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --preflight research/probe/preflight.json \
+            --output /tmp/run018-original-dry \
+            --target-boundary-adapter
+      - name: Require frozen original module origins and zero model HTTP
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/run018-original-dry/dry-input-receipt.json'))
+          assert d['model_http_requests']==0
+          assert d['analyzer_under_frozen_checkout'] is True and d['main_under_frozen_checkout'] is True
+          assert d['reached_original_analyzer'] is True and d['input_validated'] is True
+          assert d['target']=='2026-09-15' and d['context_date']=='2026-09-15'
+          print(json.dumps(d,sort_keys=True))
+          PY
+      - name: Upload sanitized receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: run018-true-original-dry-${{ github.run_id }}
+          path: /tmp/run018-original-dry/dry-input-receipt.json
+          retention-days: 14
