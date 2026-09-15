@@ -4,14 +4,19 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - scripts/prepare_xiaomi_acceptance_targeted.py
+      - scripts/xiaomi_preflight_field_diagnostics.py
       - tests/test_prepare_xiaomi_acceptance_targeted.py
+      - tests/test_xiaomi_preflight_field_diagnostics.py
       - .github/workflows/54-o-fresh-preflight-target-integration.yml
 permissions:
   contents: read
+concurrency:
+  group: o-targeted-model-free-preflight
+  cancel-in-progress: false
 jobs:
   target-integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       TZ: Asia/Hong_Kong
       PYTHONUNBUFFERED: '1'
@@ -31,49 +36,60 @@ jobs:
           python-version: '3.11'
       - name: Install deterministic/runtime dependencies
         run: pip install -r research/requirements.txt pytest
-      - name: Unit-test target adapter and frozen target contract
+      - name: Unit-test unchanged target rule and field-only diagnostics
         working-directory: research
-        run: python -m pytest --noconftest -q tests/test_prepare_xiaomi_acceptance_targeted.py tests/test_o_target_session_contract.py
-      - name: Execute fresh Xiaomi preflight through frozen target adapter
+        run: python -m pytest --noconftest -q tests/test_prepare_xiaomi_acceptance_targeted.py tests/test_o_target_session_contract.py tests/test_xiaomi_preflight_field_diagnostics.py
+      - name: Strict fresh preflight without model credentials
+        id: preflight
+        continue-on-error: true
+        working-directory: research
+        run: python scripts/xiaomi_preflight_field_diagnostics.py > /tmp/strict-preflight-private.log 2>&1
+      - name: Preserve sanitized field receipt and relevant public source only
+        if: always()
         working-directory: research
         run: |
-          set +e
-          python scripts/prepare_xiaomi_acceptance_targeted.py --allow-partial-news > /tmp/targeted-preflight.log 2>&1
-          rc=$?
-          set -e
-          echo "$rc" > /tmp/targeted-preflight.rc
           python - <<'PY'
-          import json
-          from pathlib import Path
-          rc=int(Path('/tmp/targeted-preflight.rc').read_text().strip())
-          r=json.loads(Path('probe/target-session-receipt.json').read_text())
-          assert r['rule_version']=='O_NATIVE_TARGET_SESSION_RULE_v1'
-          assert r['target_session']
-          assert r['model_http_requests']==0
-          if rc == 0:
-              p=json.loads(Path('probe/preflight.json').read_text())
-              assert r['status']=='PREFLIGHT_COMPLETED_TARGET_MATCH'
-              assert r['target_match'] is True
-              assert p['target']==r['target_session']==r['preflight_target']
-              downstream='PASS'
+          import json, hashlib, pathlib, shutil, subprocess
+          root=pathlib.Path('.')
+          out=pathlib.Path('field-diagnostics');out.mkdir(exist_ok=True)
+          selected={'docs/DSA_NEXT_ACTIONS.json','scripts/prepare_xiaomi_acceptance.py','scripts/prepare_xiaomi_acceptance_targeted.py','scripts/xiaomi_preflight_field_diagnostics.py','scripts/o_target_session_contract.py','src/services/hk_volume_reconciliation.py','data_provider/tencent_fetcher.py','data_provider/base.py','tests/test_prepare_xiaomi_acceptance.py','tests/test_prepare_xiaomi_acceptance_targeted.py','tests/test_hk_volume_reconciliation.py','tests/test_o_target_session_contract.py','tests/test_xiaomi_preflight_field_diagnostics.py'}
+          tracked=subprocess.check_output(['git','ls-files'],text=True).splitlines()
+          for name in tracked:
+              low=name.lower()
+              if name.startswith(('docs/runtime/','.github/workflows/','config/')) and any(x in low for x in ('run018','run019','successor','zero-http','recovery','native-private','o-native','target-session','target-integration')):
+                  selected.add(name)
+          for name in sorted(selected):
+              p=root/name
+              if not p.is_file():continue
+              target=out/'public-source'/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(p,target)
+          (out/'source-index.json').write_text(json.dumps([n for n in tracked if n.startswith(('scripts/','docs/runtime/','config/','.github/workflows/')) and any(x in n.lower() for x in ('native','recovery','run018','run019','xiaomi','arm'))],indent=2))
+          receipt=out/'strict-preflight-fields.json'
+          if receipt.exists():
+              r=json.loads(receipt.read_text());print(json.dumps(r,ensure_ascii=False,allow_nan=False))
           else:
-              assert r['status']=='PREFLIGHT_FAILED_AFTER_TARGET_RESOLUTION'
-              assert r['preflight_target'] is None
-              downstream='FAIL_AFTER_TARGET_RESOLUTION'
-          print(json.dumps({'frozen_target_consumed':True,
-                            'target_session':r['target_session'],
-                            'rule_version':r['rule_version'],
-                            'downstream_preflight':downstream,
-                            'downstream_exit_code':rc,
-                            'failure_type':r.get('failure_type'),
-                            'failure_message':r.get('failure_message'),
-                            'model_requests':0}))
+              print('{"preflight_passed":false,"reason":"NO_FIELD_RECEIPT","model_http_requests":0}')
+          files={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()}
+          (out/'SHA256SUMS.json').write_text(json.dumps(files,indent=2))
           PY
-      - name: Confirm model-free job environment
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: o-strict-preflight-fields-${{ github.run_id }}
+          path: research/field-diagnostics/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce strict preflight outcome without confusing target-test success
+        if: always()
+        working-directory: research
         run: |
           python - <<'PY'
-          import os, json
-          risky=[k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
-          assert risky == [], risky
-          print(json.dumps({'model_credentials_exposed':False,'model_request_path_invoked':False}))
+          import os,json
+          from pathlib import Path
+          assert not [k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
+          p=Path('field-diagnostics/strict-preflight-fields.json')
+          assert p.exists(), 'NO_STRICT_PREFLIGHT_RECEIPT'
+          r=json.loads(p.read_text())
+          assert r['model_http_requests']==0
+          assert r['preflight_passed'] is True, r.get('failure_code') or 'STRICT_PREFLIGHT_FAILED'
+          print('{"strict_preflight":"PASS","model_requests":0,"O_native_acceptance":false}')
           PY
