@@ -31,3 +31,19 @@ def test_missing_field_and_all_failures_retained():
     r=inspect_frame(f,'synthetic')
     assert r['fields']['low']['status']=='MISSING_COLUMN'
     assert r['fields']['open']['invalid_count']==25 and len(r['fields']['open']['examples'])==20
+
+def test_explicit_boundary_probe_preserves_adjusted_and_raw_as_diagnostics_only():
+    from xiaomi_preflight_field_diagnostics import probe_yahoo_target_boundary
+    calls=[]
+    class Fake:
+        def history(self,**kw):
+            calls.append(kw)
+            f=frame(float('nan') if kw['auto_adjust'] else 10.0)
+            f=f.rename(columns={'date':'Date'}).set_index('Date')
+            return f
+    result=probe_yahoo_target_boundary('2026-09-15',lambda code:Fake())
+    assert len(calls)==2 and [v['auto_adjust'] for v in calls]==[False,True]
+    assert all(v['end']=='2026-09-16' and not v['repair'] and v['keepna'] for v in calls)
+    assert result[0]['frame']['fields']['open']['status']=='FINITE'
+    assert result[1]['frame']['fields']['open']['invalid_count']==1
+    assert all(v['diagnostic_only'] for v in result)
