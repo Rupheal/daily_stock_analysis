@@ -1,0 +1,71 @@
+name: O semantic handoff 003 offline acceptance
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_semantic_handoff_contract.py
+      - tests/test_o_semantic_handoff_contract.py
+      - tests/test_native_handoff_integration.py
+      - tests/native_source_loader.py
+      - .github/workflows/o-semantic-handoff-003-tests.yml
+permissions:
+  contents: read
+jobs:
+  offline-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      ENV_FILE: /dev/null
+      DSA_FROZEN_SOURCE_ROOT: ${{ github.workspace }}/original
+      PYTHONPATH: ${{ github.workspace }}/research/scripts:${{ github.workspace }}/research/tests
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install deterministic test dependencies only
+        run: pip install pytest pydantic
+      - name: Check frozen source and no model credentials
+        run: |
+          python - <<'PY'
+          import os,subprocess
+          assert not [k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
+          assert subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          PY
+      - name: Exercise opening facts count semantics and native handoff offline
+        working-directory: research
+        run: |
+          mkdir -p semantic-003-receipt
+          python -m pytest --noconftest -q tests/test_o_single_output_fact_check.py tests/test_o_semantic_handoff_contract.py tests/test_native_handoff_integration.py --junitxml=semantic-003-receipt/tests.xml
+      - name: Verify original files unchanged and save sanitized source manifest
+        if: always()
+        run: |
+          python - <<'PY'
+          import subprocess,pathlib,json,hashlib,xml.etree.ElementTree as ET
+          assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
+          out=pathlib.Path('research/semantic-003-receipt');out.mkdir(exist_ok=True)
+          paths=['scripts/o_semantic_handoff_contract.py','scripts/o_single_output_fact_check.py','scripts/run_hk_original_model_probe.py','tests/test_o_semantic_handoff_contract.py','tests/test_o_single_output_fact_check.py','tests/test_native_handoff_integration.py','tests/native_source_loader.py']
+          hashes={p:hashlib.sha256((pathlib.Path('research')/p).read_bytes()).hexdigest() for p in paths}
+          r={'scope':'bounded_offline_three_part_handoff','model_requests':0,'private_inputs_uploaded':False,'original_tracked_source_unchanged':True,'runtime_activated':False,'code_sha256':hashes}
+          xml=out/'tests.xml'
+          if xml.exists():
+              suites=ET.parse(xml).getroot().findall('testsuite');r['tests']=[x.attrib for x in suites]
+          (out/'CI_RECEIPT.json').write_text(json.dumps(r,indent=2))
+          print(json.dumps(r))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: o-semantic-handoff-003-offline-${{ github.run_id }}
+          path: research/semantic-003-receipt/
+          if-no-files-found: error
+          retention-days: 14
