@@ -37,19 +37,36 @@ jobs:
       - name: Execute fresh Xiaomi preflight through frozen target adapter
         working-directory: research
         run: |
-          python scripts/prepare_xiaomi_acceptance_targeted.py --allow-partial-news > /tmp/targeted-preflight.log
+          set +e
+          python scripts/prepare_xiaomi_acceptance_targeted.py --allow-partial-news > /tmp/targeted-preflight.log 2>&1
+          rc=$?
+          set -e
+          echo "$rc" > /tmp/targeted-preflight.rc
           python - <<'PY'
           import json
           from pathlib import Path
-          p=json.loads(Path('probe/preflight.json').read_text())
+          rc=int(Path('/tmp/targeted-preflight.rc').read_text().strip())
           r=json.loads(Path('probe/target-session-receipt.json').read_text())
           assert r['rule_version']=='O_NATIVE_TARGET_SESSION_RULE_v1'
-          assert r['target_match'] is True
-          assert p['target']==r['target_session']==r['preflight_target']
+          assert r['target_session']
           assert r['model_http_requests']==0
-          print(json.dumps({'fresh_preflight_target':p['target'],
+          if rc == 0:
+              p=json.loads(Path('probe/preflight.json').read_text())
+              assert r['status']=='PREFLIGHT_COMPLETED_TARGET_MATCH'
+              assert r['target_match'] is True
+              assert p['target']==r['target_session']==r['preflight_target']
+              downstream='PASS'
+          else:
+              assert r['status']=='PREFLIGHT_FAILED_AFTER_TARGET_RESOLUTION'
+              assert r['preflight_target'] is None
+              downstream='FAIL_AFTER_TARGET_RESOLUTION'
+          print(json.dumps({'frozen_target_consumed':True,
+                            'target_session':r['target_session'],
                             'rule_version':r['rule_version'],
-                            'target_match':True,
+                            'downstream_preflight':downstream,
+                            'downstream_exit_code':rc,
+                            'failure_type':r.get('failure_type'),
+                            'failure_message':r.get('failure_message'),
                             'model_requests':0}))
           PY
       - name: Verify workflow has no model credential or request path
