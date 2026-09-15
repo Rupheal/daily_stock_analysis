@@ -19,6 +19,7 @@ import httpx
 SCOPE = 'https://www.googleapis.com/auth/drive.file'
 API = 'https://www.googleapis.com/drive/v3'
 LIMIT = 4 * 1024 * 1024
+READ_ATTEMPTS = 3
 
 
 class StoreError(RuntimeError):
@@ -56,10 +57,25 @@ class DriveStore:
         self.folder = checked_id(folder)
 
     def request(self, method, url, **kw):
-        r = self.client.request(method, url, **kw)
-        if r.status_code not in (200, 201):
+        method = method.upper()
+        attempts = READ_ATTEMPTS if method == 'GET' else 1
+        for attempt in range(attempts):
+            try:
+                r = self.client.request(method, url, **kw)
+            except httpx.TransportError:
+                if method != 'GET':
+                    raise StoreError('DRIVE_WRITE_TRANSPORT_AMBIGUOUS') from None
+                if attempt + 1 >= attempts:
+                    raise StoreError('DRIVE_GET_TRANSPORT_FAILED') from None
+                time.sleep(0.2 * (attempt + 1))
+                continue
+            if r.status_code in (200, 201):
+                return r
+            if method == 'GET' and r.status_code >= 500 and attempt + 1 < attempts:
+                time.sleep(0.2 * (attempt + 1))
+                continue
             raise StoreError('DRIVE_HTTP_' + str(r.status_code))
-        return r
+        raise StoreError('DRIVE_GET_TRANSPORT_FAILED')
 
     def assert_absent(self, artifact_id):
         checked_id(artifact_id)
@@ -71,12 +87,7 @@ class DriveStore:
             raise StoreError('NATIVE_ARTIFACT_EXISTS_NO_REPEAT_MODEL')
 
     def reserve_native_call(self, artifact_id, run_id, preflight_sha256, execution_id):
-        """Durable call intent under the existing single-writer serialization.
-
-        A claim is never an accepted model report. An existing claim always
-        requires reconciliation, even if the final artifact was not saved.
-        No automatic deletion, override, or exactly-once-provider claim.
-        """
+        """Durable call intent under the existing single-writer serialization."""
         checked_id(artifact_id); checked_id(run_id); checked_id(execution_id)
         claim_id = checked_id(artifact_id + '-CLAIM')
         if not re.fullmatch(r'[0-9a-f]{64}', preflight_sha256):
@@ -84,12 +95,11 @@ class DriveStore:
         self.assert_absent(artifact_id)
         self.assert_absent(claim_id)
         data = json.dumps({
-            'schema': 'dsa-native-call-intent-v1',
-            'run_id': run_id, 'native_artifact_id': artifact_id,
-            'execution_id': execution_id, 'preflight_sha256': preflight_sha256,
+            'schema': 'dsa-native-call-intent-v1', 'run_id': run_id,
+            'native_artifact_id': artifact_id, 'execution_id': execution_id,
+            'preflight_sha256': preflight_sha256,
             'upstream_commit': '089d9d26d68f8b839ea5a74a3784e4402925f8b7',
-            'state': 'RESERVED_RECONCILE_BEFORE_ANY_REPEAT',
-            'model_acceptance': False,
+            'state': 'RESERVED_RECONCILE_BEFORE_ANY_REPEAT', 'model_acceptance': False,
         }, sort_keys=True).encode()
         receipt = self.put(claim_id, data, run_id)
         if receipt.get('idempotent_reuse'):
@@ -112,13 +122,7 @@ class DriveStore:
         return m
 
     def stable_private_meta(self, file_id, attempts=6, pause=0.25):
-        """Require a freshly written Drive file version to settle before readback.
-
-        This does not relax the version gate: two consecutive metadata reads must
-        report the same numeric version before media is read, and the post-read
-        version must still match. It only avoids treating provider-side metadata
-        propagation immediately after create as a content-integrity failure.
-        """
+        """Require a freshly written Drive file version to settle before readback."""
         previous = self.private_meta(file_id)
         version = previous.get('version')
         if not isinstance(version, str) or not version.isdigit():
@@ -135,23 +139,32 @@ class DriveStore:
             version = current_version
         raise StoreError('READBACK_VERSION_NOT_STABLE')
 
+    def _read_media(self, file_id):
+        for attempt in range(READ_ATTEMPTS):
+            parts = []
+            total = 0
+            try:
+                with self.client.stream('GET', API + '/files/' + checked_id(file_id), params={'alt': 'media'}) as response:
+                    if response.status_code != 200:
+                        if response.status_code >= 500 and attempt + 1 < READ_ATTEMPTS:
+                            time.sleep(0.2 * (attempt + 1)); continue
+                        raise StoreError('DRIVE_HTTP_' + str(response.status_code))
+                    for part in response.iter_bytes(chunk_size=64 * 1024):
+                        total += len(part)
+                        if total > LIMIT:
+                            raise StoreError('READBACK_TOO_LARGE')
+                        parts.append(part)
+                return b''.join(parts)
+            except httpx.TransportError:
+                if attempt + 1 >= READ_ATTEMPTS:
+                    raise StoreError('DRIVE_MEDIA_TRANSPORT_FAILED') from None
+                time.sleep(0.2 * (attempt + 1))
+        raise StoreError('DRIVE_MEDIA_TRANSPORT_FAILED')
+
     def recover(self, file_id, expected, out):
         before = self.stable_private_meta(file_id)
-        # Bound streamed bytes before allocation; a compressed response can expand.
-        parts = []
-        total = 0
-        with self.client.stream('GET', API + '/files/' + checked_id(file_id), params={'alt': 'media'}) as response:
-            if response.status_code != 200:
-                raise StoreError('DRIVE_HTTP_' + str(response.status_code))
-            for part in response.iter_bytes(chunk_size=64 * 1024):
-                total += len(part)
-                if total > LIMIT:
-                    raise StoreError('READBACK_TOO_LARGE')
-                parts.append(part)
-        data = b''.join(parts)
+        data = self._read_media(file_id)
         after = self.private_meta(file_id)
-        # Byte integrity is the hard content gate. Provider version stability is
-        # a distinct concurrency/metadata gate and must never mask a hash failure.
         if digest(data) != expected:
             raise StoreError('READBACK_HASH_MISMATCH')
         if before.get('version') != after.get('version'):
@@ -178,8 +191,6 @@ class DriveStore:
                 raise StoreError('APPEND_ONLY_CONFLICT')
             file_id = found[0]['id']
         else:
-            # No automatic POST retry: ambiguous transport failures are reconciled
-            # by a new serialized invocation's artifact-id lookup.
             boundary = 'dsa_' + uuid.uuid4().hex
             meta = {'name': artifact_id + '.bin', 'mimeType': 'application/octet-stream',
                     'parents': [self.folder], 'appProperties': {'artifact_id': artifact_id, 'sha256': sha, 'run_id': run_id}}
@@ -214,12 +225,10 @@ def main():
         if a.receipt.exists():
             raise StoreError('RECEIPT_ALREADY_EXISTS')
         with httpx.Client(timeout=30, follow_redirects=False) as c:
-            token = scoped_token(c)
-            c.headers['Authorization'] = 'Bearer ' + token
+            token = scoped_token(c); c.headers['Authorization'] = 'Bearer ' + token
             receipt = DriveStore(c, os.environ.get('DSA_DRIVE_FOLDER_ID', '')).put(a.artifact_id, a.source.read_bytes(), a.run_id)
         a.receipt.parent.mkdir(parents=True, exist_ok=True)
-        with a.receipt.open('x') as f:
-            json.dump(receipt, f, indent=2)
+        with a.receipt.open('x') as f: json.dump(receipt, f, indent=2)
         print(json.dumps({'status': 'SAVE_READ_HASH_RESTORE_PASS', 'model_requests': 0}))
     except Exception as e:
         print(json.dumps({'status': 'FAILED', 'reason': str(e) if isinstance(e, StoreError) else type(e).__name__}))
