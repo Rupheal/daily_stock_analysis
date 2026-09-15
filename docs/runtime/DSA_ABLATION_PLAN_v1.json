@@ -1,0 +1,34 @@
+{
+  "schema": "dsa-ablation-plan-v1",
+  "status": "FROZEN_DESIGN_ONLY",
+  "frozen_by_run": "TRI-DSA-EXEC-20260915-015",
+  "champion": {
+    "id": "A0",
+    "role": "CHAMPION",
+    "mutable": false
+  },
+  "challengers": [
+    {"id": "A3_NO_VOLATILITY", "role": "CHALLENGER", "change": "remove volatility factor only"},
+    {"id": "NO_MACRO", "role": "FUTURE_ABLATION", "change": "remove macro block only"},
+    {"id": "NO_CAPITAL_TIDE", "role": "FUTURE_ABLATION", "change": "remove capital-tide block only"}
+  ],
+  "evaluation_horizons_trading_days": [1, 3, 5, 10, 20],
+  "minimum_governance": [
+    "All compared variants must share the same pre-outcome anchor and frozen universe.",
+    "No rule or factor may be changed after observing future outcomes for the anchor.",
+    "A3 or any Challenger may not overwrite or reinterpret A0 Champion.",
+    "WAIT, failures, isolated members and missing labels remain in the denominator.",
+    "No factor superiority claim is permitted before genuine OOS samples mature in sufficient quantity.",
+    "Run008 research remains frozen and is not re-scored by this plan."
+  ],
+  "metrics_when_mature": [
+    "Top3_return",
+    "Top10_return",
+    "hit_rate",
+    "rank_information_coefficient_if_defined",
+    "drawdown",
+    "turnover_if_trade_contract_defined",
+    "coverage_and_failure_rate"
+  ],
+  "current_effectiveness_conclusion": "N/A"
+}
