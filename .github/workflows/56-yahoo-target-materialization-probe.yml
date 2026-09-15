@@ -1,0 +1,59 @@
+name: Yahoo target OHLC materialization model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/56-yahoo-target-materialization-probe.yml
+permissions:
+  contents: read
+jobs:
+  yahoo-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TZ: Asia/Hong_Kong
+    steps:
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install bounded dependencies
+        run: pip install yfinance pandas
+      - name: Probe completed target session without model credentials
+        run: |
+          python - <<'PY'
+          import json, math, os
+          import pandas as pd
+          import yfinance as yf
+          target='2026-09-15'
+          start='2026-02-27'
+          end='2026-09-16'
+          out={}
+          for name,kwargs in {
+              'adjusted_default':dict(auto_adjust=True,actions=True),
+              'adjusted_repair':dict(auto_adjust=True,actions=True,repair=True),
+              'raw_default':dict(auto_adjust=False,actions=True),
+              'raw_repair':dict(auto_adjust=False,actions=True,repair=True),
+          }.items():
+              try:
+                  h=yf.Ticker('1810.HK').history(start=start,end=end,timeout=20,**kwargs)
+                  if h.empty:
+                      out[name]={'empty':True}; continue
+                  r=h.reset_index(); r.columns=[str(c).lower() for c in r.columns]
+                  r['date']=pd.to_datetime(r['date']).dt.strftime('%Y-%m-%d')
+                  row=r[r['date']==target]
+                  if row.empty:
+                      out[name]={'empty':False,'target_present':False,'last_session':str(r.iloc[-1]['date'])}; continue
+                  d=row.iloc[-1].to_dict()
+                  fields={}
+                  for f in ('open','high','low','close','adj close','volume','dividends','stock splits'):
+                      if f in d:
+                          v=d[f]
+                          try: finite=math.isfinite(float(v))
+                          except Exception: finite=False
+                          fields[f]={'finite':finite,'value':None if not finite else float(v)}
+                  out[name]={'empty':False,'target_present':True,'fields':fields}
+              except Exception as exc:
+                  out[name]={'error_type':type(exc).__name__,'error':str(exc)[:160]}
+          assert not [k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
+          print(json.dumps({'target':target,'modes':out,'model_requests':0},sort_keys=True))
+          PY
