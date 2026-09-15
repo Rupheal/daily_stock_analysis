@@ -22,7 +22,7 @@ def test_helpers_are_strict_for_hk_and_dates():
     assert not _is_hk_ticker_request((), {'tickers': 'AAPL'})
 
 
-def test_adapter_shifts_only_target_hk_end_and_enables_repair(monkeypatch):
+def test_adapter_shifts_target_hk_end_and_enables_repair(monkeypatch):
     import yfinance as yf
 
     calls = []
@@ -39,9 +39,32 @@ def test_adapter_shifts_only_target_hk_end_and_enables_repair(monkeypatch):
     assert calls[-1][1]['end'] == '2026-09-16'
     assert calls[-1][1]['repair'] is True
     assert applied['count'] == 1
+    assert applied['boundary_shift_count'] == 1
+    assert applied['repair_enable_count'] == 1
 
 
-def test_adapter_does_not_shift_non_target_or_non_hk(monkeypatch):
+def test_adapter_repairs_already_shifted_target_plus_one_without_extending_again(monkeypatch):
+    import yfinance as yf
+
+    calls = []
+    sentinel = object()
+
+    def fake_download(*args, **kwargs):
+        calls.append((args, dict(kwargs)))
+        return sentinel
+
+    monkeypatch.setattr(yf, 'download', fake_download)
+    with patched_yahoo_target_boundary('2026-09-15') as applied:
+        result = yf.download(tickers='1810.HK', start='2026-01-01', end='2026-09-16', auto_adjust=True)
+    assert result is sentinel
+    assert calls[-1][1]['end'] == '2026-09-16'
+    assert calls[-1][1]['repair'] is True
+    assert applied['count'] == 1
+    assert applied['boundary_shift_count'] == 0
+    assert applied['repair_enable_count'] == 1
+
+
+def test_adapter_does_not_shift_or_repair_non_target_or_non_hk(monkeypatch):
     import yfinance as yf
 
     calls = []
@@ -53,6 +76,8 @@ def test_adapter_does_not_shift_non_target_or_non_hk(monkeypatch):
     with patched_yahoo_target_boundary('2026-09-15') as applied:
         yf.download(tickers='AAPL', start='2026-01-01', end='2026-09-15', auto_adjust=True)
         yf.download(tickers='1810.HK', start='2026-01-01', end='2026-09-14', auto_adjust=True)
+        yf.download(tickers='1810.HK', start='2026-01-01', end='2026-09-17', auto_adjust=True)
     assert calls[0][1]['end'] == '2026-09-15' and 'repair' not in calls[0][1]
     assert calls[1][1]['end'] == '2026-09-14' and 'repair' not in calls[1][1]
+    assert calls[2][1]['end'] == '2026-09-17' and 'repair' not in calls[2][1]
     assert applied['count'] == 0
