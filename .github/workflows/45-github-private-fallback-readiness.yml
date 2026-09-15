@@ -1,0 +1,58 @@
+name: DSA private GitHub fallback readiness
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/45-github-private-fallback-readiness.yml
+permissions:
+  contents: read
+jobs:
+  verify-fallback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install httpx
+      - name: Credential gate; zero model requests
+        run: |
+          python - <<'PY'
+          import json, os
+          state={
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-001',
+            'evidence_credential_present':bool(os.environ.get('DSA_EVIDENCE_TOKEN')),
+            'model_requests':0,
+            'balance_checked':False,
+            'native_acceptance':False,
+          }
+          print(json.dumps(state))
+          if not state['evidence_credential_present']:
+              raise SystemExit('DSA_EVIDENCE_TOKEN_MISSING')
+          PY
+      - name: Synthetic private save/read/hash roundtrip
+        run: |
+          python - <<'PY'
+          import json, time
+          from pathlib import Path
+          p=Path('/tmp/dsa-github-fallback-probe.json')
+          p.write_text(json.dumps({
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-001',
+            'classification':'synthetic_no_model_content',
+            'purpose':'verify public runner to private TRIDENT fallback storage',
+            'contains_secrets':False,
+            'contains_raw_model_content':False,
+            'nonce':str(time.time_ns()),
+          },sort_keys=True)+'\n')
+          PY
+          python scripts/dsa_private_github_store.py \
+            --source /tmp/dsa-github-fallback-probe.json \
+            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-STORAGE-FALLBACK-20260915-001-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+            --repository Rupheal/TRIDENT-Foundation \
+            --branch research/dsa-private-evidence-20260914 \
+            --commit-prefix 'evidence(dsa): verify private GitHub fallback'
