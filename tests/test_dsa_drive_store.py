@@ -14,6 +14,7 @@ class Fake:
     def __init__(self):
         self.data = b''; self.props = {}; self.posts = 0
         self.public = False; self.corrupt = False; self.duplicate = False
+        self.file_versions = []
 
     def handle(self, r):
         if r.method == 'POST':
@@ -30,7 +31,10 @@ class Fake:
             found = [{'id': 'saved', 'appProperties': self.props}] if self.posts else []
             return httpx.Response(200, json={'files': found * (2 if self.duplicate else 1)})
         folder = r.url.path.endswith('/folder')
-        return httpx.Response(200, json={'id': 'folder' if folder else 'saved', 'version': '1',
+        version = '1'
+        if not folder and self.file_versions:
+            version = self.file_versions.pop(0)
+        return httpx.Response(200, json={'id': 'folder' if folder else 'saved', 'version': version,
             'parents': [] if folder else ['folder'],
             'mimeType': 'application/vnd.google-apps.folder' if folder else 'application/octet-stream',
             'capabilities': {'canShare': True, 'canAddChildren': True},
@@ -51,6 +55,17 @@ def test_bytes_and_idempotence(store):
     assert r['sha256'] == digest(data) and r['save_read_hash_restore']
     assert s.put('ART-1', data, 'RUN-1')['idempotent_reuse']
     assert f.posts == 1
+
+
+def test_fresh_version_can_settle_without_relaxing_post_read_gate(store, monkeypatch):
+    s, f = store
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    # First metadata read sees provider version 1; the next sees 2 and then it
+    # stabilizes at 2. Media read is accepted only if the post-read version is 2.
+    f.file_versions = ['1', '2', '2', '2']
+    r = s.put('ART-1', b'original', 'RUN-1')
+    assert r['version'] == '2'
+    assert r['save_read_hash_restore'] is True
 
 
 def test_conflict_not_overwritten(store):
