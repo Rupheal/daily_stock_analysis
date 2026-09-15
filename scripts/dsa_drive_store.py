@@ -108,7 +108,7 @@ class DriveStore:
 
     def private_meta(self, file_id, folder=False):
         m = self.request('GET', API + '/files/' + checked_id(file_id), params={
-            'fields': 'id,mimeType,parents,trashed,version,size,capabilities(canShare,canAddChildren),permissions(type,role),appProperties'
+            'fields': 'id,mimeType,parents,trashed,version,headRevisionId,size,capabilities(canShare,canAddChildren),permissions(type,role),appProperties'
         }).json()
         perms = m.get('permissions')
         if (m.get('trashed') or not m.get('capabilities', {}).get('canShare')
@@ -121,23 +121,27 @@ class DriveStore:
             raise StoreError('FILE_LOCATION_OR_FORMAT_INVALID')
         return m
 
-    def stable_private_meta(self, file_id, attempts=6, pause=0.25):
-        """Require a freshly written Drive file version to settle before readback."""
-        previous = self.private_meta(file_id)
-        version = previous.get('version')
-        if not isinstance(version, str) or not version.isdigit():
-            raise StoreError('READBACK_VERSION_UNVERIFIED')
-        for _ in range(attempts):
-            time.sleep(pause)
+    def stable_content_meta(self, file_id, attempts=6, pause=0.25):
+        """Require the blob content revision id to exist and settle before readback.
+
+        Google Drive ``version`` advances on every server-side file change,
+        including metadata-only changes. ``headRevisionId`` identifies the
+        current blob content revision, so content integrity is gated on it while
+        ``version`` remains audit metadata only.
+        """
+        previous_revision = None
+        for attempt in range(attempts):
             current = self.private_meta(file_id)
-            current_version = current.get('version')
-            if not isinstance(current_version, str) or not current_version.isdigit():
-                raise StoreError('READBACK_VERSION_UNVERIFIED')
-            if current_version == version:
-                return current
-            previous = current
-            version = current_version
-        raise StoreError('READBACK_VERSION_NOT_STABLE')
+            revision = current.get('headRevisionId')
+            if isinstance(revision, str) and revision:
+                if revision == previous_revision:
+                    return current
+                previous_revision = revision
+            elif attempt + 1 >= attempts:
+                raise StoreError('READBACK_HEAD_REVISION_UNVERIFIED')
+            if attempt + 1 < attempts:
+                time.sleep(pause)
+        raise StoreError('READBACK_HEAD_REVISION_NOT_STABLE')
 
     def _read_media(self, file_id):
         for attempt in range(READ_ATTEMPTS):
@@ -162,13 +166,17 @@ class DriveStore:
         raise StoreError('DRIVE_MEDIA_TRANSPORT_FAILED')
 
     def recover(self, file_id, expected, out):
-        before = self.stable_private_meta(file_id)
+        before = self.stable_content_meta(file_id)
         data = self._read_media(file_id)
         after = self.private_meta(file_id)
+        # Byte integrity remains the first and hardest content gate.
         if digest(data) != expected:
             raise StoreError('READBACK_HASH_MISMATCH')
-        if before.get('version') != after.get('version'):
-            raise StoreError('READBACK_VERSION_CHANGED')
+        after_revision = after.get('headRevisionId')
+        if not isinstance(after_revision, str) or not after_revision:
+            raise StoreError('READBACK_HEAD_REVISION_UNVERIFIED')
+        if before.get('headRevisionId') != after_revision:
+            raise StoreError('READBACK_CONTENT_REVISION_CHANGED')
         with Path(out).open('xb') as f:
             f.write(data)
         return after
@@ -191,6 +199,8 @@ class DriveStore:
                 raise StoreError('APPEND_ONLY_CONFLICT')
             file_id = found[0]['id']
         else:
+            # No automatic POST retry: an ambiguous write transport requires a
+            # later serialized artifact-id lookup before any new write/model call.
             boundary = 'dsa_' + uuid.uuid4().hex
             meta = {'name': artifact_id + '.bin', 'mimeType': 'application/octet-stream',
                     'parents': [self.folder], 'appProperties': {'artifact_id': artifact_id, 'sha256': sha, 'run_id': run_id}}
@@ -207,7 +217,8 @@ class DriveStore:
             if restored.read_bytes() != data:
                 raise StoreError('RESTORE_BYTES_MISMATCH')
         return {'artifact_id': artifact_id, 'run_id': run_id, 'file_id': file_id,
-                'version': m.get('version'), 'sha256': sha, 'bytes': len(data),
+                'version': m.get('version'), 'head_revision_id': m.get('headRevisionId'),
+                'sha256': sha, 'bytes': len(data),
                 'role': 'canonical_new_raw_evidence', 'verified_at': datetime.now(timezone.utc).isoformat(),
                 'idempotent_reuse': bool(found), 'save_read_hash_restore': True}
 
