@@ -1,0 +1,57 @@
+name: O Run018 original namespace proof model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/63-run018-original-namespace-proof.yml
+permissions:
+  contents: read
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      ENV_FILE: /dev/null
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install original runtime dependencies
+        run: pip install -r research/requirements.txt
+      - name: Prove observer import does not preload research src and original modules resolve under frozen checkout
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          root=Path.cwd(); research=(root/'research').resolve(); original=(root/'original').resolve()
+          sys.path.insert(0,str(research/'scripts'))
+          import o_native_input_contract
+          polluted=[n for n in sys.modules if n=='src' or n.startswith('src.') or n=='data_provider' or n.startswith('data_provider.')]
+          assert not polluted, 'OBSERVER_PRELOADED_NATIVE_NAMESPACE:'+','.join(polluted[:8])
+          os.chdir(original); sys.path.insert(0,str(original))
+          import src.analyzer, main, data_provider.base
+          def inside(module):
+              p=Path(module.__file__).resolve(); p.relative_to(original); return str(p.relative_to(original))
+          out={'model_http_requests':0,'observer_namespace_clean':True,'src_analyzer':inside(src.analyzer),'main':inside(main),'data_provider_base':inside(data_provider.base),'frozen_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7'}
+          print(json.dumps(out,sort_keys=True))
+          PY
+      - name: Verify no model credential or completion request path
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('research/.github/workflows/63-run018-original-namespace-proof.yml').read_text().lower()
+          assert 'deepseek_api_key' not in text and 'chat/completions' not in text
+          print('{"model_request_path_present":false}')
+          PY
