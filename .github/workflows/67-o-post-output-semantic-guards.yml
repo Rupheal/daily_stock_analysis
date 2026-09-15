@@ -1,0 +1,33 @@
+name: O post-output semantic guards model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_single_output_fact_check.py
+      - tests/test_o_single_output_fact_check.py
+      - .github/workflows/67-o-post-output-semantic-guards.yml
+permissions:
+  contents: read
+jobs:
+  semantic-guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install pytest only
+        run: pip install pytest
+      - name: Run deterministic saved-output guard regressions
+        run: python -m pytest --noconftest -q tests/test_o_single_output_fact_check.py
+      - name: Confirm model-free workflow
+        run: |
+          python - <<'PY'
+          import os
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k]
+          assert not forbidden, forbidden
+          print('{"model_credentials_present":false,"model_requests":0}')
+          PY
