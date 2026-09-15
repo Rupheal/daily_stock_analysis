@@ -80,6 +80,44 @@ jobs:
                                  downloaded_bytes=(len(r.content) if r.status_code==200 else None))
                   print(json.dumps(out,sort_keys=True))
           PY
+      - name: Verify no native artifact or unreconciled claim exists
+        if: steps.configuration.outputs.ready == 'true'
+        env:
+          DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+          DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+          DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+          DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+        run: |
+          PYTHONPATH=scripts python - <<'PY'
+          import json,os,httpx
+          from dsa_drive_store import DriveStore,scoped_token
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c)
+              store=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              store.assert_absent('ART-DSA-RUN013-NATIVE')
+              store.assert_absent('ART-DSA-RUN013-NATIVE-CLAIM')
+          print(json.dumps({'native_artifact_absent':True,'native_claim_absent':True,'model_requests':0}))
+          PY
+      - name: Read DeepSeek balance gate without model request
+        if: steps.configuration.outputs.ready == 'true'
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          import json,os
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']
+          total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          out={'balance_readable':True,'currency':'CNY','single_stock_cap_cny':'2',
+               'single_stock_affordable':bool(raw.get('is_available') and total>=Decimal('2')),
+               'model_requests':0}
+          print(json.dumps(out))
+          if not out['single_stock_affordable']:
+              raise SystemExit('CURRENT_BALANCE_NOT_SUFFICIENT_FOR_SINGLE_STOCK_CAP')
+          PY
       - name: Fresh unique runner save, independent read and restore
         if: steps.configuration.outputs.ready == 'true'
         env:
