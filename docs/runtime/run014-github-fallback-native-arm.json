@@ -1,8 +1,8 @@
 {
   "schema": "dsa-private-native-arm-v1",
   "run_id": "TRI-DSA-EXEC-20260915-014-GHFB",
-  "armed": true,
-  "reason": "Rearmed for one bounded O-native Xiaomi acceptance call after zero-model run 34940214498 passed store regression, real private save/read/hash, and the unchanged strict Xiaomi preflight. Prior run 34939976970 failed before call-intent/model request and the durable call-intent path remains absent.",
+  "armed": false,
+  "reason": "Disarmed after Actions run 34940400843 failed closed at Xiaomi preflight before call-intent/model request. Root cause isolated to repository working-directory/relative-path resolution, not relaxed data criteria. Fix path resolution and revalidate zero-model before any future re-arm.",
   "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
   "target_private_repository": "Rupheal/TRIDENT-Foundation",
   "target_private_branch": "research/dsa-private-evidence-20260914",
@@ -10,7 +10,7 @@
   "fallback_preflight_run_id": 34939084715,
   "readback_fix_validation_run_id": 34939823825,
   "strict_xiaomi_preflight_validation_run_id": 34940214498,
-  "prior_failed_data_gate_run_id": 34939976970,
+  "failed_path_resolution_run_id": 34940400843,
   "max_model_requests": 1,
   "single_stock_cap_cny": 2
 }
