@@ -1,25 +1,40 @@
 {
   "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
   "record_type": "CURRENT_EXECUTION_POINTER_NOT_A_NEW_AUTHORIZATION",
-  "asof_utc": "2026-09-15T17:42:00+00:00",
-  "state": "STRICT_PREFLIGHT_AND_TRUE_ORIGINAL_INPUT_PASS_RECONCILED_CHILD2_IN_PROGRESS",
+  "state": "CHILD2_TECHNICAL_PASS_SEMANTIC_PASS_WITH_CONDITIONS",
   "target_session": "2026-09-15",
   "bounded_pass_receipts": {
     "strict_preflight": 34996864782,
     "native_exact_session_coverage_one_of_one": 34999985334,
     "actual_frozen_module_origins": 35001349747,
-    "true_original_analyzer_input_only": 35001171210
+    "true_original_analyzer_input_only": 35001171210,
+    "child2_successor": 35002627787
   },
-  "historical_failures_not_current": ["Yahoo raw Close/Adj Close NaN propagated by auto_adjust", "native end already target+1 branch skipped adapter", "research src namespace cached before frozen checkout"],
-  "failed_child1": {"workflow_run": 35000310127, "actual_model_http_requests": 0, "private_child_and_claim_preserved": true, "reconciliation": "docs/runtime/PREFLIGHT_FIELDS_20260916_001_CHILD_RECONCILIATION.json"},
-  "child2_first_workflow": {"workflow_run": 35002235196, "failed_step": "Deterministic namespace recovery adapter and contract tests", "failure": "tests/test_run_hk_original_model_probe_imports.py missing", "model_step": "SKIPPED", "child2_claim_step": "SKIPPED", "missing_test_source_added_commit": "9c41449809c02c7ba75c1919331c3a42737c3e80", "test_not_removed_or_bypassed": true},
-  "active_existing_successor": {"workflow_run": 35002627787, "head_commit": "c75c8496410cd33a151d659add7c83ce92bdd1cd", "artifact_id": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2", "status_at_last_observation": "in_progress", "actual_provider_http_requests": "PENDING_RECEIPT"},
-  "remaining_scope": "Existing global maximum one actual successor HTTP request; no extra authorization or request allocation. Reconcile all prior children and pending intents, preserve immutable evidence, then use the original remaining slot only after fresh gates. Do not duplicate an active workflow.",
-  "o_single_stock_accepted": false,
-  "native_news_context_in_dry_probe": "absent; do not fill from U or conceal in semantic review",
-  "issuer_preflight_scope": "listing_passed_body_incomplete, not full announcement-body validation",
+  "historical_failures_not_current": [
+    "Yahoo raw Close/Adj Close NaN propagated by auto_adjust",
+    "native end already target+1 branch skipped adapter",
+    "research src namespace cached before frozen checkout"
+  ],
+  "child2": {
+    "workflow_run": 35002627787,
+    "artifact_id": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2",
+    "model_http_requests": 1,
+    "input_validated": true,
+    "request_status": "response_received",
+    "native_process_exit_code": 0,
+    "private_child_saved_read_hashed_restored": true,
+    "raw_request_response_result_present": true,
+    "semantic_status": "PASS_WITH_CONDITIONS",
+    "semantic_receipt": "docs/runtime/O_SINGLE_NATIVE_ACCEPTANCE.json"
+  },
+  "semantic_conditions": ["SEM-001 previous-close mislabeled as current price when realtime quote missing", "SEM-002 missing-news context still used '未见近3日利空公告' in one checklist item", "SEM-003 unsupported Hang Seng Tech constituent/weight statement while search_performed=false"],
+  "o_single_stock_acceptance": "PASS_WITH_CONDITIONS",
+  "g4_3_formal_credit": "PENDING_SEMANTIC_CONTRACT_FIX_OR_AUDITOR_ACCEPTANCE_OF_CONDITIONAL_PASS",
+  "provider_request_slot_remaining": 0,
+  "repeat_model_request_permitted": false,
   "runtime_activated": false,
+  "real_orders": 0,
   "schedules_changed": false,
   "main_merged": false,
-  "next": "Read current child2 job and private result, then reconcile request count and perform scoped semantic review. Update this pointer with actual outcome; earlier failures remain in Git history and linked receipts."
+  "next": "Implement deterministic semantic-output guards for SEM-001/002/003 and replay them against preserved Child2 output only. Do not call the model again."
 }
