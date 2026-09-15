@@ -1,0 +1,79 @@
+name: O repaired frozen-target preflight final model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/57-o-repaired-target-preflight-final.yml
+permissions:
+  contents: read
+jobs:
+  repaired-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
+      ENV_FILE: /dev/null
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install frozen runtime dependencies including yfinance repair support
+        run: pip install -r requirements.txt pytest httpx
+      - name: Deterministic target and adapter regressions
+        run: python -m pytest --noconftest -q tests/test_prepare_xiaomi_acceptance_targeted.py tests/test_o_target_session_contract.py tests/test_hk_volume_reconciliation.py tests/test_xiaomi_preflight_field_diagnostics.py
+      - name: Execute strict repaired preflight without model credentials
+        id: strict
+        continue-on-error: true
+        run: python scripts/xiaomi_preflight_field_diagnostics.py > /tmp/repaired-preflight-private.log 2>&1
+      - name: Publish sanitized acceptance receipt
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          assert not [k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
+          p=Path('field-diagnostics/strict-preflight-fields.json')
+          assert p.exists(), 'NO_STRICT_PREFLIGHT_RECEIPT'
+          r=json.loads(p.read_text())
+          t=r.get('target_receipt') or {}
+          safe={
+            'preflight_passed':r.get('preflight_passed'),
+            'failure_type':r.get('failure_type'),
+            'failure_code':r.get('failure_code'),
+            'target_session':r.get('target_session'),
+            'components':r.get('components'),
+            'target_match':t.get('target_match'),
+            'target_status':t.get('status'),
+            'yahoo_repair_enabled':t.get('yahoo_repair_enabled'),
+            'yahoo_retrieval_boundary':t.get('yahoo_retrieval_boundary'),
+            'model_http_requests':r.get('model_http_requests'),
+            'request_authorized':r.get('request_authorized'),
+            'thresholds_unchanged':r.get('thresholds_unchanged'),
+            'data_rows_dropped':r.get('data_rows_dropped')
+          }
+          Path('repaired-preflight-sanitized.json').write_text(json.dumps(safe,indent=2))
+          print(json.dumps(safe,sort_keys=True))
+          assert safe['model_http_requests']==0 and safe['request_authorized'] is False
+          assert safe['thresholds_unchanged'] is True and safe['data_rows_dropped']==0
+          assert safe['preflight_passed'] is True, safe['failure_code'] or 'STRICT_PREFLIGHT_FAILED'
+          assert safe['target_match'] is True and safe['yahoo_repair_enabled'] is True
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: o-repaired-frozen-target-preflight-${{ github.run_id }}
+          path: |
+            repaired-preflight-sanitized.json
+            field-diagnostics/strict-preflight-fields.json
+            probe/target-session-receipt.json
+          if-no-files-found: error
+          retention-days: 14
