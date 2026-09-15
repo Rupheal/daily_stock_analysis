@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install deterministic/runtime dependencies
-        run: pip install -r research/requirements.txt pytest
+        run: pip install -r research/requirements.txt pytest scikit-learn
       - name: Unit-test unchanged target rule and field-only diagnostics
         working-directory: research
         run: python -m pytest --noconftest -q tests/test_prepare_xiaomi_acceptance_targeted.py tests/test_o_target_session_contract.py tests/test_xiaomi_preflight_field_diagnostics.py
