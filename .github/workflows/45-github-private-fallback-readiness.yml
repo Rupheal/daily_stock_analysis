@@ -19,13 +19,15 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - run: python -m pip install httpx
+      - run: python -m pip install httpx pytest
+      - name: Store regression tests
+        run: python -m pytest -q tests/test_dsa_private_github_store.py
       - name: Credential gate; zero model requests
         run: |
           python - <<'PY'
           import json, os
           state={
-            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-001',
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-002',
             'evidence_credential_present':bool(os.environ.get('DSA_EVIDENCE_TOKEN')),
             'model_requests':0,
             'balance_checked':False,
@@ -42,9 +44,9 @@ jobs:
           from pathlib import Path
           p=Path('/tmp/dsa-github-fallback-probe.json')
           p.write_text(json.dumps({
-            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-001',
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-002',
             'classification':'synthetic_no_model_content',
-            'purpose':'verify public runner to private TRIDENT fallback storage',
+            'purpose':'verify commit-pinned public-runner to private-TRIDENT save/read/hash',
             'contains_secrets':False,
             'contains_raw_model_content':False,
             'nonce':str(time.time_ns()),
@@ -52,7 +54,7 @@ jobs:
           PY
           python scripts/dsa_private_github_store.py \
             --source /tmp/dsa-github-fallback-probe.json \
-            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-STORAGE-FALLBACK-20260915-001-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-STORAGE-FALLBACK-20260915-002-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
             --repository Rupheal/TRIDENT-Foundation \
             --branch research/dsa-private-evidence-20260914 \
-            --commit-prefix 'evidence(dsa): verify private GitHub fallback'
+            --commit-prefix 'evidence(dsa): verify commit-pinned private GitHub fallback'
