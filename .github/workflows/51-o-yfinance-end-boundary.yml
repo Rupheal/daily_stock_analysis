@@ -1,0 +1,62 @@
+name: O frozen Yfinance end-boundary diagnostic
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/51-o-yfinance-end-boundary.yml
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Assert O disarmed and no model key exposed
+        run: |
+          python - <<'PY'
+          import json,os
+          assert json.load(open('research/docs/runtime/run012-private-native-arm.json')).get('armed') is False
+          assert not os.environ.get('DEEPSEEK_API_KEY') and not os.environ.get('LLM_DEEPSEEK_API_KEY')
+          print('{"o_disarmed":true,"model_requests":0}')
+          PY
+      - run: python -m pip install 'yfinance==1.7.0' pandas
+      - name: Exercise frozen YfinanceFetcher with adjacent exclusive-end candidates
+        env:
+          PYTHONPATH: original
+        run: |
+          python - <<'PY'
+          import json
+          from data_provider.yfinance_fetcher import YfinanceFetcher
+          f=YfinanceFetcher()
+          out={'model_requests':0,'provider':'YfinanceFetcher','raw_prices_disclosed':False}
+          for label,end in [('same_day_end','2026-09-15'),('next_day_end','2026-09-16')]:
+              try:
+                  raw=f._fetch_raw_data('hk01810','2026-09-01',end)
+                  norm=f._normalize_data(raw,'hk01810')
+                  dates=sorted(str(x)[:10] for x in norm['date'].tolist()) if not norm.empty else []
+                  out[label]={'end_argument':end,'rows':len(dates),'last_date':dates[-1] if dates else None}
+              except Exception as exc:
+                  out[label]={'end_argument':end,'error_type':type(exc).__name__}
+          same=out.get('same_day_end',{}).get('last_date')
+          nxt=out.get('next_day_end',{}).get('last_date')
+          out['boundary_pattern_confirmed']=(same=='2026-09-14' and nxt=='2026-09-15')
+          print(json.dumps(out,sort_keys=True))
+          if not out['boundary_pattern_confirmed']:
+              raise SystemExit('YFINANCE_END_BOUNDARY_NOT_CONFIRMED')
+          PY
