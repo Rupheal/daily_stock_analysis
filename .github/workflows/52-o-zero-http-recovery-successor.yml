@@ -24,7 +24,7 @@ jobs:
       PYTHONPATH: research
       LITELLM_LOCAL_MODEL_COST_MAP: 'true'
       BACKTEST_ENABLED: 'false'
-      AGENT_MODE: false
+      AGENT_MODE: 'false'
       REPORT_INTEGRITY_RETRY: '0'
       MAX_WORKERS: '1'
       NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
@@ -155,8 +155,11 @@ jobs:
           assert tr.get('target_match') is True
           assert d.get('passed') is True and d.get('prices_passed') is True
           assert d.get('symbol','').upper()=='HK01810'
-          assert str(d.get('target'))==expected==str(tr.get('target_session'))==str(tr.get('preflight_target')),
-          'RECOVERY_PREFLIGHT_TARGET_CONTRACT_MISMATCH'
+          assert (
+              str(d.get('target')) == expected
+              == str(tr.get('target_session'))
+              == str(tr.get('preflight_target'))
+          ), 'RECOVERY_PREFLIGHT_TARGET_CONTRACT_MISMATCH'
           s=d.get('component_status') or {}
           assert s.get('prices')=='passed'
           assert s.get('news')=='passed_limited_coverage'
