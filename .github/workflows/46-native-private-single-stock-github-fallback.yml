@@ -1,0 +1,232 @@
+name: O native single-stock acceptance via private GitHub fallback
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/run014-github-fallback-native-arm.json
+      - .github/workflows/46-native-private-single-stock-github-fallback.yml
+permissions:
+  contents: read
+concurrency:
+  group: dsa-native-single-stock-acceptance
+  cancel-in-progress: false
+jobs:
+  native-private-github-fallback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Arm and credential gate; zero model requests
+        env:
+          EXISTING_MODEL_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json, os
+          arm=json.load(open('research/docs/runtime/run014-github-fallback-native-arm.json'))
+          state={
+            'run_id':'TRI-DSA-EXEC-20260915-014-GHFB',
+            'armed':arm.get('armed') is True,
+            'model_credential_present':bool(os.environ.get('EXISTING_MODEL_KEY')),
+            'private_evidence_credential_present':bool(os.environ.get('DSA_EVIDENCE_TOKEN')),
+            'storage_backend':arm.get('storage_backend'),
+            'model_requests_before_gate':0,
+          }
+          print(json.dumps(state))
+          if not state['armed']:
+              raise SystemExit('RUN_NOT_ARMED')
+          if not state['model_credential_present']:
+              raise SystemExit('MODEL_CREDENTIAL_MISSING')
+          if not state['private_evidence_credential_present']:
+              raise SystemExit('PRIVATE_EVIDENCE_CREDENTIAL_MISSING')
+          if state['storage_backend']!='private_github_fallback':
+              raise SystemExit('WRONG_STORAGE_BACKEND')
+          PY
+      - run: pip install -r research/requirements.txt pytest httpx
+      - name: Runner-side private save/read/hash probe before any model call
+        run: |
+          python - <<'PY'
+          import json, time
+          from pathlib import Path
+          p=Path('/tmp/runner-private-probe.json')
+          p.write_text(json.dumps({
+            'run_id':'TRI-DSA-EXEC-20260915-014-GHFB',
+            'classification':'synthetic_no_model_content',
+            'payload':'RUNNER_PRIVATE_WRITE_READ_HASH_PROBE',
+            'nonce':str(time.time_ns()),
+            'contains_secrets':False,
+            'contains_raw_model_content':False,
+          },sort_keys=True)+'\n')
+          PY
+          python research/scripts/dsa_private_github_store.py \
+            --source /tmp/runner-private-probe.json \
+            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-EXEC-20260915-014-GHFB-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+            --repository Rupheal/TRIDENT-Foundation \
+            --branch research/dsa-private-evidence-20260914 \
+            --commit-prefix 'evidence(dsa): Run014 fallback probe'
+      - name: Read current DeepSeek balance without public disclosure
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          import json,os
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']
+          total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          report={
+            'run_id':'TRI-DSA-EXEC-20260915-014-GHFB',
+            'balance_readable':True,
+            'currency':'CNY',
+            'total_balance':str(total),
+            'single_stock_cap_cny':'2',
+            'single_stock_affordable':bool(raw.get('is_available') and total>=Decimal('2')),
+            'prior_full_pool_peak_estimate_cny':'35.193540',
+            'prior_full_pool_estimate_affordable':bool(raw.get('is_available') and total>=Decimal('35.193540')),
+          }
+          open('/tmp/deepseek-balance-private.json','w').write(json.dumps(report,indent=2))
+          print(json.dumps({k:v for k,v in report.items() if k!='total_balance'}))
+          if not report['single_stock_affordable']:
+              raise SystemExit('CURRENT_BALANCE_NOT_SUFFICIENT_FOR_SINGLE_STOCK_CAP')
+          PY
+      - name: Persist balance privately before model call
+        run: |
+          python research/scripts/dsa_private_github_store.py \
+            --source /tmp/deepseek-balance-private.json \
+            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-EXEC-20260915-014-GHFB-balance-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+            --repository Rupheal/TRIDENT-Foundation \
+            --branch research/dsa-private-evidence-20260914 \
+            --commit-prefix 'evidence(dsa): Run014 balance'
+      - name: Frozen original data and observer regression
+        working-directory: research
+        run: python -m pytest -q tests/test_hk_budget_guard.py tests/test_hk_research_replay.py tests/test_hk_native_data_probe.py
+      - name: Fresh independent Xiaomi data gate
+        run: |
+          mkdir -p /tmp/native-evidence
+          python research/scripts/prepare_xiaomi_acceptance.py > /tmp/native-evidence/preflight-stdout.log 2> /tmp/native-evidence/preflight-stderr.log
+          cp research/probe/preflight.json /tmp/native-evidence/preflight.json
+      - name: Persist one-call intent before native request
+        run: |
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          preflight=Path('research/probe/preflight.json').read_bytes()
+          intent={
+            'schema':'dsa-native-call-intent-v1',
+            'run_id':'TRI-DSA-EXEC-20260915-014-GHFB',
+            'artifact_id':'ART-DSA-RUN014-GHFB-NATIVE',
+            'execution':'CI-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'],
+            'preflight_sha256':hashlib.sha256(preflight).hexdigest(),
+            'expected_original_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7',
+            'max_model_requests':1,
+            'single_stock_cap_cny':'2'
+          }
+          Path('/tmp/native-call-intent.json').write_text(json.dumps(intent,sort_keys=True)+'\n')
+          PY
+          python research/scripts/dsa_private_github_store.py \
+            --source /tmp/native-call-intent.json \
+            --destination-prefix evidence/dsa/native/TRI-DSA-EXEC-20260915-014-GHFB/call-intent \
+            --repository Rupheal/TRIDENT-Foundation \
+            --branch research/dsa-private-evidence-20260914 \
+            --commit-prefix 'evidence(dsa): Run014 durable call intent'
+          echo 'DURABLE_CALL_INTENT_VERIFIED_NOT_MODEL_ACCEPTANCE'
+      - name: One frozen-upstream native request with raw console capture
+        id: native_call
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          set +e
+          python research/scripts/run_hk_original_model_probe.py \
+            --checkout original \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --preflight research/probe/preflight.json \
+            --output /tmp/native-evidence/original-model \
+            --limit-cny 2 \
+            --carry-upper-cny 0.060156 \
+            > /tmp/native-evidence/native-stdout.log 2> /tmp/native-evidence/native-stderr.log
+          rc=$?
+          printf '{"run_id":"TRI-DSA-EXEC-20260915-014-GHFB","native_process_exit_code":%s}\n' "$rc" > /tmp/native-evidence/process.json
+          echo "$rc" > /tmp/native-evidence/process.rc
+          exit 0
+      - name: Prepare bounded text-only private evidence
+        if: ${{ always() && (steps.native_call.outcome == 'success' || steps.native_call.outcome == 'failure') }}
+        env:
+          DSA_SENSITIVE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          rm -rf /tmp/native-text-export
+          python research/scripts/dsa_prepare_private_text_export.py --source /tmp/native-evidence --output /tmp/native-text-export
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          secret=os.environ.get('DSA_SENSITIVE_API_KEY','').encode()
+          if not secret:
+              raise SystemExit('SECRET_SCAN_KEY_MISSING')
+          for p in Path('/tmp/native-text-export').rglob('*'):
+              if p.is_file() and secret in p.read_bytes():
+                  raise SystemExit('SECRET_LITERAL_FOUND_IN_PRIVATE_EXPORT')
+          print('PRIVATE_TEXT_EXPORT_SECRET_LITERAL_SCAN_PASS')
+          PY
+      - name: Persist bounded native evidence to private GitHub and read-back verify
+        if: ${{ always() && (steps.native_call.outcome == 'success' || steps.native_call.outcome == 'failure') }}
+        run: |
+          python research/scripts/dsa_private_github_store.py \
+            --source /tmp/native-text-export \
+            --destination-prefix evidence/dsa/native/TRI-DSA-EXEC-20260915-014-GHFB/native-evidence \
+            --repository Rupheal/TRIDENT-Foundation \
+            --branch research/dsa-private-evidence-20260914 \
+            --commit-prefix 'evidence(dsa): Run014 bounded native evidence'
+      - name: Publish sanitized acceptance metadata only
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          summary=Path('/tmp/native-evidence/original-model/probe-summary.json')
+          rc=int(Path('/tmp/native-evidence/process.rc').read_text().strip())
+          out={'run_id':'TRI-DSA-EXEC-20260915-014-GHFB','raw_text_evidence_private':True,
+               'storage_backend':'private_github_fallback','binary_evidence_committed':False,
+               'original_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7',
+               'native_process_exit_code':rc,'native_acceptance_pending_manual_semantic_review':True}
+          if summary.exists():
+              d=json.loads(summary.read_text())
+              reqs=d.get('budget',{}).get('requests',[])
+              out.update(model_http_requests=len(reqs),input_validated=d.get('input_validated'),
+                         usage_peak_estimate_cny=(reqs[-1].get('usage_peak_estimate_cny') if reqs else None),
+                         request_status=(reqs[-1].get('status') if reqs else None))
+          print(json.dumps(out))
+          if rc != 0:
+              raise SystemExit('NATIVE_PROCESS_FAILED_AFTER_PRIVATE_EVIDENCE_SAVE')
+          PY
