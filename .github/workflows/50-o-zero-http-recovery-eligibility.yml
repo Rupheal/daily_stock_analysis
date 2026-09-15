@@ -1,0 +1,70 @@
+name: O zero-HTTP recovery eligibility
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/50-o-zero-http-recovery-eligibility.yml
+      - scripts/o_zero_http_recovery_policy.py
+      - scripts/reconcile_o_native_private.py
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-reader
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Assert O disarmed and no model key exposed
+        run: |
+          python - <<'PY'
+          import json,os
+          assert json.load(open('docs/runtime/run012-private-native-arm.json')).get('armed') is False
+          assert not os.environ.get('DEEPSEEK_API_KEY') and not os.environ.get('LLM_DEEPSEEK_API_KEY')
+          print('{"o_disarmed":true,"model_key_exposed":false,"model_requests":0}')
+          PY
+      - run: python -m pip install httpx
+      - name: Read-only canonical private reconciliation
+        run: |
+          PYTHONPATH=scripts python scripts/reconcile_o_native_private.py > /tmp/reconciliation.json
+      - name: Apply recovery policy without owner authorization
+        run: |
+          PYTHONPATH=scripts python - <<'PY'
+          import json
+          from o_zero_http_recovery_policy import classify_zero_http_recovery
+          report=json.loads(open('/tmp/reconciliation.json').read())
+          policy=classify_zero_http_recovery(report,owner_authorized=False)
+          sanitized={
+            'state':policy['state'],
+            'evidence_recoverable':policy['evidence_recoverable'],
+            'owner_authorized':policy['owner_authorized'],
+            'request_authorized':policy['request_authorized'],
+            'maximum_successor_http_requests':policy['maximum_successor_http_requests'],
+            'canonical_claim_must_remain':policy['canonical_claim_must_remain'],
+            'canonical_native_artifact_must_remain':policy['canonical_native_artifact_must_remain'],
+            'canonical_ids_may_not_be_deleted_or_overwritten':policy['canonical_ids_may_not_be_deleted_or_overwritten'],
+            'successor_evidence_requires_new_append_only_child_artifact':policy['successor_evidence_requires_new_append_only_child_artifact'],
+            'reason_count':len(policy['reasons']),
+            'fixed_error_code':report.get('fixed_error_code'),
+            'model_http_requests':report.get('model_http_requests'),
+            'archive_sha_verified':report.get('archive_sha_verified'),
+            'bundle_manifest_restore_verified':report.get('bundle_manifest_restore_verified'),
+            'raw_private_content_disclosed':False,
+          }
+          print(json.dumps(sanitized,sort_keys=True))
+          if policy['state'] != 'RECOVERABLE_BUT_NOT_AUTHORIZED':
+              raise SystemExit('ZERO_HTTP_RECOVERY_NOT_ELIGIBLE')
+          PY
