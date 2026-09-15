@@ -1,0 +1,16 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
+  "state": "TARGETED_FIELD_DIAGNOSTICS_IN_PROGRESS",
+  "owner_directive": "Identify exact failed fields; reuse passed target-session contract for model-free preflight; update DSA_NEXT_ACTIONS; only after all gates pass continue existing authorized O single-stock successor. No repeated approval or generic audit.",
+  "parent_model_free_run": 34994695190,
+  "parent_source_commit": "eb5136a4e87a54e6f2d9be49a4bc342a6e4c82b5",
+  "observed_failure": "PRICE_NONFINITE_OPEN",
+  "target_session_at_start": "2026-09-15",
+  "rule": "O_NATIVE_TARGET_SESSION_RULE_v1",
+  "scope": ["identify source/session/type for nonfinite OHLC", "minimum necessary input fix and strict data-only preflight", "update shared NEXT_ACTIONS with current receipt", "conditional existing O-native successor, at most existing authorization, reconcile claim first"],
+  "constraints": {"new_model_request_budget": 0, "existing_successor_authorization_must_be_read_and_reconciled": true, "no_gate_relaxation": true, "allow_partial_news_for_acceptance": false, "canonical_claim_preserved": true, "no_new_schedule": true, "runtime_activated": false, "no_orders": true, "no_main_merge": true},
+  "resources": {"route": "Python/pytest and existing GitHub runner; no Work/Codex", "initial_expected_model_requests": 0, "new_paid_data_purchases": 0, "estimated_initial_runner_minutes": "3-8", "platform_tokens_credits_fees": "UNKNOWN"},
+  "coordination": "Do not start a parallel paid O successor; use this receipt and latest branch state. New diagnostic source is confined to field-probe helper/tests/workflow until exact data failure is proven.",
+  "acceptance_denominator": 4,
+  "accepted_progress_credit": 0
+}
