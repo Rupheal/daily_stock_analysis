@@ -35,21 +35,25 @@ jobs:
           assert not os.environ.get('DEEPSEEK_API_KEY') and not os.environ.get('LLM_DEEPSEEK_API_KEY')
           print('{"o_disarmed":true,"model_requests":0}')
           PY
-      - run: python -m pip install 'yfinance==1.7.0' pandas tenacity
-      - name: Exercise frozen YfinanceFetcher with adjacent exclusive-end candidates
-        env:
-          PYTHONPATH: original
+      - run: python -m pip install 'yfinance==1.7.0' pandas
+      - name: Verify exact frozen Yfinance call shape is unchanged
         run: |
           python - <<'PY'
-          import json
-          from data_provider.yfinance_fetcher import YfinanceFetcher
-          f=YfinanceFetcher()
-          out={'model_requests':0,'provider':'YfinanceFetcher','raw_prices_disclosed':False}
+          from pathlib import Path
+          text=Path('original/data_provider/yfinance_fetcher.py').read_text()
+          required=["yf.download(","start=start_date","end=end_date","auto_adjust=True","multi_level_index=True"]
+          assert all(x in text for x in required), 'FROZEN_YFINANCE_CALL_SHAPE_CHANGED'
+          print('{"frozen_yfinance_call_shape_verified":true,"model_requests":0}')
+          PY
+      - name: Exercise exact yfinance download boundary semantics
+        run: |
+          python - <<'PY'
+          import json,yfinance as yf
+          out={'model_requests':0,'provider':'Yahoo via yfinance 1.7.0','raw_prices_disclosed':False}
           for label,end in [('same_day_end','2026-09-15'),('next_day_end','2026-09-16')]:
               try:
-                  raw=f._fetch_raw_data('hk01810','2026-09-01',end)
-                  norm=f._normalize_data(raw,'hk01810')
-                  dates=sorted(str(x)[:10] for x in norm['date'].tolist()) if not norm.empty else []
+                  df=yf.download(tickers='1810.HK',start='2026-09-01',end=end,progress=False,auto_adjust=True,multi_level_index=True)
+                  dates=sorted(str(x)[:10] for x in df.index.tolist()) if not df.empty else []
                   out[label]={'end_argument':end,'rows':len(dates),'last_date':dates[-1] if dates else None}
               except Exception as exc:
                   out[label]={'end_argument':end,'error_type':type(exc).__name__}
