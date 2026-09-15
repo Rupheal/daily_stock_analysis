@@ -24,12 +24,11 @@ jobs:
         run: pip install pytest exchange-calendars==4.13.1
       - name: Verify target-session contract
         run: python -m pytest --noconftest -q tests/test_o_target_session_contract.py
-      - name: Confirm no model path exists in this workflow
+      - name: Confirm no model credential is present
         run: |
           python - <<'PY'
-          from pathlib import Path
-          text=Path('.github/workflows/53-o-target-session-contract.yml').read_text().lower()
-          forbidden=['deepseek_api_key','llm_deepseek_api_key','chat/completions','run_hk_original_model_probe']
-          assert not any(x in text for x in forbidden)
+          import os
+          forbidden = [k for k in os.environ if ('DEEPSEEK' in k.upper() or k.upper().startswith('LLM_'))]
+          assert forbidden == [], forbidden
           print('{"target_session_contract_model_requests":0,"model_credentials_exposed":false}')
           PY
