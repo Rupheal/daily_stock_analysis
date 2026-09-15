@@ -1,0 +1,277 @@
+name: O Run018 CHILD2 corrected unused provider slot
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/66-run018-child2-corrected.yml
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-writer
+  cancel-in-progress: false
+jobs:
+  child2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      RECOVERY_RUN_ID: TRI-DSA-EXEC-20260915-018
+      PREDECESSOR_CHILD_ID: ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD1
+      RECOVERY_CHILD_ID: ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Reconciled owner authorization and frozen target gate
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from datetime import datetime, time
+          from zoneinfo import ZoneInfo
+          a=json.load(open('research/docs/runtime/run018-child2-recovery-authorization.json'))
+          r=json.load(open('research/docs/runtime/PREFLIGHT_FIELDS_20260916_001_CHILD_RECONCILIATION.json'))
+          assert a['frozen_upstream']=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert a['claimed_target_session']=='2026-09-15'
+          assert a['predecessor_actual_model_http_requests']==0 and a['global_remaining_provider_request_slots']==1
+          assert a['maximum_provider_requests_in_child2']==1 and a['append_only'] is True
+          assert a['fallback_model_permitted'] is False and a['automatic_recharge_permitted'] is False
+          assert a['native_model_logic_change_permitted'] is False
+          assert a['runtime_activated'] is False and a['real_orders_permitted'] is False
+          assert r['actual_model_http_requests']==0 and r['child_artifact_saved_restored'] is True
+          assert r['provider_request_body_present'] is False and r['provider_response_present'] is False and r['original_result_present'] is False
+          now=datetime.now(ZoneInfo('Asia/Hong_Kong'))
+          assert now.date().isoformat()=='2026-09-16' and now.time() < time(9,30), 'TARGET_SESSION_EXPIRED_OR_NEW_SESSION_STARTED'
+          got=subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()
+          assert got==a['frozen_upstream']
+          assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
+          print(json.dumps({'child2_owner_scope_verified':True,'predecessor_actual_model_http_requests':0,'remaining_provider_request_slots':1,'claimed_target_session':'2026-09-15','model_requests':0}))
+          PY
+
+      - name: Install runtime dependencies
+        run: pip install -r research/requirements.txt pytest httpx
+
+      - name: Deterministic recovery adapter and contract tests
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py tests/test_o_zero_http_recovery_policy.py tests/test_o_target_session_contract.py tests/test_prepare_xiaomi_acceptance_targeted.py tests/test_o_native_date_boundary_adapter.py
+
+      - name: Reconfirm observer namespace clean and frozen original module origins
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          root=Path.cwd(); research=(root/'research').resolve(); original=(root/'original').resolve()
+          sys.path.insert(0,str(research/'scripts'))
+          import o_native_input_contract
+          polluted=[n for n in sys.modules if n=='src' or n.startswith('src.') or n=='data_provider' or n.startswith('data_provider.')]
+          assert not polluted, 'OBSERVER_PRELOADED_NATIVE_NAMESPACE:'+','.join(polluted[:8])
+          os.chdir(original); sys.path.insert(0,str(original))
+          import src.analyzer, main, data_provider.base
+          def inside(module):
+              p=Path(module.__file__).resolve(); p.relative_to(original); return str(p.relative_to(original))
+          print(json.dumps({'observer_namespace_clean':True,'src_analyzer':inside(src.analyzer),'main':inside(main),'data_provider_base':inside(data_provider.base),'frozen_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7','model_requests':0},sort_keys=True))
+          PY
+
+      - name: Restore and reconcile predecessor CHILD1 privately
+        env:
+          DSA_SENSITIVE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import json, os, tempfile, zipfile
+          from pathlib import Path
+          import httpx
+          from dsa_drive_store import DriveStore, scoped_token, API
+          from dsa_drive_bundle import verify_bundle
+          def locate(store, artifact_id):
+              q="'"+store.folder+"' in parents and trashed=false and appProperties has { key='artifact_id' and value='"+artifact_id+"' }"
+              rows=store.request('GET',API+'/files',params={'q':q,'fields':'files(id,appProperties),nextPageToken','pageSize':100}).json()
+              assert not rows.get('nextPageToken') and len(rows.get('files',[]))==1, 'PREDECESSOR_OBJECT_CARDINALITY'
+              return rows['files'][0]
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              child=locate(s,os.environ['PREDECESSOR_CHILD_ID']); claim=locate(s,os.environ['PREDECESSOR_CHILD_ID']+'-CLAIM')
+              with tempfile.TemporaryDirectory(prefix='child1-reconcile-') as td:
+                  cp=Path(td)/'child1.zip'; qp=Path(td)/'claim.json'
+                  s.recover(child['id'],child['appProperties']['sha256'],cp); verify_bundle(cp.read_bytes())
+                  s.recover(claim['id'],claim['appProperties']['sha256'],qp)
+                  claim_json=json.loads(qp.read_text()); assert claim_json['state']=='RESERVED_RECONCILE_BEFORE_ANY_REPEAT'
+                  with zipfile.ZipFile(cp) as z:
+                      names=set(z.namelist()); assert 'original-model/probe-summary.json' in names
+                      summary=json.loads(z.read('original-model/probe-summary.json')); requests=((summary.get('budget') or {}).get('requests') or [])
+                      assert len(requests)==0
+                      assert 'original-model/provider-response.txt' not in names and 'original-model/request-body.json' not in names and 'original-model/original-result.json' not in names
+              print(json.dumps({'predecessor_child_private_restore':True,'predecessor_claim_private_restore':True,'predecessor_model_http_requests':0,'predecessor_provider_payload_absent':True}))
+          PY
+
+      - name: Canonical private reconciliation and fresh Drive roundtrip
+        run: |
+          PYTHONPATH=research/scripts python research/scripts/reconcile_o_native_private.py > /tmp/canonical-reconciliation.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/canonical-reconciliation.json'))
+          assert r.get('model_http_requests')==0
+          assert r.get('archive_sha_verified') is True and r.get('bundle_manifest_restore_verified') is True
+          print('{"canonical_private_reconciliation":true,"model_requests":0}')
+          PY
+          printf '%s\n' '{"run_id":"TRI-DSA-EXEC-20260915-018","payload":"CHILD2_CORRECTED_FRESH_DRIVE_PROBE","contains_raw_model_content":false}' > /tmp/fresh-probe.json
+          AID="ART-DSA-RUN018-CHILD2-CORRECTED-PROBE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py --source /tmp/fresh-probe.json --run-id "$RECOVERY_RUN_ID" --artifact-id "$AID" --receipt /tmp/fresh-probe-receipt.json
+
+      - name: Fresh strict preflight target 2026-09-15
+        run: |
+          mkdir -p /tmp/recovery-evidence
+          python research/scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/recovery-evidence/preflight-stdout.log 2> /tmp/recovery-evidence/preflight-stderr.log
+          cp research/probe/preflight.json /tmp/recovery-evidence/preflight.json
+          cp research/probe/target-session-receipt.json /tmp/recovery-evidence/target-session-receipt.json
+          python - <<'PY'
+          import json
+          p=json.load(open('research/probe/preflight.json')); r=json.load(open('research/probe/target-session-receipt.json'))
+          assert p.get('passed') is True and p.get('prices_passed') is True and p.get('symbol','').upper()=='HK01810'
+          assert str(p.get('target'))=='2026-09-15'==str(r.get('target_session'))==str(r.get('preflight_target')) and r.get('target_match') is True
+          s=p.get('component_status') or {}; assert s.get('prices')=='passed' and s.get('news')=='passed_limited_coverage' and s.get('issuer')=='listing_passed_body_incomplete'
+          print('{"fresh_strict_preflight":true,"target":"2026-09-15","model_requests":0}')
+          PY
+
+      - name: Frozen native data smoke with bounded retrieval adapter
+        run: |
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-u-universe.json --scope O_single_stock_smoke --expected-date 2026-09-15 --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 240 --output /tmp/run018-native-data > /tmp/recovery-evidence/native-data-wrapper.log 2>&1
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/run018-native-data/coverage.json')); rows=d.get('coverage') or []
+          assert d.get('code_commit')=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert d.get('native_logic_modified') is False and d.get('target_boundary_adapter') is True and (d.get('target_boundary_adapter_apply_count') or 0)>=1
+          assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1 and len(rows)==1 and str(rows[0].get('latest_date'))=='2026-09-15' and d.get('returncode')==0
+          print(json.dumps({'native_data_smoke':True,'adapter_apply_count':d.get('target_boundary_adapter_apply_count'),'latest_date':'2026-09-15','model_requests':0}))
+          PY
+
+      - name: Observer exact-session contract
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import json, sqlite3
+          from o_native_input_contract import validate_native_input
+          p=json.load(open('research/probe/preflight.json')); db=sqlite3.connect('/tmp/run018-native-data/native-data.db')
+          row=db.execute("SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 1",('hk01810',)).fetchone(); db.close(); assert row
+          receipt=validate_native_input(p,{'today':dict(zip(('date','open','high','low','close','volume'),row))})
+          assert receipt.get('validated') is True and str(receipt.get('target'))=='2026-09-15'
+          print(json.dumps({'observer_contract':True,'target':'2026-09-15','volume_status':receipt.get('volume_status'),'model_requests':0}))
+          PY
+
+      - name: CHILD2 absence balance and durable call intent
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import os,httpx
+          from dsa_drive_store import DriveStore,scoped_token
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']); s.assert_absent(os.environ['RECOVERY_CHILD_ID']); s.assert_absent(os.environ['RECOVERY_CHILD_ID']+'-CLAIM')
+          print('{"child2_and_claim_absent":true,"model_requests":0}')
+          PY
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          import json,os
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']; total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          report={'run_id':os.environ['RECOVERY_RUN_ID'],'currency':'CNY','total_balance':str(total),'single_stock_cap_cny':'2','single_stock_affordable':bool(raw.get('is_available') and total>=Decimal('2'))}
+          open('/tmp/balance-before.json','w').write(json.dumps(report,indent=2)); assert report['single_stock_affordable'], 'CURRENT_BALANCE_NOT_SUFFICIENT_FOR_SINGLE_STOCK_CAP'
+          print('{"balance_affordable":true,"model_requests":0}')
+          PY
+          BID="ART-DSA-RUN018-CHILD2-CORRECTED-BALANCE-BEFORE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py --source /tmp/balance-before.json --run-id "$RECOVERY_RUN_ID" --artifact-id "$BID" --receipt /tmp/balance-before-receipt.json
+          PYTHONPATH=research/scripts python - <<'PY'
+          import hashlib,json,os,httpx
+          from pathlib import Path
+          from dsa_drive_store import DriveStore,scoped_token
+          preflight=Path('research/probe/preflight.json').read_bytes(); execution='CI-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); receipt=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']).reserve_native_call(os.environ['RECOVERY_CHILD_ID'],os.environ['RECOVERY_RUN_ID'],hashlib.sha256(preflight).hexdigest(),execution)
+          Path('/tmp/recovery-evidence/call-intent-receipt.json').write_text(json.dumps(receipt)); print('CHILD2_DURABLE_CALL_INTENT_PERSISTED_MODEL_REQUESTS_0')
+          PY
+
+      - name: One authorized frozen original-native provider request
+        id: native_call
+        env:
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          set +e
+          python research/scripts/run_hk_original_model_probe.py --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight research/probe/preflight.json --output /tmp/recovery-evidence/original-model --limit-cny 2 --carry-upper-cny 0.060156 --target-boundary-adapter > /tmp/recovery-evidence/native-stdout.log 2> /tmp/recovery-evidence/native-stderr.log
+          rc=$?; echo "$rc" > /tmp/recovery-evidence/process.rc; printf '{"run_id":"TRI-DSA-EXEC-20260915-018","recovery_child":"CHILD2","native_process_exit_code":%s}\n' "$rc" > /tmp/recovery-evidence/process.json; exit 0
+
+      - name: Persist CHILD2 raw bytes privately and restore verify
+        if: ${{ always() && (steps.native_call.outcome == 'success' || steps.native_call.outcome == 'failure') }}
+        env:
+          DSA_SENSITIVE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: python research/scripts/dsa_drive_bundle.py --source /tmp/recovery-evidence --run-id "$RECOVERY_RUN_ID" --artifact-id "$RECOVERY_CHILD_ID" --receipt /tmp/child2-receipt.json
+
+      - name: Emit sanitized CHILD2 acceptance and require native success
+        if: ${{ always() && (steps.native_call.outcome == 'success' || steps.native_call.outcome == 'failure') }}
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          from pathlib import Path
+          import json,os
+          before=json.load(open('/tmp/balance-before.json')); req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']; after=Decimal(rows[0]['total_balance']) if rows else Decimal('-1'); prior=Decimal(before['total_balance']); delta=(prior-after) if after>=0 and prior>=0 else None
+          rc=int(Path('/tmp/recovery-evidence/process.rc').read_text().strip())
+          out={'run_id':os.environ['RECOVERY_RUN_ID'],'workflow_run':os.environ['GITHUB_RUN_ID'],'child_artifact_id':os.environ['RECOVERY_CHILD_ID'],'append_only_child_saved_and_restored':True,'predecessor_child_preserved':True,'canonical_claim_native_preserved':True,'raw_text_evidence_private':True,'frozen_original_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7','native_process_exit_code':rc,'observed_balance_delta_cny':str(delta) if delta is not None else None,'manual_semantic_review_required':True,'runtime_activated':False,'real_orders':0}
+          summary=Path('/tmp/recovery-evidence/original-model/probe-summary.json')
+          if summary.exists():
+              d=json.loads(summary.read_text()); reqs=((d.get('budget') or {}).get('requests') or []); out['model_http_requests']=len(reqs); out['input_validated']=d.get('input_validated'); out['original_module_origins_verified']=d.get('original_module_origins_verified'); out['target_boundary_adapter']=d.get('target_boundary_adapter'); out['target_boundary_adapter_apply_count']=d.get('target_boundary_adapter_apply_count'); out['probe_error']=d.get('error')
+              if reqs:
+                  u=reqs[-1].get('usage') or {}; out['request_status']=reqs[-1].get('status'); out['prompt_tokens']=u.get('prompt_tokens'); out['completion_tokens']=u.get('completion_tokens'); out['total_tokens']=u.get('total_tokens'); out['usage_peak_estimate_cny']=reqs[-1].get('usage_peak_estimate_cny')
+          out['original_result_present']=Path('/tmp/recovery-evidence/original-model/original-result.json').exists(); out['provider_response_present']=Path('/tmp/recovery-evidence/original-model/provider-response.txt').exists(); out['provider_request_body_present']=Path('/tmp/recovery-evidence/original-model/request-body.json').exists()
+          Path('/tmp/run018-child2-sanitized.json').write_text(json.dumps(out,indent=2,sort_keys=True)); print(json.dumps(out,sort_keys=True))
+          assert out.get('model_http_requests')==1, 'EXACTLY_ONE_PROVIDER_REQUEST_REQUIRED'
+          assert out.get('input_validated') is True and out.get('original_module_origins_verified') is True and out.get('request_status')=='response_received'
+          assert out.get('original_result_present') is True and out.get('provider_response_present') is True and out.get('provider_request_body_present') is True
+          assert rc==0, 'CHILD2_NATIVE_PROCESS_FAILED_AFTER_PRIVATE_SAVE'
+          PY
+          AID="ART-DSA-RUN018-CHILD2-CORRECTED-BALANCE-AFTER-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py --source /tmp/run018-child2-sanitized.json --run-id "$RECOVERY_RUN_ID" --artifact-id "$AID" --receipt /tmp/balance-after-receipt.json
+
+      - name: Upload sanitized CHILD2 acceptance only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run018-child2-corrected-sanitized
+          path: /tmp/run018-child2-sanitized.json
+          if-no-files-found: ignore
+          retention-days: 14
