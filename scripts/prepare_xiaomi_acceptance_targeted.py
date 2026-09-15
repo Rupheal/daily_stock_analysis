@@ -5,6 +5,8 @@ It replaces only two time-boundary mechanics for the controlled recovery path:
 1) the legacy target-date resolver; and
 2) Yahoo's period-based retrieval with an explicit start/end query whose end is
    target_session + 1 calendar day, matching the frozen exclusive-end contract.
+For this bounded recovery read it also enables yfinance's built-in repair mode;
+the existing independent-source OHLC/volume gates still decide acceptance.
 No model credentials are used here.
 """
 from __future__ import annotations
@@ -24,17 +26,20 @@ def _write_receipt(path: Path, value: dict) -> None:
 
 
 def _bounded_history_kwargs(expected, kwargs):
-    """Translate the legacy 6mo Yahoo request into an explicit target boundary.
+    """Translate the legacy 6mo Yahoo request into a repaired target-bound read.
 
     The price/news/issuer validation thresholds are unchanged.  The start span is
     deliberately longer than six calendar months so the existing >=60-session
-    overlap gate remains the authority, not this helper.
+    overlap gate remains the authority, not this helper.  ``repair=True`` only
+    asks yfinance to materialize incomplete provider OHLC; values must still pass
+    the unchanged Tencent/Yahoo price and volume reconciliation gates.
     """
     out = dict(kwargs)
     if out.get("period") == "6mo" and not out.get("start") and not out.get("end"):
         out.pop("period", None)
         out["start"] = (expected - timedelta(days=200)).isoformat()
         out["end"] = (expected + timedelta(days=1)).isoformat()
+        out["repair"] = True
     return out
 
 
@@ -69,6 +74,7 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
         "target_session": expected.isoformat(),
         "yahoo_retrieval_boundary": (expected + timedelta(days=1)).isoformat(),
         "yahoo_end_semantics": "exclusive",
+        "yahoo_repair_enabled": True,
         "preflight_target": None,
         "target_match": None,
         "status": "TARGET_RESOLVED_BEFORE_PREFLIGHT",
