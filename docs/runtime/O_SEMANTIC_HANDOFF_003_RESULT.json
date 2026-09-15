@@ -1,0 +1,76 @@
+{
+  "schema_version":1,
+  "run_id":"TRI-DSA-DEV-20260916-SEMANTIC-HANDOFF-003",
+  "parent_review":"TRI-DSA-EXEC-20260916-PREFLIGHT-002",
+  "scope":"Opening arithmetic checks, native news-count semantics, versioned preflight-to-native evidence handoff, targeted validation and shared queue",
+  "state":"BOUNDED_REPAIR_OFFLINE_AND_CLOUD_PASS_ORIGINAL_OUTPUT_REMAINS_NO_GO",
+  "source_commit_tested":"320e6d561ed1cba526a831e5ca1b7ec01c281027",
+  "frozen_upstream":"089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "source_execution_reused":35002627787,
+  "implementation":{
+    "opening":"Decimal facts and nested report claims compared, explicit stated numbers checked at displayed precision; history/negation/hypothetical clauses disclosed as unassessed. Raw report not rewritten.",
+    "count":"Native tri-state preserved. Explicit null means no search, zero means searched no hits, positive means hits, absent historic field means unknown. Numeric count and supplied-evidence count are separate sidecars.",
+    "news_handoff":"Optional --news-handoff-v1 injects a hash-bound evidence bundle at the existing persisted-news loader BEFORE native AnalysisContextPack construction, then checks analyzer argument and exact original prompt consumption before any future request.",
+    "capture_stages":"Analyzer-return result and pipeline-finalized result saved separately; original provider/analyzer evidence not overwritten.",
+    "post_output":"NO_GO is a failing wrapper exit, not a successful accepted report; existing SEM-001/002/003 guards preserved.",
+    "native_source_or_prompt_template_modified":false,
+    "new_handoff_enabled_in_paid_workflows":false
+  },
+  "prior_finding_correction":{
+    "previous_code":"NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
+    "case":"news_result_count_known=true with news_result_count=null in preserved CHILD2 analyzer result",
+    "corrected_classification":"FALSE_POSITIVE_FOR_FROZEN_NATIVE_TRISTATE",
+    "proof":["src/services/empty_news.py:persisted_news_result_state","src/analyzer.py:AnalysisResult news count field contract"],
+    "frozen_empty_news_blob":"8877d66b6b21e7709167e5f58492dc39f5a25501",
+    "native_meaning":"Field state is explicitly known to be NOT_SEARCHED; not a known numeric count. Persisted evidence may exist without live search hits.",
+    "original_fields_changed":false,
+    "prior_review_record_retained":true,
+    "opening_direction_contradiction_still_real":true
+  },
+  "saved_evidence_offline_replay":{
+    "original_private_parent_sha256":"768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
+    "parent_manifest_files_verified":18,
+    "parent_hash_mismatches":0,
+    "original_prompt_reproduced_byte_identical":true,
+    "admitted_event_count":4,
+    "admitted_source_record_count":4,
+    "native_pack_news_status":"available",
+    "exact_news_envelope_appears_in_original_formatter_output_once":true,
+    "model_or_provider_called":false,
+    "alternate_input_is_not_historical_original":true,
+    "original_report_semantic_verdict":"NO_GO",
+    "count_metadata_reclassified_not_mutated":true,
+    "full_native_pipeline_with_provider_executed":false
+  },
+  "validation":{
+    "local":{"passed":95,"failed":0,"skipped":0,"includes_private_saved_input_prompt_reproduction":true},
+    "cloud":{"run_id":35035814474,"passed":94,"failed":0,"skipped":1,"skip_reason":"Private original is not uploaded to public CI; same saved-input check passed locally","artifact_id":10423247998,"artifact_sha256":"cd27f6cac1b33608fab1f8194993f7dc598e7c8399fba521e5df919f78b6aaff","tested_source_files_readback_matching":7},
+    "test_scope":"Real deterministic code; exact frozen context builder and pure formatter AST; provider return is a synthetic test stub, no prediction claims"
+  },
+  "known_boundaries":[
+    "The prior CHILD2 raw report remains NO_GO for opening-direction contradiction; this engineering repair does not retroactively accept it.",
+    "Four bounded media summaries are not full issuer/news coverage; unknown publication timezones remain unknown and observation time is not first publication.",
+    "Two older unresolved-risk IDs remain in the sidecar outside the native three-day news window; not claimed delivered to the native prompt.",
+    "Phrase recognition is bounded; unsupported language is not guaranteed checked. Main-workspace SEM guards remain active.",
+    "Optional future input handoff changes input version, not frozen template/strategy. It has not been enabled on a paid workflow or tested with a new provider request."
+  ],
+  "next":[
+    "Use this tested handoff/guard version, not the old null-count blocker, when preparing any separately authorized new native evidence case.",
+    "Preserve CHILD2 and its used call slot. Do not retry it to replace the failed narrative or silently rewrite its original input.",
+    "Any new provider acceptance must carry the new input version and full gate/claim/private-save evidence; no O full-pool or Shadow activation follows from this offline PASS."
+  ],
+  "new_model_http_requests":0,
+  "paid_data_calls":0,
+  "separate_Work_Codex_tasks":0,
+  "journal_writes":0,
+  "orders":0,
+  "schedule_changes":0,
+  "main_merge":false,
+  "platform_tokens_credits_fees":"UNKNOWN",
+  "runtime_activated":false,
+  "o_single_stock_formally_accepted":false,
+  "strategy_progress_credit":0,
+  "engineering_completed_before_archive":3,
+  "frozen_engineering_denominator":4,
+  "delivery_unit":"Close after shared queue update and detached private archive readback receipt; no circular ZIP self-hash claim"
+}
