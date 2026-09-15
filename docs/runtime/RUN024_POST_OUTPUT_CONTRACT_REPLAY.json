@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-024",
+  "scope": "formal deterministic post-output contract plus preserved Child2 offline replay; no model, broker, market API, search, or runtime activation",
+  "source_child_artifact": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2",
+  "source_private_bundle_sha256": "768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
+  "source_result_mutated": false,
+  "raw_private_content_published": false,
+  "contract": {
+    "version": "O_POST_OUTPUT_CONTRACT_v1",
+    "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1",
+    "implementation": "scripts/o_post_output_contract.py",
+    "saved_output_guard": "scripts/o_single_output_fact_check.py"
+  },
+  "ci": {
+    "workflow_run": 35034531474,
+    "result": "PASS",
+    "tests_passed": 31,
+    "tests_denominator": 31,
+    "model_credentials_present": false,
+    "model_requests": 0,
+    "runtime_activated": false
+  },
+  "child2_replay": {
+    "target_session": "2026-09-15",
+    "deterministic_open_gap": {
+      "status": "PASS",
+      "open": "27.1200008392334",
+      "previous_close": "27.15999984741211",
+      "delta": "-0.03999900817871",
+      "delta_pct": "-0.001472717540626983140289419530",
+      "direction": "GAP_DOWN",
+      "model_output_claim": "GAP_UP / 开盘高于前收",
+      "contract_result": "BLOCK",
+      "block_code": "OPEN_GAP_DIRECTION_CONTRADICTION"
+    },
+    "news_count_contract": {
+      "news_result_count_known": true,
+      "news_result_count": null,
+      "required_when_known_true": "non_negative_integer",
+      "contract_result": "BLOCK",
+      "block_code": "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER"
+    },
+    "formal_semantic_gates": {
+      "SEM-001": "BLOCK",
+      "SEM-002": "BLOCK",
+      "SEM-003": "BLOCK"
+    },
+    "promotion_gate": {
+      "status": "BLOCK",
+      "blockers": [
+        "OPEN_GAP_DIRECTION_CONTRADICTION",
+        "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
+        "SEM-001",
+        "SEM-002",
+        "SEM-003"
+      ],
+      "o_single_stock_formal_acceptance": false,
+      "o_full_pool_permitted": false,
+      "top3_permitted": false,
+      "repeat_model_request_permitted": false
+    }
+  },
+  "governance_interpretation": {
+    "post_output_contract_repaired": true,
+    "historical_child2_output_rewritten": false,
+    "historical_child2_output_reclassified_as_pass": false,
+    "new_model_request_needed_for_this_replay": false,
+    "g4_3_formal_credit": false,
+    "fixed_legacy_acceptance": "12/16"
+  },
+  "next_action": "Keep the repaired contract as a fail-closed promotion gate. Do not rewrite or rerun Child2. Apply this contract to the next independently authorized O-native output; only an output that passes both deterministic BLOCK checks and SEM-001/002/003 may receive formal semantic acceptance."
+}
