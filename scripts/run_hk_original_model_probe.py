@@ -21,6 +21,14 @@ from o_native_input_contract import NativeInputContractError, validate_native_in
 from o_native_date_boundary_adapter import patched_yahoo_target_boundary
 
 
+def _inside(path, root):
+    try:
+        Path(path).resolve().relative_to(Path(root).resolve())
+        return True
+    except Exception:
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--checkout', type=Path, required=True)
@@ -45,12 +53,32 @@ def main():
     target_session = str(preflight.get('target') or '')
     if args.target_boundary_adapter and not target_session:
         raise ValueError('Target-session adapter requires a frozen preflight target')
+
+    # The external observer must never pre-load the research fork's ``src`` or
+    # ``data_provider`` namespace.  Otherwise Python would reuse those cached
+    # modules after the frozen checkout is inserted into sys.path, silently
+    # invalidating the claim that the native model logic is original upstream.
+    contaminated = sorted(name for name in sys.modules if name == 'src' or name.startswith('src.') or name == 'data_provider' or name.startswith('data_provider.'))
+    if contaminated:
+        raise RuntimeError('ORIGINAL_NAMESPACE_PRELOADED:' + ','.join(contaminated[:8]))
+
     os.environ['DATABASE_PATH'] = str(root/'original-data.db')
     os.chdir(checkout)
     sys.path.insert(0, str(checkout))
     import httpx
     from src.analyzer import GeminiAnalyzer
     from main import main as native_main
+    import src.analyzer as native_analyzer_module
+    import main as native_main_module
+    if not _inside(native_analyzer_module.__file__, checkout) or not _inside(native_main_module.__file__, checkout):
+        raise RuntimeError('ORIGINAL_MODULE_ORIGIN_MISMATCH')
+    module_origin_receipt = {
+        'analyzer_under_frozen_checkout': True,
+        'main_under_frozen_checkout': True,
+        'analyzer_relative_path': str(Path(native_analyzer_module.__file__).resolve().relative_to(checkout)),
+        'main_relative_path': str(Path(native_main_module.__file__).resolve().relative_to(checkout)),
+    }
+
     base = os.environ['LLM_DEEPSEEK_BASE_URL']
     model = os.environ['LLM_DEEPSEEK_MODELS']
     budget = ResearchBudget(root/'budget.json', limit=args.limit_cny, carry_upper=args.carry_upper_cny,
@@ -102,6 +130,7 @@ def main():
     finally:
         report={'started_at':started,'completed_at':datetime.now(timezone.utc).isoformat(),
                 'original_commit':args.expected_commit,'original_tracked_source_unchanged':not subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).strip(),
+                'original_module_origins_verified':True,'module_origin_receipt':module_origin_receipt,
                 'provider_configuration':'Existing OpenAI-compatible channel configured for authorized DeepSeek',
                 'input_validated':validated,'input_validation_receipt':validation_receipt,
                 'scope':'O single Xiaomi native analysis; not O660 ranking',
