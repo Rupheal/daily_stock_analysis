@@ -37,6 +37,33 @@ def inspect_frame(frame, source):
              'invalid_count':len(failures),'value_types':types,'examples':failures[:20]}
     return report
 
+def probe_yahoo_target_boundary(target, ticker_factory):
+    """Two bounded diagnostic reads; never replace accepted adjusted inputs."""
+    from datetime import date, timedelta
+    target_date=date.fromisoformat(target)
+    start=(target_date-timedelta(days=7)).isoformat()
+    end=(target_date+timedelta(days=1)).isoformat()
+    out=[]
+    for adjusted in (False,True):
+        item={'auto_adjust':adjusted,'start':start,'end_exclusive':end,
+              'target_session':target,'diagnostic_only':True,'repair':False}
+        try:
+            h=ticker_factory('1810.HK').history(start=start,end=end,auto_adjust=adjusted,
+                actions=True,keepna=True,repair=False,timeout=20)
+            df=h.reset_index()
+            df.columns=[str(c).lower() for c in df.columns]
+            df['date']=df['date'].astype(str).str[:10]
+            item['frame']=inspect_frame(df,'Yahoo explicit boundary adjusted='+str(adjusted))
+            rows=df[df['date']==target]
+            item['target_count']=len(rows)
+            if len(rows)==1:
+                row=rows.iloc[0]
+                item['target_values']={k:str(row[k]) for k in FIELDS+('adj close','dividends','stock splits') if k in row}
+        except Exception as exc:
+            item['failure_type']=type(exc).__name__
+        out.append(item)
+    return out
+
 def main():
     prohibited = [k for k in os.environ if k.startswith('LLM_') or 'DEEPSEEK' in k]
     if prohibited:
@@ -74,6 +101,8 @@ def main():
             report['target_receipt']={k:v for k,v in receipt.items() if k not in ('failure_message',)}
         if (root/'acceptance-queue.json').exists():
             report['components']=json.loads((root/'acceptance-queue.json').read_text()).get('tasks',{})
+        if report['failure_code'].startswith('PRICE_') and report.get('target_session'):
+            report['bounded_yahoo_followup']=probe_yahoo_target_boundary(report['target_session'],base.yf.Ticker)
     finally:
         base.compare_prices=original
         (output/'strict-preflight-fields.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False))
