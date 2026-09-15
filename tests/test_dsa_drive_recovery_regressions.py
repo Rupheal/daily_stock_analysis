@@ -64,7 +64,7 @@ def test_missing_drive_version_never_verifies(tmp_path):
             return httpx.Response(200, json=payload)
         return response
     with httpx.Client(transport=httpx.MockTransport(handle)) as c:
-        with pytest.raises(StoreError, match='VERSION'):
+        with pytest.raises(StoreError, match='READBACK_VERSION_UNVERIFIED'):
             DriveStore(c, 'folder').recover('saved', digest(b'x'), tmp_path / 'restored')
     assert not (tmp_path / 'restored').exists()
 
@@ -77,7 +77,7 @@ def test_streaming_oversize_rejected_before_file_write(tmp_path):
     assert not (tmp_path / 'restored').exists()
 
 
-def test_version_change_rejected(tmp_path):
+def test_version_change_rejected_distinctly(tmp_path):
     f = Fake(); f.data = b'x'; reads = []
     def handle(r):
         response = f.handle(r)
@@ -86,8 +86,22 @@ def test_version_change_rejected(tmp_path):
             return httpx.Response(200, json=p)
         return response
     with httpx.Client(transport=httpx.MockTransport(handle)) as c:
-        with pytest.raises(StoreError, match='VERSION_MISMATCH'):
+        with pytest.raises(StoreError, match='READBACK_VERSION_CHANGED'):
             DriveStore(c, 'folder').recover('saved', digest(b'x'), tmp_path / 'restored')
+    assert not (tmp_path / 'restored').exists()
+
+
+def test_hash_mismatch_takes_priority_over_version_change(tmp_path):
+    f = Fake(); f.data = b'good'; reads = []
+    def handle(r):
+        response = f.handle(r)
+        if r.url.params.get('alt') == 'media':
+            return httpx.Response(200, content=b'corrupt')
+        reads.append(1); p = response.json(); p['version'] = str(len(reads))
+        return httpx.Response(200, json=p)
+    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+        with pytest.raises(StoreError, match='READBACK_HASH_MISMATCH'):
+            DriveStore(c, 'folder').recover('saved', digest(b'good'), tmp_path / 'restored')
     assert not (tmp_path / 'restored').exists()
 
 
