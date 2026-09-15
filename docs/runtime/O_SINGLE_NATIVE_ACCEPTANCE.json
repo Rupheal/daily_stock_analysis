@@ -1,13 +1,12 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "run_id": "TRI-DSA-EXEC-20260915-018",
-  "review_run": "TRI-DSA-EXEC-20260916-023",
+  "review_run": "TRI-DSA-EXEC-20260916-024",
   "target": "HK01810",
   "target_session": "2026-09-15",
   "workflow_run": 35002627787,
   "child_artifact_id": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2",
   "frozen_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
-  "prior_status": "PASS_WITH_CONDITIONS",
   "status": "FAIL",
   "technical_execution": {
     "status": "PASS",
@@ -33,48 +32,44 @@
     "usage_peak_estimate_cny": "0.063398",
     "actual_account_charge_cny": null
   },
-  "deterministic_post_output_audit": {
+  "formal_post_output_contract": {
+    "contract_version": "O_POST_OUTPUT_CONTRACT_v1",
     "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1",
-    "replay_receipt": "docs/runtime/RUN023_POST_OUTPUT_SEMANTIC_GUARD_REPLAY.json",
-    "ci_workflow_run": 35033881836,
-    "ci_tests": "19/19 PASS",
-    "semantic_verdict": "NO_GO",
-    "block_findings": [
-      {
-        "code": "OPEN_GAP_DIRECTION_CONTRADICTION",
-        "paths": ["pattern_analysis", "context.today.open", "context.yesterday.close"]
-      },
-      {
-        "code": "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
-        "paths": ["news_result_count_known", "news_result_count"]
-      }
-    ],
-    "triggered_semantic_guards": ["SEM-001", "SEM-002", "SEM-003"],
-    "sem_conditions": [
-      {
-        "id": "SEM-001",
-        "required_contract": "When realtime_quote is missing, latest completed-session close must not be labeled or populated as live current price."
-      },
-      {
-        "id": "SEM-002",
-        "required_contract": "When native news context is missing, do not assert absence of adverse news/announcements."
-      },
-      {
-        "id": "SEM-003",
-        "required_contract": "When search_performed=false, do not add external company/index facts absent from frozen evidence."
-      }
-    ],
-    "other_findings": [
-      "PREFLIGHT_NEWS_NOT_DELIVERED_TO_NATIVE_INPUT",
-      "FINANCIAL_PERIOD_PRIMARY_LINEAGE_INCOMPLETE"
-    ]
+    "implementation": "scripts/o_post_output_contract.py",
+    "replay_receipt": "docs/runtime/RUN024_POST_OUTPUT_CONTRACT_REPLAY.json",
+    "ci_workflow_run": 35034531474,
+    "ci_tests": "31/31 PASS",
+    "source_result_mutated": false,
+    "new_model_requests": 0,
+    "promotion_gate": "BLOCK",
+    "deterministic_open_gap": {
+      "open": "27.1200008392334",
+      "previous_close": "27.15999984741211",
+      "direction": "GAP_DOWN",
+      "model_claim": "GAP_UP / 开盘高于前收",
+      "result": "BLOCK",
+      "code": "OPEN_GAP_DIRECTION_CONTRADICTION"
+    },
+    "news_count_contract": {
+      "news_result_count_known": true,
+      "news_result_count": null,
+      "required_when_known_true": "non_negative_integer",
+      "result": "BLOCK",
+      "code": "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER"
+    },
+    "formal_semantic_gates": {
+      "SEM-001": "BLOCK",
+      "SEM-002": "BLOCK",
+      "SEM-003": "BLOCK"
+    }
   },
   "non_findings": [
     "No stock identity mismatch",
     "No target-session roll-forward",
     "No duplicate provider request",
     "No fallback model",
-    "No model/request/storage integrity failure"
+    "No model/request/storage integrity failure",
+    "No mutation of preserved Child2 output during post-output contract evaluation"
   ],
   "decision": {
     "repeat_model_request_permitted": false,
@@ -82,7 +77,9 @@
     "top3_permitted_by_this_receipt": false,
     "g4_3_formal_credit": false,
     "fixed_legacy_acceptance": "12/16",
-    "next_action": "Repair deterministic post-output contract handling for the two BLOCK findings and SEM-001/002/003, then replay the preserved Child2 bytes offline again. Do not call the model again."
+    "post_output_contract_repaired": true,
+    "historical_child2_reclassified_as_pass": false,
+    "next_action": "Retain O_POST_OUTPUT_CONTRACT_v1 as the fail-closed gate for future independently authorized O-native outputs. Child2 remains immutable FAIL; do not rerun it to obtain a prettier answer."
   },
   "review_basis": {
     "private_raw_bundle_restored": true,
