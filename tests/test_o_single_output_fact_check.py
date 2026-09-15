@@ -18,15 +18,15 @@ def test_equal_open_is_not_high_open():
     assert 'OPEN_GAP_DIRECTION_CONTRADICTION' in codes(check_saved_output(p,i,r))
 def test_known_null_count_is_not_zero():
     p,i,r=case();r['news_result_count_known']=True
-    assert 'NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER' in codes(check_saved_output(p,i,r))
+    assert check_saved_output(p,i,r)['news_state_sidecar']['state']=='NOT_SEARCHED'
 def test_unknown_count_is_valid_unknown():
-    assert 'NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER' not in codes(check_saved_output(*case()))
+    assert 'NEWS_COUNT_KNOWN_WITHOUT_VALID_TRISTATE' not in codes(check_saved_output(*case()))
 def test_count_boolean_not_integer():
     p,i,r=case();r.update(news_result_count_known=True,news_result_count=True)
-    assert 'NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER' in codes(check_saved_output(p,i,r))
+    assert 'NEWS_COUNT_KNOWN_WITHOUT_VALID_TRISTATE' in codes(check_saved_output(p,i,r))
 def test_actual_zero_count_known_is_consistent():
     p,i,r=case();r.update(news_result_count_known=True,news_result_count=0)
-    assert 'NEWS_COUNT_METADATA_CONSISTENT' in check_saved_output(p,i,r)['checks_passed']
+    assert 'NATIVE_NEWS_TRISTATE_CONSISTENT' in check_saved_output(p,i,r)['checks_passed']
 def test_news_precheck_not_assumed_to_have_been_in_native_prompt():
     p,i,r=case();p['news_count']=4
     assert 'PREFLIGHT_NEWS_NOT_DELIVERED_TO_NATIVE_INPUT' in codes(check_saved_output(p,i,r))
