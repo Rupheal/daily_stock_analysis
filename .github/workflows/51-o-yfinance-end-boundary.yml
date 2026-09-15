@@ -35,7 +35,7 @@ jobs:
           assert not os.environ.get('DEEPSEEK_API_KEY') and not os.environ.get('LLM_DEEPSEEK_API_KEY')
           print('{"o_disarmed":true,"model_requests":0}')
           PY
-      - run: python -m pip install 'yfinance==1.7.0' pandas
+      - run: python -m pip install 'yfinance==1.7.0' pandas tenacity
       - name: Exercise frozen YfinanceFetcher with adjacent exclusive-end candidates
         env:
           PYTHONPATH: original
