@@ -1,0 +1,29 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260915-016",
+  "state": "DRIVE_FIX_PUSHED_FRESH_ROUNDTRIP_NOT_YET_ACCEPTED",
+  "branch": "fix/native-private-execution-20260914",
+  "drive_secrets_present": 4,
+  "drive_secrets_denominator": 4,
+  "latest_observed_storage_run": 34978665852,
+  "latest_observed_storage_job": 104412930449,
+  "historical_drive_artifacts_read_hash_version_passed": 2,
+  "fresh_roundtrip": "FAIL_BEFORE_FIX_READBACK_HASH_OR_VERSION_MISMATCH",
+  "fix_commits": [
+    "1b9d16ced6decd19ed57be915e2e820550df38b4",
+    "21a8a0dc69538e853ddbd29267b4db26d672c99c"
+  ],
+  "o_native_model_requests": 0,
+  "deepseek_tokens": 0,
+  "deepseek_cost_cny": 0,
+  "o_native_acceptance": "BLOCKED_BY_DRIVE_4_OF_4_NOT_YET_VERIFIED_AFTER_FIX",
+  "o_top3": "NOT_FORMALLY_AVAILABLE",
+  "u_formal_acceptance": "0/45",
+  "fixed_legacy_acceptance": "12/16",
+  "next": [
+    "Verify the first 44-drive-storage-readiness run on or after commit 21a8a0dc69538e853ddbd29267b4db26d672c99c.",
+    "Require fresh REAL_SAVE + INDEPENDENT_READ + SHA256_MATCH + DISK_RESTORE all PASS; workflow success alone is insufficient.",
+    "If 4/4 PASS, reconcile existing CLAIM/call-intent/final artifacts before any O model request.",
+    "Only after clean reconciliation allow one bounded O Xiaomi native acceptance request; preserve frozen prompt/model/scoring.",
+    "If fresh roundtrip still fails, keep O model requests at zero and diagnose the specific split error without re-enabling fallback."
+  ]
+}
