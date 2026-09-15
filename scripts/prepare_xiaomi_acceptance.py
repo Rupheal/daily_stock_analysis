@@ -17,6 +17,8 @@ from src.services.market_data_integrity import daily_consistency_facts, validate
 from src.services.hk_report_contract import attach_report_contract, deduplicate_events
 from src.storage import get_db
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
 
 def atomic_json(path, value):
     path = Path(path)
@@ -94,9 +96,14 @@ def compare_prices(primary, independent, target):
     return len(overlap)
 
 
-def prepare(root=Path('probe'), allow_partial_news=False, include_primary_evidence=False):
-    """Reuse the same price gate; facts-only callers may disclose news gaps."""
-    root = Path(root)
+def prepare(root=None, allow_partial_news=False, include_primary_evidence=False):
+    """Reuse the same price gate; facts-only callers may disclose news gaps.
+
+    Paths needed by the acceptance workflow are repository-relative so the same
+    gate behaves identically whether the repository is checked out at the runner
+    root or under a subdirectory such as ``research/``.
+    """
+    root = REPO_ROOT/'probe' if root is None else Path(root)
     root.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc)
     checkpoint = {'run_id': os.getenv('GITHUB_RUN_ID', now.strftime('%Y%m%dT%H%M%SZ')),
@@ -136,7 +143,7 @@ def prepare(root=Path('probe'), allow_partial_news=False, include_primary_eviden
     try:
         service = IntelligenceService()
         news = refresh_company_news(service, 'hk01810', '小米集团-W', days=3)
-        reviewed = json.loads(Path('docs/xiaomi-reviewed-news.json').read_text())
+        reviewed = json.loads((REPO_ROOT/'docs/xiaomi-reviewed-news.json').read_text())
         reviewed_items, review_diagnostics = [], []
         for item in reviewed:
             published = datetime.fromisoformat(item['published_at'])
