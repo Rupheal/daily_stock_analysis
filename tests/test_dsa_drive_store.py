@@ -60,12 +60,51 @@ def test_bytes_and_idempotence(store):
 def test_fresh_version_can_settle_without_relaxing_post_read_gate(store, monkeypatch):
     s, f = store
     monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
-    # First metadata read sees provider version 1; the next sees 2 and then it
-    # stabilizes at 2. Media read is accepted only if the post-read version is 2.
     f.file_versions = ['1', '2', '2', '2']
     r = s.put('ART-1', b'original', 'RUN-1')
     assert r['version'] == '2'
     assert r['save_read_hash_restore'] is True
+
+
+def test_transient_get_transport_reset_is_retried(monkeypatch):
+    f = Fake(); resets = {'n': 0}
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    def handle(r):
+        if r.method == 'GET' and r.url.path.endswith('/folder') and resets['n'] == 0:
+            resets['n'] += 1
+            raise httpx.ConnectError('reset', request=r)
+        return f.handle(r)
+    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+        m = DriveStore(c, 'folder').private_meta('folder', folder=True)
+    assert m['id'] == 'folder' and resets['n'] == 1
+
+
+def test_media_transport_reset_is_retried(monkeypatch, tmp_path):
+    f = Fake(); f.data = b'original'; resets = {'n': 0}
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    def handle(r):
+        if r.url.params.get('alt') == 'media' and resets['n'] == 0:
+            resets['n'] += 1
+            raise httpx.ConnectError('reset', request=r)
+        return f.handle(r)
+    target = tmp_path / 'restored'
+    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+        DriveStore(c, 'folder').recover('saved', digest(f.data), target)
+    assert target.read_bytes() == b'original' and resets['n'] == 1
+
+
+def test_ambiguous_write_transport_is_not_retried(monkeypatch):
+    f = Fake(); attempts = {'posts': 0}
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    def handle(r):
+        if r.method == 'POST':
+            attempts['posts'] += 1
+            raise httpx.ConnectError('reset', request=r)
+        return f.handle(r)
+    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+        with pytest.raises(StoreError, match='DRIVE_WRITE_TRANSPORT_AMBIGUOUS'):
+            DriveStore(c, 'folder').put('ART-1', b'original', 'RUN-1')
+    assert attempts['posts'] == 1
 
 
 def test_conflict_not_overwritten(store):
