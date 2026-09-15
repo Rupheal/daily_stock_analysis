@@ -1,0 +1,43 @@
+name: O native private read-only reconciliation
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/reconcile_o_native_private.py
+      - .github/workflows/47-o-native-private-reconciliation.yml
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-reader
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Assert disarmed and zero model exposure
+        run: |
+          python - <<'PY'
+          import json,os
+          arm=json.load(open('docs/runtime/run012-private-native-arm.json'))
+          assert arm.get('armed') is False, 'O_MUST_REMAIN_DISARMED'
+          assert not os.environ.get('DEEPSEEK_API_KEY'), 'MODEL_KEY_MUST_NOT_BE_EXPOSED'
+          assert not os.environ.get('LLM_DEEPSEEK_API_KEY'), 'MODEL_KEY_MUST_NOT_BE_EXPOSED'
+          print('{"o_disarmed":true,"model_key_exposed":false,"model_requests":0}')
+          PY
+      - name: Install read-only Drive dependency
+        run: python -m pip install httpx
+      - name: Read canonical private bundle and emit sanitized reconciliation only
+        run: PYTHONPATH=scripts python scripts/reconcile_o_native_private.py
