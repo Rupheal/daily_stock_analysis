@@ -1,8 +1,8 @@
 {
   "schema": "dsa-private-native-arm-v1",
   "run_id": "TRI-DSA-EXEC-20260914-013",
-  "armed": true,
-  "reason": "Drive44 storage-only acceptance passed on 2026-09-15 job 104408770958: four OAuth secrets visible and BUNDLE_SAVE_READ_HASH_RESTORE_PASS. Arm exactly one necessary frozen O-native single-stock acceptance call; preserve no-repeat claim reconciliation and private Drive persistence.",
+  "armed": false,
+  "reason": "Disarmed after GitHub Actions Run 34977724113 failed before any model request at runner-side Drive probe with READBACK_HASH_OR_VERSION_MISMATCH. Diagnose 43/44 storage behavior first; no model retry until a fresh storage-only probe passes save/read/hash/restore and claim state is reconciled.",
   "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
   "target_private_repository": "Rupheal/TRIDENT-Foundation",
   "target_private_branch": "research/dsa-private-evidence-20260914",
