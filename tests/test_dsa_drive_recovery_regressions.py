@@ -1,10 +1,9 @@
-"""Synthetic negative cases for Run014; never access real Drive or model APIs."""
+"""Synthetic negative cases for Drive recovery; never access real Drive or model APIs."""
 import io
 import json
 from pathlib import Path
 import sys
 import zipfile
-import hashlib
 import httpx
 import pytest
 
@@ -53,17 +52,17 @@ def test_windows_drive_path_rejected():
         verify_bundle(archive([('C:payload', b'x')]))
 
 
-def test_missing_drive_version_never_verifies(tmp_path, monkeypatch):
+def test_missing_head_revision_never_verifies(tmp_path, monkeypatch):
     monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
     f = Fake(); f.data = b'x'
     def handle(r):
         response = f.handle(r)
-        if r.url.params.get('alt') != 'media' and not r.url.path.endswith('/files'):
-            payload = response.json(); payload.pop('version', None)
+        if r.url.params.get('alt') != 'media' and not r.url.path.endswith('/files') and not r.url.path.endswith('/folder'):
+            payload = response.json(); payload.pop('headRevisionId', None)
             return httpx.Response(200, json=payload)
         return response
     with httpx.Client(transport=httpx.MockTransport(handle)) as c:
-        with pytest.raises(StoreError, match='READBACK_VERSION_UNVERIFIED'):
+        with pytest.raises(StoreError, match='READBACK_HEAD_REVISION_UNVERIFIED'):
             DriveStore(c, 'folder').recover('saved', digest(b'x'), tmp_path / 'restored')
     assert not (tmp_path / 'restored').exists()
 
@@ -77,26 +76,47 @@ def test_streaming_oversize_rejected_before_file_write(tmp_path, monkeypatch):
     assert not (tmp_path / 'restored').exists()
 
 
-def test_version_change_rejected_distinctly(tmp_path, monkeypatch):
+def test_server_version_change_with_same_content_revision_is_accepted(tmp_path, monkeypatch):
     monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
     f = Fake(); f.data = b'x'
-    # Pre-read metadata settles at v1; the post-media metadata moves to v2.
-    f.file_versions = ['1', '1', '2']
+    f.file_versions = ['1', '2', '3']
+    f.head_revisions = ['rev-a', 'rev-a', 'rev-a']
+    target = tmp_path / 'restored'
     with httpx.Client(transport=httpx.MockTransport(f.handle)) as c:
-        with pytest.raises(StoreError, match='READBACK_VERSION_CHANGED'):
+        result = DriveStore(c, 'folder').recover('saved', digest(b'x'), target)
+    assert target.read_bytes() == b'x'
+    assert result['version'] == '3'
+    assert result['headRevisionId'] == 'rev-a'
+
+
+def test_content_revision_change_rejected_distinctly(tmp_path, monkeypatch):
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    f = Fake(); f.data = b'x'
+    # Pre-read content revision settles at A; post-media metadata reports B.
+    f.head_revisions = ['rev-a', 'rev-a', 'rev-b']
+    with httpx.Client(transport=httpx.MockTransport(f.handle)) as c:
+        with pytest.raises(StoreError, match='READBACK_CONTENT_REVISION_CHANGED'):
             DriveStore(c, 'folder').recover('saved', digest(b'x'), tmp_path / 'restored')
     assert not (tmp_path / 'restored').exists()
 
 
-def test_hash_mismatch_takes_priority_over_version_change(tmp_path, monkeypatch):
+def test_hash_mismatch_takes_priority_over_content_revision_change(tmp_path, monkeypatch):
     monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
     f = Fake(); f.data = b'good'; f.corrupt = True
-    # Settle at v1 before media; media bytes are corrupt and version also moves
-    # afterwards. The hard byte-integrity gate must be reported first.
-    f.file_versions = ['1', '1', '2']
+    f.head_revisions = ['rev-a', 'rev-a', 'rev-b']
     with httpx.Client(transport=httpx.MockTransport(f.handle)) as c:
         with pytest.raises(StoreError, match='READBACK_HASH_MISMATCH'):
             DriveStore(c, 'folder').recover('saved', digest(b'good'), tmp_path / 'restored')
+    assert not (tmp_path / 'restored').exists()
+
+
+def test_head_revision_must_settle_before_media(tmp_path, monkeypatch):
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    f = Fake(); f.data = b'x'
+    f.head_revisions = ['a', 'b', 'c', 'd', 'e', 'f']
+    with httpx.Client(transport=httpx.MockTransport(f.handle)) as c:
+        with pytest.raises(StoreError, match='READBACK_HEAD_REVISION_NOT_STABLE'):
+            DriveStore(c, 'folder').recover('saved', digest(b'x'), tmp_path / 'restored')
     assert not (tmp_path / 'restored').exists()
 
 
