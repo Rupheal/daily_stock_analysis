@@ -15,7 +15,7 @@ jobs:
     env:
       TZ: Asia/Hong_Kong
       PYTHONUNBUFFERED: '1'
-      PYTHONPATH: research
+      PYTHONPATH: .
       ENV_FILE: /dev/null
       NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
       ENABLE_REALTIME_QUOTE: 'false'
