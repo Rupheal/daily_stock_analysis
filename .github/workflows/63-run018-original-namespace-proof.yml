@@ -47,11 +47,19 @@ jobs:
           out={'model_http_requests':0,'observer_namespace_clean':True,'src_analyzer':inside(src.analyzer),'main':inside(main),'data_provider_base':inside(data_provider.base),'frozen_commit':'089d9d26d68f8b839ea5a74a3784e4402925f8b7'}
           print(json.dumps(out,sort_keys=True))
           PY
-      - name: Verify no model credential or completion request path
+      - name: Verify no model credential or inline completion command
+        id: no_model_guard
         run: |
           python - <<'PY'
+          import json,os,yaml
           from pathlib import Path
-          text=Path('research/.github/workflows/63-run018-original-namespace-proof.yml').read_text().lower()
-          assert 'deepseek_api_key' not in text and 'chat/completions' not in text
-          print('{"model_request_path_present":false}')
+          forbidden_env=[k for k in os.environ if k.upper().startswith('LLM_') or 'DEEPSEEK' in k.upper()]
+          assert not forbidden_env, 'MODEL_CREDENTIAL_PRESENT'
+          document=yaml.safe_load(Path('research/.github/workflows/63-run018-original-namespace-proof.yml').read_text())
+          job=document['jobs']['proof']
+          # Inspect executable/configured steps, excluding this guard's own search literals.
+          preceding=[step for step in job['steps'] if step.get('id')!='no_model_guard']
+          inspected=json.dumps({'env':job.get('env',{}),'steps':preceding}).lower()
+          assert 'deepseek_api_key' not in inspected and 'chat/completions' not in inspected
+          print('{"model_credentials_present":false,"inline_completion_command_present":false,"guard_is_not_self_referential":true}')
           PY
