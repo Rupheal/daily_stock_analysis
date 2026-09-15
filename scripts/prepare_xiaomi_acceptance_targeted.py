@@ -1,16 +1,17 @@
 """Run the existing Xiaomi fresh preflight under the frozen O target-session contract.
 
-This adapter does not alter the preflight's price/news/issuer gates. It only
-replaces the legacy target-date resolver with O_NATIVE_TARGET_SESSION_RULE_v1
-for the duration of the call. A target receipt is persisted before the original
-preflight starts, so downstream data/news failures cannot obscure which frozen
-target was actually consumed. No model credentials are used here.
+This adapter does not alter the preflight's price/news/issuer acceptance gates.
+It replaces only two time-boundary mechanics for the controlled recovery path:
+1) the legacy target-date resolver; and
+2) Yahoo's period-based retrieval with an explicit start/end query whose end is
+   target_session + 1 calendar day, matching the frozen exclusive-end contract.
+No model credentials are used here.
 """
 from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import prepare_xiaomi_acceptance as base
@@ -20,6 +21,39 @@ from o_target_session_contract import RULE_VERSION, resolve_target_session
 def _write_receipt(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False))
+
+
+def _bounded_history_kwargs(expected, kwargs):
+    """Translate the legacy 6mo Yahoo request into an explicit target boundary.
+
+    The price/news/issuer validation thresholds are unchanged.  The start span is
+    deliberately longer than six calendar months so the existing >=60-session
+    overlap gate remains the authority, not this helper.
+    """
+    out = dict(kwargs)
+    if out.get("period") == "6mo" and not out.get("start") and not out.get("end"):
+        out.pop("period", None)
+        out["start"] = (expected - timedelta(days=200)).isoformat()
+        out["end"] = (expected + timedelta(days=1)).isoformat()
+    return out
+
+
+class _BoundedTicker:
+    def __init__(self, inner, expected):
+        self._inner = inner
+        self._expected = expected
+
+    def history(self, *args, **kwargs):
+        return self._inner.history(*args, **_bounded_history_kwargs(self._expected, kwargs))
+
+
+class _BoundedYFinance:
+    def __init__(self, original, expected):
+        self._original = original
+        self._expected = expected
+
+    def Ticker(self, symbol):
+        return _BoundedTicker(self._original.Ticker(symbol), self._expected)
 
 
 def prepare_targeted(root=None, allow_partial_news=False, include_primary_evidence=False):
@@ -33,6 +67,8 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
         "rule_version": RULE_VERSION,
         "evaluated_at": evaluated_at.isoformat(),
         "target_session": expected.isoformat(),
+        "yahoo_retrieval_boundary": (expected + timedelta(days=1)).isoformat(),
+        "yahoo_end_semantics": "exclusive",
         "preflight_target": None,
         "target_match": None,
         "status": "TARGET_RESOLVED_BEFORE_PREFLIGHT",
@@ -41,6 +77,7 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
     _write_receipt(receipt_path, receipt)
 
     original_resolver = base.get_effective_trading_date
+    original_yf = base.yf
 
     def frozen_resolver(market, current_time=None):
         if str(market).lower() != "hk":
@@ -50,6 +87,7 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
         return expected
 
     base.get_effective_trading_date = frozen_resolver
+    base.yf = _BoundedYFinance(original_yf, expected)
     try:
         audit = base.prepare(
             root=root,
@@ -66,6 +104,7 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
         raise
     finally:
         base.get_effective_trading_date = original_resolver
+        base.yf = original_yf
 
     actual = str(audit.get("target"))
     if actual != expected.isoformat():

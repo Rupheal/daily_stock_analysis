@@ -27,6 +27,8 @@ def test_target_adapter_injects_frozen_rule(monkeypatch, tmp_path):
     assert audit['target'] == '2026-09-15'
     assert receipt['target_match'] is True
     assert receipt['rule_version'] == targeted.RULE_VERSION
+    assert receipt['yahoo_retrieval_boundary'] == '2026-09-16'
+    assert receipt['yahoo_end_semantics'] == 'exclusive'
     assert receipt['model_http_requests'] == 0
 
 
@@ -43,3 +45,25 @@ def test_target_adapter_fails_if_preflight_does_not_use_frozen_target(monkeypatc
         assert str(exc) == 'PREFLIGHT_TARGET_SESSION_CONTRACT_MISMATCH'
     else:
         raise AssertionError('contract mismatch must fail closed')
+
+
+def test_bounded_yahoo_history_replaces_period_with_explicit_exclusive_end():
+    expected = datetime(2026, 9, 15, tzinfo=timezone.utc).date()
+    got = targeted._bounded_history_kwargs(expected, {
+        'period': '6mo',
+        'auto_adjust': True,
+        'actions': True,
+        'timeout': 20,
+    })
+    assert 'period' not in got
+    assert got['start'] == '2026-02-27'
+    assert got['end'] == '2026-09-16'
+    assert got['auto_adjust'] is True
+    assert got['actions'] is True
+    assert got['timeout'] == 20
+
+
+def test_bounded_yahoo_history_preserves_already_explicit_request():
+    expected = datetime(2026, 9, 15, tzinfo=timezone.utc).date()
+    original = {'start': '2026-03-01', 'end': '2026-09-16', 'auto_adjust': True}
+    assert targeted._bounded_history_kwargs(expected, original) == original
