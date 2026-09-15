@@ -1,0 +1,35 @@
+name: O target-session contract model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/53-o-target-session-contract.yml
+      - scripts/o_target_session_contract.py
+      - tests/test_o_target_session_contract.py
+      - docs/runtime/O_NATIVE_TARGET_SESSION_RULE_v1.md
+permissions:
+  contents: read
+jobs:
+  target-session-contract:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install deterministic test dependencies only
+        run: pip install pytest exchange-calendars==4.13.1
+      - name: Verify target-session contract
+        run: python -m pytest --noconftest -q tests/test_o_target_session_contract.py
+      - name: Confirm no model path exists in this workflow
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/53-o-target-session-contract.yml').read_text().lower()
+          forbidden=['deepseek_api_key','llm_deepseek_api_key','chat/completions','run_hk_original_model_probe']
+          assert not any(x in text for x in forbidden)
+          print('{"target_session_contract_model_requests":0,"model_credentials_exposed":false}')
+          PY
