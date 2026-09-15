@@ -2,9 +2,11 @@
 
 The frozen upstream checkout remains byte-for-byte unchanged. This adapter only
 changes Yahoo retrieval mechanics for the one claimed HK target session:
-- yfinance ``end`` is treated as exclusive, so target -> target + 1 day;
-- ``repair=True`` is enabled to materialize provider OHLC gaps already proven by
-  model-free diagnostics.
+- yfinance ``end`` is exclusive, so an end equal to target is shifted to target + 1 day;
+- when the frozen CLI already supplies target + 1 day (because it runs after the
+  target session), the boundary is already correct and is left unchanged;
+- ``repair=True`` is enabled in both cases to materialize provider OHLC gaps
+  already observed in model-free diagnostics.
 
 Native prompts, scoring, model selection, analysis code and post-fetch validation
 are not changed. The caller must still enforce the independent preflight and
@@ -48,30 +50,34 @@ def _is_hk_ticker_request(args, kwargs) -> bool:
 
 @contextmanager
 def patched_yahoo_target_boundary(target_session: str):
-    """Patch yfinance.download globally for only the exact target HK request.
+    """Patch yfinance.download for the frozen target HK retrieval only.
 
-    The native provider can be imported through more than one module identity in
-    the frozen CLI. Patching the installed yfinance module function avoids that
-    identity ambiguity while keeping the intervention narrower than altering any
-    native source file or model logic.
+    Two frozen-CLI call shapes are accepted:
+    1. ``end == target``: shift to target+1 because yfinance end is exclusive.
+    2. ``end == target+1``: keep the already-correct exclusive boundary and only
+       enable yfinance repair materialization.
+
+    No other date or non-HK request is changed.
     """
     target = _as_date(target_session)
+    target_plus_one = target + timedelta(days=1)
     import yfinance as yf
 
     original_download = yf.download
-    applied = {"count": 0}
+    applied = {"count": 0, "boundary_shift_count": 0, "repair_enable_count": 0}
 
     def bounded_download(*args, **kwargs):
         end = kwargs.get("end")
-        if (
-            end is not None
-            and _as_date(end) == target
-            and _is_hk_ticker_request(args, kwargs)
-        ):
-            kwargs = dict(kwargs)
-            kwargs["end"] = (target + timedelta(days=1)).isoformat()
-            kwargs["repair"] = True
-            applied["count"] += 1
+        if end is not None and _is_hk_ticker_request(args, kwargs):
+            end_date = _as_date(end)
+            if end_date in (target, target_plus_one):
+                kwargs = dict(kwargs)
+                if end_date == target:
+                    kwargs["end"] = target_plus_one.isoformat()
+                    applied["boundary_shift_count"] += 1
+                kwargs["repair"] = True
+                applied["repair_enable_count"] += 1
+                applied["count"] += 1
         return original_download(*args, **kwargs)
 
     with patch.object(yf, "download", bounded_download):
