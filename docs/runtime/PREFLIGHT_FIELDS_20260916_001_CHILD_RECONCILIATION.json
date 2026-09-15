@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
+  "state": "DATA_GATES_PASS_SUCCESSOR_CHILD_SAVED_ZERO_HTTP_NATIVE_IMPORT_IDENTITY_FAILED",
+  "previous_receipt": "docs/runtime/PREFLIGHT_FIELDS_20260916_001_NATIVE_PASS.json",
+  "successor_run": 35000310127,
+  "head_commit": "189948d33b3bdc68abbaa462e08c964617ebce88",
+  "job_id": 104486787941,
+  "preflight_native_smoke_observer_drive_gates": "PASS",
+  "child_claim_persisted": true,
+  "child_artifact_saved_restored": true,
+  "sanitized_artifact_id": 10409332335,
+  "sanitized_zip_sha256": "7b8b79dbcd993bfa12c0f46ef73d61a7c764d184604059c4007a3b3b3200793c",
+  "download_digest_verified": true,
+  "actual_model_http_requests": 0,
+  "input_validated": true,
+  "native_process_exit_code": 1,
+  "observed_balance_delta_cny": "0.00",
+  "original_result_present": false,
+  "provider_request_body_present": false,
+  "provider_response_present": false,
+  "error_at_execution": "MarketDataIntegrityError: news evidence missing; no trading report will be generated",
+  "actual_module_path_observation": {
+    "pipeline": "research/src/core/pipeline.py",
+    "notification": "research/src/notification.py",
+    "search_service": "research/src/search_service.py",
+    "expected_native_prefix": "original/",
+    "raw_logs_remain_private": true
+  },
+  "source_evidence": {
+    "probe_script_blob": "d73a61808c30f952e318832a055be1db7e62de09",
+    "observer_script_blob": "2a9e1c13d37b4bcf78eb77ee5e1e315ff928f1ff",
+    "mechanism": "run_hk_original_model_probe imports o_native_input_contract before selecting frozen checkout. That observer imports research src.services.hk_volume_reconciliation, caching research src. Inserting original at sys.path[0] later does not replace the already-loaded package. Verify and isolate actual native src imports before using O identity.",
+    "no_gate_relaxation_solution": "Do not bypass news validation or feed U logic into O. Fix wrapper namespace isolation; verify analyzer/pipeline/main actual origins against frozen checkout before model HTTP. Preserve observer function references separately."
+  },
+  "claim_policy": "Canonical parent and new CHILD1/CLAIM both exist. Do not overwrite, delete or rerun CHILD1. Proven zero HTTP is not permission to ignore its intent. Reconcile and use the existing one-request authorization only through an explicit append-only recovery child with unambiguous slot accounting.",
+  "no_new_model_request_started_by_this_workspace": true,
+  "runtime_activated": false,
+  "o_single_stock_accepted": false,
+  "request_authorized_by_this_receipt": false,
+  "next": ["Fix and deterministically test native module origin isolation outside frozen source", "Reuse the concurrent main-workspace patch if already present; do not duplicate changes", "Preserve zero-HTTP failed child, update shared current status and continue only the still-valid original request budget with reconciled successor identity"]
+}
