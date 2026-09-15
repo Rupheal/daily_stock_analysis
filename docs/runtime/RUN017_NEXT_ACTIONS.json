@@ -1,0 +1,36 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260915-017",
+  "state": "DRIVE_PASS_O_BLOCKED_RECONCILIATION",
+  "accepted_progress": [
+    "Drive fresh-write SAVE/READBACK/HASH/RESTORE formally passed 4/4",
+    "Model-free Xiaomi preflight formally passed after calibrated cross-provider volume reconciliation",
+    "Durable one-call CLAIM persisted before the native probe",
+    "Canonical private failure evidence saved/read/hash/restored successfully",
+    "Run ended with arm=false and no automatic retry",
+    "Root cause narrowed to observer/preflight volume-validation contract mismatch"
+  ],
+  "current_status": {
+    "drive_secrets": "4/4 PRESENT",
+    "drive_storage": "PASS_4_OF_4",
+    "o_single_acceptance": "BLOCKED_RECONCILIATION",
+    "deepseek_http_requests": 0,
+    "deepseek_tokens": 0,
+    "deepseek_incremental_model_cost_cny": 0,
+    "durable_claim": "EXISTS",
+    "canonical_native_private_artifact": "EXISTS_AND_RESTORE_VERIFIED",
+    "arm": false,
+    "o_current_universe": "NOT_REFROZEN_BECAUSE_O_SINGLE_NOT_ACCEPTED",
+    "o_top3": "NOT_FORMALLY_AVAILABLE",
+    "u_formal": "0/45",
+    "simulation": "NOT_ELIGIBLE",
+    "fixed_legacy": "12/16"
+  },
+  "next": [
+    "Read-only reconcile the existing CLAIM and canonical native artifact; never delete or overwrite them to manufacture a fresh request slot.",
+    "Repair only the observer input-validation contract so it uses the already-accepted hk_volume_reconciliation semantics: shares unit, historical exactness, bounded latest-session provider correction <=0.2%, abnormal ratio hard fail.",
+    "Add deterministic tests proving the observer and model-free preflight cannot disagree on the same validated Xiaomi evidence.",
+    "Run a model-free observer integration test against frozen original commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7; DeepSeek requests must remain zero.",
+    "Define and independently test a claimed-but-zero-HTTP-request recovery policy. Only after that policy is accepted may a future run consider allocating one new request slot; never infer retry permission from request_count=0 alone.",
+    "Do not freeze a current O Universe, generate O Top3, start O full pool, or advance simulation until O single native acceptance is formally PASS/PASS_WITH_CONDITIONS."
+  ]
+}
