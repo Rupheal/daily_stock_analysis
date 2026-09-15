@@ -1,0 +1,63 @@
+name: O fresh preflight target integration model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/prepare_xiaomi_acceptance_targeted.py
+      - tests/test_prepare_xiaomi_acceptance_targeted.py
+      - .github/workflows/54-o-fresh-preflight-target-integration.yml
+permissions:
+  contents: read
+jobs:
+  target-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      ENV_FILE: /dev/null
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install deterministic/runtime dependencies
+        run: pip install -r research/requirements.txt pytest
+      - name: Unit-test target adapter and frozen target contract
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_prepare_xiaomi_acceptance_targeted.py tests/test_o_target_session_contract.py
+      - name: Execute fresh Xiaomi preflight through frozen target adapter
+        working-directory: research
+        run: |
+          python scripts/prepare_xiaomi_acceptance_targeted.py --allow-partial-news > /tmp/targeted-preflight.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('probe/preflight.json').read_text())
+          r=json.loads(Path('probe/target-session-receipt.json').read_text())
+          assert r['rule_version']=='O_NATIVE_TARGET_SESSION_RULE_v1'
+          assert r['target_match'] is True
+          assert p['target']==r['target_session']==r['preflight_target']
+          assert r['model_http_requests']==0
+          print(json.dumps({'fresh_preflight_target':p['target'],
+                            'rule_version':r['rule_version'],
+                            'target_match':True,
+                            'model_requests':0}))
+          PY
+      - name: Verify workflow has no model credential or request path
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('research/.github/workflows/54-o-fresh-preflight-target-integration.yml').read_text().lower()
+          checks=['chat/completions','run_hk_original_model_probe.py','one authorized frozen-upstream successor request']
+          assert not any(x in text for x in checks)
+          print('{"model_request_path_present":false}')
+          PY
