@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install bounded dependencies
-        run: pip install yfinance pandas
+        run: pip install yfinance pandas scikit-learn
       - name: Probe completed target session without model credentials
         run: |
           python - <<'PY'
@@ -45,7 +45,7 @@ jobs:
                       out[name]={'empty':False,'target_present':False,'last_session':str(r.iloc[-1]['date'])}; continue
                   d=row.iloc[-1].to_dict()
                   fields={}
-                  for f in ('open','high','low','close','adj close','volume','dividends','stock splits'):
+                  for f in ('open','high','low','close','adj close','volume','dividends','stock splits','repaired?'):
                       if f in d:
                           v=d[f]
                           try: finite=math.isfinite(float(v))
