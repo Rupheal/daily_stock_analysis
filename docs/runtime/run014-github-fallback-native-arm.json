@@ -1,8 +1,8 @@
 {
   "schema": "dsa-private-native-arm-v1",
   "run_id": "TRI-DSA-EXEC-20260915-014-GHFB",
-  "armed": true,
-  "reason": "One bounded O-native Xiaomi acceptance call after exact formal-checkout zero-model run 34940874768 passed store regression, credential gate, private save/read/hash, and unchanged strict Xiaomi preflight. Durable call-intent independently confirmed absent before this arm.",
+  "armed": false,
+  "reason": "Owner directive TRI-DSA-EXEC-20260915-015 supersedes the fallback arm: Drive workflow 44 SAVE+READBACK+HASH+RESTORE must PASS before any O single-stock native model call. Private GitHub fallback readiness remains validated evidence only and must not bypass Drive-first sequencing.",
   "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
   "target_private_repository": "Rupheal/TRIDENT-Foundation",
   "target_private_branch": "research/dsa-private-evidence-20260914",
