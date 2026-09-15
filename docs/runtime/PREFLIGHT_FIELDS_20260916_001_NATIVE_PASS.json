@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
+  "state": "STRICT_PREFLIGHT_AND_NATIVE_DATA_SMOKE_PASS_EXISTING_SUCCESSOR_PENDING",
+  "history": "docs/runtime/PREFLIGHT_FIELDS_20260916_001_RESULT.json",
+  "scope": "Additional verified receipt; supersedes only its former current native-smoke blocker. Original failed records retained.",
+  "target_session": "2026-09-15",
+  "target_rule": "O_NATIVE_TARGET_SESSION_RULE_v1",
+  "strict_preflight_run": 34996864782,
+  "native_smoke": {
+    "workflow_run": 34999985334,
+    "head_commit": "89e6d9ef4b6a46f0c6a428bc0dd070accf1417da",
+    "job_id": 104485697185,
+    "completed_at_utc": "2026-09-15T17:16:03Z",
+    "artifact_id": 10408749553,
+    "artifact_sha256": "d285d5b943cc3abe81132fc15b3c239a8cc6d493610d4780f2758c7231a2e0c1",
+    "independent_download_digest_match": true,
+    "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+    "upstream_tracked_source_unchanged": true,
+    "expected_session": "2026-09-15",
+    "actual_latest_session": "2026-09-15",
+    "coverage_denominator": 1,
+    "current_valid_count": 1,
+    "target_boundary_adapter_apply_count": 1,
+    "returncode": 0,
+    "model_http_requests": 0
+  },
+  "repair_scope": {
+    "latest_read_adapter_blob": "538273617b74bfceaee9f3c03406e0ba2b40127b",
+    "exact_target_end": "shift to target+1 calendar day",
+    "already_target_plus_one_end": "keep end unchanged and enable the previously disclosed yfinance repair mode",
+    "non_HK_or_other_dates": "unchanged",
+    "prompts_scoring_model_selection": "unchanged",
+    "input_materialization_changed_not_raw_source_restoration": true
+  },
+  "prior_bounded_successor": {
+    "workflow_run": 34999386561,
+    "job_id": 104483697505,
+    "result": "FAIL_AT_NATIVE_DATA_SMOKE_BEFORE_MODEL",
+    "model_request_step": "SKIPPED",
+    "new_child_call_intent_step": "SKIPPED",
+    "no_http_used_in_that_attempt": true
+  },
+  "next": [
+    "Continue the existing authorized successor using the newest adapter; first check for a running successor to avoid duplicate dispatch.",
+    "Reconcile canonical and append-only child evidence and require fresh same-window preflight, exact-session native/observer, Drive read-write-restore, and verified current affordability before at most one model request.",
+    "Retain unchanged canonical CLAIM/native records, store successor privately under the existing append-only child identity, then read/hash/restore and conduct semantic review.",
+    "Do not request repeat Owner approval for the already-approved scope; do not change target if a new completed session invalidates the frozen recovery."
+  ],
+  "request_authorized_by_this_receipt": false,
+  "existing_authority_path": "docs/runtime/run018-final-successor-authorization.json",
+  "maximum_successor_model_requests": 1,
+  "o_single_stock_accepted": false,
+  "runtime_activated": false,
+  "new_paid_data_purchases": 0,
+  "parallel_model_request_started_by_field_diagnostics_workspace": false,
+  "platform_tokens_credits_fees": "UNKNOWN"
+}
