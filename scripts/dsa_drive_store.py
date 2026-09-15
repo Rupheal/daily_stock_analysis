@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import time
 import uuid
 from datetime import datetime, timezone
 import httpx
@@ -110,11 +111,32 @@ class DriveStore:
             raise StoreError('FILE_LOCATION_OR_FORMAT_INVALID')
         return m
 
-    def recover(self, file_id, expected, out):
-        before = self.private_meta(file_id)
-        version = before.get('version')
+    def stable_private_meta(self, file_id, attempts=6, pause=0.25):
+        """Require a freshly written Drive file version to settle before readback.
+
+        This does not relax the version gate: two consecutive metadata reads must
+        report the same numeric version before media is read, and the post-read
+        version must still match. It only avoids treating provider-side metadata
+        propagation immediately after create as a content-integrity failure.
+        """
+        previous = self.private_meta(file_id)
+        version = previous.get('version')
         if not isinstance(version, str) or not version.isdigit():
             raise StoreError('READBACK_VERSION_UNVERIFIED')
+        for _ in range(attempts):
+            time.sleep(pause)
+            current = self.private_meta(file_id)
+            current_version = current.get('version')
+            if not isinstance(current_version, str) or not current_version.isdigit():
+                raise StoreError('READBACK_VERSION_UNVERIFIED')
+            if current_version == version:
+                return current
+            previous = current
+            version = current_version
+        raise StoreError('READBACK_VERSION_NOT_STABLE')
+
+    def recover(self, file_id, expected, out):
+        before = self.stable_private_meta(file_id)
         # Bound streamed bytes before allocation; a compressed response can expand.
         parts = []
         total = 0
