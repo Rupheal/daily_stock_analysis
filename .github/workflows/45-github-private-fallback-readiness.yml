@@ -12,6 +12,16 @@ jobs:
     timeout-minutes: 8
     env:
       DSA_EVIDENCE_TOKEN: ${{ secrets.DSA_EVIDENCE_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
     steps:
       - uses: actions/checkout@v5
         with:
@@ -27,7 +37,7 @@ jobs:
           python - <<'PY'
           import json, os
           state={
-            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-003',
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-004',
             'evidence_credential_present':bool(os.environ.get('DSA_EVIDENCE_TOKEN')),
             'model_requests':0,
             'balance_checked':False,
@@ -44,7 +54,7 @@ jobs:
           from pathlib import Path
           p=Path('/tmp/dsa-github-fallback-probe.json')
           p.write_text(json.dumps({
-            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-003',
+            'run_id':'TRI-DSA-STORAGE-FALLBACK-20260915-004',
             'classification':'synthetic_no_model_content',
             'purpose':'verify commit-pinned public-runner to private-TRIDENT save/read/hash',
             'contains_secrets':False,
@@ -54,7 +64,19 @@ jobs:
           PY
           python scripts/dsa_private_github_store.py \
             --source /tmp/dsa-github-fallback-probe.json \
-            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-STORAGE-FALLBACK-20260915-003-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+            --destination-prefix evidence/dsa/private_persistence/TRI-DSA-STORAGE-FALLBACK-20260915-004-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
             --repository Rupheal/TRIDENT-Foundation \
             --branch research/dsa-private-evidence-20260914 \
             --commit-prefix 'evidence(dsa): verify commit-pinned private GitHub fallback'
+      - name: Xiaomi strict preflight diagnosis; zero model requests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.prepare_xiaomi_acceptance import prepare
+          try:
+              prepare(root=Path('/tmp/xiaomi-preflight-diagnostic'))
+          except Exception as exc:
+              print('XIAOMI_PREFLIGHT_FAILURE', type(exc).__name__, str(exc))
+              raise SystemExit(1)
+          print('XIAOMI_PREFLIGHT_PASS')
+          PY
