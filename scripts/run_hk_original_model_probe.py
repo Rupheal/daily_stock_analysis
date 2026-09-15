@@ -15,6 +15,7 @@ from unittest.mock import patch
 from urllib.parse import urlparse
 
 from hk_budget_guard import ResearchBudget, decode_usage
+from o_native_input_contract import NativeInputContractError, validate_native_input
 
 
 def main():
@@ -37,10 +38,6 @@ def main():
     preflight = json.loads(preflight_path.read_text())
     if preflight.get('passed') is not True or preflight.get('symbol', '').upper() != 'HK01810':
         raise ValueError('A passed Xiaomi preflight is required')
-    baseline = preflight['today']
-    # This probe deliberately uses only the already validated Xiaomi identity.
-    day = baseline.get('date')
-    day = str(day)[:10]
     os.environ['DATABASE_PATH'] = str(root/'original-data.db')
     os.chdir(checkout)
     sys.path.insert(0, str(checkout))
@@ -52,20 +49,16 @@ def main():
     budget = ResearchBudget(root/'budget.json', limit=args.limit_cny, carry_upper=args.carry_upper_cny,
                             max_requests=1, model=model, host=urlparse(base).hostname)
     validated = False
+    validation_receipt = None
     original_analyze, original_send = GeminiAnalyzer.analyze, httpx.Client.send
     original_async_send = httpx.AsyncClient.send
     def analyze(instance, context, *a, **kw):
-        nonlocal validated
-        today = context.get('today', {})
-        expected = baseline.get('ohlc', baseline)
-        if str(today.get('date'))[:10] != day:
-            raise ValueError('Native input session differs from validated daily evidence')
-        for key in ['open','high','low','close']:
-            if abs(float(today[key])-float(expected[key])) > .005:
-                raise ValueError('Native price differs from independent evidence: '+key)
-        expected_volume = baseline.get('volume', expected.get('volume'))
-        if expected_volume is None or abs(float(today['volume'])-float(expected_volume)) > .5:
-            raise ValueError('Native volume differs from independent evidence')
+        nonlocal validated, validation_receipt
+        try:
+            validation_receipt = validate_native_input(preflight, context)
+        except NativeInputContractError as exc:
+            # Fixed semantic codes only; no raw provider payload is exposed.
+            raise ValueError(str(exc)) from None
         validated = True
         (root/'original-input.json').write_text(json.dumps({'context':context,'news_context':kw.get('news_context',a[0] if a else None)},ensure_ascii=False,default=str))
         result = original_analyze(instance, context, *a, **kw)
@@ -79,13 +72,10 @@ def main():
         if seq:
             raw = response.read().decode('utf-8')
             (root/'provider-response.txt').write_text(raw)
-            # Persist native body (no headers/key) for exact prompt/token audit.
             (root/'request-body.json').write_bytes(request.content)
             budget.settle(seq, decode_usage(raw), 'response_received' if response.status_code==200 else 'http_error')
         return response
     async def async_send(client, request, **kw):
-        # The original CLI under this probe is synchronous. Prevent an unexpected
-        # alternate model transport from bypassing the shared observer.
         if request.url.host == urlparse(base).hostname or request.url.path.endswith('/chat/completions'):
             raise RuntimeError('Unexpected async model route; no request sent')
         return await original_async_send(client,request,**kw)
@@ -101,7 +91,8 @@ def main():
         report={'started_at':started,'completed_at':datetime.now(timezone.utc).isoformat(),
                 'original_commit':args.expected_commit,'original_tracked_source_unchanged':not subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).strip(),
                 'provider_configuration':'Existing OpenAI-compatible channel configured for authorized DeepSeek',
-                'input_validated':validated,'scope':'O single Xiaomi native analysis; not O660 ranking',
+                'input_validated':validated,'input_validation_receipt':validation_receipt,
+                'scope':'O single Xiaomi native analysis; not O660 ranking',
                 'preflight_sha256':hashlib.sha256(preflight_path.read_bytes()).hexdigest(),
                 'process_status':status,'error':error,'budget':budget.state,'manual_approved':False,
                 'O_denominator':660,'U_denominator':45,'trading_release':'pending_manual_review'}
