@@ -1,0 +1,60 @@
+{
+  "schema": "dsa-fresh-preflight-target-integration-v1",
+  "run_id": "TRI-DSA-EXEC-20260916-020",
+  "branch": "fix/native-private-execution-20260914",
+  "status": "ACCEPTED_TARGET_INTEGRATION_WITH_DOWNSTREAM_DATA_GATE_OPEN",
+  "target_rule": "O_NATIVE_TARGET_SESSION_RULE_v1",
+  "integration": {
+    "fresh_preflight_entry": "scripts/prepare_xiaomi_acceptance_targeted.py",
+    "successor_workflow": ".github/workflows/52-o-zero-http-recovery-successor.yml",
+    "recovery_identity": "docs/runtime/run018-recovery-target-identity.json",
+    "fresh_target_source": "scripts/o_target_session_contract.py::resolve_target_session",
+    "hardcoded_fresh_target_resolver_removed": true,
+    "recovery_claim_session_remains_immutable_identity_only": true,
+    "roll_forward_permitted": false
+  },
+  "model_free_acceptance": {
+    "fresh_integration_workflow_run": 34994695190,
+    "fresh_integration_result": "PASS",
+    "unit_and_contract_tests": "12/12 PASS",
+    "observed_target_session": "2026-09-15",
+    "observed_rule_version": "O_NATIVE_TARGET_SESSION_RULE_v1",
+    "frozen_target_consumed": true,
+    "downstream_preflight_result": "FAIL_AFTER_TARGET_RESOLUTION",
+    "downstream_failure_type": "PriceVolumeReconciliationError",
+    "downstream_failure_message": "PRICE_NONFINITE_OPEN",
+    "target_failure": false,
+    "model_http_requests": 0
+  },
+  "successor_static_acceptance": {
+    "workflow_run": 34995139673,
+    "result": "PASS",
+    "yaml_parse": "PASS",
+    "embedded_python_syntax": "PASS",
+    "targeted_preflight_wired": true,
+    "literal_fresh_target_assert_2026_09_15_absent": true,
+    "literal_native_expected_date_2026_09_15_absent": true,
+    "native_smoke_reads_dynamic_target": true,
+    "observer_reads_dynamic_target": true,
+    "new_completed_session_expires_old_recovery": true,
+    "model_credentials_exposed": false,
+    "model_http_requests": 0
+  },
+  "resource_ledger": {
+    "deepseek_requests": 0,
+    "deepseek_tokens": 0,
+    "deepseek_incremental_cost_cny": 0,
+    "real_orders": 0,
+    "paid_market_data": 0
+  },
+  "governance": {
+    "o_single_acceptance_changed": false,
+    "o_top3_formally_available": false,
+    "u_formal_acceptance": "0/45",
+    "fixed_legacy_acceptance": "12/16",
+    "simulation": "NOT_ELIGIBLE",
+    "main_modified": false,
+    "schedules_modified": false
+  },
+  "next_open_issue": "PRICE_NONFINITE_OPEN is a separate fresh-price data-quality gate. Do not weaken target-session semantics to resolve it."
+}
