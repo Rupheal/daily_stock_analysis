@@ -1,0 +1,11 @@
+{
+  "schema": "dsa-o-recovery-target-identity-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-018",
+  "canonical_claim_artifact_id": "ART-DSA-RUN013-NATIVE-CLAIM",
+  "canonical_native_artifact_id": "ART-DSA-RUN013-NATIVE",
+  "target_symbol": "HK01810",
+  "claimed_target_session": "2026-09-15",
+  "target_rule_version_for_successor": "O_NATIVE_TARGET_SESSION_RULE_v1",
+  "semantics": "claimed_target_session is immutable recovery identity only; it must never act as the fresh target resolver. A successor may proceed only while the frozen target-session rule still resolves to the same completed session.",
+  "roll_forward_permitted": false
+}
