@@ -1,0 +1,37 @@
+name: O observer contract model-free tests
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_native_input_contract.py
+      - scripts/run_hk_original_model_probe.py
+      - tests/test_o_native_input_contract.py
+      - .github/workflows/49-o-observer-contract-tests.yml
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Assert disarmed and no model key exposed
+        run: |
+          python - <<'PY'
+          import json,os
+          arm=json.load(open('docs/runtime/run012-private-native-arm.json'))
+          assert arm.get('armed') is False
+          assert not os.environ.get('DEEPSEEK_API_KEY')
+          assert not os.environ.get('LLM_DEEPSEEK_API_KEY')
+          print('{"o_disarmed":true,"model_requests":0}')
+          PY
+      - run: python -m pip install pytest
+      - name: Deterministic observer contract tests
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py
