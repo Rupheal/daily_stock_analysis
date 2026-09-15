@@ -1,0 +1,39 @@
+{
+  "schema": "dsa-o-single-reconciliation-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-017",
+  "branch": "fix/native-private-execution-20260914",
+  "workflow_run_id": 34985098001,
+  "workflow_job_id": 104435051002,
+  "head_sha_at_arm": "b9a2ae82649d8713e9d9ca4b4945e2b1a69ec144",
+  "post_run_disarm_commit": "992b7e895d9aff63fe031343ad530bbe4e443d42",
+  "target_symbol": "HK01810",
+  "expected_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "drive_storage_acceptance": "PASS_4_OF_4",
+  "model_free_preflight": "PASS",
+  "durable_claim": "PERSISTED_AND_VERIFIED",
+  "deepseek_http_requests": 0,
+  "deepseek_tokens": 0,
+  "deepseek_incremental_model_cost_cny": 0,
+  "native_process_exit_code": 1,
+  "input_validated": false,
+  "private_evidence_bundle": "SAVE_READ_HASH_RESTORE_PASS",
+  "sanitized_acceptance_publish": "FAIL_BY_DESIGN_AFTER_NATIVE_PROCESS_FAILURE",
+  "o_single_acceptance": "BLOCKED_RECONCILIATION",
+  "automatic_retry_permitted": false,
+  "arm_final_state": false,
+  "root_cause": {
+    "classification": "OBSERVER_PREFLIGHT_CONTRACT_MISMATCH",
+    "detail": "The model-free Xiaomi preflight accepted a calibrated latest-session cross-provider volume difference within 0.2%, while run_hk_original_model_probe.py still required absolute native-vs-baseline volume difference <=0.5 share before setting input_validated=true. The validated Xiaomi latest-session provider difference is about 41,745 shares / 0.0254%, so the native observer rejected the input before any DeepSeek HTTP request.",
+    "model_or_provider_failure": false,
+    "drive_failure": false
+  },
+  "governance": {
+    "no_repeat_model_request": true,
+    "claim_requires_read_only_reconciliation": true,
+    "native_artifact_requires_read_only_reconciliation": true,
+    "o_top3_formally_available": false,
+    "o_current_universe_refreeze_performed": false,
+    "simulation_eligible": false
+  },
+  "next_required_action": "In a new bounded run, repair only the observer input-validation contract so it consumes the already-calibrated volume reconciliation result without weakening dual-source validation; test model-free first. Because the durable claim and canonical native evidence artifact now exist, do not issue another model request until a separate reconciliation policy explicitly resolves the claimed-but-zero-HTTP-request state."
+}
