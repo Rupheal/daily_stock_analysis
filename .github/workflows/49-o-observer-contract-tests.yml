@@ -4,8 +4,10 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - scripts/o_native_input_contract.py
+      - scripts/o_zero_http_recovery_policy.py
       - scripts/run_hk_original_model_probe.py
       - tests/test_o_native_input_contract.py
+      - tests/test_o_zero_http_recovery_policy.py
       - .github/workflows/49-o-observer-contract-tests.yml
 permissions:
   contents: read
@@ -33,5 +35,5 @@ jobs:
           print('{"o_disarmed":true,"model_requests":0}')
           PY
       - run: python -m pip install pytest
-      - name: Deterministic observer contract tests
-        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py
+      - name: Deterministic observer and recovery-policy tests
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py tests/test_o_zero_http_recovery_policy.py
