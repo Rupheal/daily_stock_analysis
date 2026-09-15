@@ -55,6 +55,39 @@ jobs:
           rc=$?
           echo "$rc" > /tmp/o-native-session-probe.rc
           exit 0
+      - name: Compare native final bar with independently dated target session
+        run: |
+          python - <<'PY'
+          import json,sqlite3,requests,math
+          from datetime import datetime,timezone
+          # Native bar stays private; only comparison facts are emitted.
+          db=sqlite3.connect('/tmp/o-native-session/native-data.db')
+          row=db.execute("SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 1",('hk01810',)).fetchone()
+          db.close()
+          if not row: raise SystemExit('NATIVE_BAR_MISSING')
+          native_date=str(row[0])[:10]; native=[float(x) for x in row[1:]]
+          t=requests.get('https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get',params={'param':'hk01810,day,,,5,qfq'},timeout=20).json()
+          rows=((t.get('data') or {}).get('hk01810') or {}).get('qfqday') or []
+          target=next((r for r in rows if str(r[0])[:10]=='2026-09-15'),None)
+          if not target: raise SystemExit('TARGET_TENCENT_BAR_MISSING')
+          # Tencent HK row order: date,open,close,high,low,volume.
+          tv=[float(target[1]),float(target[3]),float(target[4]),float(target[2]),float(target[5])]
+          pdiffs=[abs(native[i]-tv[i]) for i in range(4)]
+          vol_rel=abs(native[4]/tv[4]-1.0) if native[4] and tv[4] else (0.0 if native[4]==tv[4] else None)
+          out={
+            'model_requests':0,
+            'native_recorded_date':native_date,
+            'independent_target_date':'2026-09-15',
+            'date_offset_days':(datetime.fromisoformat('2026-09-15')-datetime.fromisoformat(native_date)).days,
+            'ohlc_max_abs_diff':max(pdiffs),
+            'ohlc_same_within_0_005':max(pdiffs)<=0.005,
+            'volume_relative_diff':vol_rel,
+            'volume_same_within_calibrated_latest_bound':vol_rel is not None and vol_rel<=0.00170985,
+            'same_bar_fingerprint':max(pdiffs)<=0.005 and vol_rel is not None and vol_rel<=0.00170985,
+            'raw_prices_disclosed':False,
+          }
+          print(json.dumps(out,sort_keys=True))
+          PY
       - name: Publish sanitized session metadata only
         run: |
           python - <<'PY'
@@ -69,21 +102,6 @@ jobs:
           d=json.loads(p.read_text())
           rows=d.get('coverage') or []
           row=rows[0] if len(rows)==1 else {}
-          out.update(
-            scope=d.get('scope'),
-            frozen_commit=d.get('code_commit'),
-            native_cli_returncode=d.get('returncode'),
-            coverage_denominator=d.get('coverage_denominator'),
-            current_valid_count=d.get('current_valid_count'),
-            native_status=d.get('status'),
-            code=row.get('code'),
-            bars=row.get('bars'),
-            latest_date=row.get('latest_date'),
-            latest_bar_status=row.get('status'),
-            native_log_mentions_code=row.get('native_log_mentions_code'),
-            model_credentials_provided=d.get('model_credentials_provided'),
-            model_analysis_enabled=d.get('model_analysis_enabled'),
-            native_logic_modified=d.get('native_logic_modified'),
-          )
+          out.update(scope=d.get('scope'),frozen_commit=d.get('code_commit'),native_cli_returncode=d.get('returncode'),coverage_denominator=d.get('coverage_denominator'),current_valid_count=d.get('current_valid_count'),native_status=d.get('status'),code=row.get('code'),bars=row.get('bars'),latest_date=row.get('latest_date'),latest_bar_status=row.get('status'),native_log_mentions_code=row.get('native_log_mentions_code'),model_credentials_provided=d.get('model_credentials_provided'),model_analysis_enabled=d.get('model_analysis_enabled'),native_logic_modified=d.get('native_logic_modified'))
           print(json.dumps(out,sort_keys=True))
           PY
