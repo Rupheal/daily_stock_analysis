@@ -42,6 +42,14 @@ def test_no_public_raw_artifacts_or_direct_secret_echo():
     assert 'reserve_native_call(' in text
 
 
+def test_preflight_ids_are_execution_scoped_but_native_id_is_canonical():
+    text = PATH.read_text()
+    assert 'ART-DSA-O-PROBE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}' in text
+    assert 'ART-DSA-O-BALANCE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}' in text
+    assert "'ART-DSA-RUN013-NATIVE','TRI-DSA-EXEC-20260914-013'" in text
+    assert '--artifact-id ART-DSA-RUN013-NATIVE' in text
+
+
 def test_workflows_serialize_same_writer_and_no_schedule():
     for n in ['43-native-private-single-stock.yml', '44-drive-storage-readiness.yml']:
         d = yaml.load((PATH.parent / n).read_text(), Loader=yaml.BaseLoader)
