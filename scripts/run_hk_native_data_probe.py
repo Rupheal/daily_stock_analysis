@@ -2,6 +2,8 @@
 
 This is data acquisition evidence, never full analysis or independent price verification.
 The O smoke scope cannot stand in for the still-unresolved official union N.
+For the explicitly authorized Run018 recovery, ``--target-boundary-adapter``
+changes only Yahoo retrieval boundary/materialization outside the frozen checkout.
 """
 import argparse
 import hashlib
@@ -44,6 +46,15 @@ def audit_database(database, codes, expected_date):
     return records
 
 
+def build_native_command(checkout, codes, expected_date, target_boundary_adapter=False):
+    native_args = ["--stocks", ",".join(codes), "--dry-run", "--no-notify",
+                   "--no-market-review", "--force-run", "--workers", "3"]
+    if not target_boundary_adapter:
+        return [sys.executable, "main.py"] + native_args
+    wrapper = Path(__file__).resolve().parent / "run_original_with_target_adapter.py"
+    return [sys.executable, str(wrapper), "--checkout", str(checkout), "--target", expected_date, "--"] + native_args
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkout", type=Path, required=True)
@@ -53,6 +64,7 @@ def main():
     parser.add_argument("--expected-commit", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--timeout", type=int, default=420)
+    parser.add_argument("--target-boundary-adapter", action="store_true")
     args = parser.parse_args()
     checkout, output = args.checkout.resolve(), args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -76,14 +88,15 @@ def main():
     env = {k: v for k, v in os.environ.items() if not any(t in k.upper() for t in ("TOKEN", "API_KEY", "SECRET", "WEBHOOK"))}
     env.update(ENV_FILE="/dev/null", DATABASE_PATH=str(database), BACKTEST_ENABLED="false",
                NEWS_INTEL_AUTO_FETCH_ENABLED="false", PYTHONUNBUFFERED="1")
-    command = [sys.executable, "main.py", "--stocks", ",".join(codes), "--dry-run", "--no-notify",
-               "--no-market-review", "--force-run", "--workers", "3"]
+    command = build_native_command(checkout, codes, args.expected_date, args.target_boundary_adapter)
     audit = {"scope": args.scope, "code_commit": actual, "started_at": datetime.now(timezone.utc).isoformat(),
              "universe_sha256": hashlib.sha256(raw_universe).hexdigest(), "requested_codes": codes,
              "expected_complete_session": args.expected_date, "command": command,
              "coverage_denominator": len(codes), "O_full_union_N": len(codes) if args.scope == "O_full_pool_data_only" else None, "O_full_pool_passed": False,
              "model_credentials_provided": False, "model_analysis_enabled": False,
-             "native_logic_modified": False, "independent_price_validation": False}
+             "native_logic_modified": False, "target_boundary_adapter": bool(args.target_boundary_adapter),
+             "adapter_scope": "Yahoo retrieval boundary/materialization only" if args.target_boundary_adapter else None,
+             "independent_price_validation": False}
     try:
         with (output / "native.log").open("w") as log:
             process = subprocess.Popen(command, cwd=checkout, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
@@ -105,6 +118,10 @@ def main():
         native_log = (output / "native.log").read_text(errors="replace")
         for record in audit["coverage"]:
             record["native_log_mentions_code"] = record["code"].lower() in native_log.lower()
+        audit["target_boundary_adapter_apply_count"] = (
+            int(native_log.rsplit("O_TARGET_BOUNDARY_ADAPTER_COUNT", 1)[1].strip().split()[0])
+            if "O_TARGET_BOUNDARY_ADAPTER_COUNT" in native_log else 0
+        )
         print("NATIVE_LOG_TAIL", native_log[-12000:], flush=True)
     audit["current_valid_count"] = sum(r["status"] == "current_valid_bar" for r in audit["coverage"])
     audit["completed_at"] = datetime.now(timezone.utc).isoformat()
