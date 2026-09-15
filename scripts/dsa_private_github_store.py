@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import time
 from urllib.parse import quote
 
 import httpx
@@ -19,6 +20,8 @@ import httpx
 DEFAULT_REPOSITORY = "Rupheal/TRIDENT-Foundation"
 DEFAULT_BRANCH = "research/dsa-private-evidence-20260914"
 TOKEN_ENV = "DSA_EVIDENCE_TOKEN"
+READBACK_ATTEMPTS = 3
+READBACK_DELAY_SECONDS = 0.5
 
 
 class PrivateEvidenceError(RuntimeError):
@@ -77,6 +80,26 @@ class PrivateGitHubStore:
             "repository_id": meta.get("id"),
         }
 
+    def _readback(self, endpoint: str, commit_sha: str) -> httpx.Response:
+        """Read the just-created blob from its immutable commit, retrying only 404s.
+
+        GitHub can briefly expose the new commit through the create response before a
+        moving branch ref resolves the new path. Pinning to the returned commit SHA
+        avoids treating branch-propagation delay as evidence loss while preserving a
+        strict byte-for-byte independent GET verification.
+        """
+        last = None
+        for attempt in range(READBACK_ATTEMPTS):
+            last = self.client.get(endpoint, params={"ref": commit_sha})
+            if last.status_code == 200:
+                return last
+            if last.status_code != 404:
+                break
+            if attempt + 1 < READBACK_ATTEMPTS:
+                time.sleep(READBACK_DELAY_SECONDS)
+        assert last is not None
+        return last
+
     def put_new(self, destination_path: str, data: bytes, commit_message: str) -> dict:
         destination_path = _safe_path(destination_path)
         encoded_path = quote(destination_path, safe="/")
@@ -95,7 +118,13 @@ class PrivateGitHubStore:
         created = self.client.put(endpoint, json=payload)
         if created.status_code not in {200, 201}:
             raise PrivateEvidenceError(f"private write failed: HTTP {created.status_code}")
-        readback = self.client.get(endpoint, params={"ref": self.branch})
+        created_body = created.json()
+        commit = created_body.get("commit") or {}
+        content = created_body.get("content") or {}
+        commit_sha = commit.get("sha")
+        if not commit_sha:
+            raise PrivateEvidenceError("private write response missing commit SHA; read-back cannot be pinned")
+        readback = self._readback(endpoint, commit_sha)
         if readback.status_code != 200:
             raise PrivateEvidenceError(f"private read-back failed: HTTP {readback.status_code}")
         body = readback.json()
@@ -106,16 +135,15 @@ class PrivateGitHubStore:
         recovered_digest = sha256_bytes(recovered)
         if recovered != data or recovered_digest != digest:
             raise PrivateEvidenceError("private read-back hash mismatch")
-        commit = created.json().get("commit") or {}
-        content = created.json().get("content") or {}
         return {
             "path": destination_path,
             "bytes": len(data),
             "sha256": digest,
             "readback_sha256": recovered_digest,
             "verified": True,
+            "readback_ref": commit_sha,
             "blob_sha": body.get("sha") or content.get("sha"),
-            "commit_sha": commit.get("sha"),
+            "commit_sha": commit_sha,
         }
 
     def put_tree(self, source: Path, destination_prefix: str, commit_prefix: str) -> dict:
