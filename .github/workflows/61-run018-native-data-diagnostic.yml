@@ -1,0 +1,98 @@
+name: O Run018 native data diagnostic model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/61-run018-native-data-diagnostic.yml
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-writer
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      RUN_ID: TRI-DSA-EXEC-20260915-018
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r research/requirements.txt httpx
+      - name: Run identical target-adapted data smoke and retain evidence regardless of coverage result
+        run: |
+          set +e
+          python research/scripts/run_hk_native_data_probe.py \
+            --checkout original \
+            --universe research/docs/dsa-u-universe.json \
+            --scope O_single_stock_smoke \
+            --expected-date 2026-09-15 \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --target-boundary-adapter \
+            --timeout 240 \
+            --output /tmp/run018-native-data \
+            > /tmp/run018-native-data-private.log 2>&1
+          rc=$?
+          echo "$rc" > /tmp/probe.rc
+          exit 0
+      - name: Build sanitized diagnostic
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/run018-native-data/coverage.json')
+          out={'run_id':'TRI-DSA-EXEC-20260915-018','classification':'MODEL_FREE_NATIVE_DATA_DIAGNOSTIC','model_http_requests':0,'target':'2026-09-15','frozen_upstream':'089d9d26d68f8b839ea5a74a3784e4402925f8b7'}
+          if p.exists():
+              d=json.loads(p.read_text())
+              out.update({k:d.get(k) for k in ['code_commit','returncode','timeout','status','coverage_denominator','current_valid_count','target_boundary_adapter','target_boundary_adapter_apply_count','native_logic_modified','error']})
+              rows=[]
+              for r in d.get('coverage') or []:
+                  rows.append({k:r.get(k) for k in ['code','status','bars','latest_date','database_code','latest_ohlcv','native_log_mentions_code','error']})
+              out['coverage']=rows
+          else:
+              out['coverage_json_missing']=True
+              out['wrapper_returncode']=int(Path('/tmp/probe.rc').read_text())
+          Path('/tmp/run018-native-data-sanitized.json').write_text(json.dumps(out,indent=2,sort_keys=True))
+          print(json.dumps(out,sort_keys=True))
+          PY
+      - name: Save raw diagnostic privately and restore verify
+        run: |
+          mkdir -p /tmp/private-bundle
+          cp /tmp/run018-native-data/coverage.json /tmp/private-bundle/coverage.json 2>/dev/null || true
+          cp /tmp/run018-native-data/native.log /tmp/private-bundle/native.log 2>/dev/null || true
+          cp /tmp/run018-native-data-private.log /tmp/private-bundle/wrapper.log 2>/dev/null || true
+          cp /tmp/run018-native-data-sanitized.json /tmp/private-bundle/sanitized.json
+          AID="ART-DSA-RUN018-NATIVE-DATA-DIAG-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py --source /tmp/private-bundle --run-id "$RUN_ID" --artifact-id "$AID" --receipt /tmp/drive-receipt.json
+      - name: Upload sanitized diagnostic only
+        uses: actions/upload-artifact@v4
+        with:
+          name: run018-native-data-sanitized-${{ github.run_id }}
+          path: /tmp/run018-native-data-sanitized.json
+          retention-days: 14
