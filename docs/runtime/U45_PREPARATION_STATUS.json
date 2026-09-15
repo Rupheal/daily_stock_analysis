@@ -1,0 +1,41 @@
+{
+  "schema": "dsa-u45-preparation-status-v1",
+  "run_id": "TRI-DSA-EXEC-20260915-015",
+  "status_as_of": "2026-09-15",
+  "denominator": 45,
+  "reviewed_in_inherited_private_source": 45,
+  "identity_receipt_consistent": 45,
+  "source_clock_order_consistent": 45,
+  "inherited_buy_eligibility_positive_asof_2026_09_14": 44,
+  "isolated_buy_eligibility": [
+    {
+      "ticker": "09618",
+      "reason": "Absent from both inherited 2026-09-14 SSE/SZSE buy-eligibility snapshots; retain in U45 denominator and isolate eligibility only."
+    }
+  ],
+  "complete": 0,
+  "partial": 45,
+  "isolated": 1,
+  "failed": 0,
+  "formal_native_execution_accepted": 0,
+  "qualified_signals": 0,
+  "row_level_source_status": "PRIVATE_ORIGINAL_NOT_RETRIEVABLE_THROUGH_CURRENT_CONNECTOR_IN_RUN015",
+  "row_level_reconstruction_permitted": false,
+  "not_current_signal_refresh": true,
+  "known_open_evidence_classes": [
+    "official suspension/trading-status evidence",
+    "corporate-action and adjustment evidence",
+    "independent volume-unit/price-basis evidence",
+    "current official announcements",
+    "current news/media source-to-official-evidence closure",
+    "capital-flow evidence",
+    "company plans/capital actions/fee-event evidence",
+    "trade-plan and fee inputs"
+  ],
+  "provenance": [
+    "docs/runtime/RUN013.zh-CN.md",
+    "docs/runtime/RUN014.zh-CN.md",
+    "docs/runtime/RUN014_CLOUD.json"
+  ],
+  "warning": "This file preserves only verified aggregate state plus the known 09618 isolation. It does not fabricate 45 row-level records from unavailable private source bytes."
+}
