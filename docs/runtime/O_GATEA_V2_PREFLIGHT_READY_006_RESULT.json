@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-O-GATEA-V2-READY-006",
+  "state": "READY_FOR_NEW_INDEPENDENT_OWNER_AUTHORIZATION_NOT_GATE_A_PASS",
+  "target": "HK01810",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "historical_run030": {
+    "run_id": "TRI-DSA-EXEC-20260916-030",
+    "workflow_run": 35065110293,
+    "state": "MODEL_AND_PRIVATE_STORAGE_PASS_SEMANTIC_GATE_FAIL_PRESERVED",
+    "provider_http_requests": 1,
+    "authorization_consumed": true,
+    "retry_permitted_under_run030": false,
+    "prompt_tokens": 6379,
+    "completion_tokens": 6175,
+    "total_tokens": 12554,
+    "usage_peak_estimate_cny": "0.062158",
+    "private_save_read_hash_restore": "PASS",
+    "genuine_blockers_preserved": [
+      "OPEN_GAP_DIRECTION_CONTRADICTION",
+      "SEM-001"
+    ],
+    "false_blocker_identified": "NEWS_HANDOFF_UNPROVEN:NEWS_HANDOFF_INPUT_BINDING_MISMATCH",
+    "gate_a": "FAIL_PRESERVED"
+  },
+  "model_free_repairs_after_run030": {
+    "stable_context_binding": {
+      "handoff_version": "O_SEMANTIC_NEWS_HANDOFF_v2",
+      "binding_version": "O_NATIVE_CONTEXT_BINDING_v1",
+      "purpose": "bind identity/session/news-window stably across typed live dates and serialized ISO snapshots while remaining fail-closed on identity/session/window changes"
+    },
+    "session_fact_anchor": {
+      "version": "O_SESSION_FACT_ANCHOR_v1",
+      "facts_bound": [
+        "target_session",
+        "open",
+        "previous_close",
+        "opening_direction",
+        "target_session_close",
+        "realtime_quote_available"
+      ],
+      "required_opening_direction_for_2026_09_15": "DOWN",
+      "required_realtime_quote_available": false,
+      "price_wording_rule": "target-session close is not current/realtime price when realtime_quote_available=false",
+      "frozen_strategy_scoring_modified": false
+    },
+    "sem001_guard": {
+      "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1.2",
+      "explicit_realtime_contract_authoritative_when_present": true,
+      "blocks_numeric_top_level_current_price_when_realtime_false": true,
+      "blocks_numeric_dashboard_current_price_when_realtime_false": true,
+      "blocks_unsafe_live_price_text_when_realtime_false": true,
+      "malformed_realtime_contract_fails_closed": true,
+      "legacy_without_execution_contract_retains_prior_conservative_inference": true
+    }
+  },
+  "cloud_model_free_acceptance": {
+    "semantic_handoff_offline_run": 35066136919,
+    "semantic_handoff_offline_result": "PASS",
+    "post_output_semantic_guard_prior_run": 35066065364,
+    "post_output_semantic_guard_prior_result": "PASS",
+    "real_prompt_dry_run": 35066416445,
+    "real_prompt_dry_result": "PASS_MODEL_FREE_REAL_FORMATTER_DRY_ONLY",
+    "real_prompt_dry_artifact_id": 10434900241,
+    "real_prompt_dry_artifact_sha256": "1ffa2872a0792c5ef6a339cf0db57d302247388c39a44b92f7eab07f89aa4609",
+    "real_prompt_dry_official_v41_input_tokens": 6674,
+    "real_prompt_dry_input_token_safety_margin": 2048,
+    "real_prompt_dry_output_cap": 8192,
+    "real_prompt_dry_pre_send_peak_upper_cny": "0.08298",
+    "real_prompt_dry_hard_cap_cny": "0.10",
+    "real_prompt_anchor_consumed_exactly_once": true,
+    "real_prompt_opening_direction": "DOWN",
+    "real_prompt_realtime_quote_available": false,
+    "real_prompt_model_http_requests": 0,
+    "real_prompt_claim_created": false,
+    "real_prompt_provider_response_present": false,
+    "real_prompt_request_body_persisted": false,
+    "sem001_hardening_run": 35066835585,
+    "sem001_hardening_tests_passed": 75,
+    "sem001_hardening_result": "PASS",
+    "sem001_hardening_model_credentials_present": false,
+    "sem001_hardening_model_requests": 0
+  },
+  "resource_accounting_after_run030": {
+    "new_provider_http_requests": 0,
+    "new_model_cost_cny": 0,
+    "new_paid_data_calls": 0,
+    "new_claims": 0,
+    "new_real_orders": 0,
+    "main_changed": false,
+    "schedule_changes": 0
+  },
+  "governance": {
+    "gate_a": "FAIL_PRESERVED_UNTIL_A_NEW_INDEPENDENT_SAMPLE_PASSES",
+    "gate_b": "FROZEN",
+    "gate_c": "FROZEN",
+    "o_full_pool": false,
+    "u45_formal_execution": false,
+    "simulation": false,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "main_merge": false,
+    "run030_may_be_reinterpreted_as_pass": false
+  },
+  "next_action": {
+    "status": "OWNER_AUTHORIZATION_REQUIRED_BEFORE_ANY_NEW_PROVIDER_HTTP_REQUEST",
+    "instruction": "If the owner approves, create one new independent Gate A claim/sample using fresh strict preflight, v2 stable evidence handoff, deterministic session-fact anchor, explicit realtime execution contract, unchanged frozen upstream, current SEM-001/2/3 fail-closed guards, private Drive save/read/hash restore, and manual scoped semantic review.",
+    "reuse_run030_claim": false,
+    "reuse_run030_output": false,
+    "automatic_retry": false,
+    "fallback_model": false,
+    "o_full_pool_before_pass": false
+  }
+}
