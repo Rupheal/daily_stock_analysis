@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-AUDIT-20260916-PRICE-ISOLATION-001",
+  "created_at_utc": "2026-09-16T01:23:33.576268+00:00",
+  "scope": "PRICE_NONFINITE_OPEN source localization and evidence isolation only; no runtime repair or successor request",
+  "parent_commit_read": "115844364ba2db8bab34caffbbd41a11f92ccf03",
+  "branch": "fix/native-private-execution-20260914",
+  "state": "CAPTURED_LAYER_LOCALIZED_EVIDENCE_ISOLATED_WIRE_LAYER_UNRESOLVED",
+  "existing_input_archives": [
+    {
+      "workflow_run": 34995746100,
+      "artifact_id": 10406614379,
+      "source_commit": "1cdc28d41f0d61f8ee8bb28caa88d61d05830d25",
+      "sha256": "5bb806c9aedcac6d37fd22e33ab1057c6bfaae1fcc70c8bdf5daee2f5fd558a8"
+    },
+    {
+      "workflow_run": 34996463223,
+      "artifact_id": 10408196315,
+      "source_commit": "595a96a47f51084dd1f595768fa50af2a696d737",
+      "sha256": "52161769e87c8d2a2111106b725950ccdefa7cf0b2cca8765a9f227628fa692d"
+    },
+    {
+      "workflow_run": 34996864782,
+      "artifact_id": 10408127349,
+      "source_commit": "c2b45407491ab6cf8180ee3bcafd0e89bf7e2b16",
+      "sha256": "e301a66576ed6f19c57e5f87e8ebe8871f846972f43a3d08772ce48facbe05db"
+    }
+  ],
+  "findings": {
+    "security": "HK01810 / 1810.HK",
+    "target_session": "2026-09-15",
+    "earliest_captured_failure_layer": "yfinance history DataFrame, before cross-provider merge",
+    "unadjusted_close_and_adj_close": "NaN",
+    "adjusted_ohlc": "NaN",
+    "first_error_reason": "compare_prices checks open before high, low and close",
+    "provider_wire_payload_archived_in_these_inputs": false,
+    "provider_wire_vs_yfinance_parser_root_cause": "UNRESOLVED_WITHOUT_ORIGINAL_WIRE_PAYLOAD",
+    "corporate_action_cause": "NOT_PROVEN",
+    "merge_first_introduction": "EXCLUDED_BY_PREMERGE_FRAME_DIAGNOSTICS",
+    "repaired_input_is_original": false
+  },
+  "original_integrity_gate": {
+    "validator_blob": "d769db6faeb3cd1df05391b50961e20b5b97f123",
+    "validator_sha256": "7fd375b9831d5fcc389ee915d47d3c3804c11d8e02e14abb8a0c32e5f35f8d65",
+    "historical_and_current_code_identical": true,
+    "ohlc_absolute_tolerance": 0.005,
+    "tolerance_changed": false,
+    "volume_contract_changed": false,
+    "rows_dropped": 0,
+    "repair_enabled_or_changed_this_run": false,
+    "tests_passed": 16,
+    "tests_failed": 0,
+    "test_scope": "Evidence-derived NaN plus synthetic finite comparator and negative controls; not a full market preflight replay",
+    "cloud_tests_started_this_run": 0
+  },
+  "historical_input_separation": {
+    "failed_originals": "REJECTED_NONFINITE_RETAINED",
+    "existing_repaired_version": "SEPARATE_DERIVED_INPUT; repair=True disclosed in prior source; historical price gate PASS does not validate original unrepaired input",
+    "historical_repaired_price_gate_run": 34996864782,
+    "new_market_fetches": 0,
+    "originals_rewritten": false,
+    "production_reader_connected": false
+  },
+  "evidence_limits": {
+    "original_yahoo_http_payload_not_present": true,
+    "wire_payload_vs_parser_cause": "UNRESOLVED; do not overstate prior PROVIDER_RAW_NONFINITE classification as wire-level proof",
+    "corporate_action_cause": "NOT_PROVEN",
+    "first_two_archives_present_manifest_files_verified_each": 22,
+    "first_two_archives_missing_manifest_files_each": 11,
+    "missing_members_class": ".github/workflows files omitted from historical archives",
+    "manifest_hash_mismatches": 0,
+    "complete_repository_backup": false,
+    "old_archives_not_rewritten": true
+  },
+  "private_isolation_storage": {
+    "artifact_name": "DSA_PRICE_NONFINITE_OPEN_ISOLATION_20260916_001.zip",
+    "destination": "Existing DSA_PRIVATE_EVIDENCE folder; private identity omitted from public receipt",
+    "bytes": 179804,
+    "sha256": "12ff2623ea207d1e67f8ef657f21459db6c249d8c7b8b6e2e81e388b4009abdb",
+    "new_file_upload_success": true,
+    "metadata_shared": false,
+    "permissions": "one user owner only",
+    "download_sha256_verified": true,
+    "zip_crc": "PASS",
+    "restored_manifest_members_verified": 6,
+    "restored_manifest_mismatches": 0,
+    "restored_verifier_replay": "16/16 PASS; result identical to packaged LOCAL_AUDIT.json",
+    "scope": "Connector save/readback/restore of diagnostic evidence only; NOT GitHub runner or Gate B journal-migration acceptance",
+    "local_audit_sha256": "96961147a842e7c84c07ecf35fb0e77d1539eb078a12613abe8ddaacde579394"
+  },
+  "gate_status": {
+    "A": "NOT_PASS; preserved CHILD2 opening-direction semantic contradiction remains NO_GO",
+    "B": "FROZEN_NOT_EXECUTED_THIS_RUN",
+    "C": "FROZEN_NOT_EXECUTED_THIS_RUN",
+    "runtime_activated": false,
+    "semantic_status_source": "docs/runtime/O_SEMANTIC_HANDOFF_003_RESULT.json",
+    "prior_news_count_finding": "Corrected as a frozen-native tri-state false positive by later verified receipt; not an active blocker",
+    "formal_acceptance_changed_this_run": false
+  },
+  "historical_vs_new_usage": {
+    "original_run_34989320785_model_http": 0,
+    "existing_successor_run": 35002627787,
+    "existing_successor_model_http": 1,
+    "existing_successor_tokens": 11440,
+    "historical_request_not_issued_this_run": true,
+    "historical_consumed_slot_must_not_be_reused": true,
+    "new_model_http": 0,
+    "new_model_tokens": 0,
+    "new_model_provider_cost_cny": 0,
+    "new_market_data_fetches": 0,
+    "paid_data_purchases": 0,
+    "separate_Work_Codex_tasks": 0,
+    "platform_tokens_credits_fees": "UNKNOWN_NOT_ASSUMED_ZERO"
+  },
+  "no_change": {
+    "authoritative_journal_writes": 0,
+    "account_principal_resets": 0,
+    "simulation_history_rewrites": 0,
+    "schedule_or_task_prompt_changes": 0,
+    "real_orders": 0,
+    "main_merges": 0,
+    "new_authorizations": 0,
+    "frozen_upstream_modified": false,
+    "Run005_Run008_modified": false,
+    "auto_recharge": false
+  },
+  "delivery_boundary": "Append-only diagnostic receipt on research branch. Preserve all newer project increments. No shared queue rewrite, no new workflow, no model retry, no Gate B/C progression."
+}
