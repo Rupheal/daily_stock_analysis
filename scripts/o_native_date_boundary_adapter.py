@@ -58,7 +58,7 @@ def _is_hk_ticker_request(args, kwargs) -> bool:
 def patched_yahoo_target_boundary(target_session: str):
     """Patch the native HK Yahoo + AkShare retrieval boundaries for one target.
 
-    The historical public name is kept for caller compatibility.  New receipts
+    The historical public name is kept for caller compatibility. New receipts
     must use the returned per-provider counters instead of describing this as a
     Yahoo-only adapter.
     """
@@ -94,18 +94,17 @@ def patched_yahoo_target_boundary(target_session: str):
         return original_download(*args, **kwargs)
 
     def bounded_hk_hist(*args, **kwargs):
-        # stock_hk_hist is HK-specific.  Restrict the patch further to the exact
-        # target/target+1 end boundary and leave older/far-future requests alone.
+        # AkShare signature: symbol, period, start_date, end_date, adjust.
         end = kwargs.get("end_date")
-        if end is None and len(args) >= 5:
-            end = args[4]
+        if end is None and len(args) >= 4:
+            end = args[3]
         if end is not None:
             end_date = _as_date(end)
             if end_date in (target, target_plus_one):
                 kwargs = dict(kwargs)
-                if len(args) >= 5:
+                if len(args) >= 4:
                     args = list(args)
-                    args[4] = target.strftime("%Y%m%d")
+                    args[3] = target.strftime("%Y%m%d")
                     args = tuple(args)
                 else:
                     kwargs["end_date"] = target.strftime("%Y%m%d")
