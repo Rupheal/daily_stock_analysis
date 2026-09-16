@@ -1,14 +1,38 @@
 {
   "schema_version": 1,
   "authorization_id": "TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007",
-  "state": "OPEN",
-  "requests_used": 0,
+  "state": "OPEN_DIAGNOSE_BEFORE_NEXT_PAID_REQUEST",
+  "requests_used": 1,
   "requests_max": 5,
-  "batch_cost_cny_used_upper": "0.00",
+  "batch_cost_cny_used_upper": "0.074642",
   "batch_cost_cny_hard_cap": "1.00",
   "gate_a_passed": false,
-  "paid_pause_required": false,
-  "samples": [],
+  "paid_pause_required": true,
+  "paid_pause_reason": "Sample01 CONT1 model output obeyed v2 realtime/session facts, but frozen pipeline deterministic post-processing reintroduced target-session close into current_price-labeled dashboard fields, triggering SEM-001. Diagnose/fix model-free before any next request.",
+  "samples": [
+    {
+      "sample_index": 1,
+      "run_id": "TRI-DSA-EXEC-20260916-031-CONT1",
+      "workflow_run": 35068490378,
+      "claim_id": "ART-DSA-RUN031-CONT1-GATEA-O-SINGLE-CLAIM",
+      "provider_http_requests": 1,
+      "request_status": "response_received",
+      "prompt_tokens": 6673,
+      "completion_tokens": 7662,
+      "total_tokens": 14335,
+      "pre_send_peak_upper_cny": "0.082978",
+      "usage_peak_estimate_cny": "0.074642",
+      "private_save_read_hash_restore": "PASS",
+      "private_sha256": "a428902c3bb95ea355d496756a3ec2e749206cd676d8cfa87f6e2f910f0482a3",
+      "automated_gate_a": "FAIL",
+      "blockers": ["SEM-001"],
+      "root_cause_classification": "POST_MODEL_FROZEN_PIPELINE_DETERMINISTIC_CURRENT_PRICE_REFILL",
+      "model_output_realtime_contract_obeyed": true,
+      "opening_direction_correct": true,
+      "news_handoff_pass": true,
+      "session_fact_handoff_pass": true
+    }
+  ],
   "historical_run030_excluded_from_new_batch": true,
-  "last_updated_utc": "2026-09-16T07:16:00Z"
+  "last_updated_utc": "2026-09-16T07:31:00Z"
 }
