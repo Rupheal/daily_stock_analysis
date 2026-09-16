@@ -10,6 +10,7 @@ on:
       - tests/test_o_semantic_handoff_contract.py
       - tests/test_o_post_output_contract.py
       - tests/test_o_session_fact_anchor.py
+      - tests/test_o_native_context_canonical.py
       - tests/test_prepare_xiaomi_acceptance_targeted.py
       - .github/workflows/77-o-evidence-handoff-v2-model-free.yml
 permissions:
@@ -33,12 +34,13 @@ jobs:
           PY
       - name: Install project test dependencies
         run: pip install -r requirements.txt pytest
-      - name: Run handoff, post-output, session-fact and targeted-preflight contracts
+      - name: Run handoff post-output session-fact canonical and targeted-preflight contracts
         run: >-
           PYTHONPATH=scripts python -m pytest --noconftest -q
           tests/test_o_semantic_handoff_contract.py
           tests/test_o_post_output_contract.py
           tests/test_o_session_fact_anchor.py
+          tests/test_o_native_context_canonical.py
           tests/test_prepare_xiaomi_acceptance_targeted.py
       - name: Static no-network scope proof
         run: |
