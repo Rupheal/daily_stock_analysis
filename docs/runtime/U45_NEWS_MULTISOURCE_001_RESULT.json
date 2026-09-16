@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-U45-NEWS-MULTISOURCE-001",
+  "status": "PASS_BOUNDED_RETRIEVAL_LAYER_ONLY",
+  "scope": "Model-free multisource public-news retrieval for 44 currently executable U45 members after Eastmoney passportWeb-only source-health failure. This does not claim semantic/event completeness or formal U acceptance.",
+  "branch": "fix/native-private-execution-20260914",
+  "source_commit": "59cb0b67ae8696602341d4db750771ee3b6a63e3",
+  "cloud_validation": {
+    "workflow": ".github/workflows/56-u45-news-multisource.yml",
+    "workflow_run": 35118416504,
+    "job": 104869665518,
+    "conclusion": "success",
+    "artifact_id": 10456136240,
+    "artifact_name": "U45_NEWS_MULTISOURCE",
+    "artifact_digest": "sha256:d062ca258a401dae15a92b365826a64d697b4e602d8a47f7f9dece30186eabfa"
+  },
+  "result": {
+    "universe_denominator": 45,
+    "execution_eligible_denominator": 44,
+    "retained_not_currently_executable": ["09618"],
+    "members_with_any_provider_parseable": 44,
+    "members_with_both_providers_parseable": 44,
+    "members_with_items": 43,
+    "members_with_zero_items": 1,
+    "zero_item_code": "01801",
+    "zero_item_name": "信达生物",
+    "yahoo_members_with_items": 0,
+    "google_news_members_with_items": 43,
+    "retrieval_quality_proven": true,
+    "news_semantic_ready": 0,
+    "formal_u_accepted": 0
+  },
+  "source_health": {
+    "eastmoney": "QUARANTINED_FOR_THIS_LANE_PASSPORTWEB_ONLY; preserved in prior failure artifacts",
+    "yahoo_finance_search": "PARSEABLE_44_OF_44_BUT_ZERO_ITEMS_44_OF_44; not used as positive coverage evidence",
+    "google_news_rss": "PARSEABLE_44_OF_44; POSITIVE_ITEMS_43_OF_44; current positive retrieval source"
+  },
+  "interpretation": {
+    "accepted": "A free independent public-news path can return actual article lists for 43 of 44 currently executable U45 members, while all 44 have parseable multisource transport.",
+    "not_accepted": "Retrieved articles have not yet passed deterministic recency/issuer-relevance/event classification. The single zero-result issuer has not yet been resolved. Therefore U45 news_ready remains 0/45 and formal acceptance remains 0/45.",
+    "fail_closed": "Do not infer no material news from a zero result and do not promote retrieval coverage to formal news evidence without semantic filtering."
+  },
+  "resources": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "new_subscriptions": 0,
+    "provider_cost_cny": 0
+  },
+  "formal_boundaries": {
+    "gate_b_frozen": true,
+    "gate_c_frozen": true,
+    "o_full_pool_permitted": false,
+    "u45_formal_acceptance_added": 0,
+    "simulation": false,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  },
+  "next_actions": [
+    "Resolve 01801 with issuer aliases/English name without weakening the denominator.",
+    "Apply deterministic publication-time and issuer-title relevance filters to the retrieved Google News evidence and preserve raw provenance/hash.",
+    "Keep Yahoo and Eastmoney zero-result behavior as source-health evidence rather than treating them as no-news proof."
+  ]
+}
