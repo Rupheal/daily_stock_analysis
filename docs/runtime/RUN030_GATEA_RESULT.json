@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-030",
+  "workflow_run": 35065110293,
+  "state": "MODEL_AND_PRIVATE_STORAGE_PASS_SEMANTIC_GATE_FAIL_PRESERVED",
+  "target": "HK01810",
+  "target_session": "2026-09-15",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "pre_model_gates": {
+    "regression": "PASS",
+    "capture_provenance": "PASS",
+    "target_session": "PASS",
+    "strict_preflight": "PASS",
+    "prices": "PASS",
+    "news_count": 5,
+    "news_origin_count": 4,
+    "native_exact_session_smoke": "PASS",
+    "dry_request_envelope": "PASS",
+    "durable_independent_claim": "PASS"
+  },
+  "provider": {
+    "model_http_requests": 1,
+    "request_status": "response_received",
+    "prompt_tokens": 6379,
+    "completion_tokens": 6175,
+    "total_tokens": 12554,
+    "pre_send_peak_upper_cny": "0.08239",
+    "usage_peak_estimate_cny": "0.062158",
+    "second_retry_under_run030": false
+  },
+  "private_evidence": {
+    "artifact_id": "ART-DSA-RUN030-GATEA-O-SINGLE",
+    "bytes": 3259584,
+    "sha256": "a75ff512172648e4c13fdd6bb44e8447248b6238108ca45affcafdfb0ac34258",
+    "save_read_hash_restore": "PASS",
+    "owner_only": true,
+    "raw_content_public": false
+  },
+  "automated_semantic_blockers": [
+    "OPEN_GAP_DIRECTION_CONTRADICTION",
+    "SEM-001",
+    "NEWS_HANDOFF_UNPROVEN:NEWS_HANDOFF_INPUT_BINDING_MISMATCH"
+  ],
+  "manual_scoped_review": {
+    "opening_fact": {
+      "open": 27.1200008392334,
+      "previous_close": 27.15999984741211,
+      "difference": -0.03999900817871094,
+      "gap_pct": -0.14727175406270554,
+      "direction": "DOWN_SMALL_BUT_NONZERO"
+    },
+    "opening_blocker_classification": "GENUINE_MODEL_SEMANTIC_ERROR",
+    "opening_reason": "The output described the session as high-open despite open being below previous close. The captured formatted prompt showed the target-session open but did not expose previous close, so the model lacked a decisive input required for this classification.",
+    "sem001_classification": "GENUINE_AMBIGUOUS_LIVE_PRICE_LANGUAGE",
+    "sem001_reason": "The output explicitly acknowledged realtime quote was unavailable, yet repeatedly labelled the 2026-09-15 close 26.50 as current/spot price. For a later delivery this wording is misleading and remains blocked.",
+    "news_handoff_blocker_classification": "ACCEPTANCE_WRAPPER_FALSE_BLOCKER",
+    "news_handoff_reason": "Five admitted news items were loaded and prompt-consumption proof confirms the news block appeared exactly once. The handoff hash was computed over the live native context containing typed date values, while the later preserved input snapshot serialized those dates to strings before the post-output re-hash. The type-preserving hash and string snapshot therefore differ even though news delivery itself succeeded.",
+    "news_loaded": true,
+    "news_prompt_consumed": true,
+    "pipeline_final_capture_proven": true
+  },
+  "root_cause_direction": {
+    "infrastructure_chain_now_end_to_end": true,
+    "remaining_work": [
+      "fix stage-aware news handoff binding without weakening typed canonical hashing",
+      "provide an explicit versioned deterministic session-fact anchor to the frozen analyzer so previous close/open direction is actually in the model input",
+      "anchor price wording to target-session close when realtime quote is unavailable",
+      "re-run one independent sample only after model-free contract tests pass"
+    ]
+  },
+  "governance": {
+    "gate_a": "FAIL_PRESERVED",
+    "gate_b": "FROZEN",
+    "gate_c": "FROZEN",
+    "o_full_pool": false,
+    "u45_formal_execution": false,
+    "simulation": false,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  }
+}
