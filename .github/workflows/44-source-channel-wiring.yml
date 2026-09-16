@@ -26,9 +26,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install test dependency
-        run: python -m pip install --disable-pip-version-check pytest
-
       - name: Wire catalog into existing runtime routes
         shell: bash
         run: |
@@ -84,7 +81,7 @@ jobs:
             src/services/__init__.py
 
       - name: Run source-channel contract tests
-        run: python -m pytest -q tests/test_source_channel_registry.py
+        run: python -m unittest -v tests.test_source_channel_registry
 
       - name: Commit verified runtime wiring
         shell: bash
