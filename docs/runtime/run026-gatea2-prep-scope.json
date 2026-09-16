@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-026",
+  "scope": "Gate A2 model-free fresh preparation only",
+  "owner_instruction": "2026-09-16 /goal resume: complete free reversible Gate A preparation before any new model request",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "model_http_requests_authorized": 0,
+  "claim_creation_permitted": false,
+  "candidate_artifact_id": "ART-DSA-RUN026-GATEA2-O-SINGLE",
+  "candidate_claim_id": "ART-DSA-RUN026-GATEA2-O-SINGLE-CLAIM",
+  "target_session": "DYNAMIC_XHKG_LATEST_COMPLETED_AT_EXECUTION",
+  "post_output_contract": "O_POST_OUTPUT_CONTRACT_v2",
+  "news_handoff": "O_SEMANTIC_HANDOFF_v1",
+  "gate_b_c": "FROZEN",
+  "runtime_activated": false,
+  "real_orders_permitted": false,
+  "main_merge_permitted": false,
+  "schedule_changes_permitted": false,
+  "auto_recharge": false
+}
