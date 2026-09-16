@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-026",
+  "scope": "Complete all remaining free reversible Gate A2 preparation after model-free native route diagnosis passed normal routing.",
+  "prior_diagnostic_run": 35053995872,
+  "normal_route_only": true,
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "model_http_requests_authorized": 0,
+  "claim_creation_permitted": false,
+  "no_gate_relaxation": true,
+  "ohlc_tolerance_unchanged": true,
+  "old_child2_rewritten": false,
+  "old_run018_slot_reused": false,
+  "gate_b_c": "FROZEN",
+  "runtime_activated": false,
+  "real_orders_permitted": false,
+  "main_merge_permitted": false,
+  "schedule_changes_permitted": false,
+  "auto_recharge": false
+}
