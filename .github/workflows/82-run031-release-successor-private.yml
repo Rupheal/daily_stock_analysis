@@ -1,0 +1,143 @@
+name: Run031 CONT1 private release successor acceptance
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/RUN031_CONT1_RELEASE_SUCCESSOR_SCOPE.json
+permissions:
+  contents: read
+concurrency:
+  group: dsa-gatea-release-successor
+  cancel-in-progress: false
+jobs:
+  accept:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      PYTHONPATH: ${{ github.workspace }}/scripts
+      PARENT_ARTIFACT_ID: ART-DSA-RUN031-CONT1-GATEA-O-SINGLE
+      PARENT_RUN_ID: TRI-DSA-EXEC-20260916-031-CONT1
+      PARENT_SHA256: a428902c3bb95ea355d496756a3ec2e749206cd676d8cfa87f6e2f910f0482a3
+      SUCCESSOR_ARTIFACT_ID: ART-DSA-RUN031-CONT1-RELEASE-SUCCESSOR
+      SUCCESSOR_RUN_ID: TRI-DSA-ACCEPT-20260916-031-RELEASE
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify scope manual review batch accounting and no model credential
+        run: |
+          python - <<'PY'
+          import json,os
+          s=json.load(open('docs/runtime/RUN031_CONT1_RELEASE_SUCCESSOR_SCOPE.json'))
+          m=json.load(open('docs/runtime/RUN031_CONT1_MANUAL_SCOPED_REVIEW.json'))
+          l=json.load(open('docs/runtime/O_GATEA_CRITICAL_BATCH_007_LEDGER.json'))
+          assert s['authorized_model_requests']==0 and s['parent_artifact_id']==os.environ['PARENT_ARTIFACT_ID'] and s['parent_sha256']==os.environ['PARENT_SHA256']
+          assert m['review_status']=='PASS_MODEL_OUTPUT_SCOPED_SEMANTIC_REVIEW_RAW_PIPELINE_BLOCK_PRESERVED'
+          assert l['requests_used']==1 and l['batch_cost_cny_used_upper']=='0.074642' and l['paid_pause_required'] is True
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k]
+          assert not forbidden, forbidden
+          print('{"scope":"PASS","manual_review":"PASS","batch_requests_used":1,"batch_cost_upper":"0.074642","model_credentials_present":false,"model_requests":0}')
+          PY
+      - name: Install private-store dependency
+        run: pip install httpx
+      - name: Recover exact parent private artifact and verify bundle
+        run: |
+          python - <<'PY'
+          import os,json,httpx,zipfile
+          from pathlib import Path
+          from dsa_drive_store import DriveStore,scoped_token,API,StoreError
+          from dsa_drive_bundle import verify_bundle
+          out=Path('/tmp/run031-parent.zip')
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c)
+              store=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              q="'"+os.environ['DSA_DRIVE_FOLDER_ID']+"' in parents and trashed=false and appProperties has { key='artifact_id' and value='"+os.environ['PARENT_ARTIFACT_ID']+"' }"
+              rows=store.request('GET',API+'/files',params={'q':q,'fields':'files(id,appProperties),nextPageToken','pageSize':100}).json()
+              found=rows.get('files') or []
+              if rows.get('nextPageToken') or len(found)!=1: raise StoreError('PARENT_ARTIFACT_LOOKUP_NOT_UNIQUE')
+              props=found[0].get('appProperties') or {}
+              assert props.get('sha256')==os.environ['PARENT_SHA256'] and props.get('run_id')==os.environ['PARENT_RUN_ID']
+              store.recover(found[0]['id'],os.environ['PARENT_SHA256'],out)
+          data=out.read_bytes(); verify_bundle(data)
+          root=Path('/tmp/run031-parent'); root.mkdir()
+          with zipfile.ZipFile(out) as z: z.extractall(root)
+          required=['preflight.json','original-model/original-input.json','original-model/original-result.json','original-model/pipeline-final-result.json','original-model/post-output-contract.json']
+          assert all((root/p).is_file() for p in required)
+          print(json.dumps({'parent_restore':'PASS','parent_sha256':os.environ['PARENT_SHA256'],'required_files_verified':len(required),'model_requests':0}))
+          PY
+      - name: Apply release adapter and successor gate to immutable parent
+        run: |
+          mkdir -p /tmp/run031-release-successor
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from o_release_quote_semantics import build_release_view
+          from o_release_gate_contract import evaluate_release_gate
+          root=Path('/tmp/run031-parent')
+          p=json.load(open(root/'preflight.json'))
+          i=json.load(open(root/'original-model/original-input.json'))
+          raw_model=json.load(open(root/'original-model/original-result.json'))
+          raw_final=json.load(open(root/'original-model/pipeline-final-result.json'))
+          raw_contract=json.load(open(root/'original-model/post-output-contract.json'))
+          assert raw_model.get('current_price') is None
+          assert ((raw_model.get('dashboard') or {}).get('data_perspective') or {}).get('price_position',{}).get('current_price') is None
+          assert (raw_contract.get('promotion_gate') or {}).get('blockers')==['SEM-001']
+          bundle=build_release_view(p,i,raw_final)
+          gate=evaluate_release_gate(raw_contract,bundle)
+          assert gate['status']=='PASS_WITH_VERSIONED_RELEASE_ADAPTER' and gate['gate_a_successor_candidate'] is True
+          assert gate['raw_native_pipeline_semantic_pass'] is False and gate['release_view_semantic_pass'] is True
+          assert bundle['receipt']['sanitized_count']==2
+          expected={'$.dashboard.data_perspective.price_position.current_price','$.dashboard.decision_stability.current_price'}
+          assert set(bundle['receipt']['sanitized_paths'])==expected
+          out=Path('/tmp/run031-release-successor')
+          (out/'release-view-result.json').write_text(json.dumps(bundle['release_result'],ensure_ascii=False,sort_keys=True))
+          (out/'release-quote-semantics-receipt.json').write_text(json.dumps(bundle['receipt'],ensure_ascii=False,indent=2,sort_keys=True))
+          (out/'release-view-semantic-audit.json').write_text(json.dumps(bundle['release_audit'],ensure_ascii=False,indent=2,sort_keys=True))
+          (out/'release-gate-contract.json').write_text(json.dumps(gate,ensure_ascii=False,indent=2,sort_keys=True))
+          print(json.dumps({'release_adapter':'PASS','successor_gate':gate['status'],'sanitized_count':2,'raw_native_pipeline_semantic_pass':False,'release_view_semantic_pass':True,'model_requests':0}))
+          PY
+      - name: Save successor release evidence privately and verify restore
+        run: >-
+          python scripts/dsa_drive_bundle.py
+          --source /tmp/run031-release-successor
+          --run-id "$SUCCESSOR_RUN_ID"
+          --artifact-id "$SUCCESSOR_ARTIFACT_ID"
+          --parent-artifact-id "$PARENT_ARTIFACT_ID"
+          --receipt /tmp/run031-release-private-receipt.json
+      - name: Build sanitized successor acceptance receipt
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.load(open('/tmp/run031-release-private-receipt.json'))
+          q=json.load(open('/tmp/run031-release-successor/release-quote-semantics-receipt.json'))
+          g=json.load(open('/tmp/run031-release-successor/release-gate-contract.json'))
+          assert r.get('save_read_hash_restore') is True and g['status']=='PASS_WITH_VERSIONED_RELEASE_ADAPTER'
+          out={
+            'schema_version':1,'run_id':os.environ['SUCCESSOR_RUN_ID'],'parent_run_id':os.environ['PARENT_RUN_ID'],
+            'parent_artifact_id':os.environ['PARENT_ARTIFACT_ID'],'parent_sha256':os.environ['PARENT_SHA256'],
+            'successor_artifact_id':os.environ['SUCCESSOR_ARTIFACT_ID'],'successor_private_sha256':r.get('sha256'),'successor_private_bytes':r.get('bytes'),
+            'successor_private_save_read_hash_restore':'PASS','release_adapter_version':q.get('version'),'release_raw_pipeline_sha256':q.get('raw_pipeline_sha256'),
+            'release_view_sha256':q.get('release_view_sha256'),'sanitized_paths':q.get('sanitized_paths'),'strategy_fields_changed':q.get('strategy_fields_changed'),
+            'raw_native_pipeline_semantic_pass':False,'raw_native_pipeline_fail_preserved':True,'release_view_semantic_pass':True,
+            'successor_gate_status':g.get('status'),'gate_a':'PASS_WITH_VERSIONED_RELEASE_ADAPTER','model_http_requests_added':0,
+            'batch_provider_requests_used':1,'batch_cost_cny_used_upper':'0.074642','remaining_authorized_requests_unused':4,
+            'gate_b':'FROZEN_CURRENT_SCOPE','gate_c':'FROZEN_CURRENT_SCOPE','o_full_pool_permitted':False,'u45_formal_execution_permitted':False,
+            'simulation':False,'runtime_activated':False,'real_orders':0,'main_merge':False,'schedule_changes':0,'raw_content_public':False
+          }
+          Path('/tmp/run031-release-successor-sanitized.json').write_text(json.dumps(out,indent=2,sort_keys=True))
+          print(json.dumps({'successor_acceptance':'PASS','gate_a':'PASS_WITH_VERSIONED_RELEASE_ADAPTER','model_requests_added':0,'batch_requests_used':1,'batch_cost_upper':'0.074642','gate_b_c':'FROZEN_CURRENT_SCOPE'}))
+          PY
+      - name: Upload sanitized successor receipt only
+        uses: actions/upload-artifact@v4
+        with:
+          name: run031-release-successor-sanitized
+          path: /tmp/run031-release-successor-sanitized.json
+          retention-days: 14
