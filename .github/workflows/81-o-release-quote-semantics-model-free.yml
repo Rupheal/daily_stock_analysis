@@ -1,0 +1,45 @@
+name: O release quote semantics model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_release_quote_semantics.py
+      - tests/test_o_release_quote_semantics.py
+      - .github/workflows/81-o-release-quote-semantics-model-free.yml
+permissions:
+  contents: read
+jobs:
+  release-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Prove no provider private-store or broker credentials
+        run: |
+          python - <<'PY'
+          import os
+          forbidden=[k for k in os.environ if ('DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k or 'FUTU' in k or 'LONGPORT' in k)]
+          assert not forbidden, forbidden
+          print('{"model_credentials_present":false,"drive_credentials_present":false,"broker_credentials_present":false,"model_requests":0}')
+          PY
+      - name: Install pytest only
+        run: pip install pytest
+      - name: Run release quote semantics and semantic guard regressions
+        run: >-
+          PYTHONPATH=scripts python -m pytest --noconftest -q
+          tests/test_o_release_quote_semantics.py
+          tests/test_o_single_output_fact_check.py
+      - name: Static no-network and no-frozen-mutation proof
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('scripts/o_release_quote_semantics.py').read_text()
+          assert 'httpx' not in text and 'requests.' not in text and 'urlopen(' not in text
+          assert 'src.' not in text and 'data_provider' not in text
+          print('{"network_calls":0,"frozen_upstream_imports":0,"model_requests":0,"runtime_activated":false}')
+          PY
