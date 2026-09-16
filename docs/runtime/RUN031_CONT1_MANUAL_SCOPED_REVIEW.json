@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-031-CONT1",
+  "review_type": "MANUAL_SCOPED_PRIVATE_SEMANTIC_REVIEW",
+  "private_parent_artifact": "ART-DSA-RUN031-CONT1-GATEA-O-SINGLE",
+  "private_parent_sha256": "a428902c3bb95ea355d496756a3ec2e749206cd676d8cfa87f6e2f910f0482a3",
+  "raw_content_public": false,
+  "reviewed_private_evidence": [
+    "original-model/original-result.json",
+    "original-model/pipeline-final-result.json",
+    "original-model/post-output-contract.json",
+    "original-model/original-input.json",
+    "original-model/news-handoff-receipt.json",
+    "original-model/news-prompt-consumption.json"
+  ],
+  "model_output_findings": {
+    "opening_direction": "CORRECT_DOWN_LOW_OPEN",
+    "top_level_current_price": "NULL",
+    "dashboard_price_position_current_price_at_model_return": "NULL",
+    "completed_session_close_wording": "SAFE_TARGET_SESSION_CLOSE_LANGUAGE",
+    "realtime_availability_disclosure": "EXPLICITLY_UNAVAILABLE",
+    "completed_close_not_realtime_disclosure": "EXPLICIT",
+    "news_handoff": "PASS",
+    "session_fact_anchor": "PASS",
+    "sem002": "PASS",
+    "sem003": "PASS",
+    "action": "watch",
+    "decision_type": "hold"
+  },
+  "post_model_pipeline_findings": {
+    "raw_pipeline_final_sem001": "BLOCK",
+    "price_position_current_price_refilled_from_completed_close": 26.5,
+    "decision_stability_current_price_added_from_completed_close": 26.5,
+    "model_action_changed": false,
+    "classification": "DETERMINISTIC_POST_MODEL_INTEGRATION_SEMANTIC_LABEL_DEFECT"
+  },
+  "review_status": "PASS_MODEL_OUTPUT_SCOPED_SEMANTIC_REVIEW_RAW_PIPELINE_BLOCK_PRESERVED",
+  "release_successor_precondition": "Only a versioned fail-closed release adapter may clear numeric current_price-labelled fields proven identical to the target-session close; raw evidence must remain immutable.",
+  "gate_a_direct_raw_pass": false,
+  "gate_b_permitted": false,
+  "gate_c_permitted": false,
+  "o_full_pool_permitted": false,
+  "runtime_activated": false,
+  "model_requests_added_by_review": 0
+}
