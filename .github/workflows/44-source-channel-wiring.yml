@@ -26,6 +26,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+
       - name: Wire catalog into existing runtime routes
         shell: bash
         run: |
