@@ -11,7 +11,7 @@ import re
 
 from o_semantic_handoff_contract import opening_check, news_count_state
 
-GUARD_VERSION = 'O_POST_OUTPUT_SEMANTIC_GUARDS_v1.1'
+GUARD_VERSION = 'O_POST_OUTPUT_SEMANTIC_GUARDS_v1.2'
 
 
 def numeric(value):
@@ -52,15 +52,38 @@ def _semantic_guards(preflight, original_input, result):
     findings=[]
     ctx=original_input.get('context') or {}
 
-    # SEM-001: a completed-session close must not be relabeled as live/current
-    # when the native input has no realtime quote.
-    realtime_missing = result.get('current_price') is None
+    # SEM-001: a completed-session close must not be relabeled as live/current.
+    # v2 preflight explicitly records whether a realtime quote existed and is
+    # authoritative when present.  Legacy evidence without that contract keeps
+    # the older conservative inference so historical receipts remain replayable.
+    execution_contract=preflight.get('execution_contract')
+    explicit_realtime=None
+    if execution_contract is not None:
+        if not isinstance(execution_contract,dict):
+            findings.append({'code':'SEM001_REALTIME_AVAILABILITY_CONTRACT_INVALID','guard_id':'SEM-001','severity':'CONDITION',
+                             'paths':['preflight.execution_contract']})
+        elif 'realtime_quote_available' in execution_contract:
+            candidate=execution_contract.get('realtime_quote_available')
+            if type(candidate) is not bool:
+                findings.append({'code':'SEM001_REALTIME_AVAILABILITY_CONTRACT_INVALID','guard_id':'SEM-001','severity':'CONDITION',
+                                 'paths':['preflight.execution_contract.realtime_quote_available']})
+            else:
+                explicit_realtime=candidate
+
     source_chain=((ctx.get('fundamental_context') or {}).get('source_chain') or [])
-    realtime_missing = realtime_missing or any(
-        row.get('provider')=='realtime_quote' and row.get('result') in ('not_supported','missing','unavailable')
-        for row in source_chain if isinstance(row,dict)
-    )
+    if explicit_realtime is not None:
+        realtime_missing=not explicit_realtime
+    else:
+        realtime_missing=result.get('current_price') is None
+        realtime_missing = realtime_missing or any(
+            row.get('provider')=='realtime_quote' and row.get('result') in ('not_supported','missing','unavailable')
+            for row in source_chain if isinstance(row,dict)
+        )
+
     if realtime_missing:
+        if numeric(result.get('current_price')) is not None:
+            findings.append({'code':'SEM001_TOPLEVEL_CURRENT_PRICE_WITHOUT_REALTIME_QUOTE','guard_id':'SEM-001','severity':'CONDITION',
+                             'paths':['current_price','preflight.execution_contract.realtime_quote_available']})
         dashboard_price=_get(result,'dashboard','data_perspective','price_position','current_price')
         if numeric(dashboard_price) is not None:
             findings.append({'code':'SEM001_LIVE_PRICE_FIELD_WITHOUT_REALTIME_QUOTE','guard_id':'SEM-001','severity':'CONDITION',
