@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-U45-NEWS-001",
+  "status": "PASS_BOUNDED_TRANSPORT_ONLY_SEMANTIC_COVERAGE_NOT_ESTABLISHED",
+  "scope": "Model-free public-news transport and parseability check for the 44 currently executable U45 members. This receipt does not claim per-stock news/event completeness or formal U acceptance.",
+  "branch": "fix/native-private-execution-20260914",
+  "source_commit": "221a374ad86d3d0e2431f15a0a9c0fd2742d4fa8",
+  "cloud_validation": {
+    "workflow": ".github/workflows/55-u45-news-coverage.yml",
+    "workflow_run": 35117932128,
+    "job": 104868020585,
+    "conclusion": "success",
+    "artifact_id": 10456740409,
+    "artifact_name": "U45_NEWS_COVERAGE",
+    "artifact_digest": "sha256:19d060e4d926d470aadc782962d76fae422579f8d3bfd391799e9b36089137f4"
+  },
+  "result": {
+    "universe_denominator": 45,
+    "execution_eligible_denominator": 44,
+    "retained_not_currently_executable": ["09618"],
+    "transport_parse_ready": 44,
+    "transport_parse_failed": 0,
+    "queries_with_items_returned": 0,
+    "queries_with_zero_items_returned": 44,
+    "news_semantic_ready": 0,
+    "formal_u_accepted": 0
+  },
+  "interpretation": {
+    "accepted": "The public search endpoint was reachable and parseable for every currently executable U45 member in this bounded run.",
+    "not_accepted": "Because every query returned zero items, this run does not establish article retrieval quality, recency, event relevance, completeness, or absence of material news. It must not be promoted to U45 news_ready.",
+    "fail_closed": "Keep news_ready at 0/45 until query formulation/response structure is independently validated and meaningful per-stock evidence or a defensible no-recent-news result can be produced."
+  },
+  "resources": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "new_subscriptions": 0,
+    "provider_cost_cny": 0
+  },
+  "formal_boundaries": {
+    "gate_b_frozen": true,
+    "gate_c_frozen": true,
+    "o_full_pool_permitted": false,
+    "u45_formal_acceptance_added": 0,
+    "simulation": false,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  },
+  "next_actions": [
+    "Correct the public-news probe so company-name and stock-code queries are evaluated independently instead of concatenated.",
+    "Record response-shape diagnostics and prove at least known-active issuers can return actual items before interpreting zero results as evidence.",
+    "Only after retrieval quality is demonstrated should per-stock event relevance/recency be evaluated; keep formal U acceptance at 0/45."
+  ]
+}
