@@ -1,0 +1,46 @@
+name: O native context date hash model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_native_context_canonical.py
+      - scripts/run_hk_original_model_probe_date_safe.py
+      - tests/test_o_native_context_canonical.py
+      - .github/workflows/69-o-native-context-date-hash.yml
+permissions:
+  contents: read
+jobs:
+  date-hash:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pytest only
+        run: pip install pytest
+      - name: Confirm model and Drive credentials are unavailable to this job
+        run: |
+          python - <<'PY'
+          import os
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k]
+          assert not forbidden, forbidden
+          print('{"model_credentials_present":false,"drive_credentials_present":false,"runtime_activated":false}')
+          PY
+      - name: Run date-shaped handoff and semantic regression tests
+        run: |
+          PYTHONPATH=scripts python -m pytest --noconftest -q \
+            tests/test_o_native_context_canonical.py \
+            tests/test_o_semantic_handoff_contract.py \
+            tests/test_o_post_output_contract.py
+      - name: Prove future bootstrap is import-safe and does not execute provider path
+        run: |
+          PYTHONPATH=scripts python - <<'PY'
+          import ast, pathlib
+          p=pathlib.Path('scripts/run_hk_original_model_probe_date_safe.py')
+          tree=ast.parse(p.read_text())
+          assert any(isinstance(n, ast.ImportFrom) and n.module=='o_native_context_canonical' for n in tree.body)
+          assert 'run_hk_original_model_probe' in p.read_text()
+          print('{"bootstrap_static_check":"PASS","provider_requests":0}')
+          PY
