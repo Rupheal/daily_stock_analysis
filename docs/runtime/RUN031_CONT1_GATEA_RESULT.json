@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-031-CONT1",
+  "workflow_run": 35068490378,
+  "batch_authorization": "TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007",
+  "batch_sample_index": 1,
+  "state": "MODEL_STORAGE_HANDOFF_PASS_FROZEN_PIPELINE_FINAL_SEM001_BLOCK",
+  "provider": {
+    "model_http_requests": 1,
+    "request_status": "response_received",
+    "prompt_tokens": 6673,
+    "completion_tokens": 7662,
+    "total_tokens": 14335,
+    "pre_send_peak_upper_cny": "0.082978",
+    "usage_peak_estimate_cny": "0.074642"
+  },
+  "private_evidence": {
+    "artifact_id": "ART-DSA-RUN031-CONT1-GATEA-O-SINGLE",
+    "bytes": 3728166,
+    "sha256": "a428902c3bb95ea355d496756a3ec2e749206cd676d8cfa87f6e2f910f0482a3",
+    "save_read_hash_restore": "PASS",
+    "owner_only": true,
+    "raw_content_public": false
+  },
+  "handoff": {
+    "version": "O_SEMANTIC_NEWS_HANDOFF_v2",
+    "news_loader_consumed": true,
+    "news_prompt_consumed": true,
+    "session_fact_anchor": "PASS",
+    "opening_direction": "DOWN",
+    "realtime_quote_available": false
+  },
+  "model_output_scoped_review": {
+    "opening_direction_correct": true,
+    "top_level_current_price": null,
+    "dashboard_price_position_current_price": null,
+    "completed_close_wording_safe": true,
+    "explicit_realtime_missing_disclosure": true,
+    "explicit_completed_close_not_realtime_disclosure": true,
+    "classification": "MODEL_OUTPUT_OBEYED_V2_SESSION_AND_REALTIME_FACTS"
+  },
+  "frozen_pipeline_final": {
+    "semantic_contract_pass": false,
+    "blockers": ["SEM-001"],
+    "post_model_mutations_relevant_to_blocker": [
+      {
+        "path": "dashboard.data_perspective.price_position.current_price",
+        "before": null,
+        "after": 26.5
+      },
+      {
+        "path": "dashboard.decision_stability.current_price",
+        "before": "MISSING",
+        "after": 26.5
+      }
+    ],
+    "top_level_current_price_after_pipeline": null,
+    "action_changed_by_relevant_mutation": false,
+    "root_cause": "FROZEN_PIPELINE_FILL_PRICE_POSITION_AND_STRUCTURE_STABILITY_USE_TREND_RESULT_CURRENT_PRICE_DERIVED_FROM_COMPLETED_DAILY_CLOSE_WHEN_REALTIME_IS_UNAVAILABLE"
+  },
+  "frozen_source_proof": {
+    "fill_price_position_if_needed_uses_trend_result_current_price": true,
+    "pipeline_calls_fill_price_position_if_needed_after_model": true,
+    "stabilize_decision_with_structure_can_fallback_to_trend_result_current_price": true,
+    "frozen_upstream_mutated": false
+  },
+  "batch_after_sample": {
+    "requests_used": 1,
+    "requests_max": 5,
+    "batch_cost_cny_used_upper": "0.074642",
+    "batch_hard_cap_cny": "1.00",
+    "paid_pause_required": true
+  },
+  "next_action": {
+    "paid_request_permitted_now": false,
+    "instruction": "Develop and model-free validate a versioned release-view quote-semantics adapter. Preserve the raw frozen pipeline final result. Only null current_price-labelled numeric fields when realtime_quote_available=false and the value is provably identical to the target-session completed close; otherwise fail closed. Do not change action, score, strategy fields, prompt, frozen upstream, or raw evidence.",
+    "gate_a_remains": "FAIL"
+  },
+  "governance": {
+    "gate_b": "FROZEN",
+    "gate_c": "FROZEN",
+    "o_full_pool": false,
+    "u45_formal_execution": false,
+    "simulation": false,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "main_merge": false,
+    "schedule_changes": 0
+  }
+}
