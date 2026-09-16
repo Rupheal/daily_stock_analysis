@@ -16,6 +16,7 @@ jobs:
       ENV_FILE: /dev/null
       TZ: Asia/Hong_Kong
       PYTHONUNBUFFERED: '1'
+      PYTHONPATH: .
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
