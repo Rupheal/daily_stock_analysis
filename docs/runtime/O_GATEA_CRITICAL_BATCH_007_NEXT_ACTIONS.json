@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "authority": "TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007",
+  "status": "AUTHORIZED_READY_TO_EXECUTE",
+  "priority": 0,
+  "workstream": "O_NATIVE_GATE_A",
+  "requests_used": 0,
+  "requests_max": 5,
+  "batch_cost_cny_used": "0.00",
+  "batch_cost_cny_hard_cap": "1.00",
+  "latest_ready_receipt": "docs/runtime/O_GATEA_V2_PREFLIGHT_READY_006_RESULT.json",
+  "directive": "docs/dsa-urgent-user-directive.md",
+  "authorization_receipt": "docs/runtime/O_GATEA_CRITICAL_BATCH_AUTH_007.json",
+  "actions": [
+    {
+      "priority": 0,
+      "id": "O-GATEA-007-A",
+      "action": "Before each paid request, resolve the current completed XHKG target session and run fresh strict preflight, price integrity, frozen native exact-session smoke and official-tokenizer cost proof.",
+      "model_requests": 0
+    },
+    {
+      "priority": 1,
+      "id": "O-GATEA-007-B",
+      "action": "If all request-before-send gates pass and no duplicate/concurrent candidate exists, create a new independent Claim and send at most one DeepSeek request for that sample.",
+      "model_requests_max_per_sample": 1
+    },
+    {
+      "priority": 2,
+      "id": "O-GATEA-007-C",
+      "action": "Persist raw evidence privately to Drive, verify save/read/hash/restore, run semantic gates and manual scoped review. Preserve failures immutably.",
+      "model_requests": 0
+    },
+    {
+      "priority": 3,
+      "id": "O-GATEA-007-D",
+      "action": "On failure, perform model-free root-cause diagnosis and regression repair before consuming another request. If the same root-cause class persists across two paid samples, pause paid requests and reassess architecture.",
+      "model_requests": 0
+    }
+  ],
+  "stop_immediately_if": [
+    "Gate A PASS",
+    "5 provider requests consumed",
+    "CNY 1.00 batch hard cap reached or cannot be proven safe before send",
+    "duplicate/concurrent paid candidate risk",
+    "target-session or price-integrity failure",
+    "private evidence persistence failure",
+    "same root-cause class persists across two paid samples"
+  ],
+  "frozen": {
+    "gate_b": true,
+    "gate_c": true,
+    "o_full_pool_before_gate_a_pass": true,
+    "u45_formal_execution": true,
+    "simulation": true,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  }
+}
