@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "case_id": "DSA_EVENT_PRICING_FOMC_20260916_001",
+  "snapshot_asof_hkt": "2026-09-16T21:49:00+08:00",
+  "event": {
+    "name": "FOMC September 2026 decision",
+    "meeting_dates": ["2026-09-15", "2026-09-16"],
+    "statement_time_et": "2026-09-16T14:00:00-04:00",
+    "press_conference_time_et": "2026-09-16T14:30:00-04:00",
+    "official_schedule_source": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+  },
+  "market_expectation": {
+    "reported_probability_25bp_hike": 0.925,
+    "source": "https://www.reuters.com/world/india/rupee-faces-more-pressure-with-likely-fed-rate-hike-compounding-oil-pain-2026-09-16/",
+    "working_two_outcome_distribution_bps": {
+      "0": 0.075,
+      "25": 0.925
+    },
+    "working_distribution_limitation": "Research approximation using the reported 92.5% +25bp probability and assigning the residual to hold. Not a substitute for a full real-time FedWatch probability tree.",
+    "probability_weighted_expected_change_bps": 23.125,
+    "reported_remainder_year_swap_pricing_bps": 60,
+    "path_distribution_available": false
+  },
+  "pre_event_market_evidence": [
+    {
+      "fact": "Dollar held near multi-week highs as markets expected a Fed hike and possible further tightening.",
+      "source": "https://www.reuters.com/world/asia-pacific/dollar-girded-by-bets-us-hiking-cycle-2026-09-16/"
+    },
+    {
+      "fact": "Markets were pricing roughly a 93% chance of a hike; US 10-year yield had recently moved above 5% before the decision.",
+      "source": "https://www.reuters.com/markets/europe/global-markets-view-europe-2026-09-16/"
+    },
+    {
+      "fact": "Nasdaq volatility compression was unusually low before the event, leaving the FOMC as a potential catalyst without determining breakout direction.",
+      "source": "https://www.reuters.com/markets/global-markets-technicals-graphic-2026-09-16/"
+    }
+  ],
+  "challenger_interpretation": {
+    "phase": "PRE_EVENT",
+    "target_state": "TARGET_OUTCOME_HEAVILY_PRICED",
+    "macro_double_count_guard": true,
+    "residual_event_risk": "TARGET_PRICED_PATH_AND_COMMUNICATION_UNRESOLVED",
+    "important_distinction": "Do not double-count the expected target action as a fresh shock. The high level of yields/oil/inflation remains a separate macro-regime input, while path, statement, press conference and target surprise remain live event risks.",
+    "not_claimed": [
+      "The post-FOMC equity direction is known before the release",
+      "Pre-event price moves prove information leakage",
+      "A 92.5% target probability means path risk is 92.5% resolved"
+    ]
+  },
+  "research_status": {
+    "champion_changed": false,
+    "formal_signal_changed": false,
+    "top3_changed": false,
+    "runtime_activated": false,
+    "requires_historical_and_forward_validation": true
+  }
+}
