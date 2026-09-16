@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260917-U45-NEWS-READINESS-002",
+  "status": "PASS_RETRIEVAL_AND_BOUNDED_RELEVANCE_LAYER_ONLY",
+  "scope": "Model-free public-news readiness layering for the 44 currently executable U45 members. Retrieval and deterministic <=7-day issuer-title relevance are measured separately; event classification and formal news acceptance remain fail-closed.",
+  "branch": "fix/native-private-execution-20260914",
+  "source_commit": "866b2fc4ca846fb23750a3f1dcd3f5037fc12cac",
+  "cloud_validation": {
+    "workflow": ".github/workflows/57-u45-news-multisource.yml",
+    "workflow_run": 35162203805,
+    "job": 105015278896,
+    "conclusion": "success",
+    "deterministic_readiness_tests": 8,
+    "deterministic_readiness_tests_result": "PASS",
+    "live_public_probe_result": "PASS",
+    "artifact_id": 10473611418,
+    "artifact_name": "U45_NEWS_MULTISOURCE",
+    "artifact_digest": "sha256:750540ff80953b8171d091d46a35fb57301b84e17608117eded1862bad0682df",
+    "artifact_json_sha256": "510602e49563054d37f58aac6c0c35f39925bcaa94f4aba94d0a36548053a1ab"
+  },
+  "result": {
+    "generated_at_utc": "2026-09-16T23:25:26.764657+00:00",
+    "cutoff_utc": "2026-09-09T23:25:19.166827+00:00",
+    "universe_denominator": 45,
+    "execution_eligible_denominator": 44,
+    "retained_not_currently_executable": ["09618"],
+    "members_with_any_provider_parseable": 44,
+    "members_retrieval_ready": 44,
+    "members_relevance_ready": 5,
+    "members_event_ready": 0,
+    "members_formal_news_ready": 0,
+    "members_with_zero_items": 0,
+    "duplicate_recent_relevant_items_removed": 1,
+    "formal_u_acceptance_added": 0
+  },
+  "readiness_contract": {
+    "retrieval_ready": "At least one parsed public source returned items.",
+    "relevance_ready": "At least one deduplicated item within the 7-day window contains a frozen issuer term in the title.",
+    "event_ready": "Requires separately accepted material-event classification; always fail-closed in this run.",
+    "formal_news_ready": "Requires formal U news-evidence acceptance; always fail-closed in this run."
+  },
+  "relevance_positive_members": [
+    {"code": "09988", "name": "阿里巴巴-W", "unique_recent_title_hits": 12},
+    {"code": "06082", "name": "壁仞科技", "unique_recent_title_hits": 7},
+    {"code": "00981", "name": "中芯国际", "unique_recent_title_hits": 1},
+    {"code": "00100", "name": "MiniMax", "unique_recent_title_hits": 3},
+    {"code": "09926", "name": "康方生物", "unique_recent_title_hits": 2}
+  ],
+  "resolved_prior_gap": {
+    "prior_zero_result_code": "01801",
+    "prior_zero_result_name": "信达生物",
+    "current_retrieval_ready": true,
+    "current_relevance_ready": false,
+    "interpretation": "Official-name fallback resolved retrieval transport, but no <=7-day issuer-title item passed relevance; do not infer no material news."
+  },
+  "dedupe": {
+    "method": "SHA-256 of normalized case-folded title plus published timestamp",
+    "duplicates_removed": 1,
+    "member_with_removed_duplicate": "09988",
+    "note": "Same title at different publication timestamps is not forcibly collapsed."
+  },
+  "formal_boundaries": {
+    "gate_a_formally_accepted": false,
+    "gate_b_frozen": true,
+    "gate_c_frozen": true,
+    "o_full_pool_permitted": false,
+    "u45_formal_acceptance_added": 0,
+    "runtime_activated": false,
+    "simulation": false,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  },
+  "resources": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "new_subscriptions": 0,
+    "provider_cost_cny": 0,
+    "real_orders": 0
+  },
+  "next_actions": [
+    "Preserve retrieval_ready=44/44 executable as transport evidence only.",
+    "For the five relevance-ready members, add deterministic/traceable material-event classification without auto-promoting formal news readiness.",
+    "For the other 39 executable members, do not interpret relevance-negative as no-news; continue source/alias expansion only where evidence justifies it.",
+    "Continue seeking a new independent complete O Gate A sample; Gate B/C and O full-pool remain frozen."
+  ],
+  "progress_effect": {
+    "retrieval_layer": "PASS_44_OF_44_EXECUTABLE",
+    "relevance_layer": "PARTIAL_5_OF_44_EXECUTABLE",
+    "event_layer": "0_OF_44",
+    "formal_news_layer": "0_OF_45",
+    "formal_strategy_acceptance": "NO_CHANGE"
+  }
+}
