@@ -1,18 +1,17 @@
-"""Run the existing Xiaomi fresh preflight under the frozen O target-session contract.
+"""Run the Xiaomi fresh preflight under the frozen O target-session contract.
 
-This adapter does not alter the preflight's price/news/issuer acceptance gates.
-It replaces only two time-boundary mechanics for the controlled recovery path:
-1) the legacy target-date resolver; and
-2) Yahoo's period-based retrieval with an explicit start/end query whose end is
-   target_session + 1 calendar day, matching the frozen exclusive-end contract.
-For this bounded recovery read it also enables yfinance's built-in repair mode;
-the existing independent-source OHLC/volume gates still decide acceptance.
+The adapter keeps price/news/issuer acceptance thresholds unchanged, freezes the
+completed XHKG target, applies bounded Yahoo retrieval mechanics, and records the
+Gate-A runtime quote policy explicitly in the resulting preflight.  That explicit
+policy lets downstream evidence handoff distinguish target-session close from a
+true realtime quote without relying on hidden environment state.
 No model credentials are used here.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -26,14 +25,6 @@ def _write_receipt(path: Path, value: dict) -> None:
 
 
 def _bounded_history_kwargs(expected, kwargs):
-    """Translate the legacy 6mo Yahoo request into a repaired target-bound read.
-
-    The price/news/issuer validation thresholds are unchanged.  The start span is
-    deliberately longer than six calendar months so the existing >=60-session
-    overlap gate remains the authority, not this helper.  ``repair=True`` only
-    asks yfinance to materialize incomplete provider OHLC; values must still pass
-    the unchanged Tencent/Yahoo price and volume reconciliation gates.
-    """
     out = dict(kwargs)
     if out.get("period") == "6mo" and not out.get("start") and not out.get("end"):
         out.pop("period", None)
@@ -61,12 +52,34 @@ class _BoundedYFinance:
         return _BoundedTicker(self._original.Ticker(symbol), self._expected)
 
 
+def _env_bool(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    text = raw.strip().lower()
+    if text in {"1", "true", "yes", "on"}:
+        return True
+    if text in {"0", "false", "no", "off", ""}:
+        return False
+    raise ValueError(f"INVALID_BOOLEAN_ENV:{name}")
+
+
 def prepare_targeted(root=None, allow_partial_news=False, include_primary_evidence=False):
     evaluated_at = datetime.now(timezone.utc)
     resolved = resolve_target_session(evaluated_at)
     expected = resolved.target_session
     root_path = Path(root) if root is not None else base.REPO_ROOT / "probe"
     receipt_path = root_path / "target-session-receipt.json"
+
+    realtime_quote_available = _env_bool("ENABLE_REALTIME_QUOTE", False)
+    execution_contract = {
+        "version": "O_GATE_A_EXECUTION_CONTRACT_v2",
+        "target_session": expected.isoformat(),
+        "realtime_quote_available": realtime_quote_available,
+        "realtime_policy_source": "ENABLE_REALTIME_QUOTE",
+        "session_fact_anchor_required": True,
+        "meaning": "When realtime_quote_available is false, target-session close is not a live/current quote."
+    }
 
     receipt = {
         "rule_version": RULE_VERSION,
@@ -75,6 +88,7 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
         "yahoo_retrieval_boundary": (expected + timedelta(days=1)).isoformat(),
         "yahoo_end_semantics": "exclusive",
         "yahoo_repair_enabled": True,
+        "execution_contract": execution_contract,
         "preflight_target": None,
         "target_match": None,
         "status": "TARGET_RESOLVED_BEFORE_PREFLIGHT",
@@ -121,6 +135,11 @@ def prepare_targeted(root=None, allow_partial_news=False, include_primary_eviden
         )
         _write_receipt(receipt_path, receipt)
         raise ValueError("PREFLIGHT_TARGET_SESSION_CONTRACT_MISMATCH")
+
+    # This is an additive execution-policy receipt, not a market-data override.
+    # It is written into the preflight before downstream hashing/claim creation.
+    audit["execution_contract"] = execution_contract
+    _write_receipt(root_path / "preflight.json", audit)
 
     receipt.update(
         preflight_target=actual,
