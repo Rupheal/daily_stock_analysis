@@ -1,7 +1,7 @@
 """Versioned offline contract; no native-field mutation or model authorization.
 
-v3 preserves the v2 final-stage and semantic gates, fixes typed-live-context to
-JSON-snapshot news binding, and can require a deterministic session-fact anchor.
+v3 preserves final-stage and semantic gates while validating the v2 evidence
+handoff's stable context projection and embedded deterministic session facts.
 Historical analyzer-return snapshots remain non-final evidence.
 """
 from __future__ import annotations
@@ -13,12 +13,13 @@ import re
 from o_single_output_fact_check import check_saved_output
 from o_semantic_handoff_contract import (
     FROZEN_UPSTREAM, ContractError, canonical_hash, news_count_state,
-    opening_check, prove_prompt_consumption, build_news_handoff, CONTRACT_VERSION as HANDOFF_VERSION,
+    opening_check, prove_prompt_consumption, build_news_handoff, context_binding_hash,
+    CONTRACT_VERSION as HANDOFF_VERSION,
 )
 from o_capture_stage_provenance import PINNED_SHA256
 from o_session_fact_anchor import (
     VERSION as SESSION_FACT_VERSION, SessionFactError,
-    build_session_fact_anchor, prove_session_fact_anchor,
+    build_session_fact_anchor_from_preflight, prove_session_fact_anchor,
 )
 
 CONTRACT_VERSION = 'O_POST_OUTPUT_CONTRACT_v3'
@@ -109,10 +110,7 @@ def _capture_checks(preflight, original_input, result, receipt, analyzer_result,
 def _validate_news_handoff(preflight, original_input, prompt_text, news_handoff):
     if not isinstance(news_handoff, dict) or not isinstance(prompt_text, str):
         raise ContractError('NEWS_HANDOFF_OR_CAPTURED_PROMPT_MISSING')
-    captured_live_hash = original_input.get('native_context_hash_at_capture')
-    if captured_live_hash is not None and not _SHA256_RE.fullmatch(str(captured_live_hash)):
-        raise ContractError('CAPTURED_NATIVE_CONTEXT_HASH_INVALID')
-    expected_context_hash = captured_live_hash or canonical_hash(original_input.get('context'))
+    expected_context_hash = context_binding_hash(original_input.get('context'))
     if (original_input.get('news_context') != news_handoff.get('news_context')
             or news_handoff.get('preflight_hash') != canonical_hash(preflight)
             or news_handoff.get('native_context_hash') != expected_context_hash
@@ -122,31 +120,20 @@ def _validate_news_handoff(preflight, original_input, prompt_text, news_handoff)
         raise ContractError('NEWS_HANDOFF_INPUT_BINDING_MISMATCH')
     rebuilt = build_news_handoff(preflight, original_input['context'],
         expected_preflight_hash=canonical_hash(preflight), decision_at=news_handoff.get('decision_at'))
-    # A live datetime.date is intentionally not canonical-equivalent to its JSON
-    # string snapshot. The source-proven observer records the typed live hash
-    # before serialization; validate it above, then normalize only this manifest
-    # field for replay comparison. All other rebuilt fields must remain exact.
-    rebuilt['native_context_hash'] = expected_context_hash
     if canonical_hash(rebuilt) != canonical_hash(news_handoff):
         raise ContractError('NEWS_HANDOFF_MANIFEST_CHANGED')
-    return prove_prompt_consumption(prompt_text, news_handoff)
-
-
-def _validate_session_fact_anchor(preflight, original_input, prompt_text, session_fact_anchor):
-    if not isinstance(session_fact_anchor, dict) or not isinstance(prompt_text, str):
-        raise SessionFactError('SESSION_FACT_PROMPT_OR_ANCHOR_MISSING')
-    if original_input.get('session_fact_anchor') != session_fact_anchor:
-        raise SessionFactError('SESSION_FACT_INPUT_BINDING_MISMATCH')
-    rebuilt = build_session_fact_anchor(original_input['context'], target_session=preflight.get('target'))
-    if canonical_hash(rebuilt) != canonical_hash(session_fact_anchor):
-        raise SessionFactError('SESSION_FACT_MANIFEST_CHANGED')
-    return prove_session_fact_anchor(prompt_text, session_fact_anchor)
+    news_proof = prove_prompt_consumption(prompt_text, news_handoff)
+    anchor = news_handoff.get('session_fact_anchor')
+    rebuilt_anchor = build_session_fact_anchor_from_preflight(preflight)
+    if canonical_hash(anchor) != canonical_hash(rebuilt_anchor):
+        raise ContractError('SESSION_FACT_ANCHOR_MANIFEST_CHANGED')
+    fact_proof = prove_session_fact_anchor(prompt_text, anchor)
+    return {'news': news_proof, 'session_fact': fact_proof}
 
 
 def evaluate_post_output_contract(preflight, original_input, result, *, capture_receipt=None,
                                   analyzer_result=None, expected_sources=None, prompt_text=None,
-                                  news_handoff=None, numeric_sidecar=None, required_handoff=False,
-                                  session_fact_anchor=None, required_session_fact_anchor=False):
+                                  news_handoff=None, numeric_sidecar=None, required_handoff=False):
     before = deepcopy((preflight, original_input, result))
     audit = check_saved_output(preflight, original_input, result)
     capture_blocks = _capture_checks(preflight, original_input, result, capture_receipt,
@@ -171,24 +158,18 @@ def evaluate_post_output_contract(preflight, original_input, result, *, capture_
 
     handoff = {'required': handoff_required, 'status': 'NOT_REQUESTED',
                'supplied_evidence_count': None, 'not_search_hit_count': True}
+    fact_handoff = {'required': handoff_required, 'status': 'NOT_REQUESTED', 'version': SESSION_FACT_VERSION}
     if handoff_required or news_handoff is not None:
         try:
             proof = _validate_news_handoff(preflight, original_input, prompt_text, news_handoff)
-            handoff.update(status='PASS', supplied_evidence_count=news_handoff['admitted_evidence_count'], proof=proof)
-        except (ContractError, KeyError, TypeError) as exc:
+            handoff.update(status='PASS', supplied_evidence_count=news_handoff['admitted_evidence_count'], proof=proof['news'])
+            anchor = news_handoff['session_fact_anchor']
+            fact_handoff.update(status='PASS', proof=proof['session_fact'],
+                                opening_direction=anchor['facts']['opening_direction'],
+                                realtime_quote_available=anchor['facts']['realtime_quote_available'])
+        except (ContractError, SessionFactError, KeyError, TypeError) as exc:
             blockers.append('NEWS_HANDOFF_UNPROVEN:' + str(exc))
             handoff['status'] = 'BLOCK'
-
-    fact_required = bool(required_session_fact_anchor or session_fact_anchor is not None)
-    fact_handoff = {'required': fact_required, 'status': 'NOT_REQUESTED', 'version': SESSION_FACT_VERSION}
-    if fact_required:
-        try:
-            fact_proof = _validate_session_fact_anchor(preflight, original_input, prompt_text, session_fact_anchor)
-            fact_handoff.update(status='PASS', proof=fact_proof,
-                                opening_direction=session_fact_anchor['facts']['opening_direction'],
-                                realtime_quote_available=session_fact_anchor['facts']['realtime_quote_available'])
-        except (SessionFactError, KeyError, TypeError) as exc:
-            blockers.append('SESSION_FACT_ANCHOR_UNPROVEN:' + str(exc))
             fact_handoff['status'] = 'BLOCK'
 
     blockers = list(dict.fromkeys(blockers))
