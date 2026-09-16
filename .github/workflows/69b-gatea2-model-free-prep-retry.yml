@@ -1,0 +1,178 @@
+name: O Gate A2 model-free prep retry
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/run026-gatea2-prep-retry.json
+permissions:
+  contents: read
+concurrency:
+  group: dsa-gatea2-prep
+  cancel-in-progress: false
+jobs:
+  prep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts:${{ github.workspace }}/research/tests
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      RUN_ID: TRI-DSA-EXEC-20260916-026
+      CANDIDATE_ARTIFACT_ID: ART-DSA-RUN026-GATEA2-O-SINGLE
+      CANDIDATE_CLAIM_ID: ART-DSA-RUN026-GATEA2-O-SINGLE-CLAIM
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify retry is model-free and frozen
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          s=json.load(open('research/docs/runtime/run026-gatea2-prep-retry.json'))
+          assert s['model_http_requests_authorized']==0 and s['claim_creation_permitted'] is False
+          assert s['reason']=='CI_IMPORT_PATH_ONLY'
+          assert s['gate_b_c']=='FROZEN' and s['runtime_activated'] is False
+          assert subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
+          print('{"retry_scope":"CI_IMPORT_PATH_ONLY","model_http_requests":0,"claim_created":false}')
+          PY
+      - name: Install dependencies
+        run: pip install -r research/requirements.txt pytest httpx
+      - name: Contract semantic and native-handoff regression suite
+        working-directory: research
+        run: >-
+          python -m pytest --noconftest -q
+          tests/test_o_target_session_contract.py
+          tests/test_prepare_xiaomi_acceptance_targeted.py
+          tests/test_o_native_date_boundary_adapter.py
+          tests/test_o_native_input_contract.py
+          tests/test_hk_volume_reconciliation.py
+          tests/test_o_semantic_handoff_contract.py
+          tests/test_o_capture_stage_provenance.py
+          tests/test_o_post_output_contract.py
+          tests/test_o_single_output_fact_check.py
+          tests/test_native_handoff_integration.py
+          tests/test_run_hk_original_model_probe_imports.py
+      - name: Resolve current XHKG completed session
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime,timezone
+          from pathlib import Path
+          from o_target_session_contract import RULE_VERSION,resolve_target_session
+          r=resolve_target_session(datetime.now(timezone.utc)); t=r.target_session.isoformat()
+          Path('/tmp/gatea2-target').write_text(t)
+          Path('/tmp/gatea2-target.json').write_text(json.dumps({'rule_version':RULE_VERSION,'target_session':t,'model_http_requests':0},indent=2))
+          print(json.dumps({'target_session':t,'rule_version':RULE_VERSION,'model_http_requests':0}))
+          PY
+      - name: Fresh strict preflight
+        run: |
+          mkdir -p /tmp/gatea2
+          python research/scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/gatea2/preflight.stdout 2> /tmp/gatea2/preflight.stderr
+          cp research/probe/preflight.json /tmp/gatea2/preflight.json
+          cp research/probe/target-session-receipt.json /tmp/gatea2/target-session-receipt.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          t=Path('/tmp/gatea2-target').read_text().strip(); p=json.load(open('research/probe/preflight.json')); r=json.load(open('research/probe/target-session-receipt.json'))
+          assert p.get('passed') is True and p.get('prices_passed') is True and p.get('symbol','').upper()=='HK01810'
+          assert str(p.get('target'))==t==str(r.get('target_session'))==str(r.get('preflight_target')) and r.get('target_match') is True
+          assert r.get('yahoo_repair_enabled') is True
+          print(json.dumps({'fresh_preflight':'PASS','target':t,'price_gate':'PASS','repair_is_disclosed_derived_input':True,'model_http_requests':0}))
+          PY
+      - name: Frozen native exact-session smoke
+        run: |
+          T="$(cat /tmp/gatea2-target)"
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-u-universe.json --scope O_single_stock_smoke --expected-date "$T" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 240 --output /tmp/gatea2-native > /tmp/gatea2/native.log 2>&1
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          t=Path('/tmp/gatea2-target').read_text().strip(); d=json.load(open('/tmp/gatea2-native/coverage.json')); rows=d.get('coverage') or []
+          assert d.get('code_commit')=='089d9d26d68f8b839ea5a74a3784e4402925f8b7' and d.get('native_logic_modified') is False
+          assert d.get('target_boundary_adapter') is True and (d.get('target_boundary_adapter_apply_count') or 0)>=1
+          assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1 and len(rows)==1 and str(rows[0].get('latest_date'))==t and d.get('returncode')==0
+          print(json.dumps({'native_exact_session':'PASS','target':t,'adapter_apply_count':d.get('target_boundary_adapter_apply_count'),'model_http_requests':0}))
+          PY
+      - name: Observer contract and deterministic opening fact
+        run: |
+          python - <<'PY'
+          import json,sqlite3
+          from pathlib import Path
+          from o_native_input_contract import validate_native_input
+          from o_post_output_contract import derive_open_gap
+          from o_semantic_handoff_contract import CONTRACT_VERSION,canonical_hash
+          p=json.load(open('research/probe/preflight.json')); t=Path('/tmp/gatea2-target').read_text().strip(); db=sqlite3.connect('/tmp/gatea2-native/native-data.db')
+          rows=db.execute("SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 2",('hk01810',)).fetchall(); db.close(); assert len(rows)==2
+          today=dict(zip(('date','open','high','low','close','volume'),rows[0])); prev=dict(zip(('date','open','high','low','close','volume'),rows[1])); v=validate_native_input(p,{'today':today}); assert v.get('validated') is True and str(v.get('target'))==t
+          candidate={'context':{'code':'HK01810','today':today,'yesterday':prev},'news_context':None,'analysis_context_pack_summary':None,'capture_stage':'PRE_PROVIDER_DETERMINISTIC_RECEIPT'}
+          gap=derive_open_gap(candidate); assert gap['status']=='PASS'
+          out={'target':t,'today':today,'previous_close':prev['close'],'opening_gap':gap,'volume_status':v.get('volume_status'),'news_handoff_version':CONTRACT_VERSION,'preflight_hash':canonical_hash(p),'candidate_input_hash':canonical_hash(candidate),'model_http_requests':0}
+          Path('/tmp/gatea2/exact-input-receipt.json').write_text(json.dumps(out,indent=2,default=str)); print(json.dumps(out,default=str))
+          PY
+      - name: True frozen analyzer dry route
+        run: |
+          python research/scripts/run_hk_original_input_dry_probe.py --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight research/probe/preflight.json --output /tmp/gatea2-dry --target-boundary-adapter > /tmp/gatea2/dry.log 2>&1
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          t=Path('/tmp/gatea2-target').read_text().strip(); d=json.load(open('/tmp/gatea2-dry/dry-input-receipt.json'))
+          assert d.get('reached_original_analyzer') is True and d.get('input_validated') is True and str(d.get('context_date'))==t
+          assert d.get('model_http_requests')==0 and (d.get('target_boundary_adapter_apply_count') or 0)>=1
+          assert d.get('original_tracked_source_unchanged') is True and d.get('analyzer_under_frozen_checkout') is True and d.get('main_under_frozen_checkout') is True
+          print(json.dumps({'frozen_analyzer_dry_route':'PASS','target':t,'model_http_requests':0}))
+          PY
+      - name: Preserve historical FAIL and prove v2 fail-closed handoff guards
+        working-directory: research
+        run: |
+          python -m pytest --noconftest -q tests/test_native_handoff_integration.py tests/test_o_post_output_contract.py tests/test_o_semantic_handoff_contract.py tests/test_o_single_output_fact_check.py
+          python - <<'PY'
+          import json
+          old=json.load(open('docs/runtime/O_SINGLE_NATIVE_ACCEPTANCE.json')); assert old['status']=='FAIL'
+          blockers=(old.get('formal_post_output_contract') or {}).get('active_output_blockers') or []; assert 'OPEN_GAP_DIRECTION_CONTRADICTION' in blockers
+          assert old.get('decision',{}).get('repeat_model_request_permitted') is False
+          print('{"child2_immutable_fail":true,"opening_contradiction_retained":true,"v2_fail_closed_tests":"PASS","model_http_requests":0}')
+          PY
+      - name: Candidate Drive absence and synthetic save-read-hash-restore
+        run: |
+          python - <<'PY'
+          import os,httpx
+          from dsa_drive_store import DriveStore,scoped_token
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']); s.assert_absent(os.environ['CANDIDATE_ARTIFACT_ID']); s.assert_absent(os.environ['CANDIDATE_CLAIM_ID'])
+          print('{"candidate_artifact_absent":true,"candidate_claim_absent":true,"model_http_requests":0}')
+          PY
+          printf '%s\n' '{"run_id":"TRI-DSA-EXEC-20260916-026","classification":"synthetic_no_model_content","runtime_activated":false}' > /tmp/gatea2-drive.json
+          AID="ART-DSA-RUN026-GATEA2-PREP-RETRY-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py --source /tmp/gatea2-drive.json --run-id "$RUN_ID" --artifact-id "$AID" --receipt /tmp/gatea2/drive-roundtrip.json
+      - name: Final model-free preparation receipt
+        run: |
+          python - <<'PY'
+          import hashlib,json,os
+          from datetime import datetime,timezone
+          from pathlib import Path
+          t=Path('/tmp/gatea2-target').read_text().strip(); p=Path('research/probe/preflight.json').read_bytes(); out={'schema_version':1,'run_id':'TRI-DSA-EXEC-20260916-026','phase':'MODEL_FREE_PREP','state':'PASS_READY_FOR_SEPARATE_CLAIM','workflow_run':os.environ['GITHUB_RUN_ID'],'source_commit':os.environ['GITHUB_SHA'],'target_session':t,'preflight_sha256':hashlib.sha256(p).hexdigest(),'tests':'PASS','price_gate':'PASS','native_exact_session':'PASS','observer_contract':'PASS','frozen_analyzer_dry_route':'PASS','news_handoff_v2_guards':'PASS','post_output_fail_closed':'PASS','drive_absence_and_roundtrip':'PASS','model_http_requests':0,'claim_created':False,'runtime_activated':False,'real_orders':0,'gate_b_c':'FROZEN','completed_at_utc':datetime.now(timezone.utc).isoformat()}; Path('/tmp/gatea2-prep-receipt.json').write_text(json.dumps(out,indent=2)); print(json.dumps(out))
+          PY
