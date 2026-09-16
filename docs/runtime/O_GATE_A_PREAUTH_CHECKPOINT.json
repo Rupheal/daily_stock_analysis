@@ -1,0 +1,19 @@
+{
+  "run_id":"TRI-DSA-EXEC-20260916-GATEA-019",
+  "case_id":"O-GATEA-019-FRESH-XIAOMI",
+  "status":"PREAUTH_CLOUD_VALIDATION_PENDING",
+  "branch":"fix/native-private-execution-20260914",
+  "frozen_upstream":"089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "child_id":"ART-DSA-GATEA-019-CHILD1",
+  "claim_id":"ART-DSA-GATEA-019-CHILD1-CLAIM",
+  "append_only_namespace":true,
+  "child2_retry_permitted":false,
+  "owner_authorized":false,
+  "maximum_model_http_requests_before_owner_authorization":0,
+  "maximum_model_http_requests_after_future_explicit_owner_authorization":1,
+  "single_stock_cap_cny":2,
+  "required_gates":["frozen_commit","target_session","fresh_preflight","ohlc","volume","news","issuer","manifest","frozen_native_data_smoke","observer_final_capture","drive_roundtrip","child_absent","affordability"],
+  "formal_boundaries":{"o_single_stock_formally_accepted":false,"o_full_pool_permitted":false,"u45_formal_acceptance_added":0,"runtime_activated":false,"main_merge":false,"real_orders":0},
+  "failure_matrix":["PRE_REQUEST_FAILURE","HTTP_SENT_NO_RESPONSE","HTTP_RESPONSE_RECEIVED","PERSISTENCE_FAILURE","SEMANTIC_NO_GO","ACCEPTED"],
+  "next_action":"Run model-free cloud preauth workflow. If every hard gate passes, change status to READY_FOR_OWNER_AUTHORIZATION; do not send model HTTP automatically."
+}
