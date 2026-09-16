@@ -1,0 +1,198 @@
+name: O v2 real-prompt dry model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/O_V2_REAL_PROMPT_DRY_005_SCOPE.json
+      - .github/workflows/78-o-v2-real-prompt-dry.yml
+permissions:
+  contents: read
+jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts:${{ github.workspace }}/research/tests
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - name: Pin official DeepSeek V4.1 tokenizer
+        uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Prove no provider/private-store credentials and frozen scope
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          s=json.load(open('research/docs/runtime/O_V2_REAL_PROMPT_DRY_005_SCOPE.json'))
+          assert s['state']=='MODEL_FREE_PRECHECK_ONLY'
+          assert s['provider_http_requests_permitted']==0 and s['claim_creation_permitted'] is False
+          assert s['model_credentials_permitted'] is False and s['private_drive_credentials_permitted'] is False
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k]
+          assert not forbidden, forbidden
+          got=subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()
+          assert got==s['frozen_upstream']=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
+          print('{"scope":"PASS","provider_requests":0,"claim_created":false,"credentials_present":false}')
+          PY
+
+      - name: Install runtime and official tokenizer binding
+        run: pip install -r research/requirements.txt pytest httpx deepseek-recipe==0.1.1
+
+      - name: Fresh strict preflight v2 execution contract
+        run: |
+          cd research
+          rm -rf probe
+          python scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/v2-preflight.stdout 2> /tmp/v2-preflight.stderr
+          python - <<'PY'
+          import json
+          p=json.load(open('probe/preflight.json'))
+          assert p['passed'] is True and p['prices_passed'] is True and p['symbol'].upper()=='HK01810'
+          assert p['target']=='2026-09-15'
+          assert type(p['news_count']) is int and p['news_count']>=3
+          assert isinstance(p['origins'],list) and len(p['origins'])>=2
+          x=p.get('execution_contract') or {}
+          assert x.get('version')=='O_GATE_A_EXECUTION_CONTRACT_v2'
+          assert x.get('target_session')=='2026-09-15'
+          assert x.get('realtime_quote_available') is False and x.get('session_fact_anchor_required') is True
+          print(json.dumps({'preflight':'PASS','target':p['target'],'news_count':p['news_count'],'origin_count':len(p['origins']),'realtime_quote_available':False,'provider_requests':0}))
+          PY
+
+      - name: Frozen native exact-session smoke
+        run: |
+          python research/scripts/run_hk_native_data_probe.py \
+            --checkout original \
+            --universe research/docs/dsa-u-universe.json \
+            --scope O_single_stock_smoke \
+            --expected-date 2026-09-15 \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --target-boundary-adapter \
+            --timeout 240 \
+            --output /tmp/v2-native > /tmp/v2-native-private.log 2>&1
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/v2-native/coverage.json')); rows=d.get('coverage') or []
+          assert d.get('code_commit')=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert d.get('native_logic_modified') is False
+          assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1 and len(rows)==1
+          assert str(rows[0].get('latest_date'))=='2026-09-15' and d.get('returncode')==0
+          assert d.get('target_boundary_adapter') is True and (d.get('target_boundary_adapter_apply_count') or 0)>=1
+          print(json.dumps({'native_exact_session':'PASS','latest_date':'2026-09-15','adapter_apply_count':d['target_boundary_adapter_apply_count'],'provider_requests':0}))
+          PY
+
+      - name: Real frozen formatter plus official-tokenizer dry envelope only
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+          DSA_BUDGET_PROBE_ONLY: '1'
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: dry-envelope-no-network
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          rm -rf /tmp/v2-real-prompt-dry
+          set +e
+          python research/scripts/run_hk_original_model_probe_run030.py \
+            --checkout original \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --preflight research/probe/preflight.json \
+            --output /tmp/v2-real-prompt-dry \
+            --limit-cny 0.10 \
+            --carry-upper-cny 0 \
+            --target-boundary-adapter \
+            --news-handoff-v1 \
+            > /tmp/v2-dry.stdout 2> /tmp/v2-dry.stderr
+          rc=$?
+          set -e
+          python - <<'PY'
+          import hashlib,json
+          from decimal import Decimal
+          from pathlib import Path
+          root=Path('/tmp/v2-real-prompt-dry')
+          b=json.load(open(root/'budget.json')); req=b.get('requests') or []
+          s=json.load(open(root/'probe-summary.json'))
+          h=json.load(open(root/'news-handoff-receipt.json'))
+          c=json.load(open(root/'news-prompt-consumption.json'))
+          prompt=(root/'original-formatted-prompt.txt').read_text(encoding='utf-8')
+          assert s.get('input_validated') is True
+          assert s.get('news_handoff_version')=='O_SEMANTIC_NEWS_HANDOFF_v2'
+          assert s.get('news_loader_consumed') is True and s.get('news_prompt_consumed') is True
+          assert h.get('version')=='O_SEMANTIC_NEWS_HANDOFF_v2'
+          assert h.get('native_context_binding_version')=='O_NATIVE_CONTEXT_BINDING_v1'
+          a=h.get('session_fact_anchor') or {}; facts=a.get('facts') or {}
+          assert a.get('version')=='O_SESSION_FACT_ANCHOR_v1'
+          assert facts.get('target_session')=='2026-09-15'
+          assert facts.get('opening_direction')=='DOWN' and facts.get('opening_label_zh')=='低开'
+          assert facts.get('realtime_quote_available') is False
+          assert prompt.count(a['text'])==1
+          assert c.get('native_prompt_evidence_consumed') is True
+          assert c.get('session_fact_anchor_sha256')==a.get('sha256')
+          assert '不得称现价' in a['text'] and 'current_price 字段应为 null' in a['text']
+          assert len(req)==1 and req[0].get('status')=='dry_envelope_validated_not_sent'
+          assert Decimal(req[0]['pre_send_peak_upper_cny']) <= Decimal('0.10')
+          assert not (root/'provider-response.txt').exists() and not (root/'request-body.json').exists()
+          receipt={
+            'schema_version':1,
+            'run_id':'TRI-DSA-DEV-20260916-O-V2-REAL-PROMPT-DRY-005',
+            'state':'PASS_MODEL_FREE_REAL_FORMATTER_DRY_ONLY',
+            'target':'HK01810','target_session':'2026-09-15',
+            'frozen_upstream':'089d9d26d68f8b839ea5a74a3784e4402925f8b7',
+            'handoff_version':h['version'],'context_binding_version':h['native_context_binding_version'],
+            'session_fact_version':a['version'],'opening_direction':facts['opening_direction'],
+            'realtime_quote_available':facts['realtime_quote_available'],
+            'prompt_consumed_anchor_exactly_once':True,
+            'prompt_sha256':hashlib.sha256(prompt.encode()).hexdigest(),
+            'news_context_sha256':h['news_context_sha256'],'session_fact_anchor_sha256':a['sha256'],
+            'official_v41_input_tokens':req[0].get('official_v41_input_tokens'),
+            'input_token_safety_margin':req[0].get('input_token_safety_margin'),
+            'output_cap':req[0].get('output_cap'),
+            'pre_send_peak_upper_cny':req[0].get('pre_send_peak_upper_cny'),
+            'hard_cap_cny':req[0].get('hard_cap_cny'),
+            'dry_provider_send':False,'model_http_requests':0,'claim_created':False,
+            'provider_response_present':False,'request_body_persisted':False,
+            'raw_prompt_public':False,'runtime_activated':False,
+            'gate_a_promoted':False,'gate_b_c':'FROZEN','o_full_pool':False,'simulation':False,'real_orders':0
+          }
+          Path('/tmp/O_V2_REAL_PROMPT_DRY_005_RESULT.json').write_text(json.dumps(receipt,indent=2,sort_keys=True))
+          print(json.dumps({k:receipt[k] for k in ('state','handoff_version','session_fact_version','opening_direction','realtime_quote_available','official_v41_input_tokens','pre_send_peak_upper_cny','model_http_requests','claim_created')}))
+          PY
+          test "$rc" -ne 0
+
+      - name: Upload sanitized receipt only
+        uses: actions/upload-artifact@v4
+        with:
+          name: o-v2-real-prompt-dry-005-sanitized
+          path: /tmp/O_V2_REAL_PROMPT_DRY_005_RESULT.json
+          if-no-files-found: error
+          retention-days: 14
