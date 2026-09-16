@@ -1,0 +1,38 @@
+name: DSA event pricing challenger model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/dsa_event_pricing_challenger.py
+      - scripts/dsa_intraday_rotation_challenger.py
+      - tests/test_dsa_event_pricing_challenger.py
+      - tests/test_dsa_intraday_rotation_challenger.py
+      - docs/runtime/DSA_EVENT_PRICING_CHALLENGER_V1.md
+      - docs/runtime/DSA_EVENT_PRICING_FOMC_20260916_CASE.json
+      - docs/runtime/DSA_INTRADAY_ROTATION_CHALLENGER_V1.md
+      - .github/workflows/70-event-pricing-challenger.yml
+permissions:
+  contents: read
+jobs:
+  challenger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install pytest only
+        run: pip install pytest
+      - name: Run event-pricing and rotation challenger tests
+        run: python -m pytest --noconftest -q tests/test_dsa_event_pricing_challenger.py tests/test_dsa_intraday_rotation_challenger.py
+      - name: Confirm model-free research-only workflow
+        run: |
+          python - <<'PY'
+          import os
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k]
+          assert not forbidden, forbidden
+          print('{"model_credentials_present":false,"model_requests":0,"champion_modified":false,"formal_signal_modified":false,"runtime_activated":false}')
+          PY
