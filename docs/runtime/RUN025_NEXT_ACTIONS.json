@@ -1,0 +1,23 @@
+{
+  "run_id": "TRI-DSA-DEV-20260916-025",
+  "record_type": "PREPARATION_STATUS_NOT_NEW_PROVIDER_AUTHORIZATION",
+  "state": "READY_FOR_NEW_CASE_AUTHORIZATION_REVIEW",
+  "receipt": "docs/runtime/RUN025_CONTRACT_INTEGRATION_RESULT.json",
+  "code_commit": "11b0a83652f417d81c010b19c8a3b98c09a251ec",
+  "historical_child2": "IMMUTABLE_FAIL; spent request slot cannot be reused",
+  "new_model_requests": 0,
+  "next": [
+    "Review latest applicable user authorization for a genuinely new case; do not request a duplicate authorization if unchanged valid scope already covers it, and do not infer approval from this engineering receipt.",
+    "Freeze a new case identity, valid target session and explicit input version. Preserve Child2 input/output/CLAIM and prior review corrections.",
+    "Use O_POST_OUTPUT_CONTRACT_v2, shared native count semantics, verified actual final-stage capture and exact news handoff proof. Preflight evidence existence alone is not prompt consumption.",
+    "Before any separately authorized model request, verify fresh input gates, durable CLAIM, budget, no duplicate execution, private save/read/hash/restore and manual-review scope.",
+    "Keep full-pool, Top3, Shadow, U formal execution, journal and trading gates unchanged. No G4.3 credit from this offline run."
+  ],
+  "unresolved": {
+    "historic_final_count": "UNKNOWN_AT_CAPTURE_STAGE; no fabricated final snapshot",
+    "financial_lineage": "Needs primary-source period/provenance support in separately scoped work",
+    "language_coverage": "Bounded deterministic phrase checks, not universal semantic proof",
+    "cloud_live_acceptance": "Not executed in Run025"
+  },
+  "parallel_queue_policy": "Do not overwrite current CAPITAL-DATA-001, PRICE-ISOLATION-001 or shared queue from an older snapshot. This additive runtime receipt and current O acceptance pointer supersede only obsolete post-output-count judgments."
+}

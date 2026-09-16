@@ -1,0 +1,20 @@
+{
+  "run_id": "TRI-DSA-DEV-20260916-025",
+  "code_commit": "11b0a83652f417d81c010b19c8a3b98c09a251ec",
+  "archive": "TRI-DSA-DEV-20260916-025_Checkpoint.zip",
+  "bytes": 1535703,
+  "sha256": "e3ebef976020243b56c4a58b5b905657ad1f1d28fd7c3bceab65f3e0c3b52d8c",
+  "independent_local_readback_members": 270,
+  "hash_mismatches": 0,
+  "zip_crc": "PASS",
+  "private_drive_save": "PASS",
+  "archive_scope": "Sanitized review plus public pinned sources; excludes private Child2 raw/credentials",
+  "not_runner_acceptance": true,
+  "independent_private_drive_download_sha256": "e3ebef976020243b56c4a58b5b905657ad1f1d28fd7c3bceab65f3e0c3b52d8c",
+  "private_drive_manifest_members_verified": 270,
+  "private_drive_hash_mismatches": 0,
+  "owner_only_permissions_verified": true,
+  "restore_synthetic_tests": {"passed": 182, "failed": 0, "skipped": 0, "deselected": 1},
+  "delivery_complete": true,
+  "raw_child2_exported": false
+}

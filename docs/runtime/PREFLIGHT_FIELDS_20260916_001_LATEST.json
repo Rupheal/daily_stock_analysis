@@ -1,61 +1,47 @@
 {
   "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-001",
-  "record_type": "CURRENT_EXECUTION_POINTER_NOT_A_NEW_AUTHORIZATION",
-  "state": "POST_OUTPUT_CONTRACT_REPAIRED_CHILD2_IMMUTABLE_FAIL",
-  "target_session": "2026-09-15",
-  "bounded_pass_receipts": {
+  "review_run": "TRI-DSA-DEV-20260916-025",
+  "record_type": "CURRENT_O_EVIDENCE_POINTER_NOT_A_NEW_AUTHORIZATION",
+  "state": "V2_OFFLINE_INTEGRATION_PASS_CHILD2_IMMUTABLE_FAIL",
+  "historical_target_session": "2026-09-15",
+  "bounded_historical_pass_receipts": {
     "strict_preflight": 34996864782,
     "native_exact_session_coverage_one_of_one": 34999985334,
     "actual_frozen_module_origins": 35001349747,
     "true_original_analyzer_input_only": 35001171210,
     "child2_successor": 35002627787,
     "post_output_guard_ci": 35033881836,
-    "formal_post_output_contract_ci": 35034531474
+    "former_v1_contract_ci": 35034531474
   },
-  "post_output_contract": {
-    "version": "O_POST_OUTPUT_CONTRACT_v1",
-    "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1",
+  "current_post_output_contract": {
+    "version": "O_POST_OUTPUT_CONTRACT_v2",
+    "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1.1",
     "implementation": "scripts/o_post_output_contract.py",
-    "contract_tests": "31/31 PASS",
-    "model_credentials_present_in_ci": false,
-    "new_model_requests": 0,
-    "replay_receipt": "docs/runtime/RUN024_POST_OUTPUT_CONTRACT_REPLAY.json"
+    "tested_code_commit": "11b0a83652f417d81c010b19c8a3b98c09a251ec",
+    "local_tests": "182 passed; 0 failed; 0 skipped; 1 old private replay deselected and replaced by one dedicated incremental replay",
+    "new_cloud_ci": "NOT_RUN",
+    "receipt": "docs/runtime/RUN025_CONTRACT_INTEGRATION_RESULT.json"
   },
   "child2": {
     "workflow_run": 35002627787,
     "artifact_id": "ART-DSA-RUN018-ZEROHTTP-RECOVERY-CHILD2",
     "technical_execution": "PASS",
-    "model_http_requests": 1,
-    "input_validated": true,
-    "request_status": "response_received",
-    "native_process_exit_code": 0,
-    "private_child_saved_read_hashed_restored": true,
-    "raw_request_response_result_present": true,
-    "formal_post_output_promotion_gate": "BLOCK",
+    "historical_model_http_requests": 1,
+    "formal_acceptance": "FAIL",
+    "promotion_gate": "BLOCK",
+    "final_count_status": "UNKNOWN_AT_CAPTURE_STAGE",
+    "prior_true_null_numeric_count_blocker": "SUPERSEDED_FALSE_POSITIVE",
+    "active_output_blockers": ["OPEN_GAP_DIRECTION_CONTRADICTION", "SEM-001", "SEM-002", "SEM-003"],
     "acceptance_receipt": "docs/runtime/O_SINGLE_NATIVE_ACCEPTANCE.json"
   },
-  "deterministic_facts": {
-    "opening_gap": "GAP_DOWN",
-    "open": "27.1200008392334",
-    "previous_close": "27.15999984741211",
-    "news_result_count_known": true,
-    "news_result_count": null
-  },
-  "formal_blockers": [
-    "OPEN_GAP_DIRECTION_CONTRADICTION",
-    "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
-    "SEM-001",
-    "SEM-002",
-    "SEM-003"
-  ],
-  "o_single_stock_acceptance": "FAIL",
   "fixed_legacy_acceptance": "12/16",
   "g4_3_formal_credit": false,
   "provider_request_slot_remaining": 0,
+  "new_model_requests": 0,
   "repeat_model_request_permitted": false,
   "runtime_activated": false,
   "real_orders": 0,
   "schedules_changed": false,
   "main_merged": false,
-  "next": "Use O_POST_OUTPUT_CONTRACT_v1 as the fail-closed gate on the next independently authorized O-native output. Do not rewrite or rerun Child2; its failure is preserved as calibration evidence."
+  "next": "Read RUN025_NEXT_ACTIONS.json for new-case authorization-review prerequisites only. Do not run or rewrite Child2."
 }

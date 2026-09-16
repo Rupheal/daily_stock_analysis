@@ -1,7 +1,7 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "run_id": "TRI-DSA-EXEC-20260915-018",
-  "review_run": "TRI-DSA-EXEC-20260916-024",
+  "review_run": "TRI-DSA-DEV-20260916-025",
   "target": "HK01810",
   "target_session": "2026-09-15",
   "workflow_run": 35002627787,
@@ -9,85 +9,55 @@
   "frozen_original_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
   "status": "FAIL",
   "technical_execution": {
-    "status": "PASS",
-    "input_validated": true,
-    "original_module_origins_verified": true,
-    "model_http_requests": 1,
-    "request_status": "response_received",
-    "native_process_exit_code": 0,
-    "request_body_present": true,
-    "provider_response_present": true,
-    "original_result_present": true,
-    "private_drive_save_read_hash_restore": "PASS",
-    "append_only_child_preserved": true,
-    "canonical_claim_native_preserved": true,
-    "fallback_used": false,
-    "real_orders": 0,
-    "runtime_activated": false
+    "status": "PASS", "input_validated": true, "original_module_origins_verified": true,
+    "model_http_requests": 1, "request_status": "response_received", "native_process_exit_code": 0,
+    "request_body_present": true, "provider_response_present": true, "original_result_present": true,
+    "private_drive_save_read_hash_restore": "PASS", "append_only_child_preserved": true,
+    "canonical_claim_native_preserved": true, "fallback_used": false,
+    "real_orders": 0, "runtime_activated": false
   },
   "usage": {
-    "prompt_tokens": 4687,
-    "completion_tokens": 6753,
-    "total_tokens": 11440,
-    "usage_peak_estimate_cny": "0.063398",
-    "actual_account_charge_cny": null
+    "prompt_tokens": 4687, "completion_tokens": 6753, "total_tokens": 11440,
+    "usage_peak_estimate_cny": "0.063398", "actual_account_charge_cny": null,
+    "historical_not_a_run025_request": true
+  },
+  "prior_review_records_retained": [
+    "docs/runtime/RUN023_POST_OUTPUT_SEMANTIC_GUARD_REPLAY.json",
+    "docs/runtime/RUN024_POST_OUTPUT_CONTRACT_REPLAY.json",
+    "docs/runtime/O_SEMANTIC_HANDOFF_003_RESULT.json",
+    "docs/runtime/O_CAPTURE_STAGE_004_RESULT.json"
+  ],
+  "count_correction": {
+    "superseded_blocker": "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER",
+    "classification": "FALSE_POSITIVE_FOR_FROZEN_NATIVE_TRISTATE",
+    "reason": "Native known flag is not a known numeric count. Historical saved result precedes final pipeline annotation.",
+    "final_search_count_status": "UNKNOWN_AT_CAPTURE_STAGE",
+    "raw_fields_unchanged": true,
+    "correcting_sources": ["O_SEMANTIC_HANDOFF_003_RESULT.json", "O_CAPTURE_STAGE_004_RESULT.json", "RUN025_CONTRACT_INTEGRATION_RESULT.json"]
   },
   "formal_post_output_contract": {
-    "contract_version": "O_POST_OUTPUT_CONTRACT_v1",
-    "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1",
+    "contract_version": "O_POST_OUTPUT_CONTRACT_v2",
+    "guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1.1",
     "implementation": "scripts/o_post_output_contract.py",
-    "replay_receipt": "docs/runtime/RUN024_POST_OUTPUT_CONTRACT_REPLAY.json",
-    "ci_workflow_run": 35034531474,
-    "ci_tests": "31/31 PASS",
-    "source_result_mutated": false,
-    "new_model_requests": 0,
-    "promotion_gate": "BLOCK",
-    "deterministic_open_gap": {
-      "open": "27.1200008392334",
-      "previous_close": "27.15999984741211",
-      "direction": "GAP_DOWN",
-      "model_claim": "GAP_UP / 开盘高于前收",
-      "result": "BLOCK",
-      "code": "OPEN_GAP_DIRECTION_CONTRADICTION"
-    },
-    "news_count_contract": {
-      "news_result_count_known": true,
-      "news_result_count": null,
-      "required_when_known_true": "non_negative_integer",
-      "result": "BLOCK",
-      "code": "NEWS_COUNT_KNOWN_WITHOUT_NONNEGATIVE_INTEGER"
-    },
-    "formal_semantic_gates": {
-      "SEM-001": "BLOCK",
-      "SEM-002": "BLOCK",
-      "SEM-003": "BLOCK"
-    }
+    "code_commit": "11b0a83652f417d81c010b19c8a3b98c09a251ec",
+    "replay_receipt": "docs/runtime/RUN025_CONTRACT_INTEGRATION_RESULT.json",
+    "local_tests": {"passed": 182, "failed": 0, "skipped": 0, "deselected": 1},
+    "new_cloud_ci": "NOT_RUN",
+    "source_result_mutated": false, "new_model_requests": 0, "promotion_gate": "BLOCK",
+    "active_output_blockers": ["OPEN_GAP_DIRECTION_CONTRADICTION", "SEM-001", "SEM-002", "SEM-003"],
+    "readiness_gaps": ["Historical final-stage snapshot absent", "Preflight news not delivered to original native input", "Financial-period primary lineage incomplete"],
+    "raw_child2_formal_acceptance": false
   },
-  "non_findings": [
-    "No stock identity mismatch",
-    "No target-session roll-forward",
-    "No duplicate provider request",
-    "No fallback model",
-    "No model/request/storage integrity failure",
-    "No mutation of preserved Child2 output during post-output contract evaluation"
-  ],
   "decision": {
-    "repeat_model_request_permitted": false,
-    "o_full_pool_permitted_by_this_receipt": false,
-    "top3_permitted_by_this_receipt": false,
-    "g4_3_formal_credit": false,
-    "fixed_legacy_acceptance": "12/16",
-    "post_output_contract_repaired": true,
-    "historical_child2_reclassified_as_pass": false,
-    "next_action": "Retain O_POST_OUTPUT_CONTRACT_v1 as the fail-closed gate for future independently authorized O-native outputs. Child2 remains immutable FAIL; do not rerun it to obtain a prettier answer."
+    "repeat_model_request_permitted": false, "o_full_pool_permitted_by_this_receipt": false,
+    "top3_permitted_by_this_receipt": false, "g4_3_formal_credit": false,
+    "fixed_legacy_acceptance": "12/16", "historical_child2_reclassified_as_pass": false,
+    "next_action": "Run025 preparation is ready for new-case authorization review only; preserve Child2 and its spent slot. No new CLAIM or arm is granted."
   },
   "review_basis": {
-    "private_raw_bundle_restored": true,
-    "request_body_reviewed": true,
-    "provider_response_reviewed": true,
-    "original_result_reviewed": true,
-    "preflight_reviewed": true,
     "private_raw_bundle_sha256": "768e5fd7d70df7a06ceecefa8c46de28b5596039a7f96aa447973d60360e33b0",
-    "raw_private_content_published": false
+    "manifest_members_verified": 18, "hash_mismatches": 0,
+    "historical_capture_stage": "ANALYZER_RETURN_BEFORE_PIPELINE_ANNOTATION",
+    "new_final_snapshot_fabricated": false, "raw_private_content_published": false
   }
 }
