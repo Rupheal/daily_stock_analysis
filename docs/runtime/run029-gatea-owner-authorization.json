@@ -27,5 +27,7 @@
   "real_orders_permitted": false,
   "runtime_activated": false,
   "gate_b_c": "FROZEN_UNTIL_FORMAL_GATE_A_PASS",
+  "workflow": ".github/workflows/74-gatea-run029-one-shot.yml",
+  "workflow_installed_before_arm": true,
   "retry_rule": "Run029 is one independent attempt. Any failure after claim or provider step is preserved; no automatic second provider request under this authorization."
 }
