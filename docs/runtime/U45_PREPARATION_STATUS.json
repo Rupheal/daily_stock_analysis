@@ -1,7 +1,7 @@
 {
-  "schema": "dsa-u45-preparation-status-v1",
-  "run_id": "TRI-DSA-EXEC-20260915-015",
-  "status_as_of": "2026-09-15",
+  "schema": "dsa-u45-preparation-status-v2",
+  "run_id": "TRI-DSA-DEV-20260916-U45-RECOVERY-001",
+  "status_as_of": "2026-09-16",
   "denominator": 45,
   "reviewed_in_inherited_private_source": 45,
   "identity_receipt_consistent": 45,
@@ -10,7 +10,7 @@
   "isolated_buy_eligibility": [
     {
       "ticker": "09618",
-      "reason": "Absent from both inherited 2026-09-14 SSE/SZSE buy-eligibility snapshots; retain in U45 denominator and isolate eligibility only."
+      "reason": "Absent from both inherited 2026-09-14 SSE/SZSE buy-eligibility snapshots; retain in U45 denominator and isolate eligibility only until a current official refresh."
     }
   ],
   "complete": 0,
@@ -19,8 +19,11 @@
   "failed": 0,
   "formal_native_execution_accepted": 0,
   "qualified_signals": 0,
-  "row_level_source_status": "PRIVATE_ORIGINAL_NOT_RETRIEVABLE_THROUGH_CURRENT_CONNECTOR_IN_RUN015",
+  "row_level_source_status": "PRIVATE_ORIGINAL_RECOVERED_AND_HASH_RECONCILED_2026_09_16",
   "row_level_reconstruction_permitted": false,
+  "row_level_original_recovered": true,
+  "row_level_original_sha256": "9697f1572bd6e9279d9418c790a41eb17d7c4afdf349cffbcafe20ca64c6d227",
+  "restore_audit_sha256": "0487a539122dca4a6cb020b1a0f6cf1a4690d653df45394caec7f27ce5f394ca",
   "not_current_signal_refresh": true,
   "known_open_evidence_classes": [
     "official suspension/trading-status evidence",
@@ -30,12 +33,14 @@
     "current news/media source-to-official-evidence closure",
     "capital-flow evidence",
     "company plans/capital actions/fee-event evidence",
-    "trade-plan and fee inputs"
+    "trade-plan and fee inputs",
+    "current buy-eligibility refresh for 09618"
   ],
   "provenance": [
     "docs/runtime/RUN013.zh-CN.md",
     "docs/runtime/RUN014.zh-CN.md",
-    "docs/runtime/RUN014_CLOUD.json"
+    "docs/runtime/RUN014_CLOUD.json",
+    "docs/runtime/U45_PRIVATE_ORIGINAL_RECOVERY_20260916.json"
   ],
-  "warning": "This file preserves only verified aggregate state plus the known 09618 isolation. It does not fabricate 45 row-level records from unavailable private source bytes."
+  "warning": "The original 45 row-level preparation bytes are now recovered and reconciled. Their market evidence is still the inherited 2026-09-14 preparation state, not a current signal refresh; no missing evidence class is silently upgraded."
 }
