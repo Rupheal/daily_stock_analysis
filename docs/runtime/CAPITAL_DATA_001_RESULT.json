@@ -1,0 +1,53 @@
+{
+  "run_id": "CAPITAL-DATA-001",
+  "version": "capital-evidence-v1",
+  "target_date": "2026-09-15",
+  "cutoff": "2026-09-16T09:00:00+08:00",
+  "completed_at": "2026-09-16T01:35:09.209382+00:00",
+  "source_denominator": 2,
+  "verified_sources": 2,
+  "cutoff_eligible_sources": 0,
+  "sources": [
+    {
+      "source": "hkex",
+      "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260915e.js",
+      "published_at": null,
+      "data_time_precision": "date",
+      "status": "VERIFIED",
+      "eligible_at_cutoff": false,
+      "retrieved_at": "2026-09-16T01:35:08.784556+00:00",
+      "first_observed_at": "2026-09-16T01:35:08.784556+00:00",
+      "sha256": "f18b5948f54a321cab514340ee910db840925e8896a7b2cd49a6535eee292d10",
+      "bytes": 8606,
+      "attempts": 2,
+      "cutoff_reason": "FIRST_OBSERVED_AFTER_CUTOFF",
+      "elapsed_seconds": 15.14
+    },
+    {
+      "source": "hkma",
+      "source_locator": "https://api.hkma.gov.hk/public/market-data-and-statistics/daily-monetary-statistics/daily-figures-interbank-liquidity?pagesize=30",
+      "published_at": null,
+      "data_time_precision": "date",
+      "status": "VERIFIED",
+      "eligible_at_cutoff": false,
+      "retrieved_at": "2026-09-16T01:35:09.208393+00:00",
+      "first_observed_at": "2026-09-16T01:35:09.208393+00:00",
+      "sha256": "06b135ceb138eb45165390cd8952b5b514d7af3645b768f5b42fa52d92acb9e4",
+      "bytes": 45101,
+      "attempts": 2,
+      "cutoff_reason": "FIRST_OBSERVED_AFTER_CUTOFF",
+      "elapsed_seconds": 15.562
+    }
+  ],
+  "unresolved": {
+    "foreign_investor_net_flow": "NOT_PUBLICLY_IDENTIFIABLE",
+    "local_institution_net_flow": "NOT_PUBLICLY_IDENTIFIABLE",
+    "etf_creation_redemption": "ISSUER_SERIES_ADAPTER_PENDING"
+  },
+  "model_calls": 0,
+  "paid_data_calls": 0,
+  "api_cost_cny": 0,
+  "trade_gate_changed": false,
+  "tests_passed": 8,
+  "scheduled_consumption": "NOT_YET_VERIFIED"
+}

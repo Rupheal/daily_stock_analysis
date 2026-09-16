@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [改进] 增加HKEX南向与HKMA流动性免费证据采集，按字段校验单位、通道、时间截止和缓存哈希，隔离单源失败；不改变原版模型或交易门槛。
+
 - [改进] DSA新增Drive原始字节保存与恢复适配器、限定文件授权入口、合成云端准备工作流；O正式调用保持未启用，U缓存身份与整手复核独立推进。
 
 - [文档] DSA原始证据改为Google Drive优先，保留私密GitHub备选，解除U独立准备对O存储的等待；正式验收门槛不变。
