@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0",
+  "catalog_id": "dsa-source-channels",
+  "updated_at": "2026-09-16",
+  "scope": {
+    "purpose": "DSA news acquisition and realtime/near-realtime market data source governance",
+    "non_goals": [
+      "Does not change model scoring weights",
+      "Does not mark an unconfigured provider as available",
+      "Does not treat search engines or aggregators as independent factual evidence"
+    ]
+  },
+  "governance": {
+    "evidence": {
+      "same_economic_event_count_once": true,
+      "preserve_original_publisher": true,
+      "preserve_published_at": true,
+      "retrieved_at_is_not_published_at": true,
+      "latest_aggregate_must_not_backfill_historical_availability": true,
+      "primary_source_can_confirm_own_action": true,
+      "secondary_claims_need_corroboration_for_high_impact_facts": 2,
+      "social_discovery_may_change_decision_without_confirmation": false
+    },
+    "news": {
+      "dedupe_keys": ["canonical_url", "publisher", "event_identity", "title_fingerprint"],
+      "search_transport_is_evidence": false,
+      "aggregator_is_independent_confirmation": false,
+      "default_provider_order": ["anspire", "bocha", "tavily", "brave", "serpapi", "minimax", "searxng"],
+      "fail_closed_on_missing_publication_time_for_core_evidence": true
+    },
+    "market": {
+      "preserve_existing_runtime_config": true,
+      "require_source": true,
+      "require_fetched_at": true,
+      "provider_timestamp_preferred": true,
+      "retrieved_at_is_not_price_time": true,
+      "reject_future_price_for_shadow_entry": true,
+      "stale_data_must_be_flagged": true,
+      "fallback_on_empty_or_failure": true,
+      "never_invent_quote": true
+    }
+  },
+  "news_channels": [
+    {"id":"hkexnews","name":"HKEXnews","tier":"N0_PRIMARY","priority":0,"regions":["HK"],"transport":"direct_web","status":"integrated_hk","domains":["hkexnews.hk","www1.hkexnews.hk"],"cost":"free","auth":"none","role":["listing_announcements","issuer_filings"],"single_source_fact_scope":"issuer_or_exchange_action"},
+    {"id":"sec_edgar","name":"SEC EDGAR","tier":"N0_PRIMARY","priority":0,"regions":["US"],"transport":"direct_web","status":"catalog","domains":["sec.gov"],"cost":"free","auth":"none","role":["regulatory_filings"],"single_source_fact_scope":"filing_content"},
+    {"id":"company_ir","name":"Company IR / Press Release","tier":"N0_PRIMARY","priority":0,"regions":["GLOBAL"],"transport":"issuer_web","status":"catalog","domains":[],"cost":"free","auth":"none","role":["company_actions","earnings_release","product_release"],"single_source_fact_scope":"company_own_action"},
+    {"id":"cninfo","name":"巨潮资讯 / CNInfo","tier":"N0_PRIMARY","priority":0,"regions":["CN"],"transport":"direct_web","status":"recognized","domains":["cninfo.com.cn"],"cost":"free","auth":"none","role":["issuer_filings"],"single_source_fact_scope":"issuer_filing"},
+    {"id":"sse","name":"上海证券交易所","tier":"N0_PRIMARY","priority":0,"regions":["CN"],"transport":"direct_web","status":"recognized","domains":["sse.com.cn","sse.com"],"cost":"free","auth":"none","role":["exchange_announcements"],"single_source_fact_scope":"exchange_action"},
+    {"id":"szse","name":"深圳证券交易所","tier":"N0_PRIMARY","priority":0,"regions":["CN"],"transport":"direct_web","status":"recognized","domains":["szse.cn"],"cost":"free","auth":"none","role":["exchange_announcements"],"single_source_fact_scope":"exchange_action"},
+    {"id":"regulators_macro","name":"Regulators / Central Banks / Official Statistics","tier":"N0_PRIMARY","priority":0,"regions":["GLOBAL"],"transport":"official_web","status":"catalog","domains":[],"cost":"free","auth":"none","role":["policy","macro_release","regulatory_action"],"single_source_fact_scope":"agency_own_release"},
+    {"id":"reuters","name":"Reuters","tier":"N1_WIRE","priority":10,"regions":["GLOBAL"],"transport":"publisher_or_syndication","status":"integrated_hk_allowlist","domains":["reuters.com"],"cost":"mixed","auth":"none_or_subscription","role":["breaking_news","cross_check"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"bloomberg","name":"Bloomberg","tier":"N1_WIRE","priority":11,"regions":["GLOBAL"],"transport":"publisher_or_search","status":"integrated_hk_allowlist","domains":["bloomberg.com"],"cost":"subscription","auth":"subscription","role":["breaking_news","market_context"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"dow_jones_wsj","name":"Dow Jones / WSJ","tier":"N1_WIRE","priority":12,"regions":["GLOBAL"],"transport":"publisher_or_syndication","status":"integrated_hk_allowlist","domains":["wsj.com"],"cost":"subscription","auth":"subscription","role":["breaking_news","company_news"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"financial_times","name":"Financial Times","tier":"N1_WIRE","priority":13,"regions":["GLOBAL"],"transport":"rss_or_publisher","status":"integrated_hk","domains":["ft.com"],"cost":"mixed","auth":"none_or_subscription","role":["macro","company_news","cross_check"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"cnbc","name":"CNBC","tier":"N1_WIRE","priority":15,"regions":["US","GLOBAL"],"transport":"publisher_or_syndication","status":"integrated_hk_allowlist","domains":["cnbc.com"],"cost":"free","auth":"none","role":["breaking_news","market_context"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"aastocks","name":"AASTOCKS","tier":"N2_REGIONAL","priority":20,"regions":["HK"],"transport":"publisher_or_syndication","status":"integrated_hk","domains":["aastocks.com"],"cost":"free","auth":"none","role":["hk_company_news","broker_research_relay"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"etnet","name":"ETNet 經濟通","tier":"N2_REGIONAL","priority":21,"regions":["HK"],"transport":"direct_web_rss","status":"integrated_hk","domains":["etnet.com.hk"],"cost":"free","auth":"none","role":["hk_company_news","market_news"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"rthk","name":"RTHK 香港電台","tier":"N2_REGIONAL","priority":22,"regions":["HK"],"transport":"rss","status":"integrated_hk","domains":["rthk.hk"],"cost":"free","auth":"none","role":["hk_market_news","policy"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"scmp","name":"South China Morning Post","tier":"N2_REGIONAL","priority":23,"regions":["HK","CN"],"transport":"publisher_or_syndication","status":"integrated_hk_allowlist","domains":["scmp.com"],"cost":"mixed","auth":"none_or_subscription","role":["regional_context","company_news"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"hkej","name":"Hong Kong Economic Journal","tier":"N2_REGIONAL","priority":24,"regions":["HK"],"transport":"publisher","status":"integrated_hk_allowlist","domains":["hkej.com"],"cost":"mixed","auth":"none_or_subscription","role":["hk_company_news"],"single_source_fact_scope":"reported_claim_only"},
+    {"id":"futu_public_news","name":"Futu Public News","tier":"N3_AGGREGATOR","priority":30,"regions":["HK","US"],"transport":"aggregator","status":"integrated_hk","domains":["news.futunn.com"],"cost":"free_public_pages","auth":"none","role":["discovery","syndication_transport"],"single_source_fact_scope":"none","rules":["must_preserve_underlying_publisher","mainland_article_does_not_become_hk_reporting_by_futu"]},
+    {"id":"yahoo_finance_news","name":"Yahoo Finance News","tier":"N3_AGGREGATOR","priority":31,"regions":["GLOBAL"],"transport":"aggregator","status":"catalog","domains":["finance.yahoo.com"],"cost":"free","auth":"none","role":["discovery","cross_check"],"single_source_fact_scope":"none"},
+    {"id":"google_news","name":"Google News","tier":"N3_AGGREGATOR","priority":32,"regions":["GLOBAL"],"transport":"aggregator","status":"catalog","domains":["news.google.com"],"cost":"free","auth":"none","role":["discovery"],"single_source_fact_scope":"none"},
+    {"id":"anspire","name":"Anspire Search","tier":"N3_SEARCH_TRANSPORT","priority":40,"regions":["GLOBAL"],"transport":"search_api","status":"integrated_if_key","adapter":"AnspireSearchProvider","auth_env":["ANSPIRE_API_KEYS"],"cost":"quota","role":["discovery_transport"],"single_source_fact_scope":"none"},
+    {"id":"bocha","name":"Bocha Search","tier":"N3_SEARCH_TRANSPORT","priority":41,"regions":["CN","GLOBAL"],"transport":"search_api","status":"integrated_if_key","adapter":"BochaSearchProvider","auth_env":["BOCHA_API_KEYS"],"cost":"quota","role":["discovery_transport"],"single_source_fact_scope":"none"},
+    {"id":"tavily","name":"Tavily","tier":"N3_SEARCH_TRANSPORT","priority":42,"regions":["GLOBAL"],"transport":"search_api","status":"integrated_if_key","adapter":"TavilySearchProvider","auth_env":["TAVILY_API_KEYS"],"cost":"quota","role":["discovery_transport"],"single_source_fact_scope":"none"},
+    {"id":"brave","name":"Brave Search","tier":"N3_SEARCH_TRANSPORT","priority":43,"regions":["GLOBAL"],"transport":"search_api","status":"integrated_if_key","adapter":"BraveSearchProvider","auth_env":["BRAVE_API_KEYS"],"cost":"quota","role":["discovery_transport"],"single_source_fact_scope":"none"},
+    {"id":"serpapi","name":"SerpAPI","tier":"N3_SEARCH_TRANSPORT","priority":44,"regions":["GLOBAL"],"transport":"search_api","status":"integrated_if_key","adapter":"SerpAPISearchProvider","auth_env":["SERPAPI_API_KEYS"],"cost":"quota","role":["discovery_transport"],"single_source_fact_scope":"none"},
+    {"id":"minimax","name":"MiniMax Web Search","tier":"N3_SEARCH_TRANSPORT","priority":45,"regions":["GLOBAL"],"transport":"search_api","status":"integrated_if_key","adapter":"MiniMaxSearchProvider","auth_env":["MINIMAX_API_KEYS"],"cost":"quota","role":["discovery_transport"],"single_source_fact_scope":"none"},
+    {"id":"searxng","name":"SearXNG","tier":"N3_SEARCH_TRANSPORT","priority":46,"regions":["GLOBAL"],"transport":"metasearch","status":"integrated_if_configured_or_public_enabled","adapter":"SearXNGSearchProvider","auth_env":["SEARXNG_BASE_URLS","SEARXNG_PUBLIC_INSTANCES_ENABLED"],"cost":"free_or_self_hosted","role":["discovery_transport","fallback"],"single_source_fact_scope":"none"},
+    {"id":"social","name":"X / Reddit / Stocktwits / forums","tier":"N4_DISCOVERY_ONLY","priority":90,"regions":["GLOBAL"],"transport":"social","status":"discovery_only","domains":[],"cost":"mixed","auth":"varies","role":["rumor_detection","sentiment_lead"],"single_source_fact_scope":"none","rules":["must_be_confirmed_before_fact_or_decision_use"]}
+  ],
+  "market_channels": [
+    {"id":"futu","name":"Futu OpenD","tier":"M0_ENTITLEMENT_LIVE","priority":0,"regions":["HK"],"status":"integrated_if_configured","adapter":"FutuFetcher","auth_env":["FUTU_OPEND_HOST"],"latency_class":"entitlement_dependent","cost":"account_or_market_entitlement","role":["realtime_quote","hk_primary"],"price_time_rule":"provider_timestamp_preferred"},
+    {"id":"longbridge","name":"Longbridge OpenAPI","tier":"M0_ENTITLEMENT_LIVE","priority":1,"regions":["HK","US"],"status":"integrated_if_configured","adapter":"LongbridgeFetcher","auth_env":["LONGBRIDGE_APP_KEY","LONGBRIDGE_APP_SECRET","LONGBRIDGE_ACCESS_TOKEN"],"latency_class":"entitlement_dependent","cost":"account_or_market_entitlement","role":["realtime_quote","fallback_or_primary_when_configured"],"price_time_rule":"provider_timestamp_preferred"},
+    {"id":"tickflow","name":"TickFlow","tier":"M0_ENTITLEMENT_LIVE","priority":2,"regions":["CN"],"status":"integrated_if_configured","adapter":"TickFlowFetcher","auth_env":["TICKFLOW_API_KEY"],"latency_class":"provider_plan_dependent","cost":"quota_or_subscription","role":["realtime_quote","batch_prefetch","market_stats"],"price_time_rule":"provider_timestamp_preferred"},
+    {"id":"tushare","name":"Tushare Pro","tier":"M1_API_NEAR_REALTIME","priority":10,"regions":["CN"],"status":"integrated_if_token","adapter":"TushareFetcher","auth_env":["TUSHARE_TOKEN"],"latency_class":"endpoint_and_entitlement_dependent","cost":"points_or_subscription","role":["realtime_quote","fundamentals","history"],"price_time_rule":"provider_timestamp_preferred"},
+    {"id":"efinance","name":"EFinance / Eastmoney","tier":"M1_PUBLIC_NEAR_REALTIME","priority":11,"regions":["CN"],"status":"integrated","adapter":"EfinanceFetcher","auth":"none","latency_class":"near_realtime_unofficial_wrapper","cost":"free","role":["realtime_quote","batch_prefetch"],"price_time_rule":"provider_timestamp_if_available"},
+    {"id":"akshare_em","name":"AkShare Eastmoney","tier":"M1_PUBLIC_NEAR_REALTIME","priority":12,"regions":["CN"],"status":"integrated","adapter":"AkshareFetcher","auth":"none","latency_class":"near_realtime_unofficial_wrapper","cost":"free","role":["realtime_quote","batch_prefetch"],"price_time_rule":"provider_timestamp_if_available"},
+    {"id":"akshare_sina","name":"AkShare Sina","tier":"M1_PUBLIC_NEAR_REALTIME","priority":13,"regions":["CN"],"status":"integrated","adapter":"AkshareFetcher","auth":"none","latency_class":"near_realtime_unofficial_wrapper","cost":"free","role":["realtime_quote","fallback"],"price_time_rule":"provider_timestamp_if_available"},
+    {"id":"tencent","name":"Tencent Quote","tier":"M1_PUBLIC_NEAR_REALTIME","priority":14,"regions":["CN","HK"],"status":"integrated","adapter":"TencentFetcher/AkshareFetcher","auth":"none","latency_class":"near_realtime_public","cost":"free","role":["realtime_quote","fallback"],"price_time_rule":"provider_timestamp_if_available"},
+    {"id":"yfinance","name":"Yahoo Finance / yfinance","tier":"M2_GLOBAL_BACKUP","priority":20,"regions":["US","HK","JP","KR","TW"],"status":"integrated","adapter":"YfinanceFetcher","auth":"none","latency_class":"may_be_delayed_or_near_realtime","cost":"free","role":["realtime_quote","global_fallback","us_index_primary"],"price_time_rule":"provider_timestamp_if_available"},
+    {"id":"finnhub","name":"Finnhub","tier":"M2_GLOBAL_BACKUP","priority":21,"regions":["US"],"status":"integrated_if_key","adapter":"FinnhubFetcher","auth_env":["FINNHUB_API_KEY"],"latency_class":"plan_dependent","cost":"quota_or_subscription","role":["realtime_quote","supplement"],"price_time_rule":"provider_timestamp_preferred"},
+    {"id":"alphavantage","name":"Alpha Vantage","tier":"M2_GLOBAL_BACKUP","priority":22,"regions":["US"],"status":"integrated_if_key","adapter":"AlphaVantageFetcher","auth_env":["ALPHAVANTAGE_API_KEY"],"latency_class":"plan_dependent","cost":"quota_or_subscription","role":["realtime_quote","supplement"],"price_time_rule":"provider_timestamp_preferred"},
+    {"id":"baostock","name":"Baostock","tier":"M3_HISTORICAL_BACKUP","priority":30,"regions":["CN"],"status":"integrated","adapter":"BaostockFetcher","auth":"none","latency_class":"historical_or_non_tick","cost":"free","role":["daily_history","fallback"],"price_time_rule":"not_for_shadow_entry_without_verified_price_time"},
+    {"id":"pytdx","name":"Pytdx / TDX","tier":"M3_HISTORICAL_BACKUP","priority":31,"regions":["CN"],"status":"integrated","adapter":"PytdxFetcher","auth":"none","latency_class":"endpoint_dependent","cost":"free","role":["daily_history","fallback"],"price_time_rule":"verify_provider_time_before_shadow_entry"}
+  ],
+  "runtime_profiles": {
+    "news_search_transport": ["anspire","bocha","tavily","brave","serpapi","minimax","searxng"],
+    "hk_news_evidence_preference": ["hkexnews","reuters","bloomberg","dow_jones_wsj","financial_times","aastocks","etnet","rthk","scmp","hkej","futu_public_news"],
+    "hk_realtime_default_existing": ["futu","longbridge","akshare_em","yfinance"],
+    "us_realtime_existing": ["longbridge_or_yfinance_primary","other_as_secondary","finnhub_supplement","alphavantage_supplement"],
+    "cn_realtime_policy": "preserve REALTIME_SOURCE_PRIORITY from runtime config; catalog provides metadata and validation, not a silent override"
+  }
+}

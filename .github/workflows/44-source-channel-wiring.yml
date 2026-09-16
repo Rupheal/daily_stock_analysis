@@ -1,0 +1,97 @@
+name: DSA Source Channel Wiring
+
+on:
+  push:
+    branches:
+      - feat/dsa-source-channels-20260916
+    paths:
+      - .github/workflows/44-source-channel-wiring.yml
+
+permissions:
+  contents: write
+
+jobs:
+  wire-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/dsa-source-channels-20260916
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Wire catalog into existing runtime routes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str, marker: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              if marker in text:
+                  print(f"already wired: {path} -> {marker}")
+                  return
+              if old not in text:
+                  raise SystemExit(f"fail-closed: patch anchor not found in {path}: {marker}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+              print(f"wired: {path} -> {marker}")
+
+          search_anchor = '''        if not self._providers:\n            logger.warning("未配置任何搜索能力，新闻搜索功能将不可用")\n'''
+          search_replacement = '''        # Canonical DSA source catalog owns search-transport fallback order.\n        # Provider availability still depends on the existing keys/configuration above.\n        if self._providers:\n            try:\n                from src.services.source_channel_registry import ordered_news_transport_ids\n\n                canonical_order = ordered_news_transport_ids()\n                rank = {channel_id: index for index, channel_id in enumerate(canonical_order)}\n                provider_ids = {\n                    "anspire": "anspire",\n                    "anspire search": "anspire",\n                    "bocha": "bocha",\n                    "tavily": "tavily",\n                    "brave": "brave",\n                    "serpapi": "serpapi",\n                    "minimax": "minimax",\n                    "searxng": "searxng",\n                }\n\n                def catalog_rank(provider):\n                    provider_id = provider_ids.get(str(provider.name).strip().lower(), "")\n                    return rank.get(provider_id, len(rank))\n\n                self._providers.sort(key=catalog_rank)\n                logger.info(\n                    "新闻搜索回退链已按 canonical source catalog 排序: %s",\n                    " -> ".join(provider.name for provider in self._providers),\n                )\n            except Exception as exc:\n                logger.warning("canonical source catalog 不可用，保留既有新闻搜索顺序: %s", exc)\n\n        if not self._providers:\n            logger.warning("未配置任何搜索能力，新闻搜索功能将不可用")\n'''
+          replace_once(
+              "src/search_service.py",
+              search_anchor,
+              search_replacement,
+              "Canonical DSA source catalog owns search-transport fallback order.",
+          )
+
+          hk_anchor = '''                hk_priority = [\n                    source.strip().lower()\n                    for source in getattr(\n                        config,\n                        "futu_hk_realtime_source_priority",\n                        "futu,longbridge,akshare,yfinance",\n                    ).split(",")\n                    if source.strip()\n                ]\n'''
+          hk_replacement = '''                # Keep explicit runtime configuration authoritative; when absent,\n                # fall back to the canonical DSA market-channel catalog.\n                from src.services.source_channel_registry import resolve_market_priority\n                hk_priority = resolve_market_priority(\n                    getattr(config, "futu_hk_realtime_source_priority", ""),\n                    market="hk",\n                )\n                if not hk_priority:\n                    hk_priority = ["futu", "longbridge", "akshare", "yfinance"]\n                # Catalog uses akshare_em as the provider family id; HK route uses\n                # the existing 'akshare' token consumed by source_map below.\n                hk_priority = [\n                    "akshare" if source == "akshare_em" else source\n                    for source in hk_priority\n                ]\n'''
+          replace_once(
+              "data_provider/base.py",
+              hk_anchor,
+              hk_replacement,
+              "fall back to the canonical DSA market-channel catalog.",
+          )
+
+          cn_anchor = '''        source_priority = [\n            source.strip().lower()\n            for source in config.realtime_source_priority.split(',')\n            if source.strip()\n        ]\n'''
+          cn_replacement = '''        # Canonical registry validates/normalizes the chain while preserving an\n        # explicitly configured REALTIME_SOURCE_PRIORITY byte-for-byte in order.\n        from src.services.source_channel_registry import resolve_market_priority\n        source_priority = resolve_market_priority(\n            config.realtime_source_priority,\n            market="cn",\n        )\n'''
+          replace_once(
+              "data_provider/base.py",
+              cn_anchor,
+              cn_replacement,
+              "Canonical registry validates/normalizes the chain",
+          )
+          PY
+
+      - name: Compile patched runtime modules
+        run: |
+          python -m py_compile \
+            src/services/source_channel_registry.py \
+            src/search_service.py \
+            data_provider/base.py \
+            data_provider/__init__.py \
+            src/services/__init__.py
+
+      - name: Run source-channel contract tests
+        run: python -m unittest -v tests.test_source_channel_registry
+
+      - name: Commit verified runtime wiring
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No runtime wiring diff to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/search_service.py data_provider/base.py
+          git commit -m "feat(dsa): wire canonical source catalog into runtime routes [skip ci]"
+          git push origin HEAD:feat/dsa-source-channels-20260916
