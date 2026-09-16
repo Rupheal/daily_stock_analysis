@@ -1,0 +1,83 @@
+name: Run028 preflight dated-news recovery model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/RUN028_PREFLIGHT_NEWS_RECOVERY_SCOPE.json
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/scripts:${{ github.workspace }}
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Prove model and private-Drive credentials are absent
+        run: |
+          python - <<'PY'
+          import os
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k]
+          assert not forbidden, forbidden
+          print('{"model_credentials_present":false,"drive_credentials_present":false,"provider_requests":0}')
+          PY
+      - name: Install runtime dependencies
+        run: pip install -r requirements.txt pytest
+      - name: Verify bounded recovery scope and current target
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from o_target_session_contract import resolve_target_session
+          s=json.load(open('docs/runtime/RUN028_PREFLIGHT_NEWS_RECOVERY_SCOPE.json'))
+          a=json.load(open('docs/runtime/run028-gatea-owner-authorization.json'))
+          assert s['provider_http_requests_permitted']==0
+          assert s['claim_creation_permitted'] is False
+          assert s['gate_relaxation'] is False
+          assert a['maximum_provider_http_requests']==1 and a['hard_model_budget_cny']=='0.10'
+          target=resolve_target_session(datetime.now(timezone.utc)).target_session.isoformat()
+          assert target==a['target_session']=='2026-09-15'
+          print(json.dumps({'target_session':target,'provider_requests':0,'claim_creation':False}))
+          PY
+      - name: Fresh strict preflight with dated reviewed evidence
+        run: |
+          python scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/preflight.stdout 2> /tmp/preflight.stderr
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          p=json.load(open('probe/preflight.json'))
+          assert p['passed'] is True and p['prices_passed'] is True and p['target']=='2026-09-15'
+          assert p['news_count'] >= 3
+          assert len(p['origins']) >= 2
+          assert len(p['company_news_evidence']) >= 3
+          for e in p['company_news_evidence']:
+              raw=str(e['published_at']).replace('Z','+00:00')
+              dt=datetime.fromisoformat(raw)
+              if dt.tzinfo is None: dt=dt.replace(tzinfo=timezone.utc)
+              assert dt.astimezone(timezone.utc) < datetime(2026,9,16,0,0,tzinfo=timezone.utc)
+          out={'target':p['target'],'prices_passed':p['prices_passed'],'news_count':p['news_count'],'origin_count':len(p['origins']),'event_candidates':p['event_candidates'],'company_news_evidence_count':len(p['company_news_evidence']),'component_status':p['component_status'],'provider_requests':0,'claim_created':False}
+          print(json.dumps(out,ensure_ascii=False))
+          open('/tmp/run028-preflight-news-recovery.json','w').write(json.dumps(out,indent=2,ensure_ascii=False))
+          PY
+      - name: Upload sanitized model-free receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run028-preflight-news-recovery-sanitized
+          path: /tmp/run028-preflight-news-recovery.json
+          if-no-files-found: ignore
+          retention-days: 14
