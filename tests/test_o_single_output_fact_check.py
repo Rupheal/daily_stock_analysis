@@ -6,6 +6,9 @@ from o_single_output_fact_check import check_saved_output
 
 def case():
     return ({'target':'2026-01-05','news_count':0},{'context':{'date':'2026-01-05','today':{'date':'2026-01-05','open':'10.0'},'yesterday':{'close':'10.2'}},'news_context':None},{'pattern_analysis':'低开','action':'watch','news_result_count_known':False,'news_result_count':None,'current_price':None,'search_performed':False})
+def add_v2_execution_contract(preflight, realtime):
+    preflight['execution_contract']={'version':'O_GATE_A_EXECUTION_CONTRACT_v2','target_session':preflight['target'],
+                                     'realtime_quote_available':realtime,'session_fact_anchor_required':True}
 def codes(out):return [f['code'] for f in out['findings']]
 def guards(out):return out['triggered_semantic_guards']
 def test_high_open_contradicts_lower_actual_open():
@@ -46,6 +49,31 @@ def test_sem001_text_live_price_without_realtime_quote():
     assert 'SEM001_LIVE_PRICE_LABEL_WITHOUT_REALTIME_QUOTE' in codes(check_saved_output(p,i,r))
 def test_sem001_safe_completed_close_language():
     p,i,r=case();r['analysis_summary']='实时行情缺失，仅使用上一交易日收盘价10.10元'
+    assert 'SEM-001' not in guards(check_saved_output(p,i,r))
+def test_sem001_v2_false_contract_blocks_numeric_toplevel_current_price():
+    p,i,r=case();add_v2_execution_contract(p,False);r['current_price']=10.1
+    out=check_saved_output(p,i,r)
+    assert 'SEM001_TOPLEVEL_CURRENT_PRICE_WITHOUT_REALTIME_QUOTE' in codes(out)
+    assert 'SEM-001' in guards(out)
+def test_sem001_v2_false_contract_blocks_numeric_dashboard_even_when_toplevel_numeric():
+    p,i,r=case();add_v2_execution_contract(p,False);r['current_price']=10.1
+    r['dashboard']={'data_perspective':{'price_position':{'current_price':10.1}}}
+    out=check_saved_output(p,i,r)
+    assert 'SEM001_TOPLEVEL_CURRENT_PRICE_WITHOUT_REALTIME_QUOTE' in codes(out)
+    assert 'SEM001_LIVE_PRICE_FIELD_WITHOUT_REALTIME_QUOTE' in codes(out)
+def test_sem001_v2_true_contract_is_authoritative_over_missing_output_field():
+    p,i,r=case();add_v2_execution_contract(p,True)
+    r['dashboard']={'data_perspective':{'price_position':{'current_price':10.1}}}
+    r['analysis_summary']='现价10.10元'
+    assert 'SEM-001' not in guards(check_saved_output(p,i,r))
+def test_sem001_v2_invalid_realtime_availability_fails_closed():
+    p,i,r=case();add_v2_execution_contract(p,False);p['execution_contract']['realtime_quote_available']='false'
+    out=check_saved_output(p,i,r)
+    assert 'SEM001_REALTIME_AVAILABILITY_CONTRACT_INVALID' in codes(out)
+    assert 'SEM-001' in guards(out)
+def test_sem001_v2_false_contract_safe_completed_close_language():
+    p,i,r=case();add_v2_execution_contract(p,False)
+    r['analysis_summary']='实时行情缺失，仅使用2026-01-05目标交易日收盘价10.10元'
     assert 'SEM-001' not in guards(check_saved_output(p,i,r))
 def test_sem002_absence_of_bad_news_claim_when_news_missing():
     p,i,r=case();r['checklist']='未见近3日利空公告'
