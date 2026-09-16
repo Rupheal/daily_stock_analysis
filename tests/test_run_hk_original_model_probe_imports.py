@@ -45,9 +45,9 @@ def test_contaminated_namespace_is_rejected_before_provider_configuration(tmp_pa
     monkeypatch.setitem(sys.modules,'src',types.ModuleType('src'))
     def git_only(argv,**kwargs):
         assert argv[0]=='git'
-        return 'fixture-commit\n' if argv[1]=='rev-parse' else ''
+        return probe.FROZEN_UPSTREAM+'\n' if argv[1]=='rev-parse' else ''
     monkeypatch.setattr(probe.subprocess,'check_output',git_only)
-    monkeypatch.setattr(sys,'argv',['probe','--checkout',str(checkout),'--expected-commit','fixture-commit','--preflight',str(preflight),'--output',str(output),'--limit-cny','2','--carry-upper-cny','0'])
+    monkeypatch.setattr(sys,'argv',['probe','--checkout',str(checkout),'--expected-commit',probe.FROZEN_UPSTREAM,'--preflight',str(preflight),'--output',str(output),'--limit-cny','2','--carry-upper-cny','0'])
     try:
         probe.main()
     except RuntimeError as exc:
