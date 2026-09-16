@@ -1,0 +1,314 @@
+name: O Gate A batch007 sample01 CONT1
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/run031-cont1-gatea-batch007-authorization.json
+permissions:
+  contents: read
+concurrency:
+  group: dsa-gatea-critical-paid-candidate
+  cancel-in-progress: false
+jobs:
+  gatea:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts:${{ github.workspace }}/research/tests
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      RUN_ID: TRI-DSA-EXEC-20260916-031-CONT1
+      EVIDENCE_ID: ART-DSA-RUN031-CONT1-GATEA-O-SINGLE
+      CLAIM_ID: ART-DSA-RUN031-CONT1-GATEA-O-SINGLE-CLAIM
+      DSA_INPUT_TOKEN_MARGIN: '2048'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - name: Read frozen CHILD2 observer source for provenance fixture
+        uses: actions/checkout@v5
+        with:
+          ref: c75c8496410cd33a151d659add7c83ce92bdd1cd
+          path: child2-observer
+          sparse-checkout: scripts/run_hk_original_model_probe.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: Pin official DeepSeek V4.1 tokenizer
+        uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Verify CONT1 authority ledger model-free repair and frozen boundaries
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          a=json.load(open('research/docs/runtime/run031-cont1-gatea-batch007-authorization.json'))
+          b=json.load(open('research/docs/runtime/O_GATEA_CRITICAL_BATCH_AUTH_007.json'))
+          l=json.load(open('research/docs/runtime/O_GATEA_CRITICAL_BATCH_007_LEDGER.json'))
+          r=json.load(open('research/docs/runtime/RUN031_GATEA_PRE_REQUEST_RESULT.json'))
+          assert a['authorized'] is True and a['authorization_id']==b['authorization_id']==l['authorization_id']
+          assert a['run_id']=='TRI-DSA-EXEC-20260916-031-CONT1' and a['continuation_of']=='TRI-DSA-EXEC-20260916-031' and a['sample_index']==1
+          assert r['provider']['model_http_requests']==0 and r['provider']['claim_created'] is False
+          assert a['model_free_repair_ci_run']==35068269373 and a['model_free_repair_tests_passed']==141
+          assert a['maximum_provider_http_requests_this_sample']==1 and a['single_sample_hard_cap_cny']=='0.10'
+          assert b['budget']['maximum_provider_http_requests_total']==5 and b['budget']['batch_hard_cap_cny']=='1.00'
+          assert l['state']=='OPEN' and l['requests_used']==0 and l['requests_max']==5 and l['batch_cost_cny_used_upper']=='0.00' and l['gate_a_passed'] is False and l['paid_pause_required'] is False
+          assert not any(a[k] for k in ('o_full_pool_permitted','u45_formal_execution_permitted','shadow_activation_permitted','simulation_permitted','schedule_changes_permitted','main_merge_permitted','real_orders_permitted','runtime_activated'))
+          got=subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()
+          assert got==a['frozen_upstream']=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
+          print(json.dumps({'authorization':'PASS','sample':1,'continuation':'CONT1','batch_requests_used_before':0,'batch_cost_upper_before':'0.00','model_free_repair':'141_PASS','gate_b_c':'FROZEN'}))
+          PY
+
+      - name: Install runtime and tokenizer bindings
+        run: pip install -r research/requirements.txt pytest httpx deepseek-recipe==0.1.1
+
+      - name: Regression suites for current v2 Gate A path
+        working-directory: research
+        run: >-
+          python -m pytest --noconftest -q
+          tests/test_o_target_session_contract.py
+          tests/test_prepare_xiaomi_acceptance_targeted.py
+          tests/test_o_native_date_boundary_adapter.py
+          tests/test_o_native_input_contract.py
+          tests/test_hk_volume_reconciliation.py
+          tests/test_o_semantic_handoff_contract.py
+          tests/test_o_post_output_contract.py
+          tests/test_o_single_output_fact_check.py
+          tests/test_o_session_fact_anchor.py
+          tests/test_run_hk_original_model_probe_imports.py
+          tests/test_o_native_context_canonical.py
+          tests/test_deepseek_flash_cap010_guard.py
+
+      - name: Frozen capture-stage provenance suite
+        env:
+          DSA_FROZEN_ANALYZER_SOURCE: ${{ github.workspace }}/original/src/analyzer.py
+          DSA_FROZEN_PIPELINE_SOURCE: ${{ github.workspace }}/original/src/core/pipeline.py
+          DSA_OBSERVER_SOURCE: ${{ github.workspace }}/child2-observer/scripts/run_hk_original_model_probe.py
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_o_capture_stage_provenance.py
+
+      - name: Resolve fresh current completed XHKG target
+        run: |
+          mkdir -p /tmp/run031c1-evidence
+          python - <<'PY'
+          import json
+          from datetime import datetime,timezone
+          from pathlib import Path
+          from o_target_session_contract import resolve_target_session
+          t=resolve_target_session(datetime.now(timezone.utc)).target_session.isoformat()
+          Path('/tmp/run031c1-target').write_text(t)
+          print(json.dumps({'target_session':t,'policy':'current_completed_XHKG','model_http_requests':0}))
+          PY
+
+      - name: Fresh strict preflight and price integrity
+        run: |
+          cd research
+          rm -rf probe
+          python scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/run031c1-evidence/preflight.stdout 2> /tmp/run031c1-evidence/preflight.stderr
+          cp probe/preflight.json /tmp/run031c1-evidence/preflight.json
+          cp probe/target-session-receipt.json /tmp/run031c1-evidence/target-session-receipt.json
+          cp probe/news.json /tmp/run031c1-evidence/news.json
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          t=Path('/tmp/run031c1-target').read_text().strip(); p=json.load(open('probe/preflight.json')); r=json.load(open('probe/target-session-receipt.json'))
+          assert p.get('passed') is True and p.get('prices_passed') is True and p.get('symbol','').upper()=='HK01810'
+          assert str(p.get('target'))==t==str(r.get('target_session'))==str(r.get('preflight_target')) and r.get('target_match') is True
+          assert (p.get('component_status') or {}).get('prices')=='passed'
+          assert (p.get('component_status') or {}).get('news') in ('passed_limited_coverage','passed')
+          assert type(p.get('news_count')) is int and p.get('news_count') >= 3
+          assert isinstance(p.get('origins'),list) and len(p.get('origins')) >= 2
+          x=p.get('execution_contract') or {}
+          assert x.get('version')=='O_GATE_A_EXECUTION_CONTRACT_v2' and x.get('target_session')==t
+          assert x.get('realtime_quote_available') is False and x.get('session_fact_anchor_required') is True
+          sha=hashlib.sha256(Path('probe/preflight.json').read_bytes()).hexdigest()
+          Path('/tmp/run031c1-evidence/preflight-lineage.json').write_text(json.dumps({'fresh_execution_preflight_sha256':sha,'target_session':t,'fresh_retrieval_performed':True,'strict_news_count':p['news_count'],'origin_count':len(p['origins']),'execution_contract_version':x['version']},indent=2))
+          print(json.dumps({'fresh_preflight':'PASS','target':t,'price_gate':'PASS','news_count':p['news_count'],'origin_count':len(p['origins']),'realtime_quote_available':False,'model_http_requests':0}))
+          PY
+
+      - name: Frozen native exact-session smoke
+        run: |
+          T="$(cat /tmp/run031c1-target)"
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-u-universe.json --scope O_single_stock_smoke --expected-date "$T" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 240 --output /tmp/run031c1-native > /tmp/run031c1-evidence/native-data.log 2>&1
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          t=Path('/tmp/run031c1-target').read_text().strip(); d=json.load(open('/tmp/run031c1-native/coverage.json')); rows=d.get('coverage') or []
+          assert d.get('code_commit')=='089d9d26d68f8b839ea5a74a3784e4402925f8b7' and d.get('native_logic_modified') is False
+          assert d.get('target_boundary_adapter') is True and (d.get('target_boundary_adapter_apply_count') or 0)>=1
+          assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1 and len(rows)==1 and str(rows[0].get('latest_date'))==t and d.get('returncode')==0
+          print(json.dumps({'native_exact_session':'PASS','target':t,'adapter_apply_count':d['target_boundary_adapter_apply_count'],'model_http_requests':0}))
+          PY
+
+      - name: Dry v2 request envelope and CNY0.10 proof
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+          DSA_BUDGET_PROBE_ONLY: '1'
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: dry-envelope-no-network
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          rm -rf /tmp/run031c1-dry
+          set +e
+          python research/scripts/run_hk_original_model_probe_run030.py --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight research/probe/preflight.json --output /tmp/run031c1-dry --limit-cny 0.10 --carry-upper-cny 0 --target-boundary-adapter --news-handoff-v1 > /tmp/run031c1-evidence/dry.stdout 2> /tmp/run031c1-evidence/dry.stderr
+          rc=$?; set -e
+          cp /tmp/run031c1-dry/probe-summary.json /tmp/run031c1-evidence/dry-probe-summary.json
+          cp /tmp/run031c1-dry/budget.json /tmp/run031c1-evidence/dry-budget.json
+          python - <<'PY'
+          import json
+          from decimal import Decimal
+          from pathlib import Path
+          s=json.load(open('/tmp/run031c1-dry/probe-summary.json')); b=json.load(open('/tmp/run031c1-dry/budget.json')); req=b.get('requests') or []
+          h=json.load(open('/tmp/run031c1-dry/news-handoff-receipt.json')); c=json.load(open('/tmp/run031c1-dry/news-prompt-consumption.json'))
+          assert s.get('input_validated') is True and (s.get('target_boundary_adapter_apply_count') or 0)>=1
+          assert s.get('news_handoff_version')=='O_SEMANTIC_NEWS_HANDOFF_v2' and s.get('news_loader_consumed') is True and s.get('news_prompt_consumed') is True
+          assert h.get('version')=='O_SEMANTIC_NEWS_HANDOFF_v2' and h.get('native_context_binding_version')=='O_NATIVE_CONTEXT_BINDING_v1'
+          a=h.get('session_fact_anchor') or {}; facts=a.get('facts') or {}
+          assert a.get('version')=='O_SESSION_FACT_ANCHOR_v1' and facts.get('realtime_quote_available') is False
+          assert c.get('native_prompt_evidence_consumed') is True and c.get('session_fact_anchor_sha256')==a.get('sha256')
+          assert len(req)==1 and req[0]['status']=='dry_envelope_validated_not_sent'
+          assert Decimal(req[0]['pre_send_peak_upper_cny']) <= Decimal('0.10')
+          assert not Path('/tmp/run031c1-dry/provider-response.txt').exists() and not Path('/tmp/run031c1-dry/request-body.json').exists()
+          out={k:req[0][k] for k in ('payload_sha256','payload_bytes','output_cap','official_v41_input_tokens','input_token_safety_margin','pre_send_peak_upper_cny','hard_cap_cny','tokenizer_repo_commit')}
+          out.update({'dry_provider_send':False,'dry_model_http_requests':0,'adapter_apply_count':s['target_boundary_adapter_apply_count'],'handoff_version':h['version'],'session_fact_version':a['version'],'opening_direction':facts.get('opening_direction'),'realtime_quote_available':False})
+          Path('/tmp/run031c1-evidence/cost-envelope-proof.json').write_text(json.dumps(out,indent=2)); print(json.dumps(out))
+          PY
+          test "$rc" -ne 0
+
+      - name: Recheck batch ledger candidate absence balance and reserve independent claim
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json
+          from decimal import Decimal
+          l=json.load(open('research/docs/runtime/O_GATEA_CRITICAL_BATCH_007_LEDGER.json'))
+          assert l['state']=='OPEN' and l['gate_a_passed'] is False and l['paid_pause_required'] is False
+          assert l['requests_used']==0 and l['requests_used'] < l['requests_max']==5
+          assert Decimal(l['batch_cost_cny_used_upper']) + Decimal('0.10') <= Decimal(l['batch_cost_cny_hard_cap'])==Decimal('1.00')
+          print('{"batch_ledger_pre_send":"PASS","requests_used":0,"batch_upper_before":"0.00"}')
+          PY
+          python - <<'PY'
+          import os,httpx
+          from dsa_drive_store import DriveStore,scoped_token
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']); s.assert_absent(os.environ['EVIDENCE_ID']); s.assert_absent(os.environ['CLAIM_ID'])
+          print('{"candidate_artifact_absent":true,"candidate_claim_absent":true,"model_http_requests":0}')
+          PY
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          from pathlib import Path
+          import json,os
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']; total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          out={'currency':'CNY','single_request_hard_cap_cny':'0.10','single_stock_affordable':bool(raw.get('is_available') and total>=Decimal('0.10'))}
+          Path('/tmp/run031c1-evidence/balance-before.json').write_text(json.dumps(out,indent=2)); assert out['single_stock_affordable']; print(json.dumps(out))
+          PY
+          python - <<'PY'
+          import hashlib,json,os,httpx
+          from pathlib import Path
+          from dsa_drive_store import DriveStore,scoped_token
+          preflight=Path('research/probe/preflight.json').read_bytes(); execution='CI-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); receipt=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']).reserve_native_call(os.environ['EVIDENCE_ID'],os.environ['RUN_ID'],hashlib.sha256(preflight).hexdigest(),execution)
+          Path('/tmp/run031c1-evidence/call-intent-receipt.json').write_text(json.dumps(receipt,indent=2)); print('RUN031_CONT1_DURABLE_INDEPENDENT_CLAIM_PERSISTED_MODEL_REQUESTS_0')
+          PY
+
+      - name: One authorized frozen original-native provider request
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+          DSA_BUDGET_PROBE_ONLY: '0'
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          set +e
+          python research/scripts/run_hk_original_model_probe_run030.py --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight research/probe/preflight.json --output /tmp/run031c1-evidence/original-model --limit-cny 0.10 --carry-upper-cny 0 --target-boundary-adapter --news-handoff-v1 > /tmp/run031c1-evidence/native.stdout 2> /tmp/run031c1-evidence/native.stderr
+          rc=$?; echo "$rc" > /tmp/run031c1-evidence/process.rc; exit 0
+
+      - name: Persist raw evidence privately when evidence exists and verify restore
+        if: always()
+        run: |
+          if [ -d /tmp/run031c1-evidence ] && find /tmp/run031c1-evidence -type f -print -quit | grep -q .; then
+            python research/scripts/dsa_drive_bundle.py --source /tmp/run031c1-evidence --run-id "$RUN_ID" --artifact-id "$EVIDENCE_ID" --receipt /tmp/run031c1-private-receipt.json
+          else
+            printf '%s\n' '{"status":"NOT_APPLICABLE_NO_EVIDENCE_BEFORE_CLAIM","save_read_hash_restore":false}' > /tmp/run031c1-private-receipt.json
+          fi
+
+      - name: Build sanitized CONT1 receipt and fail closed
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,os
+          out={'schema_version':1,'run_id':os.environ['RUN_ID'],'workflow_run':int(os.environ['GITHUB_RUN_ID']),'batch_authorization':'TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007','batch_sample_index':1,'continuation_of':'TRI-DSA-EXEC-20260916-031','artifact_id':os.environ['EVIDENCE_ID'],'claim_id':os.environ['CLAIM_ID'],'frozen_upstream':'089d9d26d68f8b839ea5a74a3784e4402925f8b7','raw_private_content_public':False,'runtime_activated':False,'real_orders':0,'gate_b_c':'FROZEN','automatic_retry':False,'single_sample_hard_cap_cny':'0.10','batch_hard_cap_cny':'1.00'}
+          rc=int(Path('/tmp/run031c1-evidence/process.rc').read_text().strip()) if Path('/tmp/run031c1-evidence/process.rc').exists() else None; out['native_process_exit_code']=rc
+          root=Path('/tmp/run031c1-evidence/original-model'); summary=root/'probe-summary.json'
+          if summary.exists():
+              d=json.loads(summary.read_text()); reqs=((d.get('budget') or {}).get('requests') or []); out['budget_rows']=len(reqs); out['input_validated']=d.get('input_validated'); out['original_module_origins_verified']=d.get('original_module_origins_verified'); out['adapter_apply_count']=d.get('target_boundary_adapter_apply_count'); out['news_handoff_version']=d.get('news_handoff_version'); out['news_handoff_requested']=d.get('news_handoff_requested'); out['news_loader_consumed']=d.get('news_loader_consumed'); out['news_prompt_consumed']=d.get('news_prompt_consumed'); out['pipeline_final_capture_proven']=d.get('pipeline_final_capture_proven'); out['semantic_contract_pass']=d.get('semantic_contract_pass'); out['promotion_gate']=d.get('post_output_promotion_gate'); out['probe_error']=d.get('error')
+              if reqs:
+                  q=reqs[-1]; u=q.get('usage') or {}; out['request_status']=q.get('status'); out['prompt_tokens']=u.get('prompt_tokens'); out['completion_tokens']=u.get('completion_tokens'); out['total_tokens']=u.get('total_tokens'); out['usage_peak_estimate_cny']=q.get('usage_peak_estimate_cny'); out['pre_send_peak_upper_cny']=q.get('pre_send_peak_upper_cny')
+          else: out['budget_rows']=0
+          out['request_body_present']=(root/'request-body.json').exists(); out['provider_response_present']=(root/'provider-response.txt').exists(); out['original_result_present']=(root/'original-result.json').exists(); out['pipeline_final_result_present']=(root/'pipeline-final-result.json').exists(); out['post_output_contract_present']=(root/'post-output-contract.json').exists()
+          out['model_http_requests']=1 if out.get('request_status')=='response_received' and out['provider_response_present'] else 0
+          dr=Path('/tmp/run031c1-private-receipt.json')
+          if dr.exists():
+              r=json.loads(dr.read_text()); out['private_persistence_status']=r.get('status'); out['private_save_read_hash_restore']='PASS' if r.get('save_read_hash_restore') is True else ('NOT_APPLICABLE_NO_EVIDENCE_BEFORE_CLAIM' if r.get('status')=='NOT_APPLICABLE_NO_EVIDENCE_BEFORE_CLAIM' else 'FAIL'); out['private_sha256']=r.get('sha256'); out['private_bytes']=r.get('bytes'); out['private_file_id_redacted']=True
+          else: out['private_save_read_hash_restore']='NOT_RUN'
+          pf=Path('/tmp/run031c1-evidence/preflight.json')
+          if pf.exists():
+              p=json.loads(pf.read_text()); out['target_session']=p.get('target'); out['preflight_news_count']=p.get('news_count'); out['preflight_news_origin_count']=len(p.get('origins') or []); out['preflight_component_status']=p.get('component_status'); out['execution_contract']=p.get('execution_contract')
+          ok=(out.get('model_http_requests')==1 and out.get('input_validated') is True and out.get('original_module_origins_verified') is True and (out.get('adapter_apply_count') or 0)>=1 and out.get('request_status')=='response_received' and out.get('original_result_present') and out.get('pipeline_final_result_present') and out.get('pipeline_final_capture_proven') is True and out.get('news_handoff_version')=='O_SEMANTIC_NEWS_HANDOFF_v2' and out.get('news_handoff_requested') is True and out.get('news_loader_consumed') is True and out.get('news_prompt_consumed') is True and out.get('semantic_contract_pass') is True and (out.get('promotion_gate') or {}).get('status')=='PASS' and out.get('private_save_read_hash_restore')=='PASS' and rc==0)
+          out['automated_gate_a']='PASS_PENDING_MANUAL_PRIVATE_SEMANTIC_REVIEW' if ok else 'FAIL_PRESERVED_DIAGNOSE_BEFORE_NEXT_BATCH_REQUEST'
+          Path('/tmp/run031c1-sanitized.json').write_text(json.dumps(out,indent=2,sort_keys=True,ensure_ascii=False)); print(json.dumps(out,sort_keys=True,ensure_ascii=False))
+          if not ok: raise SystemExit(1)
+          PY
+
+      - name: Upload sanitized CONT1 receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatea-run031-cont1-batch007-sample01-sanitized
+          path: /tmp/run031c1-sanitized.json
+          if-no-files-found: ignore
+          retention-days: 14
