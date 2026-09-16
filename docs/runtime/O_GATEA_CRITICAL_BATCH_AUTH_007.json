@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "authorization_id": "TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007",
+  "authorized_at_date": "2026-09-16",
+  "owner_instruction": "为了推进关键进程，可以申请5次Deepseek请求+ ¥1.0硬上限，请更新指令",
+  "state": "AUTHORIZED_BOUNDED_CRITICAL_BATCH",
+  "scope": {
+    "project": "DSA dual-model",
+    "workstream": "O_NATIVE_GATE_A",
+    "purpose": "Advance the critical O single-stock Gate A acceptance path using new independent samples after model-free diagnosis/repair.",
+    "target_initial": "HK01810",
+    "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7"
+  },
+  "budget": {
+    "maximum_provider_http_requests_total": 5,
+    "batch_hard_cap_cny": "1.00",
+    "auto_recharge": false,
+    "fallback_model_permitted": false,
+    "paid_data_permitted": false,
+    "new_subscription_permitted": false,
+    "unused_budget_must_not_be_spent_for_its_own_sake": true
+  },
+  "request_governance": {
+    "each_provider_request_requires_new_independent_claim": true,
+    "reuse_failed_claim": false,
+    "automatic_same_claim_retry": false,
+    "fresh_strict_preflight_before_each_request": true,
+    "fresh_target_session_resolution_before_each_request": true,
+    "frozen_upstream_must_remain_unchanged": true,
+    "private_drive_save_read_hash_restore_required": true,
+    "automated_semantic_gate_required": true,
+    "manual_scoped_semantic_review_required": true,
+    "request_cost_must_be_preflighted_before_send": true,
+    "cumulative_actual_or_conservative_accounting_must_remain_within_batch_cap": true,
+    "after_failure_do_model_free_diagnosis_before_using_next_request": true,
+    "same_root_cause_two_paid_samples_without_convergence_requires_paid_pause_and_architecture_reassessment": true
+  },
+  "stop_conditions": {
+    "stop_paid_batch_immediately_when_gate_a_passes": true,
+    "stop_when_request_count_reaches": 5,
+    "stop_when_batch_cost_reaches_cny": "1.00",
+    "stop_on_unresolved_budget_accounting": true,
+    "stop_on_target_session_or_price_integrity_failure": true,
+    "stop_on_private_evidence_persistence_failure_before_next_request": true,
+    "stop_on_duplicate_or_concurrent_candidate_request_risk": true
+  },
+  "governance_preserved": {
+    "run030_failure_immutable": true,
+    "gate_b_frozen_until_gate_a_pass": true,
+    "gate_c_frozen_until_applicable_authority": true,
+    "o_full_pool_before_gate_a_pass": false,
+    "u45_formal_execution_before_its_own_acceptance": false,
+    "simulation_requires_qualified_signal": true,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "schedule_changes_permitted": false,
+    "main_merge_permitted": false,
+    "public_raw_model_content_permitted": false
+  },
+  "supersedes_for_this_scope": {
+    "prior_single_request_authorization_limit": true,
+    "prior_cny_0_10_single_request_batch_limit": true,
+    "historical_run030_accounting_reset": false
+  },
+  "accounting_start": {
+    "new_batch_provider_http_requests_used": 0,
+    "new_batch_model_cost_cny": "0.00",
+    "historical_run030_not_counted_again": true
+  },
+  "next_action": "Use the latest model-free-ready v2 Gate A path. Up to five new independent DeepSeek requests may be consumed without asking the owner again, only as needed and only while cumulative batch cost remains <= CNY 1.00. Stop immediately on Gate A PASS or any stop condition."
+}
