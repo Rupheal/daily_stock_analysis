@@ -2494,6 +2494,37 @@ class SearchService:
             self._providers.insert(0, AnspireSearchProvider(anspire_keys))
             logger.info(f"已配置 Anspire Search 搜索，共 {len(anspire_keys)} 个 API Key")
             
+        # Canonical DSA source catalog owns search-transport fallback order.
+        # Provider availability still depends on the existing keys/configuration above.
+        if self._providers:
+            try:
+                from src.services.source_channel_registry import ordered_news_transport_ids
+
+                canonical_order = ordered_news_transport_ids()
+                rank = {channel_id: index for index, channel_id in enumerate(canonical_order)}
+                provider_ids = {
+                    "anspire": "anspire",
+                    "anspire search": "anspire",
+                    "bocha": "bocha",
+                    "tavily": "tavily",
+                    "brave": "brave",
+                    "serpapi": "serpapi",
+                    "minimax": "minimax",
+                    "searxng": "searxng",
+                }
+
+                def catalog_rank(provider):
+                    provider_id = provider_ids.get(str(provider.name).strip().lower(), "")
+                    return rank.get(provider_id, len(rank))
+
+                self._providers.sort(key=catalog_rank)
+                logger.info(
+                    "新闻搜索回退链已按 canonical source catalog 排序: %s",
+                    " -> ".join(provider.name for provider in self._providers),
+                )
+            except Exception as exc:
+                logger.warning("canonical source catalog 不可用，保留既有新闻搜索顺序: %s", exc)
+
         if not self._providers:
             logger.warning("未配置任何搜索能力，新闻搜索功能将不可用")
 

@@ -2482,14 +2482,20 @@ class DataFetcherManager:
                 primary_kw: dict = {}
                 secondary_kw: dict = {}
             else:
+                # Keep explicit runtime configuration authoritative; when absent,
+                # fall back to the canonical DSA market-channel catalog.
+                from src.services.source_channel_registry import resolve_market_priority
+                hk_priority = resolve_market_priority(
+                    getattr(config, "futu_hk_realtime_source_priority", ""),
+                    market="hk",
+                )
+                if not hk_priority:
+                    hk_priority = ["futu", "longbridge", "akshare", "yfinance"]
+                # Catalog uses akshare_em as the provider family id; HK route uses
+                # the existing 'akshare' token consumed by source_map below.
                 hk_priority = [
-                    source.strip().lower()
-                    for source in getattr(
-                        config,
-                        "futu_hk_realtime_source_priority",
-                        "futu,longbridge,akshare,yfinance",
-                    ).split(",")
-                    if source.strip()
+                    "akshare" if source == "akshare_em" else source
+                    for source in hk_priority
                 ]
                 source_map = {
                     "futu": ("FutuFetcher", {}),
@@ -2581,11 +2587,13 @@ class DataFetcherManager:
             return None
         
         # 获取配置的数据源优先级
-        source_priority = [
-            source.strip().lower()
-            for source in config.realtime_source_priority.split(',')
-            if source.strip()
-        ]
+        # Canonical registry validates/normalizes the chain while preserving an
+        # explicitly configured REALTIME_SOURCE_PRIORITY byte-for-byte in order.
+        from src.services.source_channel_registry import resolve_market_priority
+        source_priority = resolve_market_priority(
+            config.realtime_source_priority,
+            market="cn",
+        )
         
         errors = []
         failed_sources: List[str] = []
