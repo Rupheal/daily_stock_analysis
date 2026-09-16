@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-026",
+  "scope": "Diagnose why native target-boundary adapter apply_count is zero on the current model-free route; compare normal routing with an explicit Yahoo-priority diagnostic route only.",
+  "parent_failed_workflow_run": 35053659054,
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "model_http_requests_authorized": 0,
+  "claim_creation_permitted": false,
+  "no_gate_relaxation": true,
+  "normal_route_semantics_unchanged": true,
+  "yahoo_priority_route_is_diagnostic_only": true,
+  "gate_b_c": "FROZEN",
+  "runtime_activated": false,
+  "real_orders_permitted": false
+}
