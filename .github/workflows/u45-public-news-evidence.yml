@@ -1,0 +1,66 @@
+name: U45 public-news evidence
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/build_u45_news_evidence.py'
+      - '.github/workflows/u45-public-news-evidence.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  news-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install existing runtime dependencies
+        run: pip install -r requirements.txt
+      - name: Syntax and import guard
+        run: |
+          python -m py_compile scripts/build_u45_news_evidence.py src/services/hk_company_news.py
+          PYTHONPATH=. python - <<'PY'
+          from scripts.build_u45_news_evidence import _sha256_json
+          from src.services.hk_company_news import approved_news_origin
+          assert len(_sha256_json({'a': 1})) == 64
+          assert approved_news_origin({'url':'https://www.reuters.com/world/','source':'Reuters'}) == ('Reuters','Europe/international')
+          assert approved_news_origin({'url':'https://example.com/x','source':'Unknown'}) is None
+          print('PASS: news evidence import/source-policy guard')
+          PY
+      - name: Build live U45 public-news evidence ledger without model calls
+        run: |
+          PYTHONPATH=. python scripts/build_u45_news_evidence.py \
+            --universe docs/dsa-u-universe.json \
+            --days 3 \
+            --min-successful-channels 2 \
+            --out /tmp/U45_NEWS_EVIDENCE.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/U45_NEWS_EVIDENCE.json'))
+          assert d['denominator']==45 and len(d['members'])==45
+          assert d['formal_accepted']==0 and d['model_calls']==0 and d['paid_data_calls']==0
+          assert d['coverage_ready'] + d['coverage_blocked'] == 45
+          assert all(x['status'] in {'NEWS_COVERAGE_READY','NEWS_COVERAGE_BLOCKED'} for x in d['members'])
+          print(json.dumps({k:d[k] for k in ('coverage_ready','coverage_blocked','formal_accepted')}, ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U45_NEWS_EVIDENCE
+          path: /tmp/U45_NEWS_EVIDENCE.json
+          if-no-files-found: error
+          retention-days: 14
