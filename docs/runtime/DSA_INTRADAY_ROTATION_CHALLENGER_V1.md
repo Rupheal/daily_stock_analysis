@@ -1,4 +1,4 @@
-# DSA Intraday Rotation Challenger v1
+# DSA Intraday Rotation Challenger v1.1
 
 状态：Research Challenger only。不得改变Champion、正式Top3、模拟交易、定时任务或runtime。
 
@@ -25,6 +25,26 @@
    - 前期存在明确负面叙事；至少两条相互独立的反向产业/政策/订单证据出现；价格相对强弱同时确认。
    - 新闻条数本身不构成反转，必须与价格确认结合。
 
+## Event Pricing Context Overlay（v1.1新增）
+
+接入`DSA_EVENT_PRICING_CHALLENGER_v1`，用于解释已知宏观事件在公告前被市场预定价的程度。
+
+它**不增加上述四项confirmation数量**，也不直接改变rotation state；只提供：
+
+- `macro_event_double_count_guard`：当目标事件结果已经高度集中定价时，不把同一预期动作再次作为一份新的宏观冲击重复扣分；
+- `residual_event_risk`：把剩余不确定性明确留给future path、statement、press conference、真正surprise；
+- `target_state`：区分DISPERSED / LEAN / LARGELY_PRICED / HEAVILY_PRICED。
+
+重要：
+
+**“目标动作已经定价” != “宏观压力已经消失”。**
+
+例如FOMC加息高度定价时，10Y收益率5%、高油价、通胀本身仍可保持Macro Risk-Off；只是不能把“可能加25bp”这一已被市场高概率吸收的事件再重复当成新增负面冲击。
+
+因此研究层允许同时存在：
+
+`MACRO_RISK_OFF + TARGET_EVENT_LARGELY_PRICED + HARDTECH_SECTOR_RISK_ON_CANDIDATE`
+
 ## 状态机
 
 - `INSUFFICIENT_EVIDENCE`：关键相对强弱/A股lead/前日数据缺失，fail closed。
@@ -41,13 +61,14 @@
 
 ## 校准边界
 
-v1的75bp、2快照、2条反向证据等均是显式Research defaults，不是生产校准参数。必须至少观察10个未来港股交易日，优选20个，统计：
+v1/v1.1的75bp、2快照、2条反向证据以及Event Pricing的80%/90%概率阈值均是显式Research defaults，不是生产校准参数。必须至少观察10个未来港股交易日，优选20个，并同时回放历史FOMC/CPI/非农/大型科技财报事件，统计：
 
 - rotation recall；
 - false-positive rate；
 - 首次识别lead time；
 - 与原Champion冲突次数；
 - 冲突后1/3/5交易日板块相对收益；
+- 事件前已定价比例与公告surprise之间的关系；
 - 哪个因子在不同市场Regime下失效。
 
-在完成forward validation前，不允许用今天这一例直接调Champion权重。
+在完成forward validation前，不允许用单日案例直接调Champion权重。
