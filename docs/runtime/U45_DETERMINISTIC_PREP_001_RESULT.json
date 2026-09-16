@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-U45-DETERMINISTIC-PREP-001",
+  "status": "PASS_BOUNDED_DATA_LAYER_ONLY",
+  "scope": "Record the first cloud-validated model-free U45 deterministic preparation result for the 2026-09-16 completed XHKG target session without claiming formal U acceptance.",
+  "branch": "fix/native-private-execution-20260914",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "cloud_validation": {
+    "workflow": ".github/workflows/54-u45-deterministic-prep.yml",
+    "workflow_run": 35117032423,
+    "job": 104864965856,
+    "conclusion": "success",
+    "artifact_id": 10455249401,
+    "artifact_name": "U45_PREP_LEDGER",
+    "artifact_digest": "sha256:86db3665b70232f60207a6881193291f57915403e34f414f83e5826c93496165"
+  },
+  "target_session": "2026-09-16",
+  "denominator": 45,
+  "result": {
+    "identity_ready": 45,
+    "price_ready": 45,
+    "volume_ready": 45,
+    "news_ready": 0,
+    "full_preflight_ready": 0,
+    "formal_accepted": 0,
+    "data_blocked_news": 44,
+    "retained_not_currently_executable": 1,
+    "retained_not_currently_executable_code": "09618"
+  },
+  "interpretation": {
+    "price_and_volume_layer": "PASS_45_OF_45",
+    "news_event_layer": "NOT_YET_VERIFIED_0_OF_45",
+    "u45_formal_acceptance": "UNCHANGED_0_OF_45",
+    "prep_ready_semantics": "PREP_READY is intentionally stricter than data readiness and must not be inferred from price/volume alone."
+  },
+  "next_actions": [
+    "Add fresh per-stock news/event evidence as a separate deterministic layer without weakening the existing ledger gate.",
+    "Refresh official Southbound buy/sell eligibility for retained member 09618 using current official SSE/SZSE lists; do not infer eligibility from stale 2026-09-11 snapshot or absence in adjustment notices alone.",
+    "Keep capital-flow, corporate-action, suspension and fee evidence explicit and separately attributable before formal U execution."
+  ],
+  "resources": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "new_subscriptions": 0,
+    "provider_cost_cny": 0
+  },
+  "formal_boundaries": {
+    "gate_b_frozen": true,
+    "gate_c_frozen": true,
+    "o_full_pool_permitted": false,
+    "u45_formal_acceptance_added": 0,
+    "simulation": false,
+    "runtime_activated": false,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  }
+}
