@@ -1,0 +1,13 @@
+{
+  "run_id":"TRI-DSA-DEV-20260916-DASHBOARD-V018-ACCEPTANCE",
+  "status":"ACCEPTED_ENGINEERING",
+  "branch":"fix/native-private-execution-20260914",
+  "scope":"Dashboard/telemetry engineering acceptance only; no strategy acceptance or runtime activation",
+  "accepted_components":["DSA_Dashboard_v0.18_Live_UI.html","DSA_DASHBOARD_LIVE.schema.json","DSA_DASHBOARD_LIVE.json","DSA_DASHBOARD_HISTORY.json","scripts/dashboard_feed_generator.py","tests/test_dashboard_v018.py","docs/runtime/DSA_DASHBOARD_V018_RUNTIME.md"],
+  "architecture":{"single_primary_live_feed":"DSA_DASHBOARD_LIVE.json","shadow_history":"DSA_DASHBOARD_HISTORY.json","direct_actions_api_from_browser":false,"direct_drive_raw_from_browser":false,"secrets_in_browser":false,"fixed_RUN018_dependency":false,"fixed_workflow52_dependency":false,"fixed_actions_run_dependency":false,"fixed_child_dependency":false},
+  "validation":{"workflow":".github/workflows/dsa-dashboard-v018-tests.yml","workflow_run":35117618311,"job":104866947711,"conclusion":"success","deterministic_tests":"23/23 PASS","generator_smoke":"PASS","model_requests":0},
+  "shadow_week":{"status":"STARTED","days_recorded":1,"target_days":7,"first_day":"2026-09-16","append_only":true,"seven_day_final_acceptance":false},
+  "current_sanitized_state":{"O_formal_accepted":0,"U_formal_accepted":"0/45","U_identity_ready":"45/45","U_price_ready":"45/45","U_volume_ready":"45/45","U_news_ready":"0/45","simulation":"WAIT_NOT_ELIGIBLE","model_requests":0,"tokens":0,"model_cost_cny":0},
+  "limitations":["Shadow Week has only 1/7 daily records; seven-day stability acceptance is not complete.","O Gate A is blocked at the frozen-native natural session boundary and is not strategy-accepted.","U45 news/fallback/provider-disagreement evidence is not yet complete; PREP status is not formal acceptance.","The repair-branch feed/history generator is deterministic but GitHub scheduled workflows execute from the default branch; while main merge remains prohibited, daily repair-branch history updates rely on the separately authorized Shadow Week observation mechanism rather than a new default-branch schedule."],
+  "formal_boundaries":{"main_merge":false,"runtime_activated":false,"o_full_pool_permitted":false,"u_formal_acceptance_added":0,"simulated_fills":0,"real_orders":0,"new_model_authority_granted":false}
+}
