@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "append_only": true,
+  "entries": [
+    {
+      "date": "2026-09-16",
+      "observation_id": "TRI-DSA-SHADOW-20260916-DAY1",
+      "generated_at": "2026-09-16T10:55:13Z",
+      "target_session": "2026-09-16",
+      "data_pass_rate": null,
+      "observer_block_rate": null,
+      "model_success_rate": null,
+      "model_requests": 0,
+      "tokens": 0,
+      "cost_cny": 0,
+      "O_coverage": null,
+      "U_coverage": 0.0,
+      "top3_turnover": null,
+      "signal_persistence": "WAIT",
+      "BUY_WAIT": "WAIT",
+      "simulation_eligibility": false,
+      "fresh_preflight": "NOT_RUN_CURRENT_CYCLE",
+      "note": "Gate A had already closed before market close with a versioned release-adapter PASS. No post-close repair-branch run was found, so provider/observer/data pass rates are intentionally null rather than inherited from pre-close evidence."
+    }
+  ]
+}

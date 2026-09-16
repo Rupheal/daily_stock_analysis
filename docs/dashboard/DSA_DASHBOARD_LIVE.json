@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "schema_version": "0.18-shadow-1",
+    "generated_at": "2026-09-16T10:55:13Z",
+    "source_commit": "f562b420b6690cb5ebc92e446add8aff477c5223",
+    "branch": "fix/native-private-execution-20260914",
+    "latest_validated_run": "TRI-DSA-ACCEPT-20260916-031-RELEASE",
+    "evidence_timestamp": "2026-09-16T07:42:00Z",
+    "current_cycle_observation": "TRI-DSA-SHADOW-20260916-DAY1"
+  },
+  "system": {
+    "overall_state": "SHADOW_WAIT_CURRENT_CYCLE_PREFLIGHT_NOT_RUN",
+    "current_stage": "POST_CLOSE_SHADOW_OBSERVATION",
+    "next_action": "Run the next eligible model-free post-close strict preflight/observer/data gates; do not spend another paid request under closed batch007.",
+    "last_successful_gate": "O_GATE_A_PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+    "blocking_gate": "CURRENT_CYCLE_FRESH_DATA_OBSERVER_PREFLIGHT_NOT_RUN",
+    "error_code": "NO_POST_CLOSE_FRESH_PREFLIGHT"
+  },
+  "O": {
+    "denominator": 660,
+    "denominator_status": "LAST_VALIDATED_UNIVERSE_SNAPSHOT_NOT_REFRESHED_CURRENT_CYCLE",
+    "attempted": 0,
+    "succeeded": 0,
+    "failed": 0,
+    "accepted": 0,
+    "top3": null,
+    "signal": "WAIT",
+    "qualified_buy": false,
+    "latest_session": "2026-09-16",
+    "model_http_requests": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "estimated_or_actual_cost": 0,
+    "evidence_status": "CURRENT_CYCLE_MODEL_FREE_ONLY; LAST_VALIDATED_GATE_A_PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+    "gate_a": {
+      "status": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+      "raw_pipeline_fail_preserved": true,
+      "strategy_fields_changed": false
+    }
+  },
+  "U": {
+    "denominator": 45,
+    "attempted": 0,
+    "succeeded": 0,
+    "failed": 0,
+    "accepted": 0,
+    "top3": null,
+    "signal": "WAIT",
+    "qualified_buy": false
+  },
+  "data_health": {
+    "fresh_preflight": "NOT_RUN_CURRENT_CYCLE",
+    "provider": "NOT_RUN_CURRENT_CYCLE",
+    "session": "2026-09-16_RESOLVED_BY_MODEL_FREE_TARGET_CONTRACT",
+    "OHLC": "NOT_RUN_CURRENT_CYCLE",
+    "volume": "NOT_RUN_CURRENT_CYCLE",
+    "news": "NOT_RUN_CURRENT_CYCLE",
+    "issuer": "NOT_RUN_CURRENT_CYCLE",
+    "manifest": "NOT_RUN_CURRENT_CYCLE"
+  },
+  "observer": {
+    "pass_fail": "NOT_RUN_CURRENT_CYCLE",
+    "block_count": null,
+    "latest_error_code": null
+  },
+  "storage": {
+    "save": "NOT_RUN_NO_NEW_PRIVATE_ARTIFACT",
+    "independent_read": "NOT_RUN_NO_NEW_PRIVATE_ARTIFACT",
+    "sha_match": "NOT_RUN_NO_NEW_PRIVATE_ARTIFACT",
+    "revision_check": "NOT_RUN_NO_NEW_PRIVATE_ARTIFACT",
+    "restore_verified": "NOT_RUN_NO_NEW_PRIVATE_ARTIFACT",
+    "canonical_claim_count": null,
+    "canonical_native_count": null,
+    "last_validated_private_chain": "PASS"
+  },
+  "budget": {
+    "affordability": "BATCH_CLOSED_AFTER_GATE_A_PASS",
+    "request_limit": 5,
+    "actual_request_count": 1,
+    "tokens": 14335,
+    "cost": {
+      "type": "UPPER_ESTIMATE_CNY",
+      "value": 0.074642,
+      "exact_billed": null
+    },
+    "current_cycle_request_count": 0,
+    "current_cycle_tokens": 0,
+    "current_cycle_cost_cny": 0
+  },
+  "simulation": {
+    "eligibility": "NOT_ELIGIBLE_NO_FORMAL_QUALIFIED_SIGNAL",
+    "account_A": null,
+    "account_B": null,
+    "cash": null,
+    "positions": null,
+    "pnl": null,
+    "pending_signal": "WAIT"
+  },
+  "shadow_week": {
+    "date": "2026-09-16",
+    "data_pass_rate": null,
+    "observer_block_rate": null,
+    "model_success_rate": null,
+    "cost_per_accepted_analysis": null,
+    "O_coverage": null,
+    "U_coverage": 0.0,
+    "top3_turnover": null,
+    "signal_persistence": "WAIT",
+    "BUY_WAIT": "WAIT",
+    "simulation_eligibility": false
+  },
+  "debug": {
+    "provider_error": "NOT_RUN_CURRENT_CYCLE",
+    "preflight_error": "NO_POST_CLOSE_FRESH_PREFLIGHT",
+    "observer_error": "NOT_RUN_CURRENT_CYCLE",
+    "drive_error": null,
+    "model_error": null,
+    "recovery_state": "GATE_A_BATCH_CLOSED_RELEASE_ADAPTER_ACCEPTED",
+    "recovery_condition": "Next cycle may run model-free current-session gates; no additional paid request under closed batch007."
+  },
+  "anomalies": [
+    "STALE_NEXT_ACTIONS_POINTER",
+    "NO_POST_CLOSE_FRESH_PREFLIGHT"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "observation_id": "TRI-DSA-SHADOW-20260916-DAY1",
+  "generated_at": "2026-09-16T10:55:13Z",
+  "market_time_hkt": "2026-09-16T18:55:13+08:00",
+  "branch": "fix/native-private-execution-20260914",
+  "source_commit": "f562b420b6690cb5ebc92e446add8aff477c5223",
+  "mode": "MODEL_FREE_POST_CLOSE_OBSERVATION",
+  "current_cycle": {
+    "resolved_target_session": "2026-09-16",
+    "target_rule": "O_NATIVE_TARGET_SESSION_RULE_v1",
+    "target_resolution": "PASS_MODEL_FREE_EXACT_REPO_CONTRACT",
+    "post_close_github_run_found": false,
+    "fresh_strict_preflight": "NOT_RUN_CURRENT_CYCLE",
+    "price_integrity": "NOT_RUN_CURRENT_CYCLE",
+    "provider_status": "NOT_RUN_CURRENT_CYCLE",
+    "provider_failures": null,
+    "observer_status": "NOT_RUN_CURRENT_CYCLE",
+    "observer_failures": null,
+    "drive_private_artifact_created": false,
+    "drive_save_read_hash_restore": "NOT_RUN_NO_NEW_PRIVATE_ARTIFACT",
+    "model_http_requests": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "incremental_model_cost_cny": 0
+  },
+  "latest_validated_gate_a": {
+    "authorization_id": "TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007",
+    "state": "CLOSED_GATE_A_PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+    "gate_a_status": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+    "workflow_run": 35068490378,
+    "successor_workflow_run": 35069757484,
+    "requests_used": 1,
+    "requests_unused": 4,
+    "prompt_tokens": 6673,
+    "completion_tokens": 7662,
+    "total_tokens": 14335,
+    "usage_peak_estimate_cny": 0.074642,
+    "exact_billed_cost_cny": null,
+    "private_save_read_hash_restore": "PASS",
+    "raw_pipeline_fail_preserved": true,
+    "release_adapter_pass": true,
+    "strategy_fields_changed": false,
+    "paid_batch_closed": true,
+    "additional_paid_request_eligible": false
+  },
+  "O": {
+    "denominator": 660,
+    "denominator_status": "LAST_VALIDATED_UNIVERSE_SNAPSHOT_NOT_REFRESHED_CURRENT_CYCLE",
+    "formal_full_pool_accepted": false,
+    "formal_top3_available": false,
+    "qualified_signals": 0,
+    "status": "WAIT"
+  },
+  "U": {
+    "denominator": 45,
+    "formal_native_execution_accepted": 0,
+    "qualified_signals": 0,
+    "status": "WAIT"
+  },
+  "simulation": {
+    "eligibility": "NOT_ELIGIBLE_NO_FORMAL_QUALIFIED_SIGNAL",
+    "status": "WAIT",
+    "real_orders": 0
+  },
+  "anomalies": [
+    {
+      "code": "STALE_NEXT_ACTIONS_POINTER",
+      "severity": "medium",
+      "detail": "O_GATEA_CRITICAL_BATCH_007_NEXT_ACTIONS.json still says AUTHORIZED_READY_TO_EXECUTE with requests_used=0, while the newer authoritative batch ledger closes the batch after Gate A PASS with requests_used=1. Use the ledger, not the stale pointer."
+    },
+    {
+      "code": "NO_POST_CLOSE_FRESH_PREFLIGHT",
+      "severity": "medium",
+      "detail": "No repair-branch GitHub Actions run newer than the 2026-09-16 16:00 HKT close was found at observation time. Current-session provider, observer and Drive gates therefore remain NOT_RUN_CURRENT_CYCLE rather than inherited PASS."
+    }
+  ],
+  "governance": {
+    "main_merge": false,
+    "force_push": false,
+    "model_permissions_broadened": false,
+    "auto_recharge": false,
+    "canonical_claim_native_overwritten": false,
+    "runtime_activated": false
+  }
+}
