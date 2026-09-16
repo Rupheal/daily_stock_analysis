@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-027",
+  "priority": [
+    {
+      "id": "O_GATE_A_FRESH_AUTH_REVIEW",
+      "status": "WAIT_OWNER_AUTHORIZATION_REVIEW",
+      "action": "Before any provider request, re-read current branch, fresh target-session/preflight state and prior Run026 claim/authorization. If Owner explicitly authorizes a new independent Gate-A case, create a new claim ID and run at most one provider HTTP request through the date-safe bootstrap. Do not reuse the Run026 claim as if it had succeeded.",
+      "preconditions": [
+        "Run027 date-safe model-free suite remains PASS",
+        "fresh strict preflight and target-session rules pass at execution time",
+        "new independent claim is absent before creation",
+        "provider budget and credential presence are checked without exposing secrets",
+        "authorization explicitly names maximum provider requests and retry policy"
+      ]
+    },
+    {
+      "id": "U45_INDEPENDENT_PREPARATION",
+      "status": "ALLOWED_IN_PARALLEL_NOT_FORMAL_ACCEPTANCE",
+      "action": "Continue non-duplicative U45 identity/eligibility/news/capital/price evidence preparation using existing receipts and 45 denominator while O waits. Do not call this formal U execution."
+    },
+    {
+      "id": "QUEUE_RECONCILIATION",
+      "status": "PENDING_SAFE_MERGE",
+      "action": "Reconcile DSA_NEXT_ACTIONS.json with Run026 failure and Run027 fix only after re-reading the latest shared queue; never overwrite parallel Shadow/U/capital-data increments from an older snapshot."
+    }
+  ],
+  "frozen": {
+    "gate_b": true,
+    "gate_c": true,
+    "o_full_pool": true,
+    "simulation": true,
+    "runtime_activated": false,
+    "main_merge": false,
+    "schedule_changes": false,
+    "real_orders": false
+  },
+  "provider_http_requests_authorized_by_this_file": 0
+}
