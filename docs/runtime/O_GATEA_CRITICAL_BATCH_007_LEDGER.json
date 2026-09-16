@@ -1,14 +1,16 @@
 {
   "schema_version": 1,
   "authorization_id": "TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007",
-  "state": "OPEN_DIAGNOSE_BEFORE_NEXT_PAID_REQUEST",
+  "state": "CLOSED_GATE_A_PASS_WITH_VERSIONED_RELEASE_ADAPTER",
   "requests_used": 1,
   "requests_max": 5,
+  "requests_unused": 4,
   "batch_cost_cny_used_upper": "0.074642",
   "batch_cost_cny_hard_cap": "1.00",
-  "gate_a_passed": false,
-  "paid_pause_required": true,
-  "paid_pause_reason": "Sample01 CONT1 model output obeyed v2 realtime/session facts, but frozen pipeline deterministic post-processing reintroduced target-session close into current_price-labeled dashboard fields, triggering SEM-001. Diagnose/fix model-free before any next request.",
+  "gate_a_passed": true,
+  "gate_a_status": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+  "paid_pause_required": false,
+  "paid_stop_reason": "Gate A successor acceptance passed; batch rule requires stopping further paid requests immediately.",
   "samples": [
     {
       "sample_index": 1,
@@ -24,15 +26,21 @@
       "usage_peak_estimate_cny": "0.074642",
       "private_save_read_hash_restore": "PASS",
       "private_sha256": "a428902c3bb95ea355d496756a3ec2e749206cd676d8cfa87f6e2f910f0482a3",
-      "automated_gate_a": "FAIL",
-      "blockers": ["SEM-001"],
+      "raw_automated_gate_a": "FAIL",
+      "raw_blockers": ["SEM-001"],
       "root_cause_classification": "POST_MODEL_FROZEN_PIPELINE_DETERMINISTIC_CURRENT_PRICE_REFILL",
       "model_output_realtime_contract_obeyed": true,
       "opening_direction_correct": true,
       "news_handoff_pass": true,
-      "session_fact_handoff_pass": true
+      "session_fact_handoff_pass": true,
+      "successor_acceptance_run": "TRI-DSA-ACCEPT-20260916-031-RELEASE",
+      "successor_workflow_run": 35069757484,
+      "successor_gate": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+      "successor_private_sha256": "0571a501ac024ce99b7c5850536b64463fe13523934cd80557b8bfa63c4296ec",
+      "raw_pipeline_fail_preserved": true,
+      "strategy_fields_changed": false
     }
   ],
   "historical_run030_excluded_from_new_batch": true,
-  "last_updated_utc": "2026-09-16T07:31:00Z"
+  "last_updated_utc": "2026-09-16T07:42:00Z"
 }
