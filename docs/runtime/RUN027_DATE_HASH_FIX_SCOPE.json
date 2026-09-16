@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-027",
+  "parent_execution_run": 35054693729,
+  "parent_execution_state": "FAIL_PRESERVED_ZERO_PROVIDER_HTTP_REQUESTS",
+  "root_cause": "External news-handoff canonical hash attempted json.dumps on a native datetime.date object and failed before prompt formatting/provider request.",
+  "private_parent_bundle_sha256": "61ea8819dcdabf8df7d5b1e13d1f30ca0272f8ddb79f7b23e765bb30b2258e13",
+  "private_parent_bundle_reviewed": true,
+  "scope": [
+    "typed deterministic hashing for date/datetime native context values",
+    "explicit future-probe bootstrap only",
+    "real-shape synthetic regression tests",
+    "model-free CI and append-only receipt"
+  ],
+  "not_in_scope": [
+    "new provider/model request",
+    "reuse or extension of Run026 owner authorization",
+    "frozen upstream source/prompt/strategy edits",
+    "Gate B or Gate C",
+    "O full pool",
+    "U45 formal execution",
+    "simulation or authoritative journal writes",
+    "schedule changes",
+    "main merge",
+    "real orders"
+  ],
+  "authorization": {
+    "new_provider_http_requests": 0,
+    "paid_data_calls": 0,
+    "automatic_recharge": false,
+    "future_provider_attempt_requires_separate_authorization_review": true
+  },
+  "governance": {
+    "gate_b": "FROZEN",
+    "gate_c": "FROZEN",
+    "runtime_activated": false,
+    "historical_child2_immutable_fail": true,
+    "run026_failed_execution_immutable": true
+  }
+}
