@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 import sys
 
@@ -14,6 +14,8 @@ from o_native_date_boundary_adapter import (
 
 def test_helpers_are_strict_for_hk_and_dates():
     assert _as_date('2026-09-15') == date(2026, 9, 15)
+    assert _as_date('20260915') == date(2026, 9, 15)
+    assert _as_date(datetime(2026, 9, 15, 12, 30)) == date(2026, 9, 15)
     assert _is_hk_code('hk01810')
     assert _is_hk_code('1810.HK')
     assert not _is_hk_code('AAPL')
@@ -22,7 +24,7 @@ def test_helpers_are_strict_for_hk_and_dates():
     assert not _is_hk_ticker_request((), {'tickers': 'AAPL'})
 
 
-def test_adapter_shifts_target_hk_end_and_enables_repair(monkeypatch):
+def test_adapter_shifts_target_hk_yahoo_end_and_enables_repair(monkeypatch):
     import yfinance as yf
 
     calls = []
@@ -39,11 +41,13 @@ def test_adapter_shifts_target_hk_end_and_enables_repair(monkeypatch):
     assert calls[-1][1]['end'] == '2026-09-16'
     assert calls[-1][1]['repair'] is True
     assert applied['count'] == 1
+    assert applied['yahoo_count'] == 1
+    assert applied['akshare_count'] == 0
     assert applied['boundary_shift_count'] == 1
     assert applied['repair_enable_count'] == 1
 
 
-def test_adapter_repairs_already_shifted_target_plus_one_without_extending_again(monkeypatch):
+def test_adapter_repairs_already_shifted_yahoo_target_plus_one_without_extending_again(monkeypatch):
     import yfinance as yf
 
     calls = []
@@ -60,11 +64,70 @@ def test_adapter_repairs_already_shifted_target_plus_one_without_extending_again
     assert calls[-1][1]['end'] == '2026-09-16'
     assert calls[-1][1]['repair'] is True
     assert applied['count'] == 1
+    assert applied['yahoo_count'] == 1
     assert applied['boundary_shift_count'] == 0
     assert applied['repair_enable_count'] == 1
 
 
-def test_adapter_does_not_shift_or_repair_non_target_or_non_hk(monkeypatch):
+def test_adapter_caps_akshare_target_plus_one_keyword_end(monkeypatch):
+    import akshare as ak
+
+    calls = []
+    sentinel = object()
+
+    def fake_hk_hist(*args, **kwargs):
+        calls.append((args, dict(kwargs)))
+        return sentinel
+
+    monkeypatch.setattr(ak, 'stock_hk_hist', fake_hk_hist)
+    with patched_yahoo_target_boundary('2026-09-15') as applied:
+        result = ak.stock_hk_hist(symbol='01810', period='daily', start_date='20260718', end_date='20260916', adjust='qfq')
+    assert result is sentinel
+    assert calls[-1][1]['end_date'] == '20260915'
+    assert applied['count'] == 1
+    assert applied['akshare_count'] == 1
+    assert applied['akshare_cap_count'] == 1
+    assert applied['yahoo_count'] == 0
+
+
+def test_adapter_caps_akshare_positional_end(monkeypatch):
+    import akshare as ak
+
+    calls = []
+    sentinel = object()
+
+    def fake_hk_hist(*args, **kwargs):
+        calls.append((args, dict(kwargs)))
+        return sentinel
+
+    monkeypatch.setattr(ak, 'stock_hk_hist', fake_hk_hist)
+    with patched_yahoo_target_boundary('2026-09-15') as applied:
+        result = ak.stock_hk_hist('01810', 'daily', '20260718', '20260916', 'qfq')
+    assert result is sentinel
+    assert calls[-1][0][3] == '20260915'
+    assert applied['akshare_count'] == 1
+    assert applied['akshare_cap_count'] == 1
+
+
+def test_adapter_leaves_older_or_far_future_akshare_requests_unchanged(monkeypatch):
+    import akshare as ak
+
+    calls = []
+    def fake_hk_hist(*args, **kwargs):
+        calls.append((args, dict(kwargs)))
+        return object()
+
+    monkeypatch.setattr(ak, 'stock_hk_hist', fake_hk_hist)
+    with patched_yahoo_target_boundary('2026-09-15') as applied:
+        ak.stock_hk_hist(symbol='01810', period='daily', start_date='20260718', end_date='20260914', adjust='qfq')
+        ak.stock_hk_hist(symbol='01810', period='daily', start_date='20260718', end_date='20260917', adjust='qfq')
+    assert calls[0][1]['end_date'] == '20260914'
+    assert calls[1][1]['end_date'] == '20260917'
+    assert applied['akshare_count'] == 0
+    assert applied['count'] == 0
+
+
+def test_adapter_does_not_shift_or_repair_non_target_or_non_hk_yahoo(monkeypatch):
     import yfinance as yf
 
     calls = []
