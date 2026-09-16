@@ -21,5 +21,38 @@
     "verification": "核对经济通公开报道及arXiv原始摘要、作者与提交时间；未复现实验或核验商业收入。",
     "full_text_verified": false,
     "independent_confirmation": false
+  },
+  {
+    "title": "小米18 Pro系列本月发布，卢伟冰称数字系列迎来大幅升级",
+    "source": "《經濟通》新聞",
+    "published_at": "2026-09-15T02:44:00+00:00",
+    "url": "https://www.etnet.com.hk/www/tc/stocks/ah_news_detail.php?newsid=20260915770",
+    "summary": "[媒体报道，待公司原始帖文/发布材料核验] 经济通9月15日10:44 HKT报道，小米合伙人兼总裁卢伟冰在微博表示，小米18 Pro系列将于本月发布，并称性能、影像、续航和AI能力等方面有升级。报道中的产品与用户使用数据属于公司人士表述，不能据此推断销量、订单或利润。",
+    "verification": "2026-09-16复核经济通公开页面的标题、发布时间与正文摘要；未把卢伟冰微博表述升级为独立验证事实。",
+    "event_date": "2026-09-15",
+    "full_text_verified": false,
+    "independent_confirmation": false
+  },
+  {
+    "title": "小米澎程系列首批交付报道：雷军现身徐州交付活动",
+    "source": "《經濟通》新聞",
+    "published_at": "2026-09-14T06:51:00+00:00",
+    "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_blocktrade_detail.php?code=81810&newsid=20260914333&page=1",
+    "summary": "[媒体报道，待公司交付记录核验] 经济通9月14日14:51 HKT报道，小米新车系列“澎程”于9月12日开始全国交付，雷军出现在徐州首批交付活动。报道同时包含当日股价表现；不能由此推断全国交付数量、后续需求或财务贡献。",
+    "verification": "2026-09-16复核经济通公开页面的标题、发布时间与正文摘要；未取得逐车交付台账或公司正式交付公告。",
+    "event_date": "2026-09-12",
+    "full_text_verified": false,
+    "independent_confirmation": false
+  },
+  {
+    "title": "香港电台9月14日港股收市报道：小米当日升约3%",
+    "source": "香港電台",
+    "published_at": "2026-09-14T08:29:00+00:00",
+    "url": "https://news.rthk.hk/rthk/ch/component/k2/1869957-20260914.htm",
+    "summary": "[市场媒体报道；仅作公司相关市场上下文] 香港电台9月14日16:29 HKT收市报道记录，当日恒指上涨111点，科技指数微跌，ATMXJ个别发展，小米升约3%。该条仅证明当时公开市场报道及价格方向，不构成公司基本面事件或未来走势证据。",
+    "verification": "2026-09-16复核香港电台公开页面的发布时间与正文；只保留其市场报道含义。",
+    "event_date": "2026-09-14",
+    "full_text_verified": true,
+    "independent_confirmation": false
   }
 ]
