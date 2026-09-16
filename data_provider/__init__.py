@@ -8,6 +8,7 @@
 1. 统一的数据获取接口
 2. 自动故障切换
 3. 防封禁流控策略
+4. 通过 canonical source-channel registry 暴露统一行情源元数据与回退规则
 
 数据源优先级（动态调整）：
 【配置了 TUSHARE_TOKEN 时】
@@ -29,7 +30,8 @@
 7. TencentFetcher (Priority 5) - 腾讯直连日 K 最终兜底
 8. LongbridgeFetcher (Priority 5) - 长桥 OpenAPI（美股/港股兜底，与 Tencent 市场不重叠）
 
-提示：优先级数字越小越优先，同优先级按初始化顺序排列
+提示：优先级数字越小越优先，同优先级按初始化顺序排列。
+运行时配置仍优先于 catalog；catalog 不会把未配置/无权限的数据源伪装为可用。
 """
 
 from .base import BaseFetcher, DataFetcherManager
@@ -44,6 +46,14 @@ from .longbridge_fetcher import LongbridgeFetcher
 from .finnhub_fetcher import FinnhubFetcher
 from .alphavantage_fetcher import AlphaVantageFetcher
 from .us_index_mapping import is_us_index_code, is_us_stock_code, get_us_index_yf_symbol, US_INDEX_MAPPING
+from src.services.source_channel_registry import (
+    get_market_channel,
+    hk_realtime_catalog_fallback,
+    market_channel_rank,
+    resolve_market_priority,
+    source_channel_governance,
+    source_channel_summary,
+)
 
 __all__ = [
     'BaseFetcher',
@@ -63,4 +73,10 @@ __all__ = [
     'is_hk_stock_code',
     'get_us_index_yf_symbol',
     'US_INDEX_MAPPING',
+    'get_market_channel',
+    'hk_realtime_catalog_fallback',
+    'market_channel_rank',
+    'resolve_market_priority',
+    'source_channel_governance',
+    'source_channel_summary',
 ]
