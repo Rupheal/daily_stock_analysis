@@ -1,0 +1,48 @@
+name: U45 model-free public-news coverage
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/probe_u45_news_coverage.py'
+      - '.github/workflows/55-u45-news-coverage.yml'
+      - 'docs/dsa-u-universe.json'
+permissions:
+  contents: read
+jobs:
+  u45-news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install bounded probe dependencies
+        run: pip install requests
+      - name: Run U45 model-free public-news coverage probe
+        run: python scripts/probe_u45_news_coverage.py --universe docs/dsa-u-universe.json --out probe/u45-news/U45_NEWS_COVERAGE.json
+      - name: Verify no formal acceptance or model use claimed
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('probe/u45-news/U45_NEWS_COVERAGE.json'))
+          assert d['universe_denominator']==45
+          assert d['execution_eligible_denominator']==44
+          assert d['formal_u_acceptance_added']==0
+          assert d['model_http_requests']==0
+          assert d['paid_data_calls']==0
+          assert d['coverage_ready']==44
+          assert d['coverage_failed']==0
+          print(json.dumps({'coverage_ready':44,'denominator':44,'formal_u_acceptance_added':0,'model_requests':0}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: U45_NEWS_COVERAGE
+          path: probe/u45-news/U45_NEWS_COVERAGE.json
+          retention-days: 14
