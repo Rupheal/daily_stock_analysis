@@ -1,0 +1,71 @@
+name: U45 deterministic prep
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/build_u45_prep_ledger.py'
+      - '.github/workflows/54-u45-deterministic-prep.yml'
+permissions:
+  contents: read
+jobs:
+  prep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install data-only runtime
+        run: pip install -r research/requirements.txt
+      - name: Resolve target session
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          from datetime import datetime,timezone
+          from pathlib import Path
+          from o_target_session_contract import resolve_target_session
+          t=resolve_target_session(datetime.now(timezone.utc)).target_session.isoformat()
+          Path('/tmp/u-target').write_text(t)
+          print('U45 target',t)
+          PY
+      - name: U45 frozen-native data-only acquisition with external boundary adapter
+        run: |
+          TARGET="$(cat /tmp/u-target)"
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-u-universe.json --scope U45_data_only --expected-date "$TARGET" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --timeout 600 --target-boundary-adapter --output /tmp/u45-data
+      - name: Build explicit 45-row prep ledger
+        run: |
+          TARGET="$(cat /tmp/u-target)"
+          python research/scripts/build_u45_prep_ledger.py --universe research/docs/dsa-u-universe.json --coverage /tmp/u45-data/coverage.json --target "$TARGET" --out /tmp/U45_PREP_LEDGER.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/U45_PREP_LEDGER.json'))
+          assert d['denominator']==45 and len(d['members'])==45 and d['formal_accepted']==0
+          assert all(x['deterministic_preflight_status'] in {'PREP_READY','DATA_BLOCKED','PROVIDER_BLOCKED','IDENTITY_BLOCKED','SESSION_BLOCKED','OTHER_EXPLICIT_REASON'} for x in d['members'])
+          print(json.dumps(d['summary']))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U45_PREP_LEDGER
+          path: /tmp/U45_PREP_LEDGER.json
+          if-no-files-found: error
+          retention-days: 14
