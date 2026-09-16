@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-028-PREFLIGHT-NEWS-RECOVERY",
+  "parent_workflow_run": 35063861497,
+  "parent_failure_stage": "FRESH_STRICT_PREFLIGHT_BEFORE_CLAIM",
+  "parent_failure": "Insufficient dated company evidence",
+  "parent_provider_http_requests": 0,
+  "parent_claim_created": false,
+  "provider_slot_consumed": false,
+  "same_owner_authorization": "docs/runtime/run028-gatea-owner-authorization.json",
+  "scope": "Refresh only the evidence needed to rerun the existing strict preflight. No provider request, no claim and no gate relaxation.",
+  "reviewed_sources": [
+    {
+      "publisher": "ETNet",
+      "published_at": "2026-09-15T10:44:00+08:00",
+      "url": "https://www.etnet.com.hk/www/tc/stocks/ah_news_detail.php?newsid=20260915770",
+      "evidence_kind": "media report; original company statement not independently verified"
+    },
+    {
+      "publisher": "ETNet",
+      "published_at": "2026-09-14T14:51:00+08:00",
+      "url": "https://www.etnet.com.hk/www/tc/stocks/realtime/quote_blocktrade_detail.php?code=81810&newsid=20260914333&page=1",
+      "evidence_kind": "media report; delivery count not independently verified"
+    },
+    {
+      "publisher": "RTHK",
+      "published_at": "2026-09-14T16:29:00+08:00",
+      "url": "https://news.rthk.hk/rthk/ch/component/k2/1869957-20260914.htm",
+      "evidence_kind": "market context only; not a company fundamental event"
+    }
+  ],
+  "provider_http_requests_permitted": 0,
+  "claim_creation_permitted": false,
+  "paid_data_calls_permitted": false,
+  "gate_relaxation": false,
+  "minimum_company_evidence": 3,
+  "minimum_approved_origins": 2,
+  "fresh_price_gate_unchanged": true,
+  "frozen_upstream_unchanged": true,
+  "gate_b_c": "FROZEN",
+  "o_full_pool": false,
+  "u45_formal_execution": false,
+  "simulation": false,
+  "runtime_activated": false,
+  "main_merge": false,
+  "schedule_changes": false
+}
