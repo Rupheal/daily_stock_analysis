@@ -1,7 +1,9 @@
-"""Deterministic native-output semantics and a versioned news-input bridge.
+"""Deterministic native-output semantics and a versioned evidence-input bridge.
 
-No model, market, filesystem-write or broker calls. Original evidence is never
-edited. The native news count records search hits, NOT injected evidence count.
+v2 keeps native news-count semantics unchanged, replaces full Python-object
+context hashing with a stable identity/session/window projection, and appends a
+separately versioned deterministic session-fact anchor sourced from preflight.
+No model, market, filesystem-write or broker calls occur in this module.
 """
 from __future__ import annotations
 from copy import deepcopy
@@ -13,7 +15,10 @@ import json
 import re
 from urllib.parse import urlparse
 
-CONTRACT_VERSION = 'O_SEMANTIC_NEWS_HANDOFF_v1'
+from o_session_fact_anchor import build_session_fact_anchor_from_preflight
+
+CONTRACT_VERSION = 'O_SEMANTIC_NEWS_HANDOFF_v2'
+CONTEXT_BINDING_VERSION = 'O_NATIVE_CONTEXT_BINDING_v1'
 FROZEN_UPSTREAM = '089d9d26d68f8b839ea5a74a3784e4402925f8b7'
 NATIVE_COUNT_SEMANTICS = 'native_089d9_known_field_tristate'
 
@@ -62,8 +67,6 @@ def opening_check(original_input,result):
     for path,text in walk_text(result):
         for clause in re.split(r'[。；;\n]',text):
             for segment in re.split(r'[，,]',clause):
-                # Conservative language recognizer: hypotheticals/history are not
-                # silently judged as today's facts; disclose skipped statements.
                 for claimed,pattern in _CLAIMS.items():
                     for m in re.finditer(pattern,segment,re.I):
                         prefix=segment[:m.start()]
@@ -85,11 +88,6 @@ def opening_check(original_input,result):
             'findings':list(unique.values()),'claims':claims,'unassessed':skipped}
 
 def news_count_state(result,*,semantics=NATIVE_COUNT_SEMANTICS):
-    """Preserve None/zero/hits/legacy-unknown exactly as frozen native defines them.
-
-    True+None is valid known NOT_SEARCHED in src/services/empty_news.py. It is
-    not a model arithmetic error. Invalid bool/string/fraction counts still block.
-    """
     known=result.get('news_result_count_known')
     present='news_result_count' in result
     count=result.get('news_result_count');findings=[]
@@ -117,13 +115,30 @@ def _url(value):
     if p.scheme!='https' or not p.hostname or p.username or p.password:raise ContractError('INVALID_SOURCE_URL')
     return value
 
-def build_news_handoff(preflight,context,*,expected_preflight_hash,decision_at,policy_version=CONTRACT_VERSION):
-    """Build a distinct future/replay input; never relabel it historical native input.
 
-    Manifest validation authenticates bytes against the supplied trusted receipt,
-    not the truth of the news. Naive publication strings stay timezone-UNKNOWN;
-    only the preflight observation is a bounded availability timestamp.
-    """
+def context_binding_projection(context):
+    if not isinstance(context,dict):raise ContractError('CONTEXT_BINDING_NOT_MAPPING')
+    window=context.get('news_window_days')
+    if isinstance(window,bool) or not isinstance(window,int) or window<=0:raise ContractError('NEWS_WINDOW_UNKNOWN')
+    today=context.get('today') or {};yesterday=context.get('yesterday') or {}
+    projection={
+        'version':CONTEXT_BINDING_VERSION,
+        'code':str(context.get('code','')).upper(),
+        'date':str(context.get('date','')),
+        'today_date':str(today.get('date','')),
+        'yesterday_date':str(yesterday.get('date','')),
+        'news_window_days':window,
+    }
+    if not projection['code'] or not projection['date'] or not projection['today_date']:
+        raise ContractError('CONTEXT_BINDING_IDENTITY_MISSING')
+    return projection
+
+
+def context_binding_hash(context):
+    return canonical_hash(context_binding_projection(context))
+
+
+def build_news_handoff(preflight,context,*,expected_preflight_hash,decision_at,policy_version=CONTRACT_VERSION):
     if policy_version!=CONTRACT_VERSION:raise ContractError('UNKNOWN_HANDOFF_VERSION')
     if canonical_hash(preflight)!=expected_preflight_hash:raise ContractError('PREFLIGHT_HASH_MISMATCH')
     if preflight.get('passed') is not True or preflight.get('prices_passed') is not True:raise ContractError('PREFLIGHT_NOT_PASSED')
@@ -161,24 +176,31 @@ def build_news_handoff(preflight,context,*,expected_preflight_hash,decision_at,p
             if pt>prepared or pt>cutoff:raise ContractError('FUTURE_NEWS')
             recent=cutoff-timedelta(days=window)<=pt
         else:
-            # Only admit dates wholly within the last N UTC dates; do not invent
-            # a timezone. Being in the observed batch proves existence by prepared.
             if publication.date()>prepared.date():raise ContractError('FUTURE_NEWS_DATE')
             recent=(cutoff-timedelta(days=window-1)).date()<=publication.date()<=prepared.date()
         if not recent:
             rejected.append({'event_id':eid,'reason':'OUTSIDE_CONSERVATIVE_NATIVE_WINDOW'});continue
         unique[eid]=e;seen_urls.update(urls)
     if events and not unique:raise ContractError('NO_RECENT_NEWS_ADMITTED')
-    items=list(unique.values());ctx_blob={'version':CONTRACT_VERSION,'source_symbol':symbol,'target_session':target,
+    items=list(unique.values())
+    ctx_blob={'version':CONTRACT_VERSION,'source_symbol':symbol,'target_session':target,
       'preflight_observed_at':preflight['prepared_at'],'decision_at':decision_at,
       'coverage':'有限媒体摘要；不是完整公告或完整搜索；不能据此排除未报道风险',
       'publication_note':'原始发布时间保留；无时区字符串不补写时区。观测时间不是首次公开时间。',
       'items':items}
-    context_text='' if not items else 'DSA-PREFLIGHT-NEWS '+canonical_hash(ctx_blob)+'\n'+json.dumps(ctx_blob,ensure_ascii=False,sort_keys=True,indent=2)
+    news_text='' if not items else 'DSA-PREFLIGHT-NEWS '+canonical_hash(ctx_blob)+'\n'+json.dumps(ctx_blob,ensure_ascii=False,sort_keys=True,indent=2)
+    try:
+        session_anchor=build_session_fact_anchor_from_preflight(preflight)
+    except Exception as exc:
+        raise ContractError('SESSION_FACT_ANCHOR_BUILD_FAILED:'+str(exc)) from None
+    context_text=(news_text+'\n\n'+session_anchor['text']).strip() if news_text else session_anchor['text']
     risk=(preflight.get('hk_report_contract') or {}).get('required_risk_ids') or []
-    return {'version':CONTRACT_VERSION,'preflight_hash':expected_preflight_hash,'native_context_hash':canonical_hash(context),
+    binding_hash=context_binding_hash(context)
+    return {'version':CONTRACT_VERSION,'preflight_hash':expected_preflight_hash,
+            'native_context_hash':binding_hash,'native_context_binding_version':CONTEXT_BINDING_VERSION,
             'decision_at':decision_at,'target_session':target,'symbol':symbol,'news_context':context_text,
             'news_context_sha256':sha256(context_text.encode()).hexdigest(),
+            'session_fact_anchor':session_anchor,
             'admitted_event_ids':list(unique),'admitted_evidence_count':len(items),'admitted_source_record_count':len(seen_urls),
             'upstream_reported_source_count':reported,'excluded_items':rejected,
             'publication_timezone_inferred':False,'full_coverage':False,'first_publication_verified':False,
@@ -187,13 +209,7 @@ def build_news_handoff(preflight,context,*,expected_preflight_hash,decision_at,p
             'original_search_result_count_changed':False,'model_http_requests':0}
 
 def bind_news_argument(native_callable,instance,context,args,kwargs,handoff):
-    """Return positional/keyword arguments for the existing native news_context slot.
-
-    Validate by signature so positional-vs-keyword cannot drop or duplicate news.
-    Do not overwrite a different existing context; retrying the same bundle is
-    idempotent. No call is performed here.
-    """
-    if canonical_hash(context)!=handoff['native_context_hash']:raise ContractError('CONTEXT_CHANGED_AFTER_HANDOFF')
+    if context_binding_hash(context)!=handoff['native_context_hash']:raise ContractError('CONTEXT_CHANGED_AFTER_HANDOFF')
     bound=inspect.signature(native_callable).bind(instance,context,*args,**kwargs)
     if 'news_context' not in inspect.signature(native_callable).parameters:raise ContractError('NATIVE_NEWS_PARAMETER_MISSING')
     current=bound.arguments.get('news_context');new=handoff['news_context']
@@ -207,5 +223,6 @@ def prove_prompt_consumption(prompt,handoff):
     if text and ('未搜索到该股票近期的相关新闻。' in prompt or 'news_context_missing' in prompt):raise ContractError('NATIVE_PROMPT_FALSE_NO_NEWS_BRANCH')
     return {'version':CONTRACT_VERSION,'prompt_sha256':sha256(prompt.encode()).hexdigest(),
       'news_context_sha256':handoff['news_context_sha256'],'native_prompt_evidence_consumed':present,
+      'session_fact_anchor_sha256':(handoff.get('session_fact_anchor') or {}).get('sha256'),
       'admitted_evidence_count':handoff['admitted_evidence_count'],'provider_request_sent':False,
-      'meaning':'Native formatter consumed evidence; does not prove model read/understood it or ran.'}
+      'meaning':'Native formatter consumed the exact evidence block including versioned session facts; this does not prove model understanding.'}
