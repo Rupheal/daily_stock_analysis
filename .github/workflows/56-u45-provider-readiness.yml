@@ -1,0 +1,49 @@
+name: U45 independent provider readiness
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/probe_u45_independent_prices.py'
+      - '.github/workflows/56-u45-provider-readiness.yml'
+permissions:
+  contents: read
+jobs:
+  provider:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install deterministic public-data runtime
+        run: pip install -r requirements.txt
+      - name: Resolve current completed HK target session
+        run: |
+          PYTHONPATH=scripts python - <<'PY'
+          from datetime import datetime,timezone
+          from pathlib import Path
+          from o_target_session_contract import resolve_target_session
+          t=resolve_target_session(datetime.now(timezone.utc)).target_session.isoformat();Path('/tmp/u45-target').write_text(t);print(t)
+          PY
+      - name: Cross-check Tencent and Yahoo target session without model calls
+        run: |
+          python scripts/probe_u45_independent_prices.py --universe docs/dsa-u-universe.json --target "$(cat /tmp/u45-target)" --out /tmp/U45_PROVIDER_READINESS.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/U45_PROVIDER_READINESS.json'))
+          assert d['denominator']==45 and len(d['members'])==45 and d['model_calls']==0 and d['paid_data_calls']==0
+          assert d['provider_ready']+d['provider_blocked']==45
+          print(json.dumps({'provider_ready':d['provider_ready'],'provider_blocked':d['provider_blocked'],'model_calls':0}))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U45_PROVIDER_READINESS
+          path: /tmp/U45_PROVIDER_READINESS.json
+          if-no-files-found: error
+          retention-days: 14
