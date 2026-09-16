@@ -3,14 +3,18 @@
 Research-only observation layer. It never changes Champion weights, model prompts,
 Top3, trading, schedules, or runtime state. The layer distinguishes a macro Risk-Off
 regime from a sector-level Risk-On candidate when hard-tech relative strength is
-confirmed across snapshots and evidence channels.
+confirmed across snapshots and evidence channels. Scheduled-event pre-pricing is
+attached as a context overlay so already-priced macro expectations are not counted
+again as fresh shocks; it does not add a production signal.
 """
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from typing import Optional, Sequence
 
-VERSION = "DSA_INTRADAY_ROTATION_CHALLENGER_v1"
+from dsa_event_pricing_challenger import event_overlay_for_rotation
+
+VERSION = "DSA_INTRADAY_ROTATION_CHALLENGER_v1.1"
 
 
 @dataclass(frozen=True)
@@ -31,12 +35,15 @@ def evaluate_intraday_rotation(
     prior_negative_narrative: bool,
     contrary_evidence_count: int,
     thresholds: Thresholds | None = None,
+    event_pricing_context: Optional[dict] = None,
 ) -> dict:
     """Return a research-only sector-rotation state.
 
     All numeric thresholds are provisional Challenger defaults, not calibrated
     Champion parameters. Missing critical relative-strength inputs fail closed to
-    INSUFFICIENT_EVIDENCE.
+    INSUFFICIENT_EVIDENCE. Event pricing is contextual only in v1.1: it prevents
+    interpretive double-counting of a highly priced scheduled event but does not
+    alter the sector confirmation count or formal trading output.
     """
     t = thresholds or Thresholds()
     valid_snapshots = [float(v) for v in sector_relative_snapshots_bps if v is not None]
@@ -71,6 +78,8 @@ def evaluate_intraday_rotation(
     else:
         state = "NO_OVERRIDE_CANDIDATE"
 
+    event_overlay = event_overlay_for_rotation(event_pricing_context)
+
     return {
         "version": VERSION,
         "state": state,
@@ -79,6 +88,7 @@ def evaluate_intraday_rotation(
         "confirmations": confirmations,
         "critical_missing": missing,
         "thresholds": asdict(t),
+        "event_pricing_overlay": event_overlay,
         "champion_modified": False,
         "formal_signal_modified": False,
         "top3_modified": False,
