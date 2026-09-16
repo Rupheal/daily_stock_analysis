@@ -1,0 +1,38 @@
+name: DSA Dashboard v0.18 deterministic tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'DSA_Dashboard_v0.18_Live_UI.html'
+      - 'DSA_DASHBOARD_LIVE.json'
+      - 'DSA_DASHBOARD_HISTORY.json'
+      - 'DSA_DASHBOARD_LIVE.schema.json'
+      - 'scripts/dashboard_feed_generator.py'
+      - 'tests/test_dashboard_v018.py'
+      - '.github/workflows/dsa-dashboard-v018-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Deterministic dashboard contract tests
+        run: python -m pytest -q tests/test_dashboard_v018.py
+      - name: Generator smoke test without model/provider calls
+        run: |
+          tmp="$(mktemp -d)"
+          cp DSA_DASHBOARD_HISTORY.json "$tmp/history.json"
+          python scripts/dashboard_feed_generator.py --root . --out "$tmp/live.json" --history "$tmp/history.json" --source-commit "$GITHUB_SHA"
+          python - "$tmp/live.json" "$tmp/history.json" <<'PY'
+          import json,sys
+          live=json.load(open(sys.argv[1]));hist=json.load(open(sys.argv[2]))
+          assert live['U']['denominator']==45
+          assert live['budget']['actual_request_count']==0
+          assert hist['append_only'] is True
+          print('generator smoke PASS')
+          PY
