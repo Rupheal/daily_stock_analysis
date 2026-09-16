@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-028",
+  "workflow_run": 35063861497,
+  "state": "PRE_CLAIM_PREFLIGHT_FAIL_PROVIDER_SLOT_UNCONSUMED",
+  "failure_stage": "Fresh strict preflight and price integrity",
+  "failure_type": "ValueError",
+  "failure_message": "Insufficient dated company evidence",
+  "private_evidence": {
+    "artifact_title": "ART-DSA-RUN028-GATEA-O-SINGLE.bin",
+    "bytes": 1600,
+    "sha256": "f387fc3b3e7aca5e5161946dabab16e039acb96663d8d7cc50db4aca696a103a",
+    "save_read_hash_restore": "PASS",
+    "owner_only": true,
+    "members_observed": ["preflight.stderr", "preflight.stdout", "MANIFEST.json"],
+    "preflight_stderr_root_cause_verified": true
+  },
+  "provider": {
+    "model_http_requests": 0,
+    "request_body_present": false,
+    "provider_response_present": false,
+    "budget_rows": 0,
+    "provider_step_executed": false,
+    "provider_slot_consumed": false
+  },
+  "claim": {
+    "claim_creation_step_executed": false,
+    "original_claim_title": "ART-DSA-RUN028-GATEA-O-SINGLE-CLAIM.bin",
+    "original_claim_observed_in_owner_only_folder": false,
+    "claim_created": false
+  },
+  "completed_preconditions": {
+    "owner_authorization_verified": true,
+    "frozen_upstream_verified": true,
+    "regression_tests_passed": 195,
+    "capture_stage_tests_passed": 22,
+    "target_session_contract": "PASS_2026-09-15"
+  },
+  "interpretation": "This is an immutable pre-request failure. It is not a failed provider response and does not consume the owner's one-request authorization. Any continuation must use a fresh append-only evidence/claim identifier, repeat every current pre-provider gate, and still permit at most one provider HTTP request total under the authorization.",
+  "gate_relaxation_permitted": false,
+  "automatic_provider_retry_permitted": false,
+  "model_free_preflight_recovery_permitted": true,
+  "gate_b_c": "FROZEN",
+  "o_full_pool": false,
+  "u45_formal_execution": false,
+  "simulation": false,
+  "runtime_activated": false,
+  "main_merge": false,
+  "schedule_changes": false
+}
