@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "authorization_id": "TRI-DSA-AUTH-20260916-O-GATEA-CRITICAL-007",
+  "state": "OPEN",
+  "requests_used": 0,
+  "requests_max": 5,
+  "batch_cost_cny_used_upper": "0.00",
+  "batch_cost_cny_hard_cap": "1.00",
+  "gate_a_passed": false,
+  "paid_pause_required": false,
+  "samples": [],
+  "historical_run030_excluded_from_new_batch": true,
+  "last_updated_utc": "2026-09-16T07:16:00Z"
+}
