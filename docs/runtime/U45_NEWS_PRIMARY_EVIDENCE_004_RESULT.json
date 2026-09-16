@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260917-U45-NEWS-PRIMARY-004",
+  "status": "PASS_PRIMARY_EVIDENCE_REVIEW_ZERO_RECENT_EVENT_READY",
+  "scope": "Primary-source review of the two material-event candidates routed by U45_NEWS_EVENT_CANDIDATES_003. The review distinguishes article publication recency from primary event/disclosure recency and keeps formal gates fail-closed.",
+  "parent_receipt": "docs/runtime/U45_NEWS_EVENT_CANDIDATES_003_RESULT.json",
+  "source_commit_parent": "f75ee05ed52bca7c87874ab121cc8eb22e7d943d",
+  "reviewed_candidates": 2,
+  "recent_event_ready": 0,
+  "formal_news_ready": 0,
+  "formal_u_acceptance_added": 0,
+  "cases": [
+    {
+      "code": "06082",
+      "name": "壁仞科技",
+      "candidate_category": "FINANCING_EQUITY",
+      "media_candidate_date": "2026-09-15",
+      "primary_source": {
+        "type": "HKEX issuer title-search record",
+        "url": "https://www1.hkexnews.hk/search/titlesearch.xhtml?category=0&lang=EN&market=SEHK&stockId=1000286044",
+        "observed_latest_release": "2026-09-03 17:22 Monthly Return",
+        "last_official_placing_records_visible": [
+          "2026-07-05 PLACING OF NEW H SHARES UNDER GENERAL MANDATE",
+          "2026-07-08 COMPLETION OF PLACING OF NEW H SHARES UNDER GENERAL MANDATE"
+        ]
+      },
+      "primary_verification_status": "UNCONFIRMED_NEW_PLACING_NO_MATCHING_HKEX_ANNOUNCEMENT_VISIBLE_AS_OF_REVIEW",
+      "recent_event_ready": false,
+      "reason": "The September 15 financing headlines are event candidates, but no matching new issuer filing is visible in the official HKEX issuer list as of review. Prior July placing evidence must not be reused as proof of a new September transaction.",
+      "follow_up": "Keep as rumor/reporting candidate. Recheck only if a new issuer filing or another authoritative primary disclosure appears."
+    },
+    {
+      "code": "09926",
+      "name": "康方生物",
+      "candidate_category": "CLINICAL_TRIAL",
+      "media_candidate_date": "2026-09-14",
+      "primary_source": {
+        "type": "HKEX voluntary announcement plus Akeso company announcement",
+        "hkex_title_search_url": "https://www1.hkexnews.hk/search/titlesearch.xhtml?category=0&lang=EN&market=SEHK&stockId=1000035461",
+        "hkex_primary_pdf": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0903/2026090300039.pdf",
+        "company_url": "https://akesobio.com/en/media/akeso-news/260903/",
+        "primary_release_time_hkt": "2026-09-03 07:01",
+        "event": "Ivonescimab met the OS key secondary endpoint in the prespecified interim analysis of Phase III HARMONi-2, with statistically significant and clinically meaningful improvement versus pembrolizumab."
+      },
+      "primary_verification_status": "PRIMARY_EVENT_VERIFIED_BUT_EVENT_ORIGIN_OUTSIDE_CURRENT_7_DAY_EVENT_WINDOW",
+      "article_recency_vs_event_recency": "The September 14 relevance-ready article is recent, but the underlying primary event was disclosed September 3. Article publication time must not substitute for event-origin time.",
+      "recent_event_ready": false,
+      "reason": "The primary disclosure predates the source probe's seven-day cutoff; therefore this is a stale-event resurfacing case, not a newly originated event inside the bounded window.",
+      "follow_up": "Preserve as verified historical event evidence; exclude from recent-event-ready count for this window unless a genuinely new primary update is found."
+    }
+  ],
+  "new_quality_rule": {
+    "id": "PRIMARY_EVENT_ORIGIN_RECENCY",
+    "rule": "For material-event candidates, recent-event readiness requires an authoritative primary event/disclosure timestamp inside the accepted event window. A recent secondary article that references an older primary event cannot satisfy event recency by itself.",
+    "effect": "Both current material-event candidates remain recent_event_ready=false."
+  },
+  "formal_boundaries": {
+    "retrieval_ready": 44,
+    "relevance_ready": 5,
+    "material_event_candidates": 2,
+    "recent_event_ready": 0,
+    "formal_news_ready": 0,
+    "gate_a_formally_accepted": false,
+    "gate_b_frozen": true,
+    "gate_c_frozen": true,
+    "o_full_pool_permitted": false,
+    "runtime_activated": false,
+    "simulation": false,
+    "real_orders": 0,
+    "main_merge": false
+  },
+  "resources_this_review": {
+    "repository_model_http_requests": 0,
+    "paid_data_calls": 0,
+    "new_subscriptions": 0,
+    "provider_cost_cny": 0,
+    "public_web_primary_source_review": true,
+    "real_orders": 0
+  },
+  "next_actions": [
+    "Add primary-event-origin timestamp as a required field before any future event_ready promotion.",
+    "Continue source review only for relevance-ready candidates with a plausible new primary event; do not promote rumor or resurfaced old events.",
+    "Keep formal_news_ready and formal U acceptance at zero until the separate formal semantic/evidence gate is satisfied."
+  ]
+}
