@@ -1,0 +1,49 @@
+name: U45 model-free multisource news retrieval
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/probe_u45_news_multisource.py'
+      - '.github/workflows/56-u45-news-multisource.yml'
+      - 'docs/dsa-u-universe.json'
+permissions:
+  contents: read
+jobs:
+  multisource-news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Run bounded multisource U45 news retrieval
+        run: python scripts/probe_u45_news_multisource.py --universe docs/dsa-u-universe.json --out probe/u45-news/U45_NEWS_MULTISOURCE.json
+      - name: Preserve formal boundaries
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('probe/u45-news/U45_NEWS_MULTISOURCE.json'))
+          assert d['universe_denominator']==45
+          assert d['execution_eligible_denominator']==44
+          assert d['members_with_any_provider_parseable']==44
+          assert d['retrieval_quality_proven'] is True
+          assert d['news_semantic_ready']==0
+          assert d['formal_u_acceptance_added']==0
+          assert d['model_http_requests']==0
+          assert d['paid_data_calls']==0
+          print(json.dumps({'retrieval_quality_proven':True,'formal_u_acceptance_added':0,'model_requests':0}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: U45_NEWS_MULTISOURCE
+          path: probe/u45-news/U45_NEWS_MULTISOURCE.json
+          retention-days: 14
