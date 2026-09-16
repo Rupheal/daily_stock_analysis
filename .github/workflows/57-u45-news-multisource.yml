@@ -5,7 +5,9 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - 'scripts/probe_u45_news_multisource.py'
+      - 'scripts/classify_u45_news_event_candidates.py'
       - 'tests/test_u45_news_readiness.py'
+      - 'tests/test_u45_news_event_candidates.py'
       - '.github/workflows/57-u45-news-multisource.yml'
 permissions:
   contents: read
@@ -23,8 +25,10 @@ jobs:
           python-version: '3.11'
       - name: Install minimal public-data dependency
         run: pip install requests
-      - name: Deterministic readiness and dedupe tests
-        run: python -m unittest discover -s tests -p 'test_u45_news_readiness.py' -v
+      - name: Deterministic readiness, dedupe, and event-candidate tests
+        run: |
+          python -m unittest discover -s tests -p 'test_u45_news_readiness.py' -v
+          python -m unittest discover -s tests -p 'test_u45_news_event_candidates.py' -v
       - name: Probe Yahoo and Google News without model or paid data
         run: |
           python scripts/probe_u45_news_multisource.py --universe docs/dsa-u-universe.json --out /tmp/U45_NEWS_MULTISOURCE.json --workers 4 --timeout 18
@@ -46,9 +50,24 @@ jobs:
           assert all(r['retrieval_ready']==r['retrieval_positive'] for r in d['rows'])
           print(json.dumps({k:d[k] for k in ('members_with_any_provider_parseable','members_retrieval_ready','members_relevance_ready','members_event_ready','members_formal_news_ready','duplicate_recent_relevant_items_removed','model_http_requests')}))
           PY
+      - name: Route relevance-ready items into fail-closed event candidates
+        run: |
+          python scripts/classify_u45_news_event_candidates.py --input /tmp/U45_NEWS_MULTISOURCE.json --out /tmp/U45_NEWS_EVENT_CANDIDATES.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/U45_NEWS_EVENT_CANDIDATES.json'))
+          assert d['universe_denominator']==45 and d['execution_eligible_denominator']==44
+          assert d['retrieval_ready']==44
+          assert d['event_ready']==0 and d['formal_news_ready']==0 and d['formal_u_acceptance_added']==0
+          assert d['model_http_requests']==0 and d['paid_data_calls']==0
+          assert all(r['event_ready'] is False and r['formal_news_ready'] is False for r in d['rows'])
+          print(json.dumps({k:d[k] for k in ('relevance_ready','event_candidate_members','material_event_candidate_codes','event_ready','formal_news_ready')}))
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: U45_NEWS_MULTISOURCE
-          path: /tmp/U45_NEWS_MULTISOURCE.json
+          path: |
+            /tmp/U45_NEWS_MULTISOURCE.json
+            /tmp/U45_NEWS_EVENT_CANDIDATES.json
           if-no-files-found: error
           retention-days: 14
