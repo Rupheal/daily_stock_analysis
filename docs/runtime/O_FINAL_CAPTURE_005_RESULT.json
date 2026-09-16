@@ -1,0 +1,78 @@
+{
+  "run_id": "TRI-DSA-DEV-20260916-FINAL-CAPTURE-005",
+  "status": "PASS_BOUNDED_FINAL_PIPELINE_CAPTURE_ACCEPTANCE_ONLY",
+  "scope": "Resolve O_CAPTURE_STAGE_004 next-action gap by proving the updated observer's real pipeline-final wrapper, without provider/model access",
+  "branch": "fix/native-private-execution-20260914",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "prior_receipts": [
+    "docs/runtime/O_CAPTURE_STAGE_004_RESULT.json",
+    "docs/runtime/O_SEMANTIC_HANDOFF_003_RESULT.json"
+  ],
+  "implementation_evidence": {
+    "observer": "scripts/run_hk_original_model_probe.py",
+    "hook": "StockAnalysisPipeline.analyze_stock:AFTER_NORMAL_RETURN",
+    "final_stage": "PIPELINE_FINALIZED_AFTER_ANALYZE_STOCK_RETURN",
+    "writes": [
+      "pipeline-final-result.json",
+      "pipeline-final-capture.json",
+      "pipeline-final-semantic-receipt.json",
+      "post-output-contract.json"
+    ],
+    "historical_analyzer_snapshot_preserved": true,
+    "pipeline_final_identity_guard": "FINAL_PIPELINE_RESULT_NOT_PROVEN"
+  },
+  "new_test": {
+    "path": "tests/test_o_final_capture_observer_integration.py",
+    "commit": "d08bbba3e5c4c3b24df9aedd3ad6328594e34571",
+    "cases": [
+      "actual observer wrapper captures metadata added after analyzer return and distinguishes analyzer/final hashes",
+      "actual observer wrapper rejects a different/unproven pipeline return object before final-capture evidence is written"
+    ],
+    "provider_called": false,
+    "runtime_activated": false
+  },
+  "cloud_validation": {
+    "workflow": ".github/workflows/o-final-capture-005-tests.yml",
+    "workflow_commit": "78bacc3bce11f10f5f6184e26c25caad458f63b2",
+    "workflow_run": 35106843045,
+    "job": 104830168262,
+    "conclusion": "success",
+    "model_credentials_exposed": false,
+    "model_requests": 0
+  },
+  "resolution": {
+    "capture_stage_004_question": "RESOLVED",
+    "updated_observer_has_final_pipeline_capture": true,
+    "additional_capture_hook_needed": false,
+    "reason": "The current observer already wraps StockAnalysisPipeline.analyze_stock, records only after a normal return, binds the final object identity, saves separate analyzer and final snapshots, and the extracted production wrapper passed the dedicated model-free cloud integration test."
+  },
+  "formal_boundaries": {
+    "child2_immutable": true,
+    "child2_semantic_verdict": "NO_GO",
+    "repeat_child2_provider_request_permitted": false,
+    "new_provider_slot_granted": false,
+    "o_single_stock_formally_accepted": false,
+    "o_full_pool_permitted": false,
+    "u45_formal_acceptance_added": 0,
+    "simulated_fills": 0,
+    "real_orders": 0,
+    "runtime_activated": false,
+    "main_merge": false,
+    "schedule_changes": 0
+  },
+  "resources": {
+    "new_model_requests": 0,
+    "paid_data_calls": 0,
+    "new_work_or_codex_tasks": 0,
+    "github_actions_run": 1,
+    "model_request_cost_cny": 0,
+    "actions_actual_charge": "UNKNOWN",
+    "platform_tokens_credits_cost": "UNKNOWN"
+  },
+  "next_actions": [
+    "Do not add another capture hook unless the observer implementation changes; the previously open current-observer capture-stage evidence gap is closed.",
+    "Preserve CHILD2 and its consumed provider slot; do not retry it or reclassify its semantic NO_GO result.",
+    "In TRI control-plane work, continue U45 independent preparation and deterministic evidence quality improvements without claiming formal U acceptance.",
+    "Leave any separately authorized fresh O native Gate A provider case to the designated Gate A execution lane; Gate B/C and runtime activation remain frozen until their own gates pass."
+  ]
+}
