@@ -1,0 +1,157 @@
+name: O Gate A fresh preauth model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/O_GATE_A_PREAUTH_CHECKPOINT.json'
+      - '.github/workflows/53-o-gatea-preauth.yml'
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-writer
+  cancel-in-progress: false
+jobs:
+  preauth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: research
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      PREAUTH_RUN_ID: TRI-DSA-EXEC-20260916-GATEA-019
+      PREAUTH_CHILD_ID: ART-DSA-GATEA-019-CHILD1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Freeze and no-authority gate
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          c=json.load(open('research/docs/runtime/O_GATE_A_PREAUTH_CHECKPOINT.json'))
+          assert c['maximum_model_http_requests_before_owner_authorization']==0
+          assert c['owner_authorized'] is False
+          assert c['frozen_upstream']=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert c['child2_retry_permitted'] is False
+          got=subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()
+          assert got==c['frozen_upstream']
+          print(json.dumps({'frozen_upstream_verified':True,'owner_authorized':False,'model_requests':0}))
+          PY
+      - name: Install deterministic runtime dependencies
+        run: pip install -r research/requirements.txt pytest httpx
+      - name: Resolve fresh completed target session
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import json
+          from datetime import datetime,timezone
+          from pathlib import Path
+          from o_target_session_contract import RULE_VERSION,resolve_target_session
+          r=resolve_target_session(datetime.now(timezone.utc));target=r.target_session.isoformat()
+          Path('/tmp/o-gatea-target').write_text(target)
+          print(json.dumps({'rule_version':RULE_VERSION,'target_session':target,'model_requests':0}))
+          PY
+      - name: Deterministic observer and contract regressions
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_volume_reconciliation.py tests/test_o_target_session_contract.py tests/test_prepare_xiaomi_acceptance_targeted.py tests/test_o_final_capture_observer_integration.py
+      - name: Fresh independent Xiaomi preflight
+        run: |
+          python research/scripts/prepare_xiaomi_acceptance_targeted.py >/tmp/preflight.stdout 2>/tmp/preflight.stderr
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.load(open('research/probe/preflight.json')); tr=json.load(open('research/probe/target-session-receipt.json'))
+          target=Path('/tmp/o-gatea-target').read_text().strip()
+          assert d.get('passed') is True and d.get('prices_passed') is True
+          assert d.get('symbol','').upper()=='HK01810'
+          assert str(d.get('target'))==target==str(tr.get('target_session'))
+          s=d.get('component_status') or {}
+          print(json.dumps({'preflight_passed':True,'target':target,'prices':s.get('prices'),'news':s.get('news'),'issuer':s.get('issuer'),'model_requests':0}))
+          PY
+      - name: Frozen-native same-window data-only smoke
+        run: |
+          TARGET_SESSION="$(cat /tmp/o-gatea-target)"
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-u-universe.json --scope O_single_stock_smoke --expected-date "$TARGET_SESSION" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --timeout 240 --output /tmp/gatea-native-data >/tmp/gatea-native-private.log 2>&1
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          target=Path('/tmp/o-gatea-target').read_text().strip(); d=json.load(open('/tmp/gatea-native-data/coverage.json')); rows=d.get('coverage') or []
+          assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1
+          assert len(rows)==1 and str(rows[0].get('latest_date'))==target
+          print(json.dumps({'frozen_native_data_only_passed':True,'target':target,'model_requests':0}))
+          PY
+      - name: Observer exact-session OHLC volume contract
+        run: |
+          PYTHONPATH=research python - <<'PY'
+          import json,sqlite3,sys
+          from pathlib import Path
+          sys.path.insert(0,'research/scripts')
+          from o_native_input_contract import validate_native_input
+          p=json.load(open('research/probe/preflight.json')); target=Path('/tmp/o-gatea-target').read_text().strip()
+          db=sqlite3.connect('/tmp/gatea-native-data/native-data.db'); row=db.execute("SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date DESC LIMIT 1",('hk01810',)).fetchone(); db.close()
+          receipt=validate_native_input(p,{'today':dict(zip(('date','open','high','low','close','volume'),row))})
+          assert receipt.get('validated') is True and str(receipt.get('target'))==target
+          print(json.dumps({'observer_contract_passed':True,'target':target,'volume_status':receipt.get('volume_status'),'model_requests':0}))
+          PY
+      - name: Fresh Drive save read hash restore probe
+        run: |
+          python - <<'PY'
+          import json
+          open('/tmp/gatea-drive-probe.json','w').write(json.dumps({'run_id':'TRI-DSA-EXEC-20260916-GATEA-019','classification':'synthetic_no_model_content','contains_secrets':False,'contains_raw_model_content':False},sort_keys=True)+'\n')
+          PY
+          PROBE_ID="ART-DSA-GATEA019-PROBE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python research/scripts/dsa_drive_bundle.py --source /tmp/gatea-drive-probe.json --run-id "$PREAUTH_RUN_ID" --artifact-id "$PROBE_ID" --receipt /tmp/gatea-drive-receipt.json
+      - name: Confirm fresh child namespace absent
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          import os,httpx
+          from dsa_drive_store import DriveStore,scoped_token
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              s.assert_absent(os.environ['PREAUTH_CHILD_ID']); s.assert_absent(os.environ['PREAUTH_CHILD_ID']+'-CLAIM')
+          print('{"child_absent":true,"claim_absent":true,"model_requests":0}')
+          PY
+      - name: Read affordability privately without model request
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          import json,os
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']; total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          affordable=bool(raw.get('is_available') and total>=Decimal('2'))
+          print(json.dumps({'balance_readable':True,'affordability':'AFFORDABLE' if affordable else 'NOT_AFFORDABLE','single_stock_cap_cny':'2','model_requests':0}))
+          if not affordable: raise SystemExit('NOT_AFFORDABLE')
+          PY
+      - name: Preauth terminal guard no model call
+        run: |
+          python - <<'PY'
+          import json
+          print(json.dumps({'state':'READY_FOR_OWNER_AUTHORIZATION','run_id':'TRI-DSA-EXEC-20260916-GATEA-019','child_id':'ART-DSA-GATEA-019-CHILD1','maximum_model_http_requests_before_owner_authorization':0,'model_requests':0,'runtime_activated':False,'main_merge':False}))
+          PY
