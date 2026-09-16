@@ -1,0 +1,45 @@
+name: U45 public news readiness
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/probe_u45_public_news.py'
+      - '.github/workflows/55-u45-public-news-readiness.yml'
+permissions:
+  contents: read
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      DATABASE_PATH: /tmp/u45-news.db
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install deterministic/public-data runtime
+        run: pip install -r requirements.txt
+      - name: Probe U45 approved public news without model access
+        run: |
+          python scripts/probe_u45_public_news.py --universe docs/dsa-u-universe.json --out /tmp/U45_PUBLIC_NEWS_READINESS.json --days 3
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/U45_PUBLIC_NEWS_READINESS.json'))
+          assert d['denominator']==45 and len(d['members'])==45 and d['model_requests']==0
+          assert 0 <= d['news_ready_count'] <= 45
+          print(json.dumps({'news_ready_count':d['news_ready_count'],'denominator':45,'model_requests':0}))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U45_PUBLIC_NEWS_READINESS
+          path: /tmp/U45_PUBLIC_NEWS_READINESS.json
+          if-no-files-found: error
+          retention-days: 14
