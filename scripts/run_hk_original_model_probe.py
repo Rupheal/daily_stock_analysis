@@ -23,6 +23,8 @@ from o_native_date_boundary_adapter import patched_yahoo_target_boundary
 from o_semantic_handoff_contract import (CONTRACT_VERSION, FROZEN_UPSTREAM, ContractError,
     canonical_hash, build_news_handoff, prove_prompt_consumption)
 from o_single_output_fact_check import check_saved_output
+from o_post_output_contract import (CONTRACT_VERSION as POST_OUTPUT_VERSION,
+    build_final_capture, evaluate_post_output_contract, output_exit_code)
 
 
 def _inside(path, root):
@@ -92,6 +94,12 @@ def main():
     if not _inside(native_pipeline_module.__file__, checkout):
         raise RuntimeError('ORIGINAL_PIPELINE_ORIGIN_MISMATCH')
 
+    capture_source_proof = {
+        'frozen_upstream': args.expected_commit,
+        'pipeline_sha256': hashlib.sha256(Path(native_pipeline_module.__file__).read_bytes()).hexdigest(),
+        'observer_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        'pipeline_module_under_checkout': True,
+    }
     base = os.environ['LLM_DEEPSEEK_BASE_URL']
     model = os.environ['LLM_DEEPSEEK_MODELS']
     budget = ResearchBudget(root/'budget.json', limit=args.limit_cny, carry_upper=args.carry_upper_cny,
@@ -102,9 +110,14 @@ def main():
     news_handoff = None
     prompt_handoff_receipt = None
     output_semantic_receipt = None
+    output_contract_receipt = None
+    analyzer_snapshot = None
+    final_capture_receipt = None
+    captured_prompt = None
     returned_result = None
     observed_input = None
     loader_called = False
+    original_pipeline_analyze = StockAnalysisPipeline.analyze_stock
     original_format_prompt = GeminiAnalyzer._format_prompt
     original_news_loader = StockAnalysisPipeline._load_persisted_intelligence_context
     original_analyze, original_send = GeminiAnalyzer.analyze, httpx.Client.send
@@ -148,11 +161,14 @@ def main():
             news_handoff = verified
             (root/'news-handoff-receipt.json').write_text(json.dumps(news_handoff,ensure_ascii=False,indent=2))
         validated = True
-        (root/'original-input.json').write_text(json.dumps(observed_input,ensure_ascii=False,default=str))
+        # Freeze the captured value, not an alias that native code may later annotate.
+        observed_input = json.loads(json.dumps(observed_input,ensure_ascii=False,default=str))
+        (root/'original-input.json').write_text(json.dumps(observed_input,ensure_ascii=False))
         result = original_analyze(instance, context, *a, **kw)
         returned_result = result
         value = result.to_dict() if hasattr(result,'to_dict') else vars(result)
-        (root/'original-result.json').write_text(json.dumps(value,ensure_ascii=False,default=str))
+        analyzer_snapshot = json.loads(json.dumps(value,ensure_ascii=False,default=str))
+        (root/'original-result.json').write_text(json.dumps(analyzer_snapshot,ensure_ascii=False))
         output_semantic_receipt = check_saved_output(preflight, observed_input, value)
         (root/'output-semantic-receipt.json').write_text(json.dumps(output_semantic_receipt,ensure_ascii=False,indent=2))
         print('ORIGINAL_MODEL_RESULT',json.dumps(value,ensure_ascii=False,default=str),flush=True)
@@ -166,7 +182,38 @@ def main():
                 raise ContractError('PREFLIGHT_NEWS_HANDOFF_NOT_PREPARED')
             prompt_handoff_receipt = prove_prompt_consumption(prompt, news_handoff)
             (root/'news-prompt-consumption.json').write_text(json.dumps(prompt_handoff_receipt,indent=2))
+        captured_prompt = (root/'original-formatted-prompt.txt').read_text(encoding='utf-8') if (root/'original-formatted-prompt.txt').exists() else None
+        if captured_prompt is not None and captured_prompt != prompt:
+            raise ContractError('FORMATTED_PROMPT_CHANGED_WITHIN_SINGLE_CASE')
+        if captured_prompt is None:
+            captured_prompt = prompt
+            (root/'original-formatted-prompt.txt').write_text(prompt,encoding='utf-8')
         return prompt
+
+    def pipeline_analyze(instance, *a, **kw):
+        nonlocal final_capture_receipt, output_contract_receipt, output_semantic_receipt, analyzer_snapshot, captured_prompt
+        # No finally-based inference: only a real normal return proves this stage.
+        final_result = original_pipeline_analyze(instance, *a, **kw)
+        if final_result is None or final_result is not returned_result or observed_input is None or not (root/'original-result.json').exists():
+            raise ContractError('FINAL_PIPELINE_RESULT_NOT_PROVEN')
+        analyzer_snapshot = json.loads((root/'original-result.json').read_text())
+        captured_prompt = (root/'original-formatted-prompt.txt').read_text(encoding='utf-8') if (root/'original-formatted-prompt.txt').exists() else None
+        final_value = final_result.to_dict() if hasattr(final_result,'to_dict') else vars(final_result)
+        final_value = json.loads(json.dumps(final_value,ensure_ascii=False,default=str))
+        (root/'pipeline-final-result.json').write_text(json.dumps(final_value,ensure_ascii=False))
+        final_capture_receipt = build_final_capture(preflight,observed_input,analyzer_snapshot,final_value,
+            source_proof=capture_source_proof,
+            input_version=CONTRACT_VERSION if args.news_handoff_v1 else 'FROZEN_NATIVE_INPUT_NO_HANDOFF_v1')
+        (root/'pipeline-final-capture.json').write_text(json.dumps(final_capture_receipt,indent=2))
+        output_contract_receipt = evaluate_post_output_contract(preflight,observed_input,final_value,
+            capture_receipt=final_capture_receipt,analyzer_result=analyzer_snapshot,
+            expected_sources=capture_source_proof,prompt_text=captured_prompt,
+            news_handoff=news_handoff,required_handoff=bool(args.news_handoff_v1))
+        output_semantic_receipt = output_contract_receipt['semantic_audit']
+        (root/'pipeline-final-semantic-receipt.json').write_text(json.dumps(output_semantic_receipt,ensure_ascii=False,indent=2))
+        (root/'post-output-contract.json').write_text(json.dumps(output_contract_receipt,ensure_ascii=False,indent=2))
+        return final_result
+
     def send(client, request, **kw):
         seq = budget.admit(request, validated and (not args.news_handoff_v1 or bool(prompt_handoff_receipt)))
         response = original_send(client, request, **kw)
@@ -184,7 +231,7 @@ def main():
     status, error = None, None
     try:
         sys.argv=['main.py','--stocks','hk01810','--no-notify','--no-market-review','--force-run','--workers','1']
-        with patch.object(StockAnalysisPipeline,'_load_persisted_intelligence_context',load_news), patch.object(GeminiAnalyzer,'analyze',analyze), patch.object(GeminiAnalyzer,'_format_prompt',format_prompt), patch.object(httpx.Client,'send',send), patch.object(httpx.AsyncClient,'send',async_send):
+        with patch.object(StockAnalysisPipeline,'analyze_stock',pipeline_analyze), patch.object(StockAnalysisPipeline,'_load_persisted_intelligence_context',load_news), patch.object(GeminiAnalyzer,'analyze',analyze), patch.object(GeminiAnalyzer,'_format_prompt',format_prompt), patch.object(httpx.Client,'send',send), patch.object(httpx.AsyncClient,'send',async_send):
             if args.target_boundary_adapter:
                 with patched_yahoo_target_boundary(target_session) as applied:
                     status = native_main()
@@ -194,13 +241,13 @@ def main():
     except Exception as exc:
         error = type(exc).__name__+': '+str(exc)
     finally:
-        # The pipeline legitimately finalizes metadata after analyzer return.
-        # Record that observed object separately, never rewrite analyzer/provider evidence.
-        if returned_result is not None and observed_input is not None:
-            final_value = returned_result.to_dict() if hasattr(returned_result,'to_dict') else vars(returned_result)
-            (root/'pipeline-final-result.json').write_text(json.dumps(final_value,ensure_ascii=False,default=str))
-            output_semantic_receipt = check_saved_output(preflight,observed_input,final_value)
-            (root/'pipeline-final-semantic-receipt.json').write_text(json.dumps(output_semantic_receipt,ensure_ascii=False,indent=2))
+        # Never relabel an analyzer-only or interrupted object as pipeline final.
+        if output_contract_receipt is None:
+            output_contract_receipt = {'contract_version':POST_OUTPUT_VERSION,
+                'semantic_contract_pass':False,
+                'promotion_gate':{'status':'BLOCK','blockers':['FINAL_PIPELINE_RESULT_NOT_PROVEN']},
+                'o_single_stock_formal_acceptance':False,'runtime_activated':False}
+            (root/'post-output-contract.json').write_text(json.dumps(output_contract_receipt,indent=2))
         report={'started_at':started,'completed_at':datetime.now(timezone.utc).isoformat(),
                 'original_commit':args.expected_commit,'original_tracked_source_unchanged':not subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).strip(),
                 'original_module_origins_verified':True,'module_origin_receipt':module_origin_receipt,
@@ -216,12 +263,18 @@ def main():
                 'news_handoff_requested':bool(args.news_handoff_v1),'news_loader_consumed':loader_called,
                 'news_prompt_consumed':bool(prompt_handoff_receipt),
                 'output_semantic_verdict':output_semantic_receipt.get('semantic_verdict') if output_semantic_receipt else 'NOT_REVIEWED',
+                'post_output_contract_version':POST_OUTPUT_VERSION,
+                'post_output_promotion_gate':output_contract_receipt['promotion_gate'],
+                'pipeline_final_capture_proven':final_capture_receipt is not None,
+                'semantic_contract_pass':output_contract_receipt.get('semantic_contract_pass',False),
                 'runtime_activated':False,
                 'O_denominator':660,'U_denominator':45,'trading_release':'pending_manual_review'}
         (root/'probe-summary.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,default=str))
         print('ORIGINAL_PROBE_SUMMARY',json.dumps(report,ensure_ascii=False,default=str),flush=True)
-    if not budget.state['requests'] or error or output_semantic_receipt is None or output_semantic_receipt.get('semantic_verdict') == 'NO_GO':
-        raise SystemExit(1)
+    exit_code = output_exit_code(output_contract_receipt, request_count=len(budget.state['requests']),
+                                 error=error, native_status=status)
+    if exit_code:
+        raise SystemExit(exit_code)
 
 
 if __name__=='__main__':
