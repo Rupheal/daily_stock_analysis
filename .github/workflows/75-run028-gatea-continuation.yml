@@ -1,0 +1,284 @@
+name: O Gate A Run028 continuation one-shot
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - docs/runtime/run028-gatea-preflight-continuation.json
+permissions:
+  contents: read
+concurrency:
+  group: dsa-drive-evidence-writer
+  cancel-in-progress: false
+jobs:
+  gatea:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts:${{ github.workspace }}/research/tests
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      RUN_ID: TRI-DSA-EXEC-20260916-028-CONT1
+      EVIDENCE_ID: ART-DSA-RUN028-GATEA-O-SINGLE-CONT1
+      CLAIM_ID: ART-DSA-RUN028-GATEA-O-SINGLE-CONT1-CLAIM
+      PRIOR_CLAIM_ID: ART-DSA-RUN028-GATEA-O-SINGLE-CLAIM
+      DSA_INPUT_TOKEN_MARGIN: '2048'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - name: Read frozen historical CHILD2 observer source for provenance fixture
+        uses: actions/checkout@v5
+        with:
+          ref: c75c8496410cd33a151d659add7c83ce92bdd1cd
+          path: child2-observer
+          sparse-checkout: scripts/run_hk_original_model_probe.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: Pin official DeepSeek V4.1 tokenizer
+        uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Verify same authorization, recovered preflight and frozen boundaries
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          a=json.load(open('research/docs/runtime/run028-gatea-owner-authorization.json'))
+          f=json.load(open('research/docs/runtime/RUN028_PREFLIGHT_FAILURE_RECONCILIATION.json'))
+          r=json.load(open('research/docs/runtime/RUN028_PREFLIGHT_NEWS_RECOVERY_RESULT.json'))
+          c=json.load(open('research/docs/runtime/run028-gatea-preflight-continuation.json'))
+          assert a['authorized'] is True and a['maximum_provider_http_requests']==1 and a['hard_model_budget_cny']=='0.10'
+          assert a['second_retry_permitted'] is False and a['fallback_model_permitted'] is False and a['automatic_recharge_permitted'] is False
+          assert f['state']=='PRE_CLAIM_PREFLIGHT_FAIL_PROVIDER_SLOT_UNCONSUMED'
+          assert f['provider']['model_http_requests']==0 and f['claim']['claim_created'] is False
+          assert r['state']=='PASS_MODEL_FREE_STRICT_PREFLIGHT_RECOVERED' and r['provider_http_requests']==0 and r['claim_created'] is False
+          assert c['same_owner_authorization'] is True and c['prior_provider_http_requests']==0 and c['maximum_provider_http_requests_remaining']==1
+          assert c['new_evidence_id']==__import__('os').environ['EVIDENCE_ID'] and c['new_claim_id']==__import__('os').environ['CLAIM_ID']
+          assert c['second_provider_request_permitted'] is False and c['gate_relaxation'] is False
+          assert c['o_full_pool_permitted'] is False and c['u45_formal_execution_permitted'] is False
+          assert c['simulation_permitted'] is False and c['real_orders_permitted'] is False and c['runtime_activated'] is False
+          got=subprocess.check_output(['git','rev-parse','HEAD'],cwd='original',text=True).strip()
+          assert got==a['frozen_upstream']=='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
+          assert not subprocess.check_output(['git','diff','--name-only','HEAD'],cwd='original',text=True).strip()
+          print(json.dumps({'same_owner_authorization':'PASS','prior_provider_http_requests':0,'remaining_provider_http_requests':1,'hard_cap_cny':'0.10','gate_b_c':'FROZEN'}))
+          PY
+
+      - name: Install runtime and official tokenizer bindings
+        run: pip install -r research/requirements.txt pytest httpx deepseek-recipe==0.1.1
+
+      - name: Deterministic regression suite
+        working-directory: research
+        run: >-
+          python -m pytest --noconftest -q
+          tests/test_o_target_session_contract.py
+          tests/test_prepare_xiaomi_acceptance_targeted.py
+          tests/test_o_native_date_boundary_adapter.py
+          tests/test_o_native_input_contract.py
+          tests/test_hk_volume_reconciliation.py
+          tests/test_o_semantic_handoff_contract.py
+          tests/test_o_post_output_contract.py
+          tests/test_o_single_output_fact_check.py
+          tests/test_run_hk_original_model_probe_imports.py
+          tests/test_o_native_context_canonical.py
+          tests/test_deepseek_flash_cap010_guard.py
+
+      - name: Frozen capture-stage provenance suite
+        env:
+          DSA_FROZEN_ANALYZER_SOURCE: ${{ github.workspace }}/original/src/analyzer.py
+          DSA_FROZEN_PIPELINE_SOURCE: ${{ github.workspace }}/original/src/core/pipeline.py
+          DSA_OBSERVER_SOURCE: ${{ github.workspace }}/child2-observer/scripts/run_hk_original_model_probe.py
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_o_capture_stage_provenance.py
+
+      - name: Resolve current completed XHKG target and fail closed on target drift
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime,timezone
+          from pathlib import Path
+          from o_target_session_contract import resolve_target_session
+          a=json.load(open('research/docs/runtime/run028-gatea-owner-authorization.json'))
+          t=resolve_target_session(datetime.now(timezone.utc)).target_session.isoformat()
+          assert t==a['target_session'], 'RUN028_CONTINUATION_AUTHORIZED_TARGET_EXPIRED'
+          Path('/tmp/run028-target').write_text(t)
+          print(json.dumps({'target_session':t,'authorization_target_match':True,'model_http_requests':0}))
+          PY
+
+      - name: Fresh strict preflight and price integrity
+        run: |
+          mkdir -p /tmp/run028-cont-evidence
+          python research/scripts/prepare_xiaomi_acceptance_targeted.py > /tmp/run028-cont-evidence/preflight.stdout 2> /tmp/run028-cont-evidence/preflight.stderr
+          cp research/probe/preflight.json /tmp/run028-cont-evidence/preflight.json
+          cp research/probe/target-session-receipt.json /tmp/run028-cont-evidence/target-session-receipt.json
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          t=Path('/tmp/run028-target').read_text().strip(); p=json.load(open('research/probe/preflight.json')); r=json.load(open('research/probe/target-session-receipt.json'))
+          assert p.get('passed') is True and p.get('prices_passed') is True and p.get('symbol','').upper()=='HK01810'
+          assert str(p.get('target'))==t==str(r.get('target_session'))==str(r.get('preflight_target')) and r.get('target_match') is True
+          assert p.get('news_count',0)>=3 and len(p.get('origins') or [])>=2 and len(p.get('company_news_evidence') or [])>=3
+          sha=hashlib.sha256(Path('research/probe/preflight.json').read_bytes()).hexdigest()
+          Path('/tmp/run028-cont-evidence/preflight-lineage.json').write_text(json.dumps({'fresh_execution_preflight_sha256':sha,'target_session':t,'fresh_retrieval_performed':True},indent=2))
+          print(json.dumps({'fresh_strict_preflight':'PASS','target':t,'news_count':p.get('news_count'),'origin_count':len(p.get('origins') or []),'model_http_requests':0}))
+          PY
+
+      - name: Frozen native exact-session smoke
+        run: |
+          T="$(cat /tmp/run028-target)"
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/docs/dsa-u-universe.json --scope O_single_stock_smoke --expected-date "$T" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 240 --output /tmp/run028-cont-native > /tmp/run028-cont-evidence/native-data.log 2>&1
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          t=Path('/tmp/run028-target').read_text().strip(); d=json.load(open('/tmp/run028-cont-native/coverage.json')); rows=d.get('coverage') or []
+          assert d.get('code_commit')=='089d9d26d68f8b839ea5a74a3784e4402925f8b7' and d.get('native_logic_modified') is False
+          assert d.get('target_boundary_adapter') is True and (d.get('target_boundary_adapter_apply_count') or 0)>=1
+          assert d.get('coverage_denominator')==1 and d.get('current_valid_count')==1 and len(rows)==1 and str(rows[0].get('latest_date'))==t and d.get('returncode')==0
+          print(json.dumps({'native_exact_session':'PASS','target':t,'model_http_requests':0}))
+          PY
+
+      - name: Dry concrete request envelope and CNY0.10 proof with no provider send
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+          DSA_BUDGET_PROBE_ONLY: '1'
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: dry-envelope-no-network
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          set +e
+          python research/scripts/run_hk_original_model_probe_run028.py --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight research/probe/preflight.json --output /tmp/run028-cont-dry --limit-cny 0.10 --carry-upper-cny 0 --target-boundary-adapter --news-handoff-v1 > /tmp/run028-cont-evidence/dry.stdout 2> /tmp/run028-cont-evidence/dry.stderr
+          rc=$?; set -e
+          python - <<'PY'
+          import json
+          from decimal import Decimal
+          from pathlib import Path
+          s=json.load(open('/tmp/run028-cont-dry/probe-summary.json')); b=json.load(open('/tmp/run028-cont-dry/budget.json')); req=b.get('requests') or []
+          assert len(req)==1 and req[0]['status']=='dry_envelope_validated_not_sent'
+          assert Decimal(req[0]['pre_send_peak_upper_cny']) <= Decimal('0.10')
+          assert req[0]['output_cap']==8192 and req[0]['input_token_safety_margin']>=2048
+          assert not Path('/tmp/run028-cont-dry/provider-response.txt').exists() and not Path('/tmp/run028-cont-dry/request-body.json').exists()
+          assert 'RUN028_DRY_ENVELOPE_COMPLETE_NO_SEND' in str(s.get('error'))
+          out={k:req[0][k] for k in ('payload_sha256','payload_bytes','output_cap','official_v41_input_tokens','input_token_safety_margin','pre_send_peak_upper_cny','hard_cap_cny','tokenizer_repo_commit')}
+          out.update({'dry_provider_send':False,'dry_model_http_requests':0})
+          Path('/tmp/run028-cont-evidence/cost-envelope-proof.json').write_text(json.dumps(out,indent=2)); print(json.dumps(out))
+          PY
+          test "$rc" -ne 0
+
+      - name: Fresh child absence, prior-claim absence, balance and durable claim
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os,httpx
+          from dsa_drive_store import DriveStore,scoped_token
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']); s.assert_absent(os.environ['PRIOR_CLAIM_ID']); s.assert_absent(os.environ['EVIDENCE_ID']); s.assert_absent(os.environ['CLAIM_ID'])
+          print('{"prior_claim_absent":true,"child_artifact_absent":true,"child_claim_absent":true,"model_http_requests":0}')
+          PY
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from decimal import Decimal
+          import json,os
+          from pathlib import Path
+          req=Request('https://api.deepseek.com/user/balance',headers={'Authorization':'Bearer '+os.environ['DEEPSEEK_API_KEY']})
+          with urlopen(req,timeout=20) as r: raw=json.load(r)
+          rows=[x for x in raw.get('balance_infos',[]) if x.get('currency')=='CNY']; total=Decimal(rows[0]['total_balance']) if rows else Decimal('-1')
+          out={'currency':'CNY','single_request_hard_cap_cny':'0.10','single_stock_affordable':bool(raw.get('is_available') and total>=Decimal('0.10'))}
+          Path('/tmp/run028-cont-evidence/balance-before.json').write_text(json.dumps(out,indent=2)); assert out['single_stock_affordable']; print(json.dumps(out))
+          PY
+          python - <<'PY'
+          import hashlib,json,os,httpx
+          from pathlib import Path
+          from dsa_drive_store import DriveStore,scoped_token
+          preflight=Path('research/probe/preflight.json').read_bytes(); execution='CI-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c); receipt=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']).reserve_native_call(os.environ['EVIDENCE_ID'],os.environ['RUN_ID'],hashlib.sha256(preflight).hexdigest(),execution)
+          Path('/tmp/run028-cont-evidence/call-intent-receipt.json').write_text(json.dumps(receipt,indent=2)); print('RUN028_CONT1_DURABLE_CLAIM_PERSISTED_MODEL_REQUESTS_0')
+          PY
+
+      - name: One authorized frozen original-native provider request
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+          DSA_BUDGET_PROBE_ONLY: '0'
+          LLM_CHANNELS: deepseek
+          LLM_DEEPSEEK_PROTOCOL: openai
+          LLM_DEEPSEEK_BASE_URL: https://api.deepseek.com
+          LLM_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_DEEPSEEK_MODELS: deepseek-flash
+          LITELLM_MODEL: openai/deepseek-flash
+          LITELLM_FALLBACK_MODELS: ''
+        run: |
+          set +e
+          python research/scripts/run_hk_original_model_probe_run028.py --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight research/probe/preflight.json --output /tmp/run028-cont-evidence/original-model --limit-cny 0.10 --carry-upper-cny 0 --target-boundary-adapter --news-handoff-v1 > /tmp/run028-cont-evidence/native.stdout 2> /tmp/run028-cont-evidence/native.stderr
+          rc=$?; echo "$rc" > /tmp/run028-cont-evidence/process.rc; exit 0
+
+      - name: Persist raw continuation evidence privately and verify restore
+        if: always()
+        run: python research/scripts/dsa_drive_bundle.py --source /tmp/run028-cont-evidence --run-id "$RUN_ID" --artifact-id "$EVIDENCE_ID" --receipt /tmp/run028-cont-private-receipt.json
+
+      - name: Build sanitized continuation receipt and fail closed
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,os
+          out={'schema_version':1,'run_id':os.environ['RUN_ID'],'workflow_run':int(os.environ['GITHUB_RUN_ID']),'artifact_id':os.environ['EVIDENCE_ID'],'claim_id':os.environ['CLAIM_ID'],'same_owner_authorization':True,'hard_model_budget_cny':'0.10','raw_private_content_public':False,'runtime_activated':False,'real_orders':0,'gate_b_c':'FROZEN','second_provider_request_permitted':False}
+          rc=int(Path('/tmp/run028-cont-evidence/process.rc').read_text().strip()) if Path('/tmp/run028-cont-evidence/process.rc').exists() else None; out['native_process_exit_code']=rc
+          root=Path('/tmp/run028-cont-evidence/original-model'); summary=root/'probe-summary.json'
+          reqs=[]
+          if summary.exists():
+              d=json.loads(summary.read_text()); reqs=((d.get('budget') or {}).get('requests') or []); out['input_validated']=d.get('input_validated'); out['original_module_origins_verified']=d.get('original_module_origins_verified'); out['news_handoff_requested']=d.get('news_handoff_requested'); out['news_loader_consumed']=d.get('news_loader_consumed'); out['news_prompt_consumed']=d.get('news_prompt_consumed'); out['pipeline_final_capture_proven']=d.get('pipeline_final_capture_proven'); out['semantic_contract_pass']=d.get('semantic_contract_pass'); out['promotion_gate']=d.get('post_output_promotion_gate'); out['probe_error']=d.get('error')
+              if reqs:
+                  q=reqs[-1]; u=q.get('usage') or {}; out['request_status']=q.get('status'); out['prompt_tokens']=u.get('prompt_tokens'); out['completion_tokens']=u.get('completion_tokens'); out['total_tokens']=u.get('total_tokens'); out['usage_peak_estimate_cny']=q.get('usage_peak_estimate_cny'); out['official_v41_input_tokens_pre_send']=q.get('official_v41_input_tokens'); out['input_token_safety_margin']=q.get('input_token_safety_margin'); out['pre_send_peak_upper_cny']=q.get('pre_send_peak_upper_cny')
+          out['provider_http_request_attempts']=len(reqs)
+          out['request_body_present']=(root/'request-body.json').exists(); out['provider_response_present']=(root/'provider-response.txt').exists(); out['original_result_present']=(root/'original-result.json').exists(); out['pipeline_final_result_present']=(root/'pipeline-final-result.json').exists(); out['post_output_contract_present']=(root/'post-output-contract.json').exists()
+          dr=Path('/tmp/run028-cont-private-receipt.json'); out['private_save_read_hash_restore']='PASS' if dr.exists() and json.loads(dr.read_text()).get('save_read_hash_restore') is True else 'FAIL'
+          if dr.exists():
+              r=json.loads(dr.read_text()); out['private_sha256']=r.get('sha256'); out['private_bytes']=r.get('bytes'); out['private_file_id_redacted']=True
+          envp=Path('/tmp/run028-cont-evidence/cost-envelope-proof.json'); out['dry_cost_envelope']=json.loads(envp.read_text()) if envp.exists() else None
+          ok=(len(reqs)==1 and out.get('input_validated') is True and out.get('original_module_origins_verified') is True and out.get('request_status')=='response_received' and out.get('provider_response_present') and out.get('original_result_present') and out.get('pipeline_final_result_present') and out.get('pipeline_final_capture_proven') is True and out.get('news_handoff_requested') is True and out.get('news_loader_consumed') is True and out.get('news_prompt_consumed') is True and out.get('semantic_contract_pass') is True and (out.get('promotion_gate') or {}).get('status')=='PASS' and out.get('private_save_read_hash_restore')=='PASS' and rc==0)
+          out['automated_gate_a']='PASS_PENDING_MANUAL_PRIVATE_SEMANTIC_REVIEW' if ok else 'FAIL_PRESERVED_NO_SECOND_PROVIDER_REQUEST'
+          Path('/tmp/run028-cont-sanitized.json').write_text(json.dumps(out,indent=2,sort_keys=True)); print(json.dumps(out,sort_keys=True))
+          if not ok: raise SystemExit(1)
+          PY
+
+      - name: Upload sanitized continuation receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatea-run028-cont1-sanitized
+          path: /tmp/run028-cont-sanitized.json
+          if-no-files-found: ignore
+          retention-days: 14
