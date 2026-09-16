@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260917-U45-NEWS-EVENT-003",
+  "status": "PASS_EVENT_CANDIDATE_ROUTING_ONLY_FORMAL_EVENT_ZERO",
+  "scope": "Deterministic routing of relevance-ready U45 news into traceable event-candidate categories. This is candidate triage only and does not assert semantic truth, materiality, event_ready, formal_news_ready, or formal U acceptance.",
+  "branch": "fix/native-private-execution-20260914",
+  "source_commit": "edbc264ae52fc79361f0c1b5d1493d22fc4edaf6",
+  "cloud_validation": {
+    "workflow": ".github/workflows/57-u45-news-multisource.yml",
+    "workflow_run": 35162710266,
+    "job": 105016861685,
+    "conclusion": "success",
+    "deterministic_tests": 16,
+    "deterministic_tests_note": "8 readiness/dedupe tests plus 8 event-candidate routing tests",
+    "live_public_probe": "PASS",
+    "event_candidate_step": "PASS",
+    "artifact_id": 10473398221,
+    "artifact_name": "U45_NEWS_MULTISOURCE",
+    "artifact_digest": "sha256:43cf273b2dbabe4bb87420ed985add7acadde3a85aceedd83465f16d65492659",
+    "multisource_json_sha256": "f8ac2d8701d509f7151cf20694071aa8dd564ae9c506b973827afb306be89bba",
+    "event_candidates_json_sha256": "7522d564d1f8ce6d391e084f5ba0b252ad158fdb4bdcb7764b7f01a351a6b215"
+  },
+  "layer_counts": {
+    "universe_denominator": 45,
+    "execution_eligible_denominator": 44,
+    "retrieval_ready": 44,
+    "relevance_ready": 5,
+    "material_event_candidate_members": 2,
+    "event_ready": 0,
+    "formal_news_ready": 0,
+    "formal_u_acceptance_added": 0
+  },
+  "material_event_candidates": [
+    {
+      "code": "06082",
+      "name": "壁仞科技",
+      "candidate_category": "FINANCING_EQUITY",
+      "candidate_basis": "Five relevance-ready titles matched placing/equity-financing rules.",
+      "verified_material_event": false,
+      "next_evidence_required": "Authoritative company/HKEX filing or independently corroborated primary-source evidence; classify rumor/reporting separately from completed transaction."
+    },
+    {
+      "code": "09926",
+      "name": "康方生物",
+      "candidate_category": "CLINICAL_TRIAL",
+      "candidate_basis": "Two relevance-ready titles matched clinical-trial/survival rules.",
+      "verified_material_event": false,
+      "next_evidence_required": "Company/HKEX/clinical-trial primary evidence identifying study, endpoint, cutoff, comparator and disclosure time."
+    }
+  ],
+  "non_material_candidate_routing": {
+    "09988": "MARKET_PRICE_COMMENTARY",
+    "00981": "ROUTINE_REGULATORY_DISCLOSURE",
+    "00100": "ANALYST_RATING"
+  },
+  "category_match_counts": {
+    "MARKET_PRICE_COMMENTARY": 13,
+    "FINANCING_EQUITY": 5,
+    "ROUTINE_REGULATORY_DISCLOSURE": 1,
+    "ANALYST_RATING": 1,
+    "CLINICAL_TRIAL": 2
+  },
+  "formal_boundaries": {
+    "event_ready": 0,
+    "formal_news_ready": 0,
+    "gate_a_formally_accepted": false,
+    "gate_b_frozen": true,
+    "gate_c_frozen": true,
+    "o_full_pool_permitted": false,
+    "runtime_activated": false,
+    "simulation": false,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  },
+  "resources": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "new_subscriptions": 0,
+    "provider_cost_cny": 0,
+    "real_orders": 0
+  },
+  "next_actions": [
+    "Verify 06082 financing candidate against authoritative primary evidence; distinguish consideration/rumor from announced or completed financing.",
+    "Verify 09926 clinical candidate against primary trial/company/HKEX evidence with disclosure timestamp and endpoint details.",
+    "Only after accepted primary evidence may an item enter a separately versioned event-semantic acceptance step; formal_news_ready remains fail-closed."
+  ]
+}
