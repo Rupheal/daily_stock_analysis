@@ -1,15 +1,16 @@
-"""Bounded runtime-only Yahoo date-boundary adapter for Run018 recovery.
+"""Bounded runtime-only HK date-boundary adapter for Gate-A recovery.
 
 The frozen upstream checkout remains byte-for-byte unchanged. This adapter only
-changes Yahoo retrieval mechanics for the one claimed HK target session:
-- yfinance ``end`` is exclusive, so an end equal to target is shifted to target + 1 day;
-- when the frozen CLI already supplies target + 1 day (because it runs after the
-  target session), the boundary is already correct and is left unchanged;
-- ``repair=True`` is enabled in both cases to materialize provider OHLC gaps
-  already observed in model-free diagnostics.
+changes retrieval mechanics at the external runtime boundary for the one frozen
+HK target session:
+- yfinance ``end`` is exclusive, so target is shifted to target + 1 day and an
+  already shifted target+1 is left there; repair=True is enabled;
+- AkShare ``stock_hk_hist`` uses an inclusive YYYYMMDD ``end_date``.  When the
+  frozen CLI asks through target+1 because the runner is already on a later day,
+  the request is capped back to the frozen target session.
 
 Native prompts, scoring, model selection, analysis code and post-fetch validation
-are not changed. The caller must still enforce the independent preflight and
+are not changed. The caller must still enforce independent preflight and the
 native input contract before any model HTTP request.
 """
 from __future__ import annotations
@@ -20,9 +21,14 @@ from unittest.mock import patch
 
 
 def _as_date(value) -> date:
+    if isinstance(value, datetime):
+        return value.date()
     if isinstance(value, date):
         return value
-    return datetime.strptime(str(value)[:10], "%Y-%m-%d").date()
+    text = str(value)
+    if len(text) >= 8 and text[:8].isdigit() and '-' not in text[:10]:
+        return datetime.strptime(text[:8], "%Y%m%d").date()
+    return datetime.strptime(text[:10], "%Y-%m-%d").date()
 
 
 def _is_hk_code(value: str) -> bool:
@@ -50,21 +56,27 @@ def _is_hk_ticker_request(args, kwargs) -> bool:
 
 @contextmanager
 def patched_yahoo_target_boundary(target_session: str):
-    """Patch yfinance.download for the frozen target HK retrieval only.
+    """Patch the native HK Yahoo + AkShare retrieval boundaries for one target.
 
-    Two frozen-CLI call shapes are accepted:
-    1. ``end == target``: shift to target+1 because yfinance end is exclusive.
-    2. ``end == target+1``: keep the already-correct exclusive boundary and only
-       enable yfinance repair materialization.
-
-    No other date or non-HK request is changed.
+    The historical public name is kept for caller compatibility.  New receipts
+    must use the returned per-provider counters instead of describing this as a
+    Yahoo-only adapter.
     """
     target = _as_date(target_session)
     target_plus_one = target + timedelta(days=1)
     import yfinance as yf
+    import akshare as ak
 
     original_download = yf.download
-    applied = {"count": 0, "boundary_shift_count": 0, "repair_enable_count": 0}
+    original_hk_hist = ak.stock_hk_hist
+    applied = {
+        "count": 0,
+        "yahoo_count": 0,
+        "akshare_count": 0,
+        "boundary_shift_count": 0,
+        "repair_enable_count": 0,
+        "akshare_cap_count": 0,
+    }
 
     def bounded_download(*args, **kwargs):
         end = kwargs.get("end")
@@ -77,8 +89,30 @@ def patched_yahoo_target_boundary(target_session: str):
                     applied["boundary_shift_count"] += 1
                 kwargs["repair"] = True
                 applied["repair_enable_count"] += 1
+                applied["yahoo_count"] += 1
                 applied["count"] += 1
         return original_download(*args, **kwargs)
 
-    with patch.object(yf, "download", bounded_download):
+    def bounded_hk_hist(*args, **kwargs):
+        # stock_hk_hist is HK-specific.  Restrict the patch further to the exact
+        # target/target+1 end boundary and leave older/far-future requests alone.
+        end = kwargs.get("end_date")
+        if end is None and len(args) >= 5:
+            end = args[4]
+        if end is not None:
+            end_date = _as_date(end)
+            if end_date in (target, target_plus_one):
+                kwargs = dict(kwargs)
+                if len(args) >= 5:
+                    args = list(args)
+                    args[4] = target.strftime("%Y%m%d")
+                    args = tuple(args)
+                else:
+                    kwargs["end_date"] = target.strftime("%Y%m%d")
+                applied["akshare_cap_count"] += 1
+                applied["akshare_count"] += 1
+                applied["count"] += 1
+        return original_hk_hist(*args, **kwargs)
+
+    with patch.object(yf, "download", bounded_download), patch.object(ak, "stock_hk_hist", bounded_hk_hist):
         yield applied
