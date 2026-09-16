@@ -1,0 +1,51 @@
+name: O evidence handoff v2 model-free
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - scripts/o_semantic_handoff_contract.py
+      - scripts/o_post_output_contract.py
+      - scripts/o_session_fact_anchor.py
+      - scripts/prepare_xiaomi_acceptance_targeted.py
+      - tests/test_o_semantic_handoff_contract.py
+      - tests/test_o_post_output_contract.py
+      - tests/test_o_session_fact_anchor.py
+      - tests/test_prepare_xiaomi_acceptance_targeted.py
+      - .github/workflows/77-o-evidence-handoff-v2-model-free.yml
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Confirm provider and private-store credentials are absent
+        run: |
+          python - <<'PY'
+          import os
+          forbidden=[k for k in os.environ if 'DEEPSEEK' in k or 'OPENAI_API_KEY' in k or 'DSA_DRIVE_' in k]
+          assert not forbidden, forbidden
+          print('{"model_credentials_present":false,"drive_credentials_present":false,"provider_requests":0}')
+          PY
+      - name: Install minimal test dependencies
+        run: pip install pytest yfinance akshare exchange-calendars
+      - name: Run handoff, post-output, session-fact and targeted-preflight contracts
+        run: >-
+          PYTHONPATH=scripts python -m pytest --noconftest -q
+          tests/test_o_semantic_handoff_contract.py
+          tests/test_o_post_output_contract.py
+          tests/test_o_session_fact_anchor.py
+          tests/test_prepare_xiaomi_acceptance_targeted.py
+      - name: Static no-network scope proof
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          files=['scripts/o_semantic_handoff_contract.py','scripts/o_post_output_contract.py','scripts/o_session_fact_anchor.py']
+          text='\n'.join(Path(x).read_text() for x in files)
+          assert 'httpx.' not in text and 'requests.' not in text and 'urlopen(' not in text
+          print('{"contract_files_network_calls":0,"model_requests":0,"runtime_activated":false}')
+          PY
