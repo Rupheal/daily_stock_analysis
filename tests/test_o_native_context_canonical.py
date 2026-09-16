@@ -20,6 +20,14 @@ def preflight():
         "target": "2026-09-15",
         "prepared_at": "2026-09-16T04:07:00+00:00",
         "component_status": {"news": "passed_limited_coverage"},
+        "execution_contract": {
+            "version": "O_GATE_A_EXECUTION_CONTRACT_v2",
+            "target_session": "2026-09-15",
+            "realtime_quote_available": False,
+            "session_fact_anchor_required": True,
+        },
+        "today": {"date": "2026-09-15", "open": 27.1200008392334, "close": 26.5},
+        "yesterday": {"date": "2026-09-14", "close": 27.15999984741211},
         "news_count": 1,
         "allowed_news_urls": ["https://example.org/item1"],
         "company_news_evidence": [{
@@ -40,7 +48,7 @@ def native_context():
         "code": "HK01810",
         "date": date(2026, 9, 15),
         "news_window_days": 3,
-        "today": {"date": date(2026, 9, 15), "open": 27.1200008392334},
+        "today": {"date": date(2026, 9, 15), "open": 27.1200008392334, "close": 26.5},
         "yesterday": {"date": date(2026, 9, 14), "close": 27.15999984741211},
         "generated_at": datetime(2026, 9, 16, 4, 14, 19, tzinfo=timezone.utc),
     }
@@ -99,14 +107,17 @@ def test_real_shape_news_handoff_no_longer_crashes_on_date_objects():
         expected_preflight_hash=canonical_hash(p),
         decision_at="2026-09-16T04:14:19+00:00",
     )
-    assert bundle["native_context_hash"] == canonical_hash(ctx)
+    assert bundle["native_context_hash"] == semantic.context_binding_hash(ctx)
+    assert bundle["native_context_binding_version"] == "O_NATIVE_CONTEXT_BINDING_v1"
     assert bundle["symbol"] == "HK01810"
     assert bundle["target_session"] == "2026-09-15"
     assert bundle["admitted_evidence_count"] == 1
+    assert bundle["session_fact_anchor"]["facts"]["opening_direction"] == "DOWN"
+    assert bundle["session_fact_anchor"]["facts"]["realtime_quote_available"] is False
     assert bundle["model_http_requests"] == 0
 
 
-def test_context_change_after_handoff_is_detected_with_date_objects():
+def test_v2_binding_ignores_nonidentity_price_value_but_detects_identity_session_window_changes():
     install_into_semantic_contract()
     p = preflight()
     ctx = native_context()
@@ -114,9 +125,26 @@ def test_context_change_after_handoff_is_detected_with_date_objects():
         p, ctx, expected_preflight_hash=canonical_hash(p),
         decision_at="2026-09-16T04:14:19+00:00",
     )
-    changed = deepcopy(ctx)
-    changed["today"]["open"] = 27.13
-    assert canonical_hash(changed) != bundle["native_context_hash"]
+    price_changed = deepcopy(ctx)
+    price_changed["today"]["open"] = 27.13
+    assert semantic.context_binding_hash(price_changed) == bundle["native_context_hash"]
+    for changed in (
+        {**ctx, "code": "HK00700"},
+        {**ctx, "date": date(2026, 9, 16)},
+        {**ctx, "news_window_days": 4},
+    ):
+        assert semantic.context_binding_hash(changed) != bundle["native_context_hash"]
+
+
+def test_missing_execution_contract_still_fails_closed():
+    install_into_semantic_contract()
+    p = preflight()
+    p.pop("execution_contract")
+    with pytest.raises(semantic.ContractError, match="SESSION_FACT_ANCHOR_BUILD_FAILED:PREFLIGHT_EXECUTION_CONTRACT_MISSING"):
+        semantic.build_news_handoff(
+            p, native_context(), expected_preflight_hash=canonical_hash(p),
+            decision_at="2026-09-16T04:14:19+00:00",
+        )
 
 
 def test_post_output_final_capture_accepts_date_objects_for_hashing_only():
