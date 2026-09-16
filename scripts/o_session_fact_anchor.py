@@ -1,10 +1,9 @@
 """Versioned deterministic session-fact anchor for O Gate-A inputs.
 
-This is an external evidence/input contract.  It does not change frozen upstream
-source, strategy scoring, model parameters, or saved model output.  It exposes
-facts already present in the validated native context but omitted/ambiguous in
-the frozen formatted prompt: previous close/open direction and whether a live
-quote exists.
+This external evidence/input contract exposes facts already independently
+validated but omitted/ambiguous in the frozen formatted prompt: previous close,
+opening direction, target-session close, and explicit realtime availability.
+It does not change frozen upstream strategy scoring or model parameters.
 """
 from __future__ import annotations
 
@@ -37,6 +36,11 @@ def _canonical(value):
 
 
 def _realtime_available(context):
+    contract = context.get("execution_contract") or {}
+    if "realtime_quote_available" in contract:
+        if type(contract.get("realtime_quote_available")) is not bool:
+            raise SessionFactError("REALTIME_AVAILABILITY_NOT_BOOLEAN")
+        return contract["realtime_quote_available"]
     today = context.get("today") or {}
     source = str(today.get("data_source") or "")
     if source.startswith("realtime:") or today.get("is_partial_bar") is True or today.get("is_estimated") is True:
@@ -45,7 +49,7 @@ def _realtime_available(context):
     rows = [row for row in chain if isinstance(row, dict) and row.get("provider") == "realtime_quote"]
     if rows:
         return any(row.get("result") not in ("not_supported", "missing", "unavailable", "fetch_failed") for row in rows)
-    return False
+    raise SessionFactError("REALTIME_AVAILABILITY_UNPROVEN")
 
 
 def build_session_fact_anchor(context, *, target_session):
@@ -85,6 +89,22 @@ def build_session_fact_anchor(context, *, target_session):
         "model_requests": 0,
         "frozen_upstream_mutated": False,
     }
+
+
+def build_session_fact_anchor_from_preflight(preflight):
+    if not isinstance(preflight, dict):
+        raise SessionFactError("PREFLIGHT_NOT_MAPPING")
+    target = str(preflight.get("target") or "")
+    contract = preflight.get("execution_contract")
+    if not target or not isinstance(contract, dict):
+        raise SessionFactError("PREFLIGHT_EXECUTION_CONTRACT_MISSING")
+    context = {
+        "date": target,
+        "today": preflight.get("today"),
+        "yesterday": preflight.get("yesterday"),
+        "execution_contract": contract,
+    }
+    return build_session_fact_anchor(context, target_session=target)
 
 
 def prove_session_fact_anchor(prompt, anchor):
