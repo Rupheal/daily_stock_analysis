@@ -1,7 +1,7 @@
 {
   "run_id":"TRI-DSA-EXEC-20260916-GATEA-019",
   "case_id":"O-GATEA-019-FRESH-XIAOMI",
-  "status":"PREAUTH_CLOUD_VALIDATION_PENDING",
+  "status":"BLOCKED_FROZEN_NATIVE_SESSION_BOUNDARY",
   "branch":"fix/native-private-execution-20260914",
   "frozen_upstream":"089d9d26d68f8b839ea5a74a3784e4402925f8b7",
   "child_id":"ART-DSA-GATEA-019-CHILD1",
@@ -12,8 +12,11 @@
   "maximum_model_http_requests_before_owner_authorization":0,
   "maximum_model_http_requests_after_future_explicit_owner_authorization":1,
   "single_stock_cap_cny":2,
+  "cloud_validation":{"workflow_run":35116551488,"job":104863340962,"conclusion":"failure","model_requests":0},
+  "gates":{"frozen_commit":"PASS","target_session":"PASS:2026-09-16","deterministic_regressions":"PASS:38/38","fresh_preflight":"PASS","prices":"PASS","news":"PASS_LIMITED_COVERAGE","issuer":"LISTING_PASS_BODY_INCOMPLETE","frozen_native_data_smoke":"BLOCKED_SESSION_BOUNDARY","observer_exact_session":"NOT_RUN_AFTER_BLOCK","drive_roundtrip":"NOT_RUN_AFTER_BLOCK","child_absent":"NOT_RUN_AFTER_BLOCK","affordability":"NOT_RUN_AFTER_BLOCK"},
+  "blocker":{"code":"FROZEN_NATIVE_END_EXCLUSIVE_CURRENT_DATE","detail":"Fresh target session resolved to 2026-09-16 and independent preflight passed, but frozen-native same-window data-only smoke did not contain the 2026-09-16 bar. This is consistent with the already-proven frozen Yahoo/yfinance exclusive-end boundary. No model request was sent.","safe_resolution":"Re-run the model-free preauth after the natural date boundary when frozen native end can include the completed 2026-09-16 session. Do not relabel 2026-09-15 as 2026-09-16 and do not weaken the exact-session gate."},
   "required_gates":["frozen_commit","target_session","fresh_preflight","ohlc","volume","news","issuer","manifest","frozen_native_data_smoke","observer_final_capture","drive_roundtrip","child_absent","affordability"],
   "formal_boundaries":{"o_single_stock_formally_accepted":false,"o_full_pool_permitted":false,"u45_formal_acceptance_added":0,"runtime_activated":false,"main_merge":false,"real_orders":0},
   "failure_matrix":["PRE_REQUEST_FAILURE","HTTP_SENT_NO_RESPONSE","HTTP_RESPONSE_RECEIVED","PERSISTENCE_FAILURE","SEMANTIC_NO_GO","ACCEPTED"],
-  "next_action":"Run model-free cloud preauth workflow. If every hard gate passes, change status to READY_FOR_OWNER_AUTHORIZATION; do not send model HTTP automatically."
+  "next_action":"After the natural date boundary, rerun only this model-free preauth lane from the beginning. If every hard gate then passes, record READY_FOR_OWNER_AUTHORIZATION; do not send model HTTP automatically."
 }
