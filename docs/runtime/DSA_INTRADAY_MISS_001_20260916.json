@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "case_id": "DSA_INTRADAY_MISS_001",
+  "asof_hkt": "2026-09-16T11:30:00+08:00",
+  "scope": "Morning DSA defensive regime versus optical/semiconductor relative-strength rotation",
+  "classification": "MACRO_PASS_SECTOR_ROTATION_MISS",
+  "champion_changed": false,
+  "formal_signal_changed": false,
+  "top3_changed": false,
+  "runtime_activated": false,
+  "observed_timeline": [
+    {
+      "time_hkt": "2026-09-16T09:23:00+08:00",
+      "observation": "Hang Seng +0.50%, Hang Seng Tech +0.47%; optical/computer-hardware names already led at the open, including Q Technology, Sunny Optical and Lenovo.",
+      "source": "https://news.futunn.com/post/79320614/hong-kong-stocks-open-hang-seng-index-opens-0-50"
+    },
+    {
+      "time_hkt": "2026-09-16T09:32:00+08:00",
+      "observation": "A-share breadth was weak, but STAR 50 was the only major index positive and communication equipment / optical communication ranked among leading themes.",
+      "source": "https://4g.stockstar.com/detail/IG2026091600008400"
+    },
+    {
+      "time_hkt": "2026-09-15T17:46:00+08:00",
+      "observation": "Previous session: Hang Seng -1.0%, Hang Seng Tech -0.62%, while semiconductor/software sectors rose, showing index-weak/sector-strong divergence before the miss day.",
+      "source": "https://www.nbd.com.cn/articles/2026-09-15/4582174.html"
+    },
+    {
+      "time_hkt": "2026-09-15T10:33:00+08:00",
+      "observation": "Prior-session communication/AI-hardware evidence included NPO/CPO industrialization and AI data-center demand support; this was not a new 9:00-11:30 shock on Sep 16.",
+      "source": "https://finance.sina.com.cn/jjxw/2026-09-15/doc-inirwmwh3937087.shtml"
+    }
+  ],
+  "diagnosis": {
+    "pure_intraday_breaking_news": "NOT_PRIMARY_EXPLANATION",
+    "macro_risk_off_assessment": "REASONABLE",
+    "sector_rotation_detection": "MISSED_OR_UNDERWEIGHTED",
+    "cross_market_lead_lag": "MISSING_OR_INSUFFICIENT",
+    "previous_day_relative_strength_persistence": "MISSING_OR_INSUFFICIENT",
+    "narrative_reversal_detection": "MISSING_OR_INSUFFICIENT",
+    "capital_flow_coverage": "INCOMPLETE_AT_09_00_CUTOFF"
+  },
+  "known_internal_capital_gap": {
+    "receipt": "docs/runtime/CAPITAL_DATA_001_RESULT.json",
+    "verified_sources": 2,
+    "cutoff_eligible_sources": 0,
+    "unresolved": [
+      "foreign_investor_net_flow",
+      "local_institution_net_flow",
+      "etf_creation_redemption"
+    ]
+  },
+  "challenger_factors": [
+    "INTRADAY_SECTOR_RELATIVE_STRENGTH_REFRESH",
+    "A_SHARE_TO_HK_HARDTECH_LEAD_LAG",
+    "PREVIOUS_DAY_WEAK_INDEX_STRONG_SECTOR_PERSISTENCE",
+    "NEGATIVE_NARRATIVE_REVERSAL"
+  ],
+  "research_rule": "A macro defensive regime may coexist with a sector-level Risk-On candidate. Challenger observations may split the regime label but must not overwrite Champion weights or trading signals until forward validated.",
+  "minimum_forward_validation_sessions": 10,
+  "preferred_forward_validation_sessions": 20,
+  "next": "Collect 09:30/10:00/10:30 sector-vs-index snapshots plus A/H confirmation for future sessions; compare Challenger detection lead time, false positives and missed rotations against Champion without changing formal trading outputs."
+}
