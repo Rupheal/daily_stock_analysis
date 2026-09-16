@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260916-026",
+  "reason": "CI_IMPORT_PATH_ONLY",
+  "failed_prior_workflow_run": 35053276267,
+  "model_http_requests_authorized": 0,
+  "claim_creation_permitted": false,
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "gate_b_c": "FROZEN",
+  "runtime_activated": false,
+  "real_orders_permitted": false,
+  "no_gate_relaxation": true,
+  "old_child2_rewritten": false,
+  "old_run018_slot_reused": false
+}
