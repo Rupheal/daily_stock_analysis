@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-DEV-20260916-U45-RECOVERY-001",
+  "state": "PASS_PRIVATE_ROW_LEVEL_SOURCE_RECOVERED_NO_MARKET_REFRESH",
+  "scope": "Recover and reconcile existing owner-only U45 preparation bytes. No new market/model request and no formal U execution.",
+  "source_preparation": {
+    "title": "DSA_Run013_U45_PREPARATION_20260914.json",
+    "bytes": 98470,
+    "sha256": "9697f1572bd6e9279d9418c790a41eb17d7c4afdf349cffbcafe20ca64c6d227",
+    "drive_created_at": "2026-09-14T15:25:35.024Z",
+    "denominator": 45,
+    "row_count": 45,
+    "unique_code_count": 45,
+    "ordered_code_list_sha256": "50231abf3948813dbee883d2c6454ed174210b4f395d21e402cb022f2136dc92"
+  },
+  "source_restore_audit": {
+    "title": "DSA_Run014_U45_RESTORE_AUDIT.json",
+    "bytes": 40783,
+    "sha256": "0487a539122dca4a6cb020b1a0f6cf1a4690d653df45394caec7f27ce5f394ca",
+    "drive_created_at": "2026-09-14T16:04:00.081Z",
+    "embedded_preparation_sha256_match": true,
+    "row_count": 45
+  },
+  "reconciliation": {
+    "same_45_code_set": true,
+    "identity_receipt_consistent": 45,
+    "source_clock_order_consistent": 45,
+    "board_lot_matches_between_sources": 45,
+    "buy_eligibility_consistent_between_sources": 45,
+    "inherited_positive_buy_eligibility": 44,
+    "isolated_buy_eligibility_count": 1,
+    "isolated_code": "09618",
+    "all_actions_remain_WAIT": true,
+    "preparation_complete": 0,
+    "formal_execution_accepted": 0,
+    "qualified_signals": 0
+  },
+  "closed_gap": {
+    "gap_class": "row_level_private_original",
+    "prior_state": "CONNECTOR_BLOCKED",
+    "new_state": "RECOVERED_AND_HASH_RECONCILED",
+    "effect": "45-row historical preparation can now be truthfully referenced and amended by future versioned refreshes; no row was fabricated from chat summaries."
+  },
+  "still_open": [
+    "official_trading_status",
+    "corporate_actions_adjustment",
+    "volume_unit_price_basis",
+    "current_official_announcements",
+    "news_media_to_official_closure",
+    "capital_flow",
+    "company_plan_capital_fee_events",
+    "trade_plan_and_fees",
+    "buy_eligibility_09618_current_refresh"
+  ],
+  "capital_data_note": "CAPITAL-DATA-001 verified two public source payloads but neither was eligible at its stated cutoff and it does not provide 45-stock row-level capital-flow closure; capital_flow remains OPEN.",
+  "resources": {
+    "new_model_calls": 0,
+    "new_market_data_calls": 0,
+    "paid_data_calls": 0,
+    "api_cost_cny": 0
+  },
+  "governance": {
+    "not_current_signal_refresh": true,
+    "formal_u_acceptance_changed": false,
+    "o_gate_a_changed": false,
+    "gate_b": "FROZEN",
+    "gate_c": "FROZEN",
+    "simulation": false,
+    "runtime_activated": false,
+    "main_merge": false,
+    "schedule_changes": false,
+    "real_orders": 0
+  }
+}
