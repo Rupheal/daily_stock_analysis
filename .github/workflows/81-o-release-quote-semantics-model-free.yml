@@ -4,7 +4,9 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - scripts/o_release_quote_semantics.py
+      - scripts/o_release_gate_contract.py
       - tests/test_o_release_quote_semantics.py
+      - tests/test_o_release_gate_contract.py
       - .github/workflows/81-o-release-quote-semantics-model-free.yml
 permissions:
   contents: read
@@ -29,16 +31,18 @@ jobs:
           PY
       - name: Install pytest only
         run: pip install pytest
-      - name: Run release quote semantics and semantic guard regressions
+      - name: Run release quote semantics successor gate and semantic guard regressions
         run: >-
           PYTHONPATH=scripts python -m pytest --noconftest -q
           tests/test_o_release_quote_semantics.py
+          tests/test_o_release_gate_contract.py
           tests/test_o_single_output_fact_check.py
       - name: Static no-network and no-frozen-mutation proof
         run: |
           python - <<'PY'
           from pathlib import Path
-          text=Path('scripts/o_release_quote_semantics.py').read_text()
+          files=['scripts/o_release_quote_semantics.py','scripts/o_release_gate_contract.py']
+          text='\n'.join(Path(x).read_text() for x in files)
           assert 'httpx' not in text and 'requests.' not in text and 'urlopen(' not in text
           assert 'src.' not in text and 'data_provider' not in text
           print('{"network_calls":0,"frozen_upstream_imports":0,"model_requests":0,"runtime_activated":false}')
