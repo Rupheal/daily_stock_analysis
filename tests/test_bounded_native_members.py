@@ -48,3 +48,20 @@ def test_claim_failure_prevents_paid_subprocess_and_preserves_receipt(monkeypatc
     runner.main();r=json.loads((out/'SANITIZED_RESULT.json').read_text())
     assert all(mode in (None,'1') for _,mode in calls) and r['model_http_requests_possible']==0
     assert all('CLAIM_EXISTS' in m['failure_code'] for m in r['members'])
+
+
+def test_pre_send_storage_failure_stops_before_balance_or_claim(monkeypatch,tmp_path):
+    out=setup(monkeypatch,tmp_path)
+    def command(script,args,env,log):
+        if script.name.startswith('prepare'):
+            p=Path(args[args.index('--out')+1]);p.mkdir();(p/'preflight.json').write_text('{}')
+        else:
+            assert env['DSA_BUDGET_PROBE_ONLY']=='1'
+            p=Path(args[args.index('--output')+1]);p.mkdir();(p/'budget.json').write_text(json.dumps({'requests':[{'status':'dry_envelope_validated_not_sent','pre_send_peak_upper_cny':'0.08'}]}))
+        return 0
+    monkeypatch.setattr(runner,'command',command)
+    monkeypatch.setattr(runner,'private_save',lambda *a:(_ for _ in ()).throw(runner.StoreError('BUNDLE_TOO_LARGE')))
+    monkeypatch.setattr(runner,'balance',lambda:pytest.fail('No billing/claim after private storage failure'))
+    runner.main();r=json.loads((out/'SANITIZED_RESULT.json').read_text())
+    assert r['model_http_requests_possible']==0 and r['members'][0]['private_persistence']['reason']=='BUNDLE_TOO_LARGE'
+    assert r['members'][1]['status']=='ISOLATED_AFTER_PRIVATE_OR_SHARED_FAILURE'

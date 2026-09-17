@@ -7,7 +7,7 @@ from datetime import datetime,timezone
 from decimal import Decimal
 from pathlib import Path
 import httpx
-from dsa_drive_store import DriveStore,scoped_token
+from dsa_drive_store import DriveStore,scoped_token,StoreError
 from dsa_drive_bundle import bundle,verify_bundle
 from o_release_quote_semantics import build_release_view
 from o_release_gate_contract import evaluate_release_gate
@@ -28,18 +28,16 @@ def command(script,args,env,log):
 
 
 def private_save(root,artifact_id,run_id):
-    payload=bundle(root,run_id,artifact_id,retrieved_time=datetime.now(timezone.utc).isoformat())
+    from dsa_private_multipart import save
     with httpx.Client(timeout=30,follow_redirects=False) as c:
-        c.headers['Authorization']='Bearer '+scoped_token(c);s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID']);r=s.put(artifact_id,payload,run_id)
-        with tempfile.TemporaryDirectory() as td:
-            dest=Path(td)/'bundle.zip';s.recover(r['file_id'],r['sha256'],dest);verify_bundle(dest.read_bytes())
-    return {'save_read_hash_restore':bool(r['save_read_hash_restore']),'sha256':r['sha256'],'bytes':r['bytes']}
+        c.headers['Authorization']='Bearer '+scoped_token(c);s=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+        return save(root,artifact_id,run_id,s)
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--checkout',type=Path,required=True);p.add_argument('--cache',type=Path,required=True);p.add_argument('--scope',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();s=json.loads(a.scope.read_text());a.out.mkdir(parents=True,exist_ok=False)
     repo=Path(__file__).resolve().parents[1];scripts=repo/'scripts';universe=repo/'docs/runtime/run032_public_cache/O_UNIVERSE.json';codes=s['codes']
-    assert s['maximum_requests']==len(codes)==2 and len(set(codes))==2 and s['maximum_cost_cny']=='0.20' and s['per_member_cap_cny']=='0.10'
+    assert s['maximum_requests']==len(codes)==len(set(codes)) and 1<=len(codes)<=2 and Decimal(s['maximum_cost_cny'])==Decimal('0.10')*len(codes) and s['per_member_cap_cny']=='0.10'
     assert hashlib.sha256(a.cache.read_bytes()).hexdigest()==s['history_cache_sha256']
     assert os.environ.get('GITHUB_RUN_ATTEMPT')=='1' and os.environ.get('GITHUB_EVENT_NAME')=='push'
     from o_target_session_contract import resolve_target_session
@@ -63,6 +61,10 @@ def main():
             if len(req)!=1 or req[0]['status']!='dry_envelope_validated_not_sent':raise ValueError('FREE_NATIVE_ENVELOPE_FAILED')
             upper=Decimal(req[0]['pre_send_peak_upper_cny']);assert upper<=Decimal('0.10')
             row['pre_send_upper_cny']=str(upper);row['preflight_sha256']=hashlib.sha256((pre/'preflight.json').read_bytes()).hexdigest()
+            row['pre_send_private_persistence']=private_save(root,artifact+'-PRE-SEND',run_id)
+            if not row['pre_send_private_persistence'].get('save_read_hash_restore'):raise ValueError('PRE_SEND_PRIVATE_SAVE_UNVERIFIED')
+            if s.get('model_free_storage_probe'):
+                row['status']='FREE_NATIVE_ENVELOPE_AND_PRIVATE_STORAGE_PASS';continue
             before=balance();write(root/'private-balance-before.json',{'currency':'CNY','available_balance':str(before),'retrieved_at':datetime.now(timezone.utc).isoformat()})
             if before<Decimal('0.10') or reserved+Decimal('0.10')>Decimal(s['maximum_cost_cny']):raise ValueError('BUDGET_OR_BALANCE_INSUFFICIENT')
             with httpx.Client(timeout=30,follow_redirects=False) as c:
@@ -96,7 +98,9 @@ def main():
             try:
                 write(root/'member-summary.json',row);row['private_persistence']=private_save(root,artifact,run_id)
                 if not row['private_persistence']['save_read_hash_restore']:stop=True
-            except Exception as exc:row['private_persistence']={'status':'FAIL','reason':type(exc).__name__};stop=True
+            except Exception as exc:
+                reason=str(exc) if isinstance(exc,StoreError) and str(exc).replace('_','').isalnum() else type(exc).__name__
+                row['private_persistence']={'status':'FAIL','reason':reason};stop=True
             rows.append(row);write(a.out/'SANITIZED_RESULT.json',{'run_id':s['run_id'],'workflow_run':os.environ.get('GITHUB_RUN_ID'),'O_denominator':660,'attempted_members':len(rows),'members':rows,'model_http_requests_confirmed':sum(x['model_http_requests_confirmed'] for x in rows),'model_http_requests_possible':sum(x['model_http_requests_possible'] for x in rows),'maximum_cost_cny':s['maximum_cost_cny'],'actual_attributable_charge_cny':None,'qualified_signals':0,'formal_pool_top3_generated':False,'simulation_ledger_writes':0,'manual_review_required':True})
             print('BOUNDED_NATIVE_MEMBER '+json.dumps(row,ensure_ascii=False),flush=True)
     write(a.out/'SANITIZED_RESULT.json',{'run_id':s['run_id'],'workflow_run':os.environ.get('GITHUB_RUN_ID'),'O_denominator':660,'attempted_members':len(rows),'members':rows,'model_http_requests_confirmed':sum(x['model_http_requests_confirmed'] for x in rows),'model_http_requests_possible':sum(x['model_http_requests_possible'] for x in rows),'maximum_cost_cny':s['maximum_cost_cny'],'actual_attributable_charge_cny':None,'qualified_signals':0,'formal_pool_top3_generated':False,'simulation_ledger_writes':0,'manual_review_required':True})
