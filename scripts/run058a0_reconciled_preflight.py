@@ -98,7 +98,7 @@ def official_action(item,out):
 
 def make_context(rows,code):
     from data_provider.tencent_fetcher import TencentFetcher
-    f=TencentFetcher();df=pd.DataFrame(rows);df=f._calculate_indicators(f._clean_data(f._normalize_data(df,"HK"+code)))
+    f=TencentFetcher();df=pd.DataFrame(rows);df["amount"]=None;df["pct_chg"]=None;df=f._calculate_indicators(f._clean_data(f._normalize_data(df,"HK"+code)))
     df["date"]=pd.to_datetime(df["date"]).dt.strftime("%Y-%m-%d")
     today=df.iloc[-1].to_dict();yesterday=df.iloc[-2].to_dict()
     for z in (today,yesterday):
@@ -142,6 +142,7 @@ def main():
         official=official_action(actions[code],d/"hkex-action.pdf")
         from data_provider.tencent_fetcher import TencentFetcher
         f=TencentFetcher()
+        qdf=pd.DataFrame(tq);qdf["amount"]=None;qdf["pct_chg"]=None
         qdf=f._calculate_indicators(f._clean_data(f._normalize_data(pd.DataFrame(tq),"HK"+code)));qdf["date"]=pd.to_datetime(qdf["date"]).dt.strftime("%Y-%m-%d")
         ndf=pd.DataFrame(native)
         strict=True;strict_error=None;recon=None
