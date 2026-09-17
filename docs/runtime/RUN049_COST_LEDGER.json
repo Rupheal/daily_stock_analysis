@@ -1,0 +1,9 @@
+{
+  "run_id": "TRI-DSA-RESUME-20260917-049",
+  "model_http_requests": 0,
+  "paid_data_calls": 0,
+  "new_subscription_spend": 0,
+  "github_actions_jobs": 1,
+  "actual_cost": null,
+  "actual_cost_status": "NOT_EXPOSED"
+}

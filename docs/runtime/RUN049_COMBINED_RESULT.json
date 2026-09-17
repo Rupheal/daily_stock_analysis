@@ -1,0 +1,41 @@
+{
+  "schema": "dsa-run049-combined-v1",
+  "run_id": "TRI-DSA-RESUME-20260917-049",
+  "generated_at": "2026-09-17T13:11:54.762810+00:00",
+  "target_session": "2026-09-17",
+  "U": {
+    "denominator": 45,
+    "current_valid_count": 45,
+    "formal_signal_gate": "NO_GO",
+    "qualified_BUY": 0
+  },
+  "O": {
+    "denominator": 660,
+    "prior_isolated": 52,
+    "current_session_ready_within_prior_isolated": 49,
+    "historical_released": 0
+  },
+  "evidence": {
+    "u_coverage_sha256": "59476e76fbaa0b1bb31b4279408b662e28e41ec226dce56ac660bc775697f39f",
+    "u_history_sha256": "1f0ebbabb54f3ac975d6297240c8b84d2271ce984e1467919e9a3be95b3510aa",
+    "o_coverage_sha256": "9f63c5bd19cbd9877b11cab97a48a4c23976123a41d5ecde4f4cfc50037085ac",
+    "run045_third_source_sha256": "41091db450c74c9aa075585a8554c4987d9ea3c2b19e4828c617ea03395e5fe8",
+    "workflow_run": "35224980615",
+    "artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE"
+  },
+  "resource_accounting": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "new_subscription_spend": 0,
+    "real_orders": 0,
+    "actual_platform_cost": null,
+    "actual_cost_status": "NOT_EXPOSED"
+  },
+  "permissions": {
+    "main_merge": false,
+    "schedule_changes": false,
+    "production_promotion": false,
+    "real_orders": 0
+  },
+  "state": "CURRENT_DATA_REFRESH_ACCEPTED_FORMAL_U_SIGNAL_NO_GO_O52_NO_HISTORICAL_RELEASE"
+}

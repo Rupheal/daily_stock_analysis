@@ -1,0 +1,41 @@
+{
+  "schema": "dsa-run049-u-formal-signal-gate-v1",
+  "run_id": "TRI-DSA-RESUME-20260917-049",
+  "target_session": "2026-09-17",
+  "denominator": 45,
+  "close_refresh_status": "PASS_CURRENT_SESSION_FACT_REFRESH",
+  "ranking": {
+    "status": "NO_GO_MISSING_ACCEPTED_RANKING_CONTRACT",
+    "executed": false,
+    "Top3": [],
+    "Top10": [],
+    "rule": "No score/rank is invented from prep, bounded observation reviews, or legacy pilot weights."
+  },
+  "macro_cap": {
+    "status": "NO_GO_MISSING_DATED_VERIFIED_MACRO_CAP",
+    "accepted_value": null
+  },
+  "buy_zone": {
+    "status": "NO_GO_MISSING_ACCEPTED_STRATEGY_BUY_ZONE",
+    "accepted_members": 0,
+    "rule": "Entry-v1 execution envelope is not a strategy buy-zone generator."
+  },
+  "formal_signal_gate": "NO_GO",
+  "formal_signal_count": 0,
+  "qualified_BUY": 0,
+  "marker_visibility": {
+    "accepted_U_BUY_and_rank": true,
+    "verified_macro_cap": true
+  },
+  "authority_search": {
+    "checked": [
+      "docs/runtime/RUN047_U45_HANDOFF.json",
+      "docs/runtime/RUN041_U45_MEMBER_REPORTS.json",
+      "docs/runtime/RUN032_FORMAL_EXECUTION_SCOPE.json",
+      "scripts/dsa_u_execution_audit.py",
+      "scripts/run004_u45_safe_deepseek.py"
+    ],
+    "conclusion": "No current accepted formal ranking + dated macro-cap + strategy buy-zone contract was established in the bounded authority set; legacy pilot ranking is not promoted."
+  },
+  "boundary": "Data readiness and report readiness do not imply a formal U signal."
+}
