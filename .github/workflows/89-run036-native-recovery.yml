@@ -1,0 +1,47 @@
+name: DSA Run036 actual native consumption of current recovery
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN036_SCOPE.json]
+permissions: {contents: read, actions: read}
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35181701358
+          github-token: ${{ github.token }}
+          name: RUN035_CONT1_PUBLIC_RECOVERY_INPUTS
+          path: parent
+      - name: Verify exact current recovery artifact
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('research/docs/runtime/RUN036_SCOPE.json'))
+          assert hashlib.sha256(Path('parent/CURRENT_RECOVERY.json').read_bytes()).hexdigest()==s['recovery_sha256']
+          PY
+      - name: Every O member keeps its denominator and prior isolation
+        run: python research/scripts/run_current_recovery_native.py --checkout original --recovery parent/CURRENT_RECOVERY.json --universe research/docs/runtime/run032_public_cache/O_UNIVERSE.json --out /tmp/run036
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN036_PUBLIC_NATIVE_RECOVERY
+          path: |
+            /tmp/run036/NATIVE_RECOVERY_ACCEPTANCE.json
+            /tmp/run036/market-history.json
+          if-no-files-found: error
+          retention-days: 90
