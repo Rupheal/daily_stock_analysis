@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-058",
+  "state": "READY_CHILD_ENVELOPE",
+  "target_session": "2026-09-17",
+  "plan_sha256": "dc1ff79240da457963c511b4af9201e37e7b41ac0a46c2bb90b8b2a2a22306c5",
+  "ledger_sha256": null,
+  "denominator": {
+    "O_universe": 660,
+    "deterministic_ready": 608,
+    "retained_isolated": 52,
+    "no_repeat_ready": 3,
+    "never_called": 605
+  },
+  "ledger_summary": {
+    "rows": 0,
+    "terminal_batches": 0,
+    "hold_batches": 0
+  },
+  "selected_child": {
+    "proposed_child_run_id": "TRI-DSA-O-NATIVE-20260917-058A",
+    "micro_batch_id": "O57-MB-001",
+    "tranche_id": "O57-TR-01",
+    "codes": [
+      "00001",
+      "00002"
+    ],
+    "member_count": 2,
+    "per_member_hard_cap_cny": "0.10",
+    "child_hard_cap_cny": "0.20",
+    "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+    "required_pre_send_gates": [
+      "fresh_free_member_preflight",
+      "single_request_dry_envelope_per_member",
+      "pre_send_private_save_read_hash_restore",
+      "verified_available_CNY_balance",
+      "durable_Drive_reserve_native_call",
+      "GITHUB_RUN_ATTEMPT_equals_1",
+      "GITHUB_EVENT_NAME_equals_push"
+    ],
+    "required_post_send_gates": [
+      "provider_completion_audit",
+      "post_output_contract",
+      "release_gate_if_SEM_001_only",
+      "final_private_save_read_hash_restore",
+      "sanitized_receipt",
+      "no_signal_publish"
+    ],
+    "drive_claim_reconciliation_required_before_send": true,
+    "automatic_retry_after_claim": false,
+    "provider_send_authorized_by_run058": false
+  },
+  "resource_accounting": {
+    "route": "L0/L1 deterministic Python + GitHub Actions only",
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "automatic_recharge": false,
+    "new_subscriptions": false,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "next": "Create one immutable paid-child scope for only this selected micro-batch. The child must re-run free preflight and Drive claim reconciliation before any provider request. Do not arm the next micro-batch until this child is reconciled."
+}
