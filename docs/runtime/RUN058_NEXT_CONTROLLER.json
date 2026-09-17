@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-058",
+  "state": "HOLD_NO_CHILD",
+  "target_session": "2026-09-17",
+  "reason": "UNRESOLVED_FAIL_CLOSED_LEDGER_STATE",
+  "holds": [
+    {
+      "micro_batch_id": "O57-MB-001",
+      "status": "STOP_TRANCHE",
+      "codes": [
+        "00001",
+        "00002"
+      ]
+    }
+  ],
+  "selected_child": null,
+  "plan_sha256": "dc1ff79240da457963c511b4af9201e37e7b41ac0a46c2bb90b8b2a2a22306c5",
+  "ledger_sha256": "f3f5106441d36f777dbccae6b691ad5c8a2759a4e61dee320ee52a3ec0ceeeed",
+  "resource_accounting": {
+    "route": "L0/L1 deterministic Python + GitHub Actions only",
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "automatic_recharge": false,
+    "new_subscriptions": false,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "next": "Append a verified reconciliation receipt; do not retry a claimed or private-failure batch automatically."
+}

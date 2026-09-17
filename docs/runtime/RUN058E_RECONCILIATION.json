@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058E",
+  "state": "STOP_TRANCHE",
+  "micro_batch_id": "O57-MB-001",
+  "codes": [
+    "00001",
+    "00002"
+  ],
+  "member_outcomes": {
+    "00001": {
+      "status": "ISOLATED",
+      "fresh_preflight_status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "pre_send_upper_cny": null,
+      "usage_peak_estimate_cny": null,
+      "observed_balance_change_cny": null,
+      "private_final_roundtrip": false,
+      "raw_gate": null,
+      "raw_blockers": null
+    },
+    "00002": {
+      "status": "TARGET_SESSION_ISOLATED",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
+      "provider_request_permitted": false
+    }
+  },
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "automatic_retry": false,
+  "ledger_status": "STOP_TRANCHE",
+  "next": "Hold controller; diagnose 00001 without automatic retry."
+}
