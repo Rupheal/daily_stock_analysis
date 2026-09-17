@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-EXEC-20260918-057-HISTORY",
+  "created_at_utc": "2026-09-17T23:06:30Z",
+  "parent_gate_a_recovery": "docs/runtime/RUN057_O_GATEA_RECOVERY_RESULT.json",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "O_denominator": 660,
+  "U_denominator": 45,
+  "model_requests": 0,
+  "paid_data_cny": "0",
+  "purpose": "Refresh full O market-history evidence to the latest completed HK session before any new paid O native shard. Preserve all 660 and all failures; no scoring, no signal promotion.",
+  "deliverables": [
+    "market-history.json",
+    "HISTORY_CACHE.json",
+    "HISTORY_READINESS.json",
+    "RUN057_O_HISTORY_RESULT.json"
+  ],
+  "no_orders": true,
+  "schedule_changes": false,
+  "main_changes": false,
+  "historical_rewrites": false
+}
