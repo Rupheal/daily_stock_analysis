@@ -1,0 +1,1863 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-054",
+  "target_session": "2026-09-17",
+  "scope": "Freeze source-bound U45 company-event/capital evidence and explicit company/sector risk missingness. Deterministic only; no ranking, BUY, quote or fill inference.",
+  "inputs": {
+    "close_refresh_run": "TRI-DSA-RESUME-20260917-049",
+    "member_report_run": "TRI-DSA-EXEC-20260917-041",
+    "handoff_run": "TRI-DSA-EXEC-20260917-047-HANDOFF",
+    "review_acceptance_run": "TRI-DSA-EXEC-20260917-046",
+    "macro_cap_run": "TRI-DSA-RESUME-20260917-053"
+  },
+  "evidence_contract": {
+    "verified_event_requires_source_url": true,
+    "bounded_search_no_hit_is_not_no_adverse_news": true,
+    "capital_not_disclosed_in_top10_is_not_zero_flow": true,
+    "ultimate_investor_identity_not_inferred": true,
+    "sector_risk_requires_separate_source": true,
+    "missingness_must_survive_into_formal_strategy_prompt": true,
+    "formal_strategy_may_return_WAIT_when_risk_evidence_is_incomplete": true,
+    "BUY_must_not_be_created_by_this_run": true
+  },
+  "macro_position_ceiling_pct": 30,
+  "counts": {
+    "denominator": 45,
+    "eligible": 44,
+    "ineligible_retained": 1,
+    "current_bar_valid": 45,
+    "bounded_member_report_present": 45,
+    "news_retrieval_ready": 44,
+    "verified_issuer_event_present": 2,
+    "capital_verified": 5,
+    "capital_not_disclosed_in_top10": 36,
+    "primary_issuer_reviewed": 2,
+    "qualitative_review_raw_pass": 40,
+    "qualitative_review_isolated": 4,
+    "sector_risk_separately_source_bound": 0,
+    "formal_decision_input_pass_with_missingness": 44
+  },
+  "rows": [
+    {
+      "code": "00005",
+      "name": "HSBC HOLDINGS",
+      "eligible": true,
+      "current_close": 159.8000030517578,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_ISOLATED:U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00100",
+      "name": "MINIMAX-W",
+      "eligible": true,
+      "current_close": 254.8000030517578,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "VERIFIED",
+        "net_buy_hkd": "499584604",
+        "channel_coverage": 2,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00175",
+      "name": "GEELY AUTO",
+      "eligible": true,
+      "current_close": 16.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00388",
+      "name": "HKEX",
+      "eligible": true,
+      "current_close": 388.6000061035156,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00700",
+      "name": "TENCENT",
+      "eligible": true,
+      "current_close": 426.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "VERIFIED_BOUNDED_ISSUER_EVENT",
+        "retrieval_ready": true,
+        "verified_source_urls": [
+          "https://www.tencent.com/wp-content/uploads/2026/09/e_Next-Day-Disclosure-Return_20260916.pdf"
+        ],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "VERIFIED",
+        "net_buy_hkd": "349727310",
+        "channel_coverage": 2,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": true,
+        "scope": "Verified recent issuer repurchases only",
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00883",
+      "name": "CNOOC",
+      "eligible": true,
+      "current_close": 23.8799991607666,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "PARTIAL_CHANNEL_COVERAGE",
+        "net_buy_hkd": null,
+        "channel_coverage": 1,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00939",
+      "name": "CCB",
+      "eligible": true,
+      "current_close": 9.675000190734863,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00941",
+      "name": "CHINA MOBILE",
+      "eligible": true,
+      "current_close": 79.19999694824219,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00981",
+      "name": "SMIC",
+      "eligible": true,
+      "current_close": 62.400001525878906,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "VERIFIED",
+        "net_buy_hkd": "600309915",
+        "channel_coverage": 2,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "00992",
+      "name": "LENOVO GROUP",
+      "eligible": true,
+      "current_close": 34.31999969482422,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "01024",
+      "name": "KUAISHOU-W",
+      "eligible": true,
+      "current_close": 29.940000534057617,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "VERIFIED_BOUNDED_ISSUER_EVENT",
+        "retrieval_ready": true,
+        "verified_source_urls": [
+          "https://ea-cdn.eurolandir.com/press-releases-attachments/4180637/HKEX-EPS_20260916_12334729_0.PDF",
+          "https://ea-cdn.eurolandir.com/press-releases-attachments/4179674/HKEX-EPS_20260911_12330165_0.PDF"
+        ],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": true,
+        "scope": "Verified recent issuer repurchases only",
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "01211",
+      "name": "BYD COMPANY",
+      "eligible": true,
+      "current_close": 81.1500015258789,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "01347",
+      "name": "HUA HONG GRACE",
+      "eligible": true,
+      "current_close": 110.19999694824219,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "PARTIAL_CHANNEL_COVERAGE",
+        "net_buy_hkd": null,
+        "channel_coverage": 1,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "01428",
+      "name": "BRIGHT SMART",
+      "eligible": true,
+      "current_close": 6.934999942779541,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "01787",
+      "name": "SD GOLD",
+      "eligible": true,
+      "current_close": 23.299999237060547,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "01801",
+      "name": "INNOVENT BIO",
+      "eligible": true,
+      "current_close": 96.1500015258789,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "01810",
+      "name": "XIAOMI-W",
+      "eligible": true,
+      "current_close": 26.139999389648438,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02020",
+      "name": "ANTA SPORTS",
+      "eligible": true,
+      "current_close": 72.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_ISOLATED:U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02269",
+      "name": "WUXI BIO",
+      "eligible": true,
+      "current_close": 50.099998474121094,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02318",
+      "name": "PING AN",
+      "eligible": true,
+      "current_close": 52.849998474121094,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02359",
+      "name": "WUXI APPTEC",
+      "eligible": true,
+      "current_close": 198.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02382",
+      "name": "SUNNY OPTICAL",
+      "eligible": true,
+      "current_close": 67.5,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02513",
+      "name": "Z.AI",
+      "eligible": true,
+      "current_close": 740.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "VERIFIED",
+        "net_buy_hkd": "3121817550",
+        "channel_coverage": 2,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02556",
+      "name": "MARKETINGFORCE",
+      "eligible": true,
+      "current_close": 50.849998474121094,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "02899",
+      "name": "ZIJIN MINING",
+      "eligible": true,
+      "current_close": 33.86000061035156,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "03308",
+      "name": "ZJ INNOLIGHT",
+      "eligible": true,
+      "current_close": 1150.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "PARTIAL_CHANNEL_COVERAGE",
+        "net_buy_hkd": null,
+        "channel_coverage": 1,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "03690",
+      "name": "MEITUAN-W",
+      "eligible": true,
+      "current_close": 72.9000015258789,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "03888",
+      "name": "KINGSOFT",
+      "eligible": true,
+      "current_close": 24.040000915527344,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "03896",
+      "name": "KINGSOFT CLOUD",
+      "eligible": true,
+      "current_close": 4.875,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "03968",
+      "name": "CM BANK",
+      "eligible": true,
+      "current_close": 51.29999923706055,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "03986",
+      "name": "GIGADEVICE",
+      "eligible": true,
+      "current_close": 466.6000061035156,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "03993",
+      "name": "CMOC",
+      "eligible": true,
+      "current_close": 15.520000457763672,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "06082",
+      "name": "BIREN TECH",
+      "eligible": true,
+      "current_close": 33.86000061035156,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "06160",
+      "name": "BEONE MEDICINES",
+      "eligible": true,
+      "current_close": 211.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "06166",
+      "name": "CIG",
+      "eligible": true,
+      "current_close": 124.5999984741211,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "VERIFIED",
+        "net_buy_hkd": "-231109805",
+        "channel_coverage": 2,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "06181",
+      "name": "LAOPU GOLD",
+      "eligible": true,
+      "current_close": 363.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "06682",
+      "name": "PHANCY",
+      "eligible": true,
+      "current_close": 25.8799991607666,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09618",
+      "name": "JD.com, Inc.",
+      "eligible": false,
+      "current_close": 105.0,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NEWS_EVIDENCE_MISSING",
+        "retrieval_ready": false,
+        "verified_source_urls": [],
+        "bounded_scope": null
+      },
+      "capital_evidence": {
+        "state": "MISSING",
+        "net_buy_hkd": null,
+        "channel_coverage": null,
+        "source_locator": null,
+        "source_sha256": null,
+        "date": null,
+        "persistence": null,
+        "ultimate_investor_identity": null
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "INELIGIBLE_RETAINED",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "INELIGIBLE_RETAINED_NO_FORMAL_BUY_DECISION",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09626",
+      "name": "BILIBILI-W",
+      "eligible": true,
+      "current_close": 114.5999984741211,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09660",
+      "name": "HORIZONROBOT-W",
+      "eligible": true,
+      "current_close": 4.130000114440918,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_ISOLATED:U_RSI_OVERSOLD_CONFLICT",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09880",
+      "name": "UBTECH ROBOTICS",
+      "eligible": true,
+      "current_close": 79.30000305175781,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09926",
+      "name": "AKESO",
+      "eligible": true,
+      "current_close": 90.75,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_ISOLATED:U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09988",
+      "name": "BABA-W",
+      "eligible": true,
+      "current_close": 105.0999984741211,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09992",
+      "name": "POP MART",
+      "eligible": true,
+      "current_close": 153.1999969482422,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    },
+    {
+      "code": "09999",
+      "name": "NTES",
+      "eligible": true,
+      "current_close": 185.10000610351562,
+      "current_bar_valid": true,
+      "member_report_available": true,
+      "company_event_evidence": {
+        "state": "NO_VERIFIED_RECENT_EVENT_IN_BOUNDED_SEARCH_NOT_NO_RISK",
+        "retrieval_ready": true,
+        "verified_source_urls": [],
+        "bounded_scope": "Bounded evidence only. Absence of a verified event is not evidence of no adverse news."
+      },
+      "capital_evidence": {
+        "state": "NOT_DISCLOSED_IN_TOP10",
+        "net_buy_hkd": null,
+        "channel_coverage": 0,
+        "source_locator": "https://www.hkex.com.hk/eng/csm/DailyStat/data_tab_daily_20260916e.js",
+        "source_sha256": "830ecf411e82304f663329f7b9a489403b2b1e8fad17a07eb76f6b70e754a649",
+        "date": "2026-09-16",
+        "persistence": "ONE_SESSION_ONLY_NOT_A_TREND",
+        "ultimate_investor_identity": "NOT_PROVEN"
+      },
+      "issuer_primary_review": {
+        "reviewed": false,
+        "scope": null,
+        "full_risk_coverage_proven": false
+      },
+      "sector_risk_evidence": {
+        "state": "NOT_SEPARATELY_SOURCE_BOUND",
+        "rule": "Do not infer sector risk from company-news absence, price action, or unsourced model prose."
+      },
+      "qualitative_review": {
+        "state": "RAW_SEMANTIC_PASS",
+        "source_run": "TRI-DSA-EXEC-20260917-046",
+        "is_full_strategy_decision": false
+      },
+      "formal_decision_input_status": "PASS_WITH_EXPLICIT_RISK_MISSINGNESS",
+      "buy_permission_from_run054": false
+    }
+  ],
+  "result": {
+    "status": "PASS_RISK_EVIDENCE_BINDING_WITH_EXPLICIT_MISSINGNESS",
+    "risk_evidence_bound": true,
+    "risk_evidence_complete_for_all_members": false,
+    "formal_decision_inputs_available_with_missingness": 44,
+    "qualified_BUY_created": 0,
+    "ranking_created": false,
+    "simulation_authorized": false
+  },
+  "resources": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "next": "RUN055: bind a strategy buy-zone contract without inventing execution quotes. RUN056 may consume RUN053-055 only after each contract passes; missing risk remains explicit input and may force WAIT."
+}
