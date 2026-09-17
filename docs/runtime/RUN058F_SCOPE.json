@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-DIAG-20260918-058F",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "code": "00001",
+  "parent_run": "TRI-DSA-O-NATIVE-20260918-058E",
+  "parent_workflow_run": 35285236744,
+  "history_parent_run": 35224980615,
+  "history_cache_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "purpose": "Diagnose FREE_NATIVE_ENVELOPE_FAILED without a real provider credential, Drive write, retry, ranking or order.",
+  "model_requests": 0,
+  "paid_data_calls": 0,
+  "drive_writes": 0,
+  "automatic_retry": false,
+  "no_orders": true,
+  "main_changes": false,
+  "schedule_changes": false
+}
