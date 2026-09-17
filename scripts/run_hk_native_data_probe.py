@@ -61,6 +61,7 @@ def main():
     parser.add_argument("--universe", type=Path, required=True)
     parser.add_argument("--scope", choices=["U45_data_only", "O_single_stock_smoke", "O_full_pool_data_only"], required=True)
     parser.add_argument("--expected-date", required=True)
+    parser.add_argument("--decision-session", help="Official pool session; completed price session may precede it")
     parser.add_argument("--expected-commit", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--timeout", type=int, default=420)
@@ -74,8 +75,10 @@ def main():
     if len(set(all_codes)) != universe["member_count"] or len(all_codes) != universe["member_count"]:
         raise ValueError("Frozen universe count or uniqueness mismatch")
     if args.scope == "O_full_pool_data_only":
-        if not universe.get("full_union_verified") or universe.get("effective_session") != args.expected_date:
-            raise ValueError("O requires a complete verified official union for the requested session")
+        if not universe.get("full_union_verified") or universe.get("effective_session") != (args.decision_session or args.expected_date):
+            raise ValueError("O requires a complete verified official union for the decision session")
+        if args.expected_date > (args.decision_session or args.expected_date):
+            raise ValueError("Price session is after decision session")
     elif len(all_codes) != 45:
         raise ValueError("The frozen U denominator must be 45")
     codes = ["hk01810"] if args.scope == "O_single_stock_smoke" else all_codes
@@ -91,7 +94,7 @@ def main():
     command = build_native_command(checkout, codes, args.expected_date, args.target_boundary_adapter)
     audit = {"scope": args.scope, "code_commit": actual, "started_at": datetime.now(timezone.utc).isoformat(),
              "universe_sha256": hashlib.sha256(raw_universe).hexdigest(), "requested_codes": codes,
-             "expected_complete_session": args.expected_date, "command": command,
+             "expected_complete_session": args.expected_date, "decision_session": args.decision_session or args.expected_date, "command": command,
              "coverage_denominator": len(codes), "O_full_union_N": len(codes) if args.scope == "O_full_pool_data_only" else None, "O_full_pool_passed": False,
              "model_credentials_provided": False, "model_analysis_enabled": False,
              "native_logic_modified": False, "target_boundary_adapter": bool(args.target_boundary_adapter),

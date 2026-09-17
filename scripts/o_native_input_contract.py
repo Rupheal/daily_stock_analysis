@@ -10,6 +10,7 @@ observer standalone preserves the frozen upstream module namespace.
 from __future__ import annotations
 
 import math
+import re
 
 CALIBRATION_RUN_ID = 34983641578
 LATEST_SESSION_MAX_RELATIVE_DEVIATION = 0.00170985
@@ -37,8 +38,14 @@ def _finite(value, code):
 
 def validate_native_input(preflight, context):
     """Fail closed unless native analyzer input matches the accepted preflight contract."""
-    if preflight.get('passed') is not True or str(preflight.get('symbol', '')).upper() != 'HK01810':
+    symbol = str(preflight.get('symbol', '')).upper()
+    if preflight.get('passed') is not True or not re.fullmatch(r'HK[0-9]{5}', symbol):
         raise NativeInputContractError('PREFLIGHT_NOT_ACCEPTED')
+    native_code = str((context or {}).get('code', '')).upper()
+    if native_code and native_code != symbol:
+        raise NativeInputContractError('NATIVE_SYMBOL_MISMATCH')
+    if symbol != 'HK01810' and not native_code:
+        raise NativeInputContractError('NATIVE_SYMBOL_REQUIRED_FOR_POOL')
     target = _day(preflight.get('target'))
     baseline = preflight.get('today') or {}
     baseline_day = _day(baseline.get('date'))

@@ -1,0 +1,90 @@
+name: DSA Run032 current O universe and U per-member acceptance
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN032_FORMAL_EXECUTION_SCOPE.json]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: dsa-formal-dual-readiness
+  cancel-in-progress: false
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - name: Install existing runtime
+        run: pip install -r research/requirements.txt pytest
+      - name: Verify original observer identity and calendar boundary regressions
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_native_data_probe.py tests/test_run_hk_original_model_probe_imports.py tests/test_formal_universe_and_readiness.py
+      - name: Reuse accepted U45 target-session data
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 35117032423
+          github-token: ${{ github.token }}
+          name: U45_PREP_LEDGER
+          path: reused/data
+      - name: Reuse latest U45 news retrieval
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 35162710266
+          github-token: ${{ github.token }}
+          name: U45_NEWS_MULTISOURCE
+          path: reused/news
+      - name: Resolve independent decision and completed-price sessions
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          from datetime import datetime,timezone
+          from zoneinfo import ZoneInfo
+          from pathlib import Path
+          from o_target_session_contract import resolve_target_session
+          now=datetime.now(timezone.utc)
+          Path('/tmp/price-session').write_text(resolve_target_session(now).target_session.isoformat())
+          Path('/tmp/decision-session').write_text(now.astimezone(ZoneInfo('Asia/Hong_Kong')).date().isoformat())
+          PY
+      - name: Collect official complete membership and identity sources
+        working-directory: research
+        run: |
+          python scripts/probe_hk_research_sources.py > /tmp/official-sources.log 2>&1
+          python scripts/freeze_hk_connect_universe.py --sources probe/universe --session "$(cat /tmp/decision-session)" --u-universe docs/dsa-u-universe.json --out probe/formal032
+      - name: Execute frozen original data path for every O member
+        run: |
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/probe/formal032/O_UNIVERSE.json --scope O_full_pool_data_only --expected-date "$(cat /tmp/price-session)" --decision-session "$(cat /tmp/decision-session)" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 1500 --output /tmp/run032-o > /tmp/run032-native.log 2>&1
+      - name: Produce joined per-member acceptance and explicit next gates
+        if: always()
+        run: |
+          python research/scripts/join_dual_formal_readiness.py --o-universe research/probe/formal032/O_UNIVERSE.json --u-universe research/probe/formal032/U_UNIVERSE.json --o-coverage /tmp/run032-o/coverage.json --u-data reused/data/U45_PREP_LEDGER.json --u-news reused/news/U45_NEWS_MULTISOURCE.json --target "$(cat /tmp/price-session)" --out /tmp/RUN032_READINESS.json
+      - name: Upload only public-data readiness receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RUN032_FORMAL_READINESS
+          path: |
+            research/probe/formal032/*.json
+            research/probe/universe/source-probe.json
+            /tmp/RUN032_READINESS.json
+            /tmp/run032-o/coverage.json
+          if-no-files-found: error
+          retention-days: 30

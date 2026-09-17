@@ -37,6 +37,7 @@ def _inside(path, root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--symbol', default='HK01810', help='Frozen per-member preflight symbol; no change to native scoring')
     parser.add_argument('--checkout', type=Path, required=True)
     parser.add_argument('--expected-commit', required=True)
     parser.add_argument('--preflight', type=Path, required=True)
@@ -58,8 +59,8 @@ def main():
         raise ValueError('Original tracked source must remain unchanged')
     root.mkdir(parents=True, exist_ok=False)
     preflight = json.loads(preflight_path.read_text())
-    if preflight.get('passed') is not True or preflight.get('symbol', '').upper() != 'HK01810':
-        raise ValueError('A passed Xiaomi preflight is required')
+    if preflight.get('passed') is not True or preflight.get('symbol', '').upper() != args.symbol.upper():
+        raise ValueError('A passed symbol-matched preflight is required')
     target_session = str(preflight.get('target') or '')
     if args.target_boundary_adapter and not target_session:
         raise ValueError('Target-session adapter requires a frozen preflight target')
@@ -230,7 +231,7 @@ def main():
     started = datetime.now(timezone.utc).isoformat()
     status, error = None, None
     try:
-        sys.argv=['main.py','--stocks','hk01810','--no-notify','--no-market-review','--force-run','--workers','1']
+        sys.argv=['main.py','--stocks',args.symbol.lower(),'--no-notify','--no-market-review','--force-run','--workers','1']
         with patch.object(StockAnalysisPipeline,'analyze_stock',pipeline_analyze), patch.object(StockAnalysisPipeline,'_load_persisted_intelligence_context',load_news), patch.object(GeminiAnalyzer,'analyze',analyze), patch.object(GeminiAnalyzer,'_format_prompt',format_prompt), patch.object(httpx.Client,'send',send), patch.object(httpx.AsyncClient,'send',async_send):
             if args.target_boundary_adapter:
                 with patched_yahoo_target_boundary(target_session) as applied:
