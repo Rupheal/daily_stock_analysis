@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-051",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-050",
+  "scope": "Fail-closed re-adjudication of the 32 RUN049 THIRD_SOURCE_CONFLICT_REMAINS rows using the already-captured Yahoo/Tencent/Sina publisher evidence and the bounded official-HKEX capability boundary. No current-day agreement is allowed to erase unresolved historical source conflicts.",
+  "target_session": "2026-09-17",
+  "input_receipts": {
+    "run045_third_source_path": "docs/runtime/RUN045_THIRD_SOURCE_RESULT.json",
+    "run035_raw_conflict_path": "docs/runtime/RUN035_CONT1_RAW_CONFLICT_DIAGNOSTIC.json",
+    "run049_o52_repair_path": "docs/runtime/RUN049_O52_REPAIR.json",
+    "run049_056_scope_path": "docs/runtime/RUN049_056_SCOPE.json"
+  },
+  "denominator": {
+    "O_universe": 660,
+    "prior_isolated": 52,
+    "run051_conflict_rows": 32,
+    "removed_from_denominator": 0
+  },
+  "evidence_contract": {
+    "publishers_already_compared": ["Yahoo", "Tencent", "Sina"],
+    "official_hkex_limitation": "The accepted compact HKEX quotation evidence does not expose a historical session open field suitable for arbitrating open-only OHLC conflicts; therefore an open-only publisher disagreement cannot be declared resolved by absence of an HKEX contradiction.",
+    "release_rule": "Release only when an independent source or a verified corporate-action/identity transform coherently explains the historical discrepancy. Current-session valid bars alone are insufficient.",
+    "no_majority_vote_without_semantics": true
+  },
+  "classification": {
+    "open_only_unresolved": [
+      "00512","00867","00874","00901","00999","01112","01377","01908","01972","02155","02171","02273","02315","02419","02589","02595","02714","02768","02877","03698","03933","06055","06090","06600","06715","06990","09636","09658","09890"
+    ],
+    "volume_conflict_unresolved": ["02238"],
+    "systematic_multi_ohlc_conflict_unresolved": ["02525","09903"]
+  },
+  "adjudication": {
+    "released": [],
+    "retained_isolated": [
+      "00512","00867","00874","00901","00999","01112","01377","01908","01972","02155","02171","02238","02273","02315","02419","02525","02589","02595","02714","02768","02877","03698","03933","06055","06090","06600","06715","06990","09636","09658","09890","09903"
+    ],
+    "retained_reason": "THIRD_SOURCE_CONFLICT_REMAINS",
+    "decision": "RETAIN_ALL_32_FAIL_CLOSED"
+  },
+  "rationale": [
+    "RUN045 already captured a third publisher (Sina) and showed that these 32 rows still did not satisfy the accepted cross-publisher contract.",
+    "For 29 open-only rows, the bounded official HKEX source used by the project cannot independently arbitrate historical open values; treating Tencent/Sina agreement or current-day validity as a historical release would weaken the frozen evidence contract.",
+    "02238 is a raw-volume conflict and cannot be repaired by an OHLC-only source or by inference from turnover without an accepted share/lot/unit normalization contract.",
+    "02525 and 09903 show systematic multi-field OHLC disagreement across many sessions, which is materially different from a one-tick open discrepancy and requires a verified corporate-action/price-transform or authoritative raw-history explanation before release.",
+    "The 2026-09-17 current bars for isolated symbols are useful for current-session execution readiness but do not retroactively validate the historical 21-bar feature window."
+  ],
+  "result": {
+    "status": "PASS_BOUNDED_ADJUDICATION_WITH_ALL_CONFLICTS_RETAINED",
+    "reviewed": 32,
+    "released": 0,
+    "retained": 32,
+    "O_denominator_after_run051": 660,
+    "prior_isolated_denominator_after_run051": 52,
+    "fabricated_values": 0,
+    "silent_normalizations": 0
+  },
+  "limitations": [
+    "This receipt is an evidence adjudication, not a fresh publisher download. It consumes the already-captured three-publisher evidence from RUN045 and the frozen source-capability boundary.",
+    "A future authoritative raw-history source or accepted corporate-action transform may release individual rows, but such a release must create a new receipt and must not rewrite this failure history.",
+    "No model score, rank, BUY signal, or historical isolation release is created by RUN051."
+  ],
+  "resources": {
+    "model_http_requests": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "next": "RUN052: re-adjudicate the 16 INVALID_BAR_GEOMETRY rows, distinguishing source normalization, corporate action, and genuine source conflict. In parallel, continue preparing native execution for the non-isolated O members; do not wait on these 32 retained historical conflicts."
+}
