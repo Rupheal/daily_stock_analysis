@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260918-059",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-056",
+  "target_session": "2026-09-17",
+  "track": "U",
+  "state": "PASS_FORMAL_U45_DECISION_RANKING_NO_BUY",
+  "denominator": 45,
+  "eligible": 44,
+  "retained_ineligible": [
+    "09618"
+  ],
+  "facts_current_session": 45,
+  "formal_valid_rows": 44,
+  "macro_cap": {
+    "source": "docs/runtime/RUN053_U_MACRO_POSITION_CAP.json",
+    "position_ceiling_pct": 30,
+    "state": "PASS_DATED_MACRO_CAP",
+    "score_or_rank_override": false
+  },
+  "risk_evidence": {
+    "source": "docs/runtime/RUN054_U_RISK_EVIDENCE.json",
+    "formal_inputs_with_explicit_missingness": 44,
+    "sector_risk_separately_source_bound": 0,
+    "missingness_preserved": true
+  },
+  "strategy_zone": {
+    "source": "docs/runtime/RUN055_U_STRATEGY_ZONE_CONTRACT.json",
+    "contract_pass": true,
+    "numeric_zones_approved": 0,
+    "interpretation": "No formal BUY survived Run056, so numeric BUY zones remain withheld rather than fabricated. Strategy zone is distinct from Entry-v1 execution band and firm ask."
+  },
+  "formal_decision": {
+    "source": "docs/runtime/RUN056_U_FORMAL_RESULT.json",
+    "state": "PASS_FORMAL_U_DECISION_WAIT_NO_BUY",
+    "Top10": [
+      "00992",
+      "06166",
+      "00700",
+      "03308",
+      "02359",
+      "00939",
+      "01211",
+      "00100",
+      "00981",
+      "06682"
+    ],
+    "Top3": [],
+    "qualified_BUY": 0
+  },
+  "acceptance": {
+    "full_U_strategy_decision_for_target_session": true,
+    "independent_ranking_generated": true,
+    "Top10_generated": true,
+    "Top3_rule": "EMPTY_ALLOWED_WHEN_QUALIFIED_BUY_ZERO",
+    "qualified_BUY": 0,
+    "buyable_verified_count": 0,
+    "entry_v1_handoff": false,
+    "same_day_signal_write": false,
+    "reason": "The research was completed post-close for 2026-09-17 and produced no BUY. It must not be backfilled into the 2026-09-17 morning runtime."
+  },
+  "resources": {
+    "new_model_http_requests": 0,
+    "new_paid_data_calls": 0,
+    "real_orders": 0,
+    "simulation_writes": 0,
+    "automatic_recharge": false
+  },
+  "next": "For U, refresh to the next actual decision session before 09:25 and rerun the accepted fact/risk/macro/zone/decision chain. Research is not blocked by BUY=0. O full-pool native rollout remains the current production-preparation critical path."
+}
