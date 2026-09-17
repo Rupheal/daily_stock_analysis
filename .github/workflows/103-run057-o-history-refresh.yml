@@ -1,0 +1,91 @@
+name: DSA Run057 O current-session history refresh
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN057_O_HISTORY_SCOPE.json]
+permissions: {contents: read, actions: read}
+concurrency: {group: dsa-o-current-history-refresh, cancel-in-progress: false}
+jobs:
+  histories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest
+      - working-directory: research
+        run: python -m pytest --noconftest -q tests/test_market_history_allowlist.py tests/test_dual_history_cache.py tests/test_run032_recovery4.py
+      - name: Bind current completed session and cached official pool
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          from o_target_session_contract import resolve_target_session
+          from datetime import datetime,timezone
+          from zoneinfo import ZoneInfo
+          from pathlib import Path
+          import json
+          s=json.load(open('research/docs/runtime/RUN057_O_HISTORY_SCOPE.json'))
+          now=datetime.now(timezone.utc)
+          assert resolve_target_session(now).target_session.isoformat()==s['target_session']
+          assert now.astimezone(ZoneInfo('Asia/Hong_Kong')).date().isoformat()==s['decision_session']
+          assert s['O_denominator']==660 and s['model_requests']==0
+          Path('/tmp/target').write_text(s['target_session'])
+          Path('/tmp/decision').write_text(s['decision_session'])
+          PY
+          python research/scripts/reuse_verified_hk_snapshot.py --cache research/docs/runtime/run032_public_cache --session "$(cat /tmp/decision)" --out /tmp/pool
+      - name: Persist current original native market history
+        run: |
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe /tmp/pool/O_UNIVERSE.json --scope O_full_pool_data_only --expected-date "$(cat /tmp/target)" --decision-session "$(cat /tmp/decision)" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 1500 --output /tmp/native > /tmp/native-only.log 2>&1
+      - name: Compare independent histories and preserve failures
+        run: python research/scripts/audit_dual_history_cache.py --native /tmp/native/market-history.json --universe /tmp/pool/O_UNIVERSE.json --u-universe /tmp/pool/U_UNIVERSE.json --recovery-cache research/docs/runtime/run032_recovery4 --out /tmp/dual-history
+      - name: Build sanitized refresh receipt
+        run: |
+          python - <<'PY'
+          import json,hashlib,os
+          from pathlib import Path
+          s=json.load(open('research/docs/runtime/RUN057_O_HISTORY_SCOPE.json'))
+          r=json.load(open('/tmp/dual-history/HISTORY_READINESS.json'))
+          c=json.load(open('/tmp/native/coverage.json'))
+          out={
+            'schema_version':1,'run_id':s['run_id'],'workflow_run':os.environ['GITHUB_RUN_ID'],
+            'target_session':s['target_session'],'decision_session':s['decision_session'],
+            'O_denominator':660,'history_ready':sum(not x.get('failures') for x in r['members']),
+            'isolated':sum(bool(x.get('failures')) for x in r['members']),
+            'failure_reason_counts':{},
+            'market_history_sha256':hashlib.sha256(Path('/tmp/native/market-history.json').read_bytes()).hexdigest(),
+            'history_cache_sha256':hashlib.sha256(Path('/tmp/dual-history/HISTORY_CACHE.json').read_bytes()).hexdigest(),
+            'model_http_requests':0,'real_orders':0,'formal_signal_generated':False
+          }
+          from collections import Counter
+          cc=Counter(y for x in r['members'] for y in x.get('failures',[]))
+          out['failure_reason_counts']=dict(cc)
+          Path('/tmp/RUN057_O_HISTORY_RESULT.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(out,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN057_O_HISTORY_CACHE
+          path: |
+            /tmp/native/market-history.json
+            /tmp/native/coverage.json
+            /tmp/dual-history/
+            /tmp/RUN057_O_HISTORY_RESULT.json
+          if-no-files-found: error
+          retention-days: 90
