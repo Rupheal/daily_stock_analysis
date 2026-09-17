@@ -1,0 +1,186 @@
+{
+  "run_id": "TRI-DSA-RESUME-20260917-033-040",
+  "completed_at": "2026-09-17T05:01:47.566565+00:00",
+  "state": "PARTIAL_ACCEPTED_ENGINEERING_DATA_RECOVERY; FORMAL_DUAL_SIGNAL_NO_GO",
+  "branch": "fix/native-private-execution-20260914",
+  "tested_code_commit": "83e02656bc80dd16a7f159c1ab0869d47497fdc8",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "main_unchanged": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
+  "effective_official_universe_session": "2026-09-17",
+  "completed_price_session": "2026-09-16",
+  "actual_runs": {
+    "history": 35180179743,
+    "first_bounded_preflight": 35180873802,
+    "first_recovery_attempt": 35181236114,
+    "first_native_envelope": 35181530433,
+    "recovery_current": 35181701358,
+    "tencent_native": 35181806937,
+    "actual_native_recovery": 35182213024,
+    "first_storage_replay_failed_binding": 35182652229,
+    "private_storage_replay": 35182844843,
+    "kuaishou_native": 35183191883,
+    "completion_guard_regression": 35183873567
+  },
+  "O": {
+    "denominator": 660,
+    "native_target_bar_ready_prior_Run032": 660,
+    "strict_entire_native_history_independent_ready": 356,
+    "run006_current_21_session_inputs_ready": 598,
+    "actual_frozen_native_data_cli_success": 598,
+    "isolated": 62,
+    "isolation_reasons": {
+      "raw_price_conflict": 57,
+      "missing_target": 3,
+      "raw_volume_conflict": 1,
+      "under21_sessions": 1
+    },
+    "raw_price_conflict_open_only": 39,
+    "new_native_requests": 2,
+    "new_formal_native_outputs_accepted": 0,
+    "full_pool_ranking_accepted": false
+  },
+  "U": {
+    "denominator": 45,
+    "members_audited": 45,
+    "currently_buy_eligible": 44,
+    "run006_feature_input_ready": 44,
+    "independent_entire_history_ready": 30,
+    "public_facts_recomputed": 44,
+    "news_retrieval_ready": 44,
+    "bounded_issuer_primary_review": 2,
+    "formal_signal_accepted": 0,
+    "Top3": [],
+    "Top10": [],
+    "score_source_imported_from_O": false
+  },
+  "simulation": {
+    "runtime_approved": true,
+    "runtime_active": true,
+    "authority_read_commit": "be654e71d667b0c3935b5a7dcb42821ba3ad110b",
+    "complete_summary_replay_matches": true,
+    "accounts_each_cash_cny": "300000",
+    "positions_each": 0,
+    "buys_each": 0,
+    "sells_each": 0,
+    "new_commands_this_stage": 0,
+    "no_retroactive_AM_fill": true
+  },
+  "acceptance": {
+    "native_data_consumption_598_verified": true,
+    "private_multipart_save_read_hash_restore": true,
+    "lossless_private_replay_bytes": 4901401,
+    "run039_private_raw_restore_files": 37,
+    "latest_cloud_tests_passed": 104,
+    "latest_cloud_tests_failed": 0,
+    "latest_cloud_tests_skipped": 0,
+    "actual_failed_response_replay": "PASS_REJECTED_NO_PROMOTION",
+    "O_formal_full_pool": false,
+    "U_formal_per_member": false,
+    "real_future_qualified_shadow_fill": false
+  },
+  "resources": {
+    "run_id": "TRI-DSA-RESUME-20260917-033-040",
+    "recorded_at": "2026-09-17T05:01:47.566565+00:00",
+    "model_http_requests": 2,
+    "requests": [
+      {
+        "workflow_run": 35181806937,
+        "symbol": "00700",
+        "confirmed_http_requests": 1,
+        "usage": [
+          {
+            "completion_tokens": 7108,
+            "completion_tokens_details": {
+              "reasoning_tokens": 4198
+            },
+            "prompt_cache_hit_tokens": 2688,
+            "prompt_cache_miss_tokens": 2948,
+            "prompt_tokens": 5636,
+            "prompt_tokens_details": {
+              "cached_tokens": 2688
+            },
+            "total_tokens": 12744
+          }
+        ],
+        "pre_send_upper_cny": "0.080906",
+        "conservative_peak_usage_estimate_cny": "0.068136",
+        "actual_attributable_charge_cny": null,
+        "observed_balance_change_cny": "0.00",
+        "status": "FAILED_AND_ISOLATED",
+        "private_persistence": {
+          "reason": "StoreError",
+          "status": "FAIL"
+        },
+        "repeated": false
+      },
+      {
+        "workflow_run": 35183191883,
+        "symbol": "01024",
+        "confirmed_http_requests": 1,
+        "usage": [
+          {
+            "completion_tokens": 8192,
+            "completion_tokens_details": {
+              "reasoning_tokens": 8192
+            },
+            "prompt_cache_hit_tokens": 2688,
+            "prompt_cache_miss_tokens": 2970,
+            "prompt_tokens": 5658,
+            "prompt_tokens_details": {
+              "cached_tokens": 2688
+            },
+            "total_tokens": 13850
+          }
+        ],
+        "pre_send_upper_cny": "0.08095",
+        "conservative_peak_usage_estimate_cny": "0.076852",
+        "actual_attributable_charge_cny": null,
+        "observed_balance_change_cny": "0.00",
+        "status": "FAILED_AND_ISOLATED",
+        "private_persistence": {
+          "bytes": 4931230,
+          "files": 37,
+          "format": "DSA_PRIVATE_MULTIPART_v1",
+          "original_bytes": 4908132,
+          "parts": 4,
+          "save_read_hash_restore": true,
+          "sha256": "5655e0533f80cfb2ea640ccba31142adb07f672930b5daf1bd75f5d5af86b5ad"
+        },
+        "repeated": false
+      }
+    ],
+    "total_peak_usage_estimate_cny": "0.144988",
+    "actual_total_attributable_charge_cny": null,
+    "actual_charge_status": "UNVERIFIED; balance API unchanged/rounded is not a zero-cost invoice",
+    "paid_data_calls": 0,
+    "subscriptions_added": 0,
+    "auto_recharge": false,
+    "platform_compute_cost": "NOT_VISIBLE",
+    "budget_authority": "Existing funded necessary DSA research authorization; per-case internal cap0.10; combined two-case guard0.20",
+    "closed_claims": [
+      "ART-DSA-RUN034-CONT2-O-MEMBER-00700-CLAIM",
+      "ART-DSA-RUN039-O-MEMBER-01024-CLAIM"
+    ],
+    "new_model_authorization_requested": false,
+    "not_a_successful_O_full_scan_cost_quote": true
+  },
+  "unresolved": [
+    "Run034 Tencent opening contradiction; only sanitized failure receipt/claim survives, raw private save failed. Do not regenerate it as original.",
+    "Run039 reasoning exhausted8192 output cap; actual final content empty; native success=false default is not a valid opinion. Config/transport compatibility remains research work.",
+    "Current O has62 input isolates and per-member independent news/risk/model acceptance remains incomplete.",
+    "U has no accepted formal signal/plan/macro-cap artifact in this handoff; existing technical research score does not replace it.",
+    "Future timely accepted signal plus executable quote, fees, FX and lot evidence required before first natural Shadow fill."
+  ],
+  "next_actions": [
+    "Inspect frozen-native supported model configuration with preserved prompt/upstream and a separately versioned prospective research case; no automatic failed-case retries.",
+    "Resolve O raw open-price conflicts with a source that actually includes opening prices; keep all660 and all failures.",
+    "Complete independent U issuer/risk/macro/plan producer and formal45-member acceptance; retain zero-to-three qualified-candidate rule.",
+    "Only after their own gates pass freeze timely independent U/O signals and pass to already approved Entry-v1.",
+    "Do not change Run005 OOS, A0/A3, windows, main, production strategy or real orders."
+  ],
+  "existing_tasks_handoff": "Read current_execution and dated facts/receipts; keep established AM09:00 PM16:30 and review times. This batch did not deploy a daily full-pool model runner or grant a new entry. Next reports must refresh the target session and cannot present the9/16 cache as9/17 close.",
+  "new_permissions_required_now": false,
+  "new_strategy_promotion_requires_owner": true,
+  "overall_completion_percentage": null,
+  "overall_percentage_reason": "No verified aggregate project denominator; separate data readiness and formal signal acceptance, never average research engineering into trade readiness."
+}

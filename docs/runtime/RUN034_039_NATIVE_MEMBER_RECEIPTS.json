@@ -1,0 +1,125 @@
+{
+  "run034_cont2": {
+    "workflow_run": 35181806937,
+    "member": {
+      "actual_attributable_charge_cny": null,
+      "claim_persisted": true,
+      "code": "00700",
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "native_exit_code": 1,
+      "observed_balance_change_cny": "0.00",
+      "pre_send_upper_cny": "0.080906",
+      "preflight_sha256": "05b2ca4a4441f14084e5513f9c3f2b0279b961ec9d0898cc310dc176ab039411",
+      "private_persistence": {
+        "reason": "StoreError",
+        "status": "FAIL"
+      },
+      "qualified_signal": false,
+      "raw_blockers": [
+        "OPEN_GAP_DIRECTION_CONTRADICTION",
+        "SEM-001"
+      ],
+      "raw_gate": "BLOCK",
+      "status": "NATIVE_OUTPUT_ISOLATED",
+      "usage": [
+        {
+          "completion_tokens": 7108,
+          "completion_tokens_details": {
+            "reasoning_tokens": 4198
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 2948,
+          "prompt_tokens": 5636,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "total_tokens": 12744
+        }
+      ],
+      "usage_peak_estimate_cny": "0.068136"
+    },
+    "private_original_unavailable": true,
+    "status": "NO_GO_NOT_RETRIED"
+  },
+  "run039": {
+    "workflow_run": 35183191883,
+    "member": {
+      "actual_attributable_charge_cny": null,
+      "claim_persisted": true,
+      "code": "01024",
+      "failure_class": "ReleaseQuoteError",
+      "failure_code": "RELEASE_EXECUTION_CONTRACT_MISSING_OR_WRONG_VERSION",
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "native_exit_code": 1,
+      "observed_balance_change_cny": "0.00",
+      "pre_send_private_persistence": {
+        "bytes": 1241927,
+        "files": 17,
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "original_bytes": 1231912,
+        "parts": 1,
+        "save_read_hash_restore": true,
+        "sha256": "f410e5bfd75234762a01f89c444877cb2f88d22300ab5e3cf8d3af0af2d045bb"
+      },
+      "pre_send_upper_cny": "0.08095",
+      "preflight_sha256": "fe60599f7a4e78b6b5c961274221425de53992d86a6e64000b45d802a42d24ad",
+      "private_persistence": {
+        "bytes": 4931230,
+        "files": 37,
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "original_bytes": 4908132,
+        "parts": 4,
+        "save_read_hash_restore": true,
+        "sha256": "5655e0533f80cfb2ea640ccba31142adb07f672930b5daf1bd75f5d5af86b5ad"
+      },
+      "qualified_signal": false,
+      "raw_blockers": [
+        "SEM-001"
+      ],
+      "raw_gate": "BLOCK",
+      "status": "ISOLATED",
+      "usage": [
+        {
+          "completion_tokens": 8192,
+          "completion_tokens_details": {
+            "reasoning_tokens": 8192
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 2970,
+          "prompt_tokens": 5658,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "total_tokens": 13850
+        }
+      ],
+      "usage_peak_estimate_cny": "0.076852"
+    },
+    "independent_private_restore_passed": true,
+    "restored_files": 37,
+    "private_original_bytes": 4908132,
+    "status": "NO_GO_OUTPUT_TRUNCATED_AND_NATIVE_FAILED"
+  },
+  "run037_cont1": {
+    "workflow_run": 35182844843,
+    "private_storage": {
+      "bytes": 4927559,
+      "fee_cny": "0",
+      "files": 42,
+      "format": "DSA_PRIVATE_MULTIPART_v1",
+      "model_requests": 0,
+      "old_single_pack_failure": "BUNDLE_TOO_LARGE",
+      "original_bytes": 4901401,
+      "originals_changed": false,
+      "parts": 4,
+      "run_id": "TRI-DSA-EXEC-20260917-037-CONT1",
+      "save_read_hash_restore": true,
+      "scope": "Storage engineering replay of old immutable originals; no new prediction",
+      "sha256": "b69baca23714666baccb42e455177c7de8209e0b5fd84ca013f1c15469624c74",
+      "workflow_run": "35182844843"
+    },
+    "tests_passed": 59
+  }
+}

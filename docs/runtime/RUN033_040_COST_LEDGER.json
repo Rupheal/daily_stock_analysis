@@ -1,0 +1,86 @@
+{
+  "run_id": "TRI-DSA-RESUME-20260917-033-040",
+  "recorded_at": "2026-09-17T05:01:47.566565+00:00",
+  "model_http_requests": 2,
+  "requests": [
+    {
+      "workflow_run": 35181806937,
+      "symbol": "00700",
+      "confirmed_http_requests": 1,
+      "usage": [
+        {
+          "completion_tokens": 7108,
+          "completion_tokens_details": {
+            "reasoning_tokens": 4198
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 2948,
+          "prompt_tokens": 5636,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "total_tokens": 12744
+        }
+      ],
+      "pre_send_upper_cny": "0.080906",
+      "conservative_peak_usage_estimate_cny": "0.068136",
+      "actual_attributable_charge_cny": null,
+      "observed_balance_change_cny": "0.00",
+      "status": "FAILED_AND_ISOLATED",
+      "private_persistence": {
+        "reason": "StoreError",
+        "status": "FAIL"
+      },
+      "repeated": false
+    },
+    {
+      "workflow_run": 35183191883,
+      "symbol": "01024",
+      "confirmed_http_requests": 1,
+      "usage": [
+        {
+          "completion_tokens": 8192,
+          "completion_tokens_details": {
+            "reasoning_tokens": 8192
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 2970,
+          "prompt_tokens": 5658,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "total_tokens": 13850
+        }
+      ],
+      "pre_send_upper_cny": "0.08095",
+      "conservative_peak_usage_estimate_cny": "0.076852",
+      "actual_attributable_charge_cny": null,
+      "observed_balance_change_cny": "0.00",
+      "status": "FAILED_AND_ISOLATED",
+      "private_persistence": {
+        "bytes": 4931230,
+        "files": 37,
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "original_bytes": 4908132,
+        "parts": 4,
+        "save_read_hash_restore": true,
+        "sha256": "5655e0533f80cfb2ea640ccba31142adb07f672930b5daf1bd75f5d5af86b5ad"
+      },
+      "repeated": false
+    }
+  ],
+  "total_peak_usage_estimate_cny": "0.144988",
+  "actual_total_attributable_charge_cny": null,
+  "actual_charge_status": "UNVERIFIED; balance API unchanged/rounded is not a zero-cost invoice",
+  "paid_data_calls": 0,
+  "subscriptions_added": 0,
+  "auto_recharge": false,
+  "platform_compute_cost": "NOT_VISIBLE",
+  "budget_authority": "Existing funded necessary DSA research authorization; per-case internal cap0.10; combined two-case guard0.20",
+  "closed_claims": [
+    "ART-DSA-RUN034-CONT2-O-MEMBER-00700-CLAIM",
+    "ART-DSA-RUN039-O-MEMBER-01024-CLAIM"
+  ],
+  "new_model_authorization_requested": false,
+  "not_a_successful_O_full_scan_cost_quote": true
+}

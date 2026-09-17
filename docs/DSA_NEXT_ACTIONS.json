@@ -15,7 +15,7 @@
       "paid_data",
       "unrelated_model_experiments"
     ],
-    "paid_workflow_state": "new full-pool workflow not started; public raw model-content export remains prohibited; private text-evidence bridge prepared"
+    "paid_workflow_state": "Two new current-scope HTTP requests consumed and isolated; total conservative usage estimate0.144988CNY, actual invoice unverified. No active paid run; closed claims must not repeat."
   },
   "active_model_authorization": "DSA_FUNDED_DUAL_20260912",
   "completed": [
@@ -32,7 +32,7 @@
     "package_sha256": "9b56b11f0c6f0c59d30d34bab9f7a55c8b27f55c675198aa8ce1451cb9800a3a",
     "report": "docs/dsa-resumption-handoff.md"
   },
-  "description": "Run032 resumes formal O/U acceptance from the verified Run031 release successor. Older semantic failure receipts remain historical; runtime authorization is external control state.",
+  "description": "Current Run033-040 verified data/private-storage/error-output work; formal O/U signals remain unaccepted. Historical authorization and failures are retained by scope.",
   "fixed_progress": "12/16 closed within named bounded legacy scopes; strategy unverified; Run012 engineering bridge separately passed",
   "frozen_acceptance_items": [
     {
@@ -152,14 +152,15 @@
       "title": "受约束的单股模型输出与真实消费者验收"
     },
     {
-      "definition_of_done": "先完成 O 冻结上游单股原生调用、私密文本证据保存/读回/哈希和人工语义复核；再冻结当期官方沪深港股通可买并集并完成 O 全池；之后才启动 U45 正式逐股执行验收；最新覆盖：U独立数据准备不等待O，Drive为首选原件目的地，正式验收门槛不变",
+      "definition_of_done": "Independently finish O frozen-native full official pool and U45 per-member formal signals, preserve failure denominators and original outputs, then verify genuine timely future Entry-v1 fill. U preparation does not wait for O. Already approved runtime windows require no repeated approval.",
       "id": "G4",
       "priority": 1,
-      "status": "GATEA_VERSIONED_RELEASE_PASS; CURRENT_O_UNIVERSE_660; NATIVE_DATA_COMPOSITE_660_OF_660; FULL_NATIVE_MODEL_PENDING; U_FORMAL_0_OF_45",
+      "status": "CURRENT_O_NATIVE_INPUT598_OF660; CURRENT_FORMAL_O0_OF660; U_FACTS44_OF45_AND_FORMAL0_OF45; PRIVATE_STORAGE_PASS; NO_NEW_SHADOW_BUY",
       "title": "U45与O全港股通独立覆盖及原生实例验收",
       "previous_status_asof_20260914": "Drive_primary_runner_authorization_and_roundtrip_pending; U_independent_preparation_unblocked; Run012_GitHub_bridge_retained_as_fallback",
-      "current_receipt": "docs/runtime/RUN032_RESULT.json",
-      "previous_status_preserved_run032": "SEMANTIC_HANDOFF_003_OFFLINE_PASS; ORIGINAL_OUTPUT_NO_GO; COUNT_FALSE_POSITIVE_CORRECTED; NO_NEW_PROVIDER_CALL; U_PREPARATION_UNBLOCKED"
+      "current_receipt": "docs/runtime/RUN033_040_RESUME_RESULT.json",
+      "previous_status_preserved_run032": "SEMANTIC_HANDOFF_003_OFFLINE_PASS; ORIGINAL_OUTPUT_NO_GO; COUNT_FALSE_POSITIVE_CORRECTED; NO_NEW_PROVIDER_CALL; U_PREPARATION_UNBLOCKED",
+      "previous_status_preserved_run040": "GATEA_VERSIONED_RELEASE_PASS; CURRENT_O_UNIVERSE_660; NATIVE_DATA_COMPOSITE_660_OF_660; FULL_NATIVE_MODEL_PENDING; U_FORMAL_0_OF_45"
     },
     {
       "definition_of_done": "冻结规则、PIT证据与交易时点，可复算成本后指标，接受/拒绝/不足均有证据",
@@ -169,12 +170,13 @@
       "title": "资金潮汐/宏观历史回放、时间外与因子对照"
     },
     {
-      "definition_of_done": "交付可审阅部署方案、失败恢复、费用及不可覆盖预测记录；正式启用另行批准",
+      "definition_of_done": "Existing runtime authorization follows RUNTIME_STATE; formal signal and future real simulated fill acceptance remain separate.",
       "evidence": "docs/dsa-resumption-handoff.md",
       "id": "G6",
       "priority": 3,
       "status": "passed_preparation_and_delivery_only",
-      "title": "部署准备和未来观察交接"
+      "title": "部署准备和未来观察交接",
+      "status_scope": "Historical deployment-preparation receipt; current runtime is approved and active externally"
     }
   ],
   "operating_rules": {
@@ -191,7 +193,7 @@
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-17T03:46:33.648202+00:00",
+  "updated_at_utc": "2026-09-17T05:01:47.566565+00:00",
   "user_directive_override": {
     "priority": "urgent",
     "path": "docs/dsa-urgent-user-directive.md",
@@ -427,47 +429,55 @@
     "native_armed": false
   },
   "current_execution": {
-    "run_id": "TRI-DSA-EXEC-20260917-032",
+    "run_id": "TRI-DSA-RESUME-20260917-033-040",
     "authoritative_for_current_execution": true,
-    "scope_receipt": "docs/runtime/RUN032_RESULT.json",
-    "state": "BOUNDED_FREE_RUN032_COMPLETE_FORMAL_MODEL_GATES_PENDING",
-    "gate_a": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
-    "gate_a_workflow": 35069757484,
+    "scope_receipt": "docs/runtime/RUN033_040_RESUME_RESULT.json",
+    "report": "docs/runtime/RUN033_040_RESUME_REPORT.zh-CN.md",
+    "state": "PARTIAL_ACCEPTED_ENGINEERING_DATA_RECOVERY; FORMAL_DUAL_SIGNAL_NO_GO",
+    "gate_a": "Prior Run031 bounded release acceptance retained; not current O full-pool acceptance",
     "historical_raw_failures_preserved": true,
-    "o_full_pool_accepted": false,
-    "u_formal_accepted": 0,
-    "u_denominator": 45,
-    "runtime_status_source": "Rupheal/TRIDENT-Foundation@runtime/dsa-shadow-journal-v1:control_room/dsa/runtime/RUNTIME_STATE.json",
-    "model_requests_this_stage": 0,
-    "next": [
-      "Read Run032 handoff receipt for 4 O data failures and U provider failure; retain full denominators",
-      "Complete O per-member independent history/news preflight and private per-member request claims before using funded native full-pool calls",
-      "Complete remaining U risk/macro/news/plan inputs and formal outputs; latest approved runtime windows remain active",
-      "Only genuinely qualified timely future AM signals can reach Entry-v1; do not fill expired 2026-09-17 morning signals"
-    ],
-    "latest_actual_run": 35179162716,
-    "latest_actual_run_conclusion": "success",
     "current_official_denominator": 660,
     "current_official_session": "2026-09-17",
     "completed_price_session": "2026-09-16",
-    "O_native_data_ready": 660,
-    "O_data_isolated": 0,
+    "actual_O_native_recovery_inputs": 598,
+    "O_input_isolated": 62,
+    "current_formal_native_accepted": 0,
     "O_native_full_pool_accepted": false,
-    "U_formal_accepted": 0,
     "U_denominator": 45,
-    "U_price_ready": 45,
-    "U_independent_provider_ready": 44,
-    "news_title_relevance_raw": 9,
-    "news_title_relevance_reviewed": 8,
-    "news_bounded_issuer_evidence_members": 2,
-    "model_http_requests_this_resume": 0,
-    "formal_native_model_outputs_accepted": 0,
-    "full_history_persistence": "Next collection saves allowlisted per-stock history; current aggregate is not a reusable full native database"
+    "U_audited": 45,
+    "U_input_facts_ready": 44,
+    "U_formal_accepted": 0,
+    "runtime_status_source": "Rupheal/TRIDENT-Foundation@runtime/dsa-shadow-journal-v1:control_room/dsa/runtime/RUNTIME_STATE.json",
+    "runtime_approved_last_verified": true,
+    "runtime_active_last_verified": true,
+    "authority_read_commit": "be654e71d667b0c3935b5a7dcb42821ba3ad110b",
+    "model_http_requests_this_resume": 2,
+    "estimated_cost_cny": "0.144988",
+    "actual_cost_cny": null,
+    "cost_ledger": "docs/runtime/RUN033_040_COST_LEDGER.json",
+    "model_calls_in_progress": false,
+    "latest_actual_run": 35183873567,
+    "latest_actual_run_conclusion": "success",
+    "cloud_tests": {
+      "passed": 104,
+      "failed": 0,
+      "skipped": 0
+    },
+    "full_history_persistence": "Run033 public history artifact; source hash receipts persisted. Run039 private raw multipart independently restored. Tencent failed raw save remains missing.",
+    "remaining_owner_approval_for_existing_window": false,
+    "next": [
+      "Inspect frozen-native supported model configuration with preserved prompt/upstream and a separately versioned prospective research case; no automatic failed-case retries.",
+      "Resolve O raw open-price conflicts with a source that actually includes opening prices; keep all660 and all failures.",
+      "Complete independent U issuer/risk/macro/plan producer and formal45-member acceptance; retain zero-to-three qualified-candidate rule.",
+      "Only after their own gates pass freeze timely independent U/O signals and pass to already approved Entry-v1.",
+      "Do not change Run005 OOS, A0/A3, windows, main, production strategy or real orders."
+    ],
+    "scheduled_handoff": "Read current_execution and dated facts/receipts; keep established AM09:00 PM16:30 and review times. This batch did not deploy a daily full-pool model runner or grant a new entry. Next reports must refresh the target session and cannot present the9/16 cache as9/17 close."
   },
   "execution_checkpoint_history": [
     {
       "run_id": "TRI-DSA-EXEC-20260916-PREFLIGHT-002",
-      "authoritative_for_current_execution": true,
+      "authoritative_for_current_execution": false,
       "receipt": "docs/runtime/PREFLIGHT_FIELDS_20260916_002_RESULT.json",
       "previous_checkpoint_commit": "249dcb959451246bf6e24e9cff6aeffbed284e41",
       "historical_field_receipt": "docs/runtime/PREFLIGHT_FIELDS_20260916_001_RESULT.json",
@@ -508,7 +518,8 @@
       "no_schedule_change": true,
       "no_main_merge": true,
       "strategy_progress_credit": 0,
-      "platform_tokens_credits_fees": "UNKNOWN"
+      "platform_tokens_credits_fees": "UNKNOWN",
+      "scope_note": "Historical record; current control state is external RUNTIME_STATE and current_execution below"
     },
     {
       "run_id": "TRI-DSA-DEV-20260916-SEMANTIC-HANDOFF-003",
@@ -567,6 +578,45 @@
       "strategy_progress_credit": 0,
       "platform_tokens_credits_fees": "UNKNOWN",
       "superseded_pointer_only": true
+    },
+    {
+      "run_id": "TRI-DSA-EXEC-20260917-032",
+      "authoritative_for_current_execution": false,
+      "scope_receipt": "docs/runtime/RUN032_RESULT.json",
+      "state": "BOUNDED_FREE_RUN032_COMPLETE_FORMAL_MODEL_GATES_PENDING",
+      "gate_a": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+      "gate_a_workflow": 35069757484,
+      "historical_raw_failures_preserved": true,
+      "o_full_pool_accepted": false,
+      "u_formal_accepted": 0,
+      "u_denominator": 45,
+      "runtime_status_source": "Rupheal/TRIDENT-Foundation@runtime/dsa-shadow-journal-v1:control_room/dsa/runtime/RUNTIME_STATE.json",
+      "model_requests_this_stage": 0,
+      "next": [
+        "Read Run032 handoff receipt for 4 O data failures and U provider failure; retain full denominators",
+        "Complete O per-member independent history/news preflight and private per-member request claims before using funded native full-pool calls",
+        "Complete remaining U risk/macro/news/plan inputs and formal outputs; latest approved runtime windows remain active",
+        "Only genuinely qualified timely future AM signals can reach Entry-v1; do not fill expired 2026-09-17 morning signals"
+      ],
+      "latest_actual_run": 35179162716,
+      "latest_actual_run_conclusion": "success",
+      "current_official_denominator": 660,
+      "current_official_session": "2026-09-17",
+      "completed_price_session": "2026-09-16",
+      "O_native_data_ready": 660,
+      "O_data_isolated": 0,
+      "O_native_full_pool_accepted": false,
+      "U_formal_accepted": 0,
+      "U_denominator": 45,
+      "U_price_ready": 45,
+      "U_independent_provider_ready": 44,
+      "news_title_relevance_raw": 9,
+      "news_title_relevance_reviewed": 8,
+      "news_bounded_issuer_evidence_members": 2,
+      "model_http_requests_this_resume": 0,
+      "formal_native_model_outputs_accepted": 0,
+      "full_history_persistence": "Next collection saves allowlisted per-stock history; current aggregate is not a reusable full native database",
+      "superseded_by": "TRI-DSA-RESUME-20260917-033-040"
     }
   ],
   "capital_data_collection": {

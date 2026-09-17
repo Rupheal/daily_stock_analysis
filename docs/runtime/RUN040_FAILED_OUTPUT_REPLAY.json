@@ -34,5 +34,15 @@
   "fee_cny": "0",
   "strategy_changes": false,
   "runtime_changes": false,
-  "new_preflight_contract_note": "Future generic inputs include the existing v2 contract identifier; no retroactive repair of Run039 input"
+  "new_preflight_contract_note": "Future generic inputs include the existing v2 contract identifier; no retroactive repair of Run039 input",
+  "cloud_regression": {
+    "run_id": 35183873567,
+    "job_id": 105081639578,
+    "passed": 104,
+    "failed": 0,
+    "skipped": 0,
+    "artifact_id": 10480984041,
+    "artifact_sha256": "d093fd4e2e9ee8694e9c7da1704bf57445ccc4cac4e14283cb3cf242895d5543",
+    "tested_commit": "83e02656bc80dd16a7f159c1ab0869d47497fdc8"
+  }
 }
