@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260918-058A0",
+  "parent_controller_run_id": "TRI-DSA-RESUME-20260917-058",
+  "parent_controller_commit": "f6c63ecc0513d19e02e2801eb8f9f72ce0f9fdea",
+  "micro_batch_id": "O57-MB-001",
+  "tranche_id": "O57-TR-01",
+  "codes": ["00001", "00002"],
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "pit_universe": "docs/runtime/run032_public_cache/O_UNIVERSE.json",
+  "expected_pit_effective_session": "2026-09-17",
+  "expected_o_denominator": 660,
+  "minimum_native_sessions": 21,
+  "fresh_news_policy": {
+    "mode": "ZERO_EVENT_LIMITED_COVERAGE",
+    "news_count": 0,
+    "full_coverage": false,
+    "risk_review_complete": false,
+    "required_risk_ids": ["FRESH_NEWS_NOT_REVIEWED"]
+  },
+  "resource_boundary": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "deepseek_cost_cny": "0",
+    "provider_send_authorized": false,
+    "automatic_recharge": false
+  },
+  "safety": {
+    "no_orders": true,
+    "no_simulation_ledger_writes": true,
+    "no_schedule_changes": true,
+    "no_main_merge": true,
+    "no_historical_rewrite": true
+  }
+}
