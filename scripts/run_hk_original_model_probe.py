@@ -110,6 +110,7 @@ def main():
                             max_requests=1, model=model, host=urlparse(base).hostname)
     validated = False
     validation_receipt = None
+    input_validation_error_code = None
     adapter_applied_count = 0
     frozen_history_adapter_receipt = None
     news_handoff = None
@@ -145,13 +146,14 @@ def main():
         return text or None
 
     def analyze(instance, context, *a, **kw):
-        nonlocal validated, validation_receipt, news_handoff, output_semantic_receipt, returned_result, observed_input
+        nonlocal validated, validation_receipt, input_validation_error_code, news_handoff, output_semantic_receipt, returned_result, observed_input
         try:
             validation_receipt = validate_native_input(preflight, context)
             history_receipt = validate_native_history_database(preflight, root/'original-data.db')
             if history_receipt is not None:
                 validation_receipt['full_native_history_window'] = history_receipt
         except NativeInputContractError as exc:
+            input_validation_error_code = str(exc)
             raise ValueError(str(exc)) from None
         bound = inspect.signature(original_analyze).bind(instance,context,*a,**kw)
         observed_input = {'context':context,'news_context':bound.arguments.get('news_context'),
@@ -264,6 +266,8 @@ def main():
                 'original_module_origins_verified':True,'module_origin_receipt':module_origin_receipt,
                 'provider_configuration':'Existing OpenAI-compatible channel configured for authorized DeepSeek',
                 'input_validated':validated,'input_validation_receipt':validation_receipt,
+                'input_validation_error_code':input_validation_error_code,
+                'native_main_failure_reason':getattr(native_main_module,'_LAST_ANALYSIS_FAILURE_REASON',None),
                 'scope':'O single Xiaomi native analysis; not O660 ranking',
                 'preflight_sha256':hashlib.sha256(preflight_path.read_bytes()).hexdigest(),
                 'target_boundary_adapter':bool(args.target_boundary_adapter),
