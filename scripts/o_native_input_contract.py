@@ -96,3 +96,25 @@ def validate_native_input(preflight, context):
         'volume_relative_deviation': deviation,
         'calibration_run_id': CALIBRATION_RUN_ID,
     }
+
+
+def validate_native_history_database(preflight, database):
+    """For new pool preflights bind every independently checked native input bar.
+
+    Historical Gate-A artifacts do not contain this optional member-window contract.
+    No research src module or mutable strategy is imported.
+    """
+    expected=preflight.get('validated_native_history')
+    if expected is None:return None
+    import sqlite3
+    window=preflight.get('native_history_window') or {}
+    if len(expected)<21 or window.get('count')!=len(expected):raise NativeInputContractError('NATIVE_HISTORY_CONTRACT_INVALID')
+    with sqlite3.connect('file:'+str(database)+'?mode=ro',uri=True) as con:
+        rows=con.execute('SELECT date,open,high,low,close,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date',(preflight['symbol'],)).fetchall()
+    if len(rows)!=len(expected):raise NativeInputContractError('NATIVE_HISTORY_WINDOW_CHANGED')
+    for actual,ref in zip(rows,expected):
+        if str(actual[0])[:10]!=str(ref['date'])[:10]:raise NativeInputContractError('NATIVE_HISTORY_DATE_CHANGED')
+        for i,k in enumerate(('open','high','low','close'),1):
+            if abs(_finite(actual[i],'NATIVE_HISTORY_NONFINITE')-_finite(ref[k],'NATIVE_HISTORY_NONFINITE'))>OHLC_ABSOLUTE_TOLERANCE:raise NativeInputContractError('NATIVE_HISTORY_PRICE_CHANGED')
+        if _finite(actual[5],'NATIVE_HISTORY_NONFINITE')!=_finite(ref['volume'],'NATIVE_HISTORY_NONFINITE'):raise NativeInputContractError('NATIVE_HISTORY_VOLUME_CHANGED')
+    return {'passed':True,'count':len(rows),'first':window['first'],'last':window['last'],'every_native_bar_validated':True}

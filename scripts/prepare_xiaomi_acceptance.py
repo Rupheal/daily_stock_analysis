@@ -83,18 +83,20 @@ def fetch_issuer_announcements(now, root):
     return result
 
 
-def compare_prices(primary, independent, target, return_diagnostics=False):
+def compare_prices(primary, independent, target, return_diagnostics=False, *, minimum_overlap=60):
     """Require same session, strict OHLC, exact history volume and calibrated latest volume.
 
     Historical volume remains exact-only. The latest session alone may use the
     evidence-bounded provider reconciliation rule calibrated in Actions Run
     34983641578; the calibration added no discretionary margin.
     """
-    if len(primary) < 60 or independent.empty:
+    if type(minimum_overlap) is not int or minimum_overlap < 21:
+        raise ValueError('Invalid minimum validated window')
+    if len(primary) < minimum_overlap or independent.empty:
         raise ValueError('Incomplete latest session/history coverage')
     validate_latest_session(primary.iloc[-1]['date'], independent.iloc[-1]['date'], target)
     overlap = primary.merge(independent, on='date', suffixes=('_tencent', '_yahoo'), validate='one_to_one')
-    if len(overlap) < 60:
+    if len(overlap) < minimum_overlap:
         raise ValueError('Insufficient independent overlap')
 
     for field in ('open', 'high', 'low', 'close'):

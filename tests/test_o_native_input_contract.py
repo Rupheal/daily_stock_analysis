@@ -66,3 +66,18 @@ def test_wrong_bound_fails_closed():
 def test_nonfinite_volume_fails():
     with pytest.raises(NativeInputContractError,match='NATIVE_VOLUME_NONFINITE'):
         validate_native_input(preflight(),context(volume=float('nan')))
+
+
+def test_member_history_contract_rejects_changed_nonlatest_bar(tmp_path):
+    import sqlite3
+    from o_native_input_contract import validate_native_history_database,NativeInputContractError
+    db=tmp_path/'data.db'
+    conn=sqlite3.connect(db);conn.execute('CREATE TABLE stock_daily(code,date,open,high,low,close,volume)')
+    rows=[{'date':f'2026-08-{i:02}','open':10,'high':11,'low':9,'close':10,'volume':100} for i in range(1,22)]
+    conn.executemany('INSERT INTO stock_daily VALUES (?,?,?,?,?,?,?)',[('hk00700',r['date'],10,11,9,10,100) for r in rows]);conn.commit()
+    p={'symbol':'HK00700','validated_native_history':rows,'native_history_window':{'first':rows[0]['date'],'last':rows[-1]['date'],'count':21}}
+    assert validate_native_history_database(p,db)['every_native_bar_validated']
+    conn.execute("UPDATE stock_daily SET volume=101 WHERE date='2026-08-01'");conn.commit()
+    import pytest
+    with pytest.raises(NativeInputContractError,match='VOLUME_CHANGED'):validate_native_history_database(p,db)
+    conn.close()

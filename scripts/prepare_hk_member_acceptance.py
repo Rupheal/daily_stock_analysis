@@ -40,21 +40,25 @@ def prepare(code,target,universe,cache,root):
     history=json.loads(cache.read_text());assert history['target_session']==target
     item=history['histories'][code]
     if not item['tencent'] or not item.get('independent_source',{}).get('sha256'):raise ValueError('PERSISTED_TENCENT_SOURCE_MISSING')
-    df=pd.DataFrame(item['tencent']);fetcher=TencentFetcher();df=fetcher._calculate_indicators(fetcher._clean_data(fetcher._normalize_data(df,'HK'+code)))
+    native=item.get('native') or []
+    from audit_dual_history_cache import normalized
+    native=normalized(native,target); native_dates={r['date'] for r in native}
+    df=pd.DataFrame([r for r in item['tencent'] if r['date'] in native_dates]);fetcher=TencentFetcher();df=fetcher._calculate_indicators(fetcher._clean_data(fetcher._normalize_data(df,'HK'+code)))
     df['date']=pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d');df=df[df['date']<=target].sort_values('date')
-    end=datetime.fromisoformat(target)+timedelta(days=1);start=end-timedelta(days=220)
+    end=datetime.fromisoformat(target)+timedelta(days=1);start=datetime.fromisoformat(native[0]['date'])
     h=yf.Ticker(f'{int(code):04d}.HK').history(start=start.date().isoformat(),end=end.date().isoformat(),auto_adjust=True,actions=True,repair=True,timeout=20)
     if h.empty:raise ValueError('INDEPENDENT_YAHOO_HISTORY_EMPTY')
     y=h.reset_index();y.columns=[str(c).lower() for c in y.columns];y['date']=pd.to_datetime(y['date']).dt.strftime('%Y-%m-%d');y=y[y['date']<=target].sort_values('date')
     atomic_json(root/'independent_history.json',{'provider':'Yahoo via yfinance','adjustment':'auto_adjust=True,repair=True','source_locator':f'https://query1.finance.yahoo.com/v8/finance/chart/{int(code):04d}.HK','retrieved_at':datetime.now(timezone.utc).isoformat(),'result':y.to_dict('records')})
-    overlap,reconciliation=compare_prices(df,y,target,True)
+    overlap,reconciliation=compare_prices(df,y,target,True,minimum_overlap=len(native))
+    if set(df['date'])!=native_dates or set(y['date'])!=native_dates:raise ValueError('NATIVE_WINDOW_NOT_COMPLETELY_VALIDATED')
     # Price rules are unchanged. Explicitly distinguish exact comparisons from the legacy latest-bar bound.
     today,yesterday=df.iloc[-1].to_dict(),df.iloc[-2].to_dict();context={'today':today,'yesterday':yesterday,'volume_change_ratio':round(today['volume']/yesterday['volume'],2)}
     validate_daily_context(context,target)
     now=datetime.now(timezone.utc).isoformat();base=Path(__file__).resolve().parents[1]/'docs/runtime';eraw=(base/'RUN032_PRIMARY_EVIDENCE.json').read_bytes();review=json.loads((base/'RUN032_PRIMARY_REVIEW.json').read_text())
     events=reviewed_events(code,target,json.loads(eraw),review,hashlib.sha256(eraw).hexdigest(),now)
     urls=sorted({s for e in events for s in e['source_urls']})
-    preflight={'passed':True,'symbol':'HK'+code,'stock_name':member['official_name'],'prices_passed':True,'prepared_at':now,'target':target,'today':today,'yesterday':yesterday,'facts':daily_consistency_facts(context),'price_reconciliation':reconciliation,'overlap':overlap,'component_status':{'prices':'passed','news':'passed_limited_coverage'},'news_count':len(urls),'allowed_news_urls':urls,'company_news_evidence':events,'execution_contract':{'realtime_quote_available':False,'target_session':target},'hk_report_contract':{'required_risk_ids':[]},'risk_review_complete':False,'limitation':'Only reviewed issuer repurchases are admitted. No exhaustive risk/news review, execution clearance, U rule acceptance or whole-pool ranking.','sources':{'universe_sha256':hashlib.sha256(universe.read_bytes()).hexdigest(),'history_cache_sha256':hashlib.sha256(cache.read_bytes()).hexdigest(),'primary_evidence_sha256':hashlib.sha256(eraw).hexdigest(),'tencent':item['independent_source']}}
+    preflight={'passed':True,'symbol':'HK'+code,'stock_name':member['official_name'],'prices_passed':True,'prepared_at':now,'target':target,'today':today,'yesterday':yesterday,'facts':daily_consistency_facts(context),'price_reconciliation':reconciliation,'overlap':overlap,'validated_native_history':native,'native_history_window':{'first':native[0]['date'],'last':target,'count':len(native),'scope':'Every bar in frozen native data-only window; unrelated earlier archive conflicts retained separately','ma60_supported':len(native)>=60},'component_status':{'prices':'passed','news':'passed_limited_coverage'},'news_count':len(urls),'allowed_news_urls':urls,'company_news_evidence':events,'execution_contract':{'realtime_quote_available':False,'target_session':target},'hk_report_contract':{'required_risk_ids':[]},'risk_review_complete':False,'limitation':'Only reviewed issuer repurchases are admitted. No exhaustive risk/news review, execution clearance, U rule acceptance or whole-pool ranking.','sources':{'universe_sha256':hashlib.sha256(universe.read_bytes()).hexdigest(),'history_cache_sha256':hashlib.sha256(cache.read_bytes()).hexdigest(),'primary_evidence_sha256':hashlib.sha256(eraw).hexdigest(),'tencent':item['independent_source']}}
     atomic_json(root/'preflight.json',preflight)
     return {'symbol':'HK'+code,'preflight':'PASS_BOUNDED_NATIVE_RESEARCH','overlap':overlap,'news_count':len(events),'model_requests':0}
 

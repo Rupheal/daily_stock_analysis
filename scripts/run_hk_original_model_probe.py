@@ -18,7 +18,7 @@ from unittest.mock import patch
 from urllib.parse import urlparse
 
 from hk_budget_guard import ResearchBudget, decode_usage
-from o_native_input_contract import NativeInputContractError, validate_native_input
+from o_native_input_contract import NativeInputContractError, validate_native_input, validate_native_history_database
 from o_native_date_boundary_adapter import patched_yahoo_target_boundary
 from o_semantic_handoff_contract import (CONTRACT_VERSION, FROZEN_UPSTREAM, ContractError,
     canonical_hash, build_news_handoff, prove_prompt_consumption)
@@ -144,6 +144,9 @@ def main():
         nonlocal validated, validation_receipt, news_handoff, output_semantic_receipt, returned_result, observed_input
         try:
             validation_receipt = validate_native_input(preflight, context)
+            history_receipt = validate_native_history_database(preflight, root/'original-data.db')
+            if history_receipt is not None:
+                validation_receipt['full_native_history_window'] = history_receipt
         except NativeInputContractError as exc:
             raise ValueError(str(exc)) from None
         bound = inspect.signature(original_analyze).bind(instance,context,*a,**kw)
