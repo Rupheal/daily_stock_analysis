@@ -1,0 +1,110 @@
+name: DSA Run058G frozen-history zero-model dry acceptance
+
+on:
+  push:
+    branches: [research/run058g-o-frozen-history-dry-20260918]
+    paths:
+      - .github/workflows/111-run058g-o-frozen-history-dry.yml
+      - scripts/o_frozen_history_retrieval_adapter.py
+      - scripts/run_hk_original_model_probe_run058g.py
+      - scripts/diagnose_run058g_frozen_history.py
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058g-o-frozen-history-dry
+  cancel-in-progress: false
+
+jobs:
+  dry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, fetch-depth: 0}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt requests deepseek-recipe==0.1.1
+      - name: Compile bounded adapter
+        working-directory: research
+        run: python -m py_compile scripts/o_frozen_history_retrieval_adapter.py scripts/run_hk_original_model_probe_run058g.py scripts/diagnose_run058g_frozen_history.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35224980615
+          github-token: ${{ github.token }}
+          name: RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE
+          path: parent
+      - name: Bind exact history
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          h='5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e'
+          m=[p for p in Path('parent').rglob('market-history.json') if hashlib.sha256(p.read_bytes()).hexdigest()==h]
+          assert len(m)==1 and json.loads(m[0].read_text())['target_session']=='2026-09-17'
+          Path('/tmp/history-path').write_text(str(m[0].resolve()))
+          PY
+      - name: Run frozen-history dry acceptance with no provider or Drive credential
+        working-directory: research
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+        run: python scripts/diagnose_run058g_frozen_history.py --checkout ../original --cache "$(cat /tmp/history-path)" --out /tmp/run058g
+      - name: Verify exact history passes before any provider slot is reopened
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/run058g/RUN058G_RESULT.json'))
+          assert r['model_http_requests']==0 and r['provider_credentials_used'] is False and r['drive_claims']==0
+          assert r['returncode']==0 and r['exact_history_contract_pass'] is True
+          a=r['frozen_history_audit']
+          assert a['enabled'] is True and a['symbol']=='HK00001' and a['expected_count']>=21
+          assert a['calls']>=1 and a['rows_replayed']>=21
+          print('RUN058G_EXACT_HISTORY_PASS')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058G_FROZEN_HISTORY_DRY_ACCEPTANCE
+          path: |
+            /tmp/run058g/RUN058G_RESULT.json
+            /tmp/run058g/frozen-history-audit.json
+          retention-days: 90
+      - name: Commit sanitized Run058G receipt
+        working-directory: research
+        run: |
+          set -euo pipefail
+          cp /tmp/run058g/RUN058G_RESULT.json docs/runtime/RUN058G_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN058G_RESULT.json
+          git commit -m 'dsa: record Run058G frozen-history dry acceptance'
+          git push
