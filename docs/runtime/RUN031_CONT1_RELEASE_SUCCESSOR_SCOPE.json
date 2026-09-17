@@ -25,5 +25,13 @@
   "runtime_activated": false,
   "real_orders_permitted": false,
   "main_merge_permitted": false,
-  "schedule_changes_permitted": false
+  "schedule_changes_permitted": false,
+  "replay_request": {
+    "requested_at_utc": "2026-09-17T22:45:00Z",
+    "reason": "Bounded recovery: historical run 35069618691 proved contract tests only and exposed no Drive/private successor acceptance receipt; rerun current model-free successor workflow to recover exact parent artifact, verify release adapter, save/read/hash restore privately, and resolve Gate A without a new model call.",
+    "model_requests_authorized": 0,
+    "no_raw_parent_mutation": true,
+    "no_strategy_change": true,
+    "no_main_merge": true
+  }
 }
