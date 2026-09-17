@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058E",
+  "parent_run_id": "TRI-DSA-O-TARGET-PREFLIGHT-20260918-058D",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "codes": [
+    "00001"
+  ],
+  "O_denominator": 660,
+  "retained_historical_isolations": 52,
+  "session_preflight_isolated": [
+    "00002"
+  ],
+  "no_repeat_codes": [
+    "00700",
+    "01024",
+    "01810"
+  ],
+  "parent_artifact_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "history_cache_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "preflight_builder": "O_POOL_TARGET_PREFLIGHT_V2",
+  "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+  "maximum_requests": 1,
+  "maximum_cost_cny": "0.10",
+  "per_member_cap_cny": "0.10",
+  "artifact_prefix": "ART-DSA-RUN058E-O-NATIVE",
+  "budget_authority": "Existing funded DSA authorization. One request maximum for HK00001 only; CNY0.10 hard cap; no automatic recharge.",
+  "selection_reason": "Run058D passed fresh target-session preflight for 00001 and fail-closed 00002. 00001 has never had a provider request in this rollout.",
+  "closed_batch_007_reused": false,
+  "automatic_retry": false,
+  "provider_send_authorized": true,
+  "provider_send_authorization_scope": "HK00001 only, one provider request maximum, CNY0.10 hard cap.",
+  "manual_private_review_required": true,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "schedule_changes": false,
+  "main_changes": false,
+  "historical_rewrites": false,
+  "required_pre_send_gates": [
+    "O_POOL_TARGET_PREFLIGHT_V2",
+    "single_request_dry_envelope",
+    "pre_send_private_save_read_hash_restore",
+    "verified_available_CNY_balance",
+    "durable_Drive_reserve_native_call",
+    "GITHUB_RUN_ATTEMPT_equals_1",
+    "GITHUB_EVENT_NAME_equals_push"
+  ],
+  "required_post_send_gates": [
+    "provider_completion_audit",
+    "post_output_contract",
+    "release_gate_if_SEM_001_only",
+    "final_private_save_read_hash_restore",
+    "sanitized_receipt",
+    "no_signal_publish"
+  ],
+  "definition_of_done": "HK00001 has at most one provider request with private save/read/hash/restore and semantic/release reconciliation. No BUY, ranking, fill or order is created in this child. Any ambiguity stops the rollout."
+}
