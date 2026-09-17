@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260918-057-GATEA-RECOVERY",
+  "verified_at_utc": "2026-09-17T23:05:00Z",
+  "state": "HISTORICAL_GATE_A_RECEIPT_RECOVERED",
+  "historical_successor": {
+    "workflow_run": 35069757484,
+    "head_sha": "abdc05ffc93107ae5b1b19d7b2357768f1c4ca02",
+    "conclusion": "success",
+    "parent_run_id": "TRI-DSA-EXEC-20260916-031-CONT1",
+    "parent_artifact_id": "ART-DSA-RUN031-CONT1-GATEA-O-SINGLE",
+    "parent_sha256": "a428902c3bb95ea355d496756a3ec2e749206cd676d8cfa87f6e2f910f0482a3",
+    "successor_run_id": "TRI-DSA-ACCEPT-20260916-031-RELEASE",
+    "successor_gate": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+    "successor_private_sha256": "0571a501ac024ce99b7c5850536b64463fe13523934cd80557b8bfa63c4296ec",
+    "private_save_read_hash_restore": "PASS",
+    "raw_pipeline_fail_preserved": true,
+    "strategy_fields_changed": false,
+    "model_http_requests_added": 0
+  },
+  "current_bounded_replay": {
+    "workflow_run": 35285061350,
+    "head_sha": "9a354206ed29fc662fb1de6a9a655c7b88fc6556",
+    "conclusion": "failure",
+    "failure_class": "STALE_PRECONDITION_ASSERTION",
+    "detail": "Replay expected paid_pause_required=true, while authoritative batch ledger had already closed Gate A with paid_pause_required=false after historical successor PASS. Failure occurred before Drive restore and before any model call.",
+    "model_http_requests": 0,
+    "no_retry_required": true
+  },
+  "gate_a": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+  "new_model_call_required": false,
+  "next": "Refresh O full-pool history for completed 2026-09-17 session, then shard native execution while retaining all 660 and all isolates.",
+  "real_orders": 0,
+  "main_merge": false,
+  "schedule_changes": 0
+}
