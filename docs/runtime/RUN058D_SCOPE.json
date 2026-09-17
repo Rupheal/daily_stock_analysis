@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-TARGET-PREFLIGHT-20260918-058D",
+  "parent_run_id": "TRI-DSA-O-INDEPENDENT-DIAG-20260918-058C",
+  "target_session": "2026-09-17",
+  "codes": [
+    "00001",
+    "00002"
+  ],
+  "parent_artifact_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "native_history_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "run057_plan": "docs/runtime/RUN057_O_NATIVE_PLAN.json",
+  "decision": "Historical cross-provider qfq differences remain disclosed but are not re-adjudicated in the per-send preflight because Run057 already binds Run050-052 adjudication. Fresh target-session OHLC and calibrated volume remain hard gates.",
+  "expected_member_outcomes": {
+    "00001": "PASS_POOL_TARGET_PREFLIGHT_V2",
+    "00002": "FAIL_TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+  },
+  "model_http_requests": 0,
+  "provider_send_authorized": false,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "next_if_expected": "Mark 00002 session-preflight isolated and permit only 00001 to enter a new immutable paid child; do not retry 00002."
+}
