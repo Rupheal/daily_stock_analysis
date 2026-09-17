@@ -6,7 +6,9 @@ on:
     paths:
       - .github/workflows/102-run056-u-formal-decision.yml
       - scripts/run056_u_formal_decision.py
+      - scripts/run056_u_formal_decision_v2.py
       - tests/test_run056_u_formal_decision.py
+      - tests/test_run056_u_formal_decision_v2.py
       - docs/runtime/RUN056_SCOPE.json
   workflow_dispatch:
 
@@ -46,7 +48,7 @@ jobs:
 
       - name: Run Run056 deterministic contract tests
         working-directory: research
-        run: python -m pytest --noconftest -q tests/test_run056_u_formal_decision.py tests/test_private_multipart.py
+        run: python -m pytest --noconftest -q tests/test_run056_u_formal_decision.py tests/test_run056_u_formal_decision_v2.py tests/test_private_multipart.py
 
       - name: Run formal U45 decision and ranking
         env:
@@ -57,7 +59,7 @@ jobs:
           DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
           DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
         run: |
-          python research/scripts/run056_u_formal_decision.py \
+          python research/scripts/run056_u_formal_decision_v2.py \
             --scope research/docs/runtime/RUN056_SCOPE.json \
             --member research/docs/runtime/RUN041_U45_MEMBER_REPORTS.json \
             --close research/docs/runtime/RUN049_U45_20260917_CLOSE_REFRESH.json \
