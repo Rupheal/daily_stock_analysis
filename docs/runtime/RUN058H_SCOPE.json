@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058H",
+  "parent_run_id": "TRI-DSA-O-DRY-ACCEPT-20260918-058G",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "codes": [
+    "00001"
+  ],
+  "O_denominator": 660,
+  "retained_historical_isolations": 52,
+  "session_preflight_isolated": [
+    "00002"
+  ],
+  "no_repeat_codes": [
+    "00700",
+    "01024",
+    "01810"
+  ],
+  "parent_artifact_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "history_cache_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "preflight_contract": "POOL_TARGET_V2",
+  "preflight_plan": "docs/runtime/RUN057_O_NATIVE_PLAN.json",
+  "frozen_native_history_adapter": true,
+  "dry_acceptance": {
+    "workflow_run": 35285911984,
+    "artifact_id": 10524391395,
+    "artifact_digest": "sha256:8d8a3d6b5f899c15c74ca0d7e64896842bf5436f4c3071a935c629548dd5d438",
+    "state": "PASS_FROZEN_HISTORY_DRY",
+    "pre_send_peak_upper_cny": "0.07982",
+    "history_rows": 44,
+    "history_sha256": "f747bdf6f08da9164b631e1a81d264f172c1b16776d7ec302c9e77eda0d839cc"
+  },
+  "prior_failed_runs": [
+    35285018917,
+    35285236744
+  ],
+  "prior_model_http_requests_confirmed": 0,
+  "maximum_requests": 1,
+  "maximum_cost_cny": "0.10",
+  "per_member_cap_cny": "0.10",
+  "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+  "artifact_prefix": "ART-DSA-RUN058H-O-NATIVE",
+  "budget_authority": "Existing funded DSA authorization; one request maximum for HK00001; CNY0.10 hard cap; no automatic recharge.",
+  "automatic_retry": false,
+  "provider_send_authorized": true,
+  "provider_send_authorization_scope": "HK00001 only after PASS_FROZEN_HISTORY_DRY; one request maximum; CNY0.10 hard cap.",
+  "manual_private_review_required": true,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "schedule_changes": false,
+  "main_changes": false,
+  "historical_rewrites": false,
+  "required_pre_send_gates": [
+    "fresh_pool_target_preflight_v2",
+    "frozen_native_history_adapter_dry_pass",
+    "single_request_dry_envelope",
+    "pre_send_private_save_read_hash_restore",
+    "verified_available_CNY_balance",
+    "durable_Drive_reserve_native_call",
+    "GITHUB_RUN_ATTEMPT_equals_1",
+    "GITHUB_EVENT_NAME_equals_push"
+  ],
+  "required_post_send_gates": [
+    "provider_completion_audit",
+    "post_output_contract",
+    "release_gate_if_SEM_001_only",
+    "final_private_save_read_hash_restore",
+    "sanitized_receipt",
+    "manual_semantic_review",
+    "no_signal_publish"
+  ],
+  "definition_of_done": "One and only one HK00001 provider request at most; immutable original output privately saved/read/hash/restored; no rank/signal/order/fill; any ambiguity stops."
+}
