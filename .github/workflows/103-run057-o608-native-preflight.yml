@@ -1,0 +1,105 @@
+name: DSA Run057 O608 zero-model native rollout plan
+
+on:
+  push:
+    branches: [research/run057-o608-native-preflight-20260917]
+    paths:
+      - .github/workflows/103-run057-o608-native-preflight.yml
+      - scripts/build_run057_o_native_plan.py
+      - tests/test_run057_o_native_plan.py
+      - docs/runtime/RUN057_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run057-o608-native-preflight
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependency
+        run: pip install pytest
+
+      - name: Run deterministic Run057 tests
+        run: python -m pytest --noconftest -q tests/test_run057_o_native_plan.py
+
+      - name: Build exact O608 rollout plan
+        run: |
+          python scripts/build_run057_o_native_plan.py \
+            --root . \
+            --scope docs/runtime/RUN057_SCOPE.json \
+            --output /tmp/RUN057_O_NATIVE_PLAN.json
+
+      - name: Verify Run057 boundaries
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/RUN057_O_NATIVE_PLAN.json'))
+          assert p['state']=='PASS_ZERO_MODEL_O_NATIVE_ROLLOUT_PLAN'
+          assert p['denominator']=={
+              'O_universe':660,
+              'deterministic_ready':608,
+              'retained_isolated':52,
+              'released_from_isolation':0,
+              'removed_from_denominator':0,
+          }
+          assert set(p['no_repeat']['known_minimum_recovered'])=={'00700','01024','01810'}
+          assert p['no_repeat']['count_within_ready']>=3
+          assert p['rollout']['never_called_count']+p['no_repeat']['count_within_ready']==608
+          assert p['rollout']['send_authorized_by_run057'] is False
+          flat=[c for b in p['rollout']['micro_batches'] for c in b['codes']]
+          assert flat==p['rollout']['never_called_codes']
+          assert len(flat)==len(set(flat))
+          tflat=[c for t in p['rollout']['tranches'] for c in t['codes']]
+          assert tflat==p['rollout']['never_called_codes']
+          r=p['resource_accounting']
+          assert r['model_http_requests']==0
+          assert r['paid_data_calls']==0
+          assert r['DeepSeek_API_cost_cny']==0
+          assert r['real_orders']==0
+          assert r['simulation_writes']==0
+          assert r['schedule_changes']==0
+          assert r['automatic_recharge'] is False
+          print(json.dumps({
+              'ready':608,
+              'isolated':52,
+              'no_repeat_ready':p['no_repeat']['count_within_ready'],
+              'never_called':p['rollout']['never_called_count'],
+              'micro_batches':p['rollout']['micro_batch_count'],
+              'tranches':p['rollout']['tranche_count'],
+              'hard_cap_cny':p['rollout']['conservative_provider_hard_cap_cny'],
+          }))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN057_O_NATIVE_PLAN
+          path: /tmp/RUN057_O_NATIVE_PLAN.json
+          retention-days: 90
+
+      - name: Commit sanitized Run057 receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp /tmp/RUN057_O_NATIVE_PLAN.json docs/runtime/RUN057_O_NATIVE_PLAN.json
+          git add docs/runtime/RUN057_O_NATIVE_PLAN.json
+          if git diff --cached --quiet; then
+            echo 'No Run057 receipt changes'
+          else
+            git commit -m 'dsa: record Run057 O608 zero-model rollout plan'
+            git push
+          fi
