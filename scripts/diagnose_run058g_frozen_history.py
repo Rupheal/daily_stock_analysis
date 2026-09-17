@@ -26,7 +26,16 @@ def main():
       if q.exists():result[name[:-5].replace("-","_")]=json.loads(q.read_text())
     q=a.out/"frozen-history-audit.json"
     if q.exists():result["frozen_history_audit"]=json.loads(q.read_text())
-    result["exact_history_contract_pass"]=bool(result.get("probe_summary",{}).get("input_validated")) and p.returncode==0
+    summary=result.get("probe_summary",{})
+    hist=((summary.get("input_validation_receipt") or {}).get("full_native_history_window") or {})
+    reqs=(result.get("budget") or {}).get("requests") or []
+    result["exact_history_contract_pass"]=(
+        summary.get("input_validated") is True
+        and hist.get("passed") is True
+        and hist.get("every_native_bar_validated") is True
+        and len(reqs)==1
+        and reqs[0].get("status")=="dry_envelope_validated_not_sent"
+    )
     (a.out/"RUN058G_RESULT.json").write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
     print(json.dumps(result,ensure_ascii=False))
 if __name__=="__main__":main()
