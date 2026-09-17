@@ -1,0 +1,14 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-032-RECOVERY1",
+  "created_at": "2026-09-17T03:24:17.285452+00:00",
+  "official_session": "2026-09-17",
+  "files": {
+    "O_UNIVERSE.json": "4d649ced819fb1f75cbacb235ef98a42000a3e2b563b6079a4ab321666a420be",
+    "U_UNIVERSE.json": "a3bb7c15c4eda8adc80fd74364edae11e0037f39b45537647a281d9c3c14db3d",
+    "U45_NEWS_MULTISOURCE.json": "8667899683ac7a40a4284d0a609417ad1e36a4ee50d0d5d6cfa637272c5c2381"
+  },
+  "purpose": "Previously verified same-session public source cache, not a new cloud source fetch; unavailable to earlier decisions",
+  "first_cloud_failure": 35177566103,
+  "failure": "SZSE JSON missing after cloud transport attempt; full local metadata, workbook and HKEX source bytes already verified",
+  "model_calls": 0
+}

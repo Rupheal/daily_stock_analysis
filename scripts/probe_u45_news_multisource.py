@@ -108,7 +108,7 @@ def fetch_yahoo(member: dict, timeout: float) -> dict:
 
 
 def google_once(term: str, timeout: float, cutoff: datetime, relevance_terms: list[str]) -> dict:
-    query=f'"{term}" 股票 OR 港股'; started=time.monotonic(); out={'provider':'google_news_rss','query':query,'term':term}
+    query=f'"{term}" (stock OR shares OR Hong Kong OR 股票 OR 港股)'; started=time.monotonic(); out={'provider':'google_news_rss','query':query,'term':term}
     try:
         r=requests.get(GOOGLE_RSS,params={'q':query,'hl':'zh-TW','gl':'HK','ceid':'HK:zh-Hant'},headers={'User-Agent':UA,'Accept':'application/rss+xml, application/xml;q=0.9, */*;q=0.8'},timeout=(8,timeout))
         raw=r.content; out.update(http_status=r.status_code,response_bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest()); r.raise_for_status(); root=ET.fromstring(raw); items=root.findall('.//item')
@@ -119,7 +119,7 @@ def google_once(term: str, timeout: float, cutoff: datetime, relevance_terms: li
             try:
                 dt=parsedate_to_datetime(pub)
                 if dt.tzinfo is None: dt=dt.replace(tzinfo=timezone.utc)
-                is_recent=dt.astimezone(timezone.utc)>=cutoff
+                is_recent=cutoff<=dt.astimezone(timezone.utc)<=datetime.now(timezone.utc)
             except Exception:
                 pass
             hit=any(t in title.casefold() for t in terms)
@@ -140,7 +140,7 @@ def google_once(term: str, timeout: float, cutoff: datetime, relevance_terms: li
 def fetch_google(member: dict, timeout: float, cutoff: datetime) -> list[dict]:
     alias=clean_alias(member['name']); official=member.get('official_name','').strip(); relevance=[alias,official]
     first=google_once(alias,timeout,cutoff,relevance); attempts=[first]
-    if int(first.get('items_returned') or 0)==0 and official and official.casefold()!=alias.casefold():
+    if int(first.get('recent_title_issuer_hits') or 0)==0 and official and official.casefold()!=alias.casefold():
         attempts.append(google_once(official,timeout,cutoff,relevance))
     return attempts
 

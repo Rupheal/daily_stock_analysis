@@ -54,5 +54,14 @@ class TestU45NewsReadiness(unittest.TestCase):
         self.assertEqual(M.clean_alias('腾讯控股'),'腾讯控股')
 
 
+class TestOfficialAliasFallback(unittest.TestCase):
+    def test_unrelated_results_do_not_suppress_official_alias(self):
+        from unittest.mock import patch
+        from datetime import datetime,timezone
+        member={'name':'腾讯控股','official_name':'TENCENT','code':'00700'}
+        with patch.object(M,'google_once',return_value={'items_returned':20,'recent_title_issuer_hits':0}) as probe:
+            M.fetch_google(member,10,datetime.now(timezone.utc))
+        self.assertEqual(probe.call_count,2)
+
 if __name__=='__main__':
     unittest.main(verbosity=2)

@@ -38,7 +38,7 @@ jobs:
         run: pip install -r research/requirements.txt pytest
       - name: Verify original observer identity and calendar boundary regressions
         working-directory: research
-        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_native_data_probe.py tests/test_run_hk_original_model_probe_imports.py tests/test_formal_universe_and_readiness.py
+        run: python -m pytest --noconftest -q tests/test_o_native_input_contract.py tests/test_hk_native_data_probe.py tests/test_run_hk_original_model_probe_imports.py tests/test_formal_universe_and_readiness.py tests/test_u45_news_readiness.py tests/test_u45_reviewed_news_handoff.py tests/test_reuse_verified_hk_snapshot.py
       - name: Reuse accepted U45 target-session data
         uses: actions/download-artifact@v4
         with:
@@ -46,13 +46,13 @@ jobs:
           github-token: ${{ github.token }}
           name: U45_PREP_LEDGER
           path: reused/data
-      - name: Reuse latest U45 news retrieval
+      - name: Reuse accepted U45 independent provider comparison
         uses: actions/download-artifact@v4
         with:
-          run-id: 35162710266
+          run-id: 35118327248
           github-token: ${{ github.token }}
-          name: U45_NEWS_MULTISOURCE
-          path: reused/news
+          name: U45_PROVIDER_READINESS
+          path: reused/providers
       - name: Resolve independent decision and completed-price sessions
         run: |
           PYTHONPATH=research/scripts python - <<'PY'
@@ -64,18 +64,17 @@ jobs:
           Path('/tmp/price-session').write_text(resolve_target_session(now).target_session.isoformat())
           Path('/tmp/decision-session').write_text(now.astimezone(ZoneInfo('Asia/Hong_Kong')).date().isoformat())
           PY
-      - name: Collect official complete membership and identity sources
+      - name: Validate and reuse current official public snapshots
         working-directory: research
         run: |
-          python scripts/probe_hk_research_sources.py > /tmp/official-sources.log 2>&1
-          python scripts/freeze_hk_connect_universe.py --sources probe/universe --session "$(cat /tmp/decision-session)" --u-universe docs/dsa-u-universe.json --out probe/formal032
+          python scripts/reuse_verified_hk_snapshot.py --cache docs/runtime/run032_public_cache --session "$(cat /tmp/decision-session)" --out probe/formal032
       - name: Execute frozen original data path for every O member
         run: |
           python research/scripts/run_hk_native_data_probe.py --checkout original --universe research/probe/formal032/O_UNIVERSE.json --scope O_full_pool_data_only --expected-date "$(cat /tmp/price-session)" --decision-session "$(cat /tmp/decision-session)" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 1500 --output /tmp/run032-o > /tmp/run032-native.log 2>&1
       - name: Produce joined per-member acceptance and explicit next gates
         if: always()
         run: |
-          python research/scripts/join_dual_formal_readiness.py --o-universe research/probe/formal032/O_UNIVERSE.json --u-universe research/probe/formal032/U_UNIVERSE.json --o-coverage /tmp/run032-o/coverage.json --u-data reused/data/U45_PREP_LEDGER.json --u-news reused/news/U45_NEWS_MULTISOURCE.json --target "$(cat /tmp/price-session)" --out /tmp/RUN032_READINESS.json
+          python research/scripts/join_dual_formal_readiness.py --o-universe research/probe/formal032/O_UNIVERSE.json --u-universe research/probe/formal032/U_UNIVERSE.json --o-coverage /tmp/run032-o/coverage.json --u-data reused/data/U45_PREP_LEDGER.json --u-news research/probe/formal032/U45_NEWS_MULTISOURCE.json --u-provider reused/providers/U45_PROVIDER_READINESS.json --target "$(cat /tmp/price-session)" --out /tmp/RUN032_READINESS.json
       - name: Upload only public-data readiness receipts
         if: always()
         uses: actions/upload-artifact@v4
@@ -83,7 +82,7 @@ jobs:
           name: RUN032_FORMAL_READINESS
           path: |
             research/probe/formal032/*.json
-            research/probe/universe/source-probe.json
+            reused/providers/U45_PROVIDER_READINESS.json
             /tmp/RUN032_READINESS.json
             /tmp/run032-o/coverage.json
           if-no-files-found: error

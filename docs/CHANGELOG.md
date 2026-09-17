@@ -1,5 +1,7 @@
 # Changelog
 
+- Run032 Recovery1: reuse same-session official source snapshots with hash/date guards after SZSE cloud transport failure; reuse U45 independent price evidence, improve bilingual recent-news fallback, and permit evidence-bound reviewed-news handoff without requiring a new catalyst every day. Preserve first failure and all native historical outputs.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

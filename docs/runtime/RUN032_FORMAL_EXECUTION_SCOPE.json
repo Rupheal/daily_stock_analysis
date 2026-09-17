@@ -1,14 +1,28 @@
 {
-  "run_id":"TRI-DSA-EXEC-20260917-032",
-  "user_authorization":"Latest explicit request: complete O native full-pool output and U member acceptance, then verify genuinely eligible shadow signal; proceed now without repeat window approval",
-  "scope":"Current official universe, frozen O per-member data execution, U evidence reuse and joined gate assessment; generic O observer symbol repair",
-  "decision_session":"2026-09-17",
-  "price_session":"2026-09-16",
-  "budget_this_free_stage_cny":0,
-  "model_requests_this_stage":0,
-  "progress_denominators":{"O":"recompute complete SSE/SZSE stocks-only union","U":45},
-  "gate_a_parent":{"status":"PASS_WITH_VERSIONED_RELEASE_ADAPTER","workflow_run":35069757484,"old_failed_raw_outputs_preserved":true},
-  "runtime_authority":"Rupheal/TRIDENT-Foundation@runtime/dsa-shadow-journal-v1:control_room/dsa/runtime/RUNTIME_STATE.json",
-  "paid_stage":"Existing necessary-DSA-research available-balance authorization retained, but no provider send before current per-member evidence, cost proof, distinct claim and private persistence; closed batch007 slots not reused",
-  "no_main_merge":true,"no_strategy_promotion":true,"no_order":true,"no_task_schedule_changes":true,"no_historical_signal_rewrite":true
+  "run_id": "TRI-DSA-EXEC-20260917-032",
+  "user_authorization": "Latest explicit request: complete O native full-pool output and U member acceptance, then verify genuinely eligible shadow signal; proceed now without repeat window approval",
+  "scope": "Current official universe, frozen O per-member data execution, U evidence reuse and joined gate assessment; generic O observer symbol repair",
+  "decision_session": "2026-09-17",
+  "price_session": "2026-09-16",
+  "budget_this_free_stage_cny": 0,
+  "model_requests_this_stage": 0,
+  "progress_denominators": {
+    "O": "recompute complete SSE/SZSE stocks-only union",
+    "U": 45
+  },
+  "gate_a_parent": {
+    "status": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
+    "workflow_run": 35069757484,
+    "old_failed_raw_outputs_preserved": true
+  },
+  "runtime_authority": "Rupheal/TRIDENT-Foundation@runtime/dsa-shadow-journal-v1:control_room/dsa/runtime/RUNTIME_STATE.json",
+  "paid_stage": "Existing necessary-DSA-research available-balance authorization retained, but no provider send before current per-member evidence, cost proof, distinct claim and private persistence; closed batch007 slots not reused",
+  "no_main_merge": true,
+  "no_strategy_promotion": true,
+  "no_order": true,
+  "no_task_schedule_changes": true,
+  "no_historical_signal_rewrite": true,
+  "attempt_id": "TRI-DSA-EXEC-20260917-032-RECOVERY1",
+  "parent_failed_run": 35177566103,
+  "recovery": "Reuse SHA-verified same-day public official snapshots after cloud SZSE transport failed; reuse U independent price checks; keep original failure"
 }
