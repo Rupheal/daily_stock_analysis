@@ -118,9 +118,12 @@ def build_preflight(code, member, native, tencent, source, universe_raw, target,
     tdf=tdf[tdf["date"].isin(native_dates)].sort_values("date")
     if set(tdf["date"])!=native_dates: raise ValueError("TENCENT_NATIVE_WINDOW_MISMATCH")
     ndf=pd.DataFrame(native).sort_values("date")
+    def diag_row(frame):
+        r=frame.iloc[-1]
+        return {"date":str(r["date"])[:10],**{k:float(r[k]) for k in ("open","high","low","close","volume")}}
     diag={"code":code,"target":target,"native_count":len(native),"tencent_count":len(tencent),
           "conflicts":price_conflicts(tdf,ndf),
-          "native_target":ndf.iloc[-1].to_dict(),"tencent_target":tdf.iloc[-1].to_dict()}
+          "native_target":diag_row(ndf),"tencent_target":diag_row(tdf)}
     write_json(out/"PRICE_DIAGNOSTIC.json",diag)
     try:
         overlap,reconciliation=compare_prices(tdf,ndf,target,True,minimum_overlap=len(native))
