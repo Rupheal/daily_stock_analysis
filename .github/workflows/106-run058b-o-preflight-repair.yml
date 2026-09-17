@@ -1,0 +1,185 @@
+name: DSA Run058B zero-model O preflight repair
+
+on:
+  push:
+    branches: [research/run058b-o-preflight-repair-20260918]
+    paths:
+      - .github/workflows/106-run058b-o-preflight-repair.yml
+      - scripts/prepare_hk_pool_rollout_preflight.py
+      - tests/test_hk_pool_rollout_preflight.py
+      - docs/runtime/RUN058B_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058b-o-preflight-repair
+  cancel-in-progress: false
+
+jobs:
+  preflight-repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install deterministic dependencies only
+        run: pip install -r research/requirements.txt pytest requests
+
+      - name: Run pool preflight unit tests
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_hk_pool_rollout_preflight.py
+
+      - name: Verify repair scope is zero-model
+        run: |
+          python - <<'PY'
+          import json
+          s=json.load(open('research/docs/runtime/RUN058B_SCOPE.json'))
+          assert s['run_id']=='TRI-DSA-O-PREFLIGHT-REPAIR-20260918-058B'
+          assert s['codes']==['00001','00002']
+          assert s['model_http_requests']==0
+          assert s['provider_send_authorized'] is False
+          assert s['cost_cny']==0
+          assert s['automatic_retry'] is False
+          assert s['failed_workflow_run']==35283829684
+          print('RUN058B_SCOPE_ZERO_MODEL_PASS')
+          PY
+
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35224980615
+          github-token: ${{ github.token }}
+          name: RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE
+          path: parent
+
+      - name: Bind exact Run049 O660 market history
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('research/docs/runtime/RUN058B_SCOPE.json'))
+          matches=[]
+          for p in Path('parent').rglob('market-history.json'):
+              if hashlib.sha256(p.read_bytes()).hexdigest()==s['native_history_sha256']:
+                  matches.append(p)
+          assert len(matches)==1, (len(matches), [str(x) for x in matches])
+          d=json.loads(matches[0].read_text())
+          assert d['schema']=='DSA_PUBLIC_MARKET_HISTORY_v1'
+          assert d['target_session']=='2026-09-17'
+          assert 'hk00001' in d['histories'] and 'hk00002' in d['histories']
+          Path('/tmp/o-history-path').write_text(str(matches[0].resolve()))
+          print(json.dumps({'history_sha256':s['native_history_sha256'],'target':d['target_session']}))
+          PY
+
+      - name: Build both free pool preflights without model credentials
+        run: |
+          set +e
+          mkdir -p /tmp/run058b
+          python research/scripts/prepare_hk_pool_rollout_preflight.py \
+            --code 00001 --target 2026-09-17 \
+            --universe research/docs/runtime/run032_public_cache/O_UNIVERSE.json \
+            --cache "$(cat /tmp/o-history-path)" --out /tmp/run058b/00001
+          rc1=$?
+          python research/scripts/prepare_hk_pool_rollout_preflight.py \
+            --code 00002 --target 2026-09-17 \
+            --universe research/docs/runtime/run032_public_cache/O_UNIVERSE.json \
+            --cache "$(cat /tmp/o-history-path)" --out /tmp/run058b/00002
+          rc2=$?
+          printf '%s %s\n' "$rc1" "$rc2" > /tmp/run058b/rc.txt
+          exit 0
+
+      - name: Build fail-closed sanitized repair receipt
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('/tmp/run058b')
+          rcs=[int(x) for x in (root/'rc.txt').read_text().split()]
+          rows=[]
+          for code,rc in zip(['00001','00002'],rcs):
+              p=root/code/'preflight.json'
+              fail=root/code/'FREE_PREFLIGHT_STATUS.json'
+              if rc==0 and p.exists():
+                  d=json.loads(p.read_text())
+                  rows.append({
+                    'code':code,'status':'PASS_POOL_PREFLIGHT_V1',
+                    'preflight_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                    'target':d['target'],'overlap':d['overlap'],
+                    'news_admitted':len(d['company_news_evidence']),
+                    'news_search_performed':d.get('news_search_performed'),
+                    'native_history_count':d['native_history_window']['count'],
+                    'independent_provider':d['price_reconciliation']['independent_provider'],
+                    'latest_volume_status':d['price_reconciliation']['volume']['latest_status'],
+                  })
+              else:
+                  reason='UNKNOWN_FREE_PREFLIGHT_FAILURE'
+                  if fail.exists():
+                      reason=json.loads(fail.read_text()).get('reason') or reason
+                  rows.append({'code':code,'status':'FAIL_POOL_PREFLIGHT_V1','reason':reason})
+          all_pass=all(x['status']=='PASS_POOL_PREFLIGHT_V1' for x in rows)
+          out={
+            'schema_version':1,
+            'run_id':'TRI-DSA-O-PREFLIGHT-REPAIR-20260918-058B',
+            'state':'PASS_ZERO_MODEL_PREFLIGHT_REPAIR' if all_pass else 'STOP_TRANCHE_FREE_PREFLIGHT',
+            'parent_failed_workflow':35283829684,
+            'root_cause_confirmed':'WRONG_HISTORY_CACHE_SCHEMA_FOR_OLD_PREFLIGHT',
+            'members':rows,
+            'model_http_requests':0,
+            'provider_credentials_used':False,
+            'DeepSeek_API_cost_cny':0,
+            'paid_data_calls':0,
+            'real_orders':0,
+            'simulation_writes':0,
+            'automatic_retry':False,
+            'next':'Create one new immutable paid child for the same two never-called members only.' if all_pass else 'Keep tranche frozen; do not send provider requests.',
+          }
+          Path('/tmp/RUN058B_PREFLIGHT_REPAIR_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058B_PREFLIGHT_REPAIR
+          path: |
+            /tmp/RUN058B_PREFLIGHT_REPAIR_RESULT.json
+            /tmp/run058b/00001/preflight.json
+            /tmp/run058b/00001/FREE_PREFLIGHT_STATUS.json
+            /tmp/run058b/00002/preflight.json
+            /tmp/run058b/00002/FREE_PREFLIGHT_STATUS.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit sanitized repair receipt
+        working-directory: research
+        run: |
+          set -euo pipefail
+          cp /tmp/RUN058B_PREFLIGHT_REPAIR_RESULT.json docs/runtime/RUN058B_PREFLIGHT_REPAIR_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN058B_PREFLIGHT_REPAIR_RESULT.json
+          if git diff --cached --quiet; then
+            echo 'No Run058B receipt changes'
+          else
+            git commit -m 'dsa: record Run058B zero-model preflight repair'
+            git push
+          fi
