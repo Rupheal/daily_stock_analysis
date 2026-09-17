@@ -1,0 +1,95 @@
+name: DSA Run058F zero-model dry-envelope diagnostic
+
+on:
+  push:
+    branches: [research/run058f-o-dry-diagnostic-20260918]
+    paths:
+      - .github/workflows/110-run058f-o-dry-diagnostic.yml
+      - scripts/diagnose_run058e_dry.py
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058f-o-dry-diagnostic
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          fetch-depth: 0
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install -r research/requirements.txt requests deepseek-recipe==0.1.1
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35224980615
+          github-token: ${{ github.token }}
+          name: RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE
+          path: parent
+      - name: Bind exact history
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          h='5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e'
+          m=[p for p in Path('parent').rglob('market-history.json') if hashlib.sha256(p.read_bytes()).hexdigest()==h]
+          assert len(m)==1 and json.loads(m[0].read_text())['target_session']=='2026-09-17'
+          Path('/tmp/history-path').write_text(str(m[0].resolve()))
+          PY
+      - name: Run dry diagnostic with no provider credential and no Drive credential
+        working-directory: research
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+        run: |
+          python scripts/diagnose_run058e_dry.py --checkout ../original --cache "$(cat /tmp/history-path)" --out /tmp/run058f
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058F_ZERO_MODEL_DRY_DIAGNOSTIC
+          path: /tmp/run058f/RUN058F_RESULT.json
+          retention-days: 90
+      - name: Commit diagnostic receipt
+        working-directory: research
+        run: |
+          set -euo pipefail
+          cp /tmp/run058f/RUN058F_RESULT.json docs/runtime/RUN058F_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN058F_RESULT.json
+          if git diff --cached --quiet; then echo no-change; else git commit -m 'dsa: record Run058F dry-envelope diagnosis'; git push; fi
