@@ -1,0 +1,141 @@
+name: DSA Run049 2026-09-17 close refresh and formal gate
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN049_SCOPE.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run049-close-gate
+  cancel-in-progress: true
+
+jobs:
+  run049:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      TZ: Asia/Hong_Kong
+      ENV_FILE: /dev/null
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          fetch-depth: 0
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install existing data-only runtime
+        run: pip install -r research/requirements.txt pytest
+
+      - name: Run Run049 deterministic boundary tests
+        working-directory: research
+        env:
+          PYTHONPATH: scripts
+        run: python -m pytest --noconftest -q tests/test_run049_close_and_gate.py
+
+      - name: Refresh U45 native data-only to 2026-09-17 close
+        run: |
+          python research/scripts/run_hk_native_data_probe.py \
+            --checkout original \
+            --universe research/docs/dsa-u-universe.json \
+            --scope U45_data_only \
+            --expected-date 2026-09-17 \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --timeout 900 \
+            --target-boundary-adapter \
+            --output /tmp/run049-u45
+
+      - name: Refresh O660 native data-only to 2026-09-17 close
+        run: |
+          python research/scripts/run_hk_native_data_probe.py \
+            --checkout original \
+            --universe research/docs/runtime/run032_public_cache/O_UNIVERSE.json \
+            --scope O_full_pool_data_only \
+            --expected-date 2026-09-17 \
+            --decision-session 2026-09-17 \
+            --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 \
+            --timeout 1200 \
+            --target-boundary-adapter \
+            --output /tmp/run049-o660
+
+      - name: Build U formal gate and O52 bounded repair receipts
+        run: |
+          python research/scripts/run049_close_and_gate.py \
+            --u-universe research/docs/dsa-u-universe.json \
+            --u-coverage /tmp/run049-u45/coverage.json \
+            --u-history /tmp/run049-u45/market-history.json \
+            --u-handoff research/docs/runtime/RUN047_U45_HANDOFF.json \
+            --u-member-reports research/docs/runtime/RUN041_U45_MEMBER_REPORTS.json \
+            --o-coverage /tmp/run049-o660/coverage.json \
+            --o-prior-third research/docs/runtime/RUN045_THIRD_SOURCE_RESULT.json \
+            --target 2026-09-17 \
+            --out /tmp/run049-result
+
+      - name: Verify denominators, target and fail-closed formal gate
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/run049-result')
+          u=json.loads((p/'RUN049_U45_20260917_CLOSE_REFRESH.json').read_text())
+          g=json.loads((p/'RUN049_U_FORMAL_GATE.json').read_text())
+          o=json.loads((p/'RUN049_O52_REPAIR.json').read_text())
+          c=json.loads((p/'RUN049_COMBINED_RESULT.json').read_text())
+          assert u['target_session']=='2026-09-17' and u['denominator']==45 and len(u['facts'])==45
+          assert o['O_denominator']==660 and o['prior_isolated']==52 and o['reviewed_prior_isolations']==52
+          assert g['ranking']['executed'] is False and g['formal_signal_gate']=='NO_GO'
+          assert g['qualified_BUY']==0 and g['ranking']['Top3']==[] and g['ranking']['Top10']==[]
+          assert o['historical_source_conflicts_resolved_this_run']==0
+          assert c['resource_accounting']['model_http_requests']==0 and c['resource_accounting']['paid_data_calls']==0
+          print(json.dumps({'U_current':u['current_valid_count'],'O52_current':o['current_session_data_ready_within_o52'],'formal_gate':g['formal_signal_gate']}))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE
+          path: |
+            /tmp/run049-u45/coverage.json
+            /tmp/run049-u45/market-history.json
+            /tmp/run049-o660/coverage.json
+            /tmp/run049-o660/market-history.json
+            /tmp/run049-result/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit bounded Run049 receipts to research branch
+        working-directory: research
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp /tmp/run049-result/RUN049_* docs/runtime/
+          git add docs/runtime/RUN049_U45_20260917_CLOSE_REFRESH.json
+          git add docs/runtime/RUN049_U_FORMAL_GATE.json
+          git add docs/runtime/RUN049_O52_REPAIR.json
+          git add docs/runtime/RUN049_COMBINED_RESULT.json
+          git add docs/runtime/RUN049_COST_LEDGER.json
+          git add docs/runtime/RUN049_REPORT.zh-CN.md
+          if git diff --cached --quiet; then
+            echo 'No Run049 receipt changes'
+          else
+            git commit -m 'dsa: record Run049 close refresh and formal gate'
+            git push
+          fi
