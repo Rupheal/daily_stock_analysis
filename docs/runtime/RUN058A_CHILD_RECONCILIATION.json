@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260917-058A",
+  "state": "STOP_TRANCHE",
+  "codes": [
+    "00001",
+    "00002"
+  ],
+  "attempted_members": 2,
+  "member_statuses": [
+    {
+      "code": "00001",
+      "status": "ISOLATED",
+      "raw_gate": null,
+      "raw_blockers": null,
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "usage_peak_estimate_cny": null,
+      "observed_balance_change_cny": null
+    },
+    {
+      "code": "00002",
+      "status": "ISOLATED",
+      "raw_gate": null,
+      "raw_blockers": null,
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "usage_peak_estimate_cny": null,
+      "observed_balance_change_cny": null
+    }
+  ],
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.20",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip_all": true,
+  "formal_pool_top3_generated": false,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true,
+  "automatic_retry": false,
+  "next": "Freeze tranche; diagnose this child without automatic retry."
+}

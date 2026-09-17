@@ -1,0 +1,52 @@
+{
+  "run_id": "TRI-DSA-O-NATIVE-20260917-058A",
+  "workflow_run": "35283829684",
+  "O_denominator": 660,
+  "attempted_members": 2,
+  "members": [
+    {
+      "code": "00001",
+      "status": "ISOLATED",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "9cf3f0cd5c6536a826d2db8e93388e6089ff080582c4a08b8960fede702dcd69",
+        "bytes": 3434,
+        "original_bytes": 896,
+        "parts": 1,
+        "files": 3
+      },
+      "failure_class": "ValueError",
+      "failure_code": "FREE_PREFLIGHT_FAILED:KeyError"
+    },
+    {
+      "code": "00002",
+      "status": "ISOLATED",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "774e7548ff2dc598251feb82a1ef6f3964b6066c4665c978579b6f59506b4cb3",
+        "bytes": 3434,
+        "original_bytes": 896,
+        "parts": 1,
+        "files": 3
+      },
+      "failure_class": "ValueError",
+      "failure_code": "FREE_PREFLIGHT_FAILED:KeyError"
+    }
+  ],
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.20",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true
+}
