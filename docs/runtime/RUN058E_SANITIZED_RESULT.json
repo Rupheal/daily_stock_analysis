@@ -1,0 +1,36 @@
+{
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058E",
+  "workflow_run": "35285018917",
+  "O_denominator": 660,
+  "attempted_members": 1,
+  "members": [
+    {
+      "code": "00001",
+      "status": "ISOLATED",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "c831adf1b0dced4a3cd40d5ef64ecc8ccf489c1b51fe7f8193a51ff5ae8ebf0d",
+        "bytes": 3538332,
+        "original_bytes": 3529276,
+        "parts": 3,
+        "files": 12
+      },
+      "preflight_builder": "O_POOL_TARGET_PREFLIGHT_V2",
+      "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+      "failure_class": "ValueError",
+      "failure_code": "FREE_NATIVE_ENVELOPE_FAILED"
+    }
+  ],
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true
+}

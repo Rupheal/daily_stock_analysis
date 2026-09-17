@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058E",
+  "state": "STOP_ROLLOUT",
+  "codes": [
+    "00001"
+  ],
+  "member_status": {
+    "code": "00001",
+    "status": "ISOLATED",
+    "preflight_builder": "O_POOL_TARGET_PREFLIGHT_V2",
+    "raw_gate": null,
+    "raw_blockers": null,
+    "model_http_requests_confirmed": 0,
+    "model_http_requests_possible": 0,
+    "usage_peak_estimate_cny": null,
+    "observed_balance_change_cny": null,
+    "failure_class": "ValueError",
+    "failure_code": "FREE_NATIVE_ENVELOPE_FAILED"
+  },
+  "pre_send_private_roundtrip": false,
+  "final_private_roundtrip": true,
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true,
+  "automatic_retry": false,
+  "next": "Freeze rollout; no automatic retry. Diagnose this child and reconcile any durable Drive claim before any new send."
+}
