@@ -143,7 +143,7 @@ def main():
         from data_provider.tencent_fetcher import TencentFetcher
         f=TencentFetcher()
         qdf=pd.DataFrame(tq);qdf["amount"]=None;qdf["pct_chg"]=None
-        qdf=f._calculate_indicators(f._clean_data(f._normalize_data(pd.DataFrame(tq),"HK"+code)));qdf["date"]=pd.to_datetime(qdf["date"]).dt.strftime("%Y-%m-%d")
+        qdf=f._calculate_indicators(f._clean_data(f._normalize_data(qdf,"HK"+code)));qdf["date"]=pd.to_datetime(qdf["date"]).dt.strftime("%Y-%m-%d")
         ndf=pd.DataFrame(native)
         strict=True;strict_error=None;recon=None
         try:
