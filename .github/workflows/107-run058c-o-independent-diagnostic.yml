@@ -1,0 +1,111 @@
+name: DSA Run058C zero-model O independent diagnostic
+
+on:
+  push:
+    branches: [research/run058c-o-independent-diagnostic-20260918]
+    paths:
+      - .github/workflows/107-run058c-o-independent-diagnostic.yml
+      - scripts/diagnose_hk_pool_independent.py
+      - docs/runtime/RUN058C_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058c-o-independent-diagnostic
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install deterministic dependencies
+        run: pip install requests
+      - name: Verify scope remains zero-model
+        run: |
+          python - <<'PY'
+          import json
+          s=json.load(open('research/docs/runtime/RUN058C_SCOPE.json'))
+          assert s['codes']==['00001','00002']
+          assert s['model_http_requests']==0 and s['provider_send_authorized'] is False
+          assert s['cost_cny']==0 and s['automatic_retry'] is False
+          print('RUN058C_ZERO_MODEL_SCOPE_PASS')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35224980615
+          github-token: ${{ github.token }}
+          name: RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE
+          path: parent
+      - name: Bind exact O660 history
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('research/docs/runtime/RUN058C_SCOPE.json'))
+          m=[]
+          for p in Path('parent').rglob('market-history.json'):
+              if hashlib.sha256(p.read_bytes()).hexdigest()==s['native_history_sha256']:m.append(p)
+          assert len(m)==1
+          Path('/tmp/o-history').write_text(str(m[0].resolve()))
+          PY
+      - name: Diagnose target versus historical independent disagreement
+        run: |
+          python research/scripts/diagnose_hk_pool_independent.py \
+            --cache "$(cat /tmp/o-history)" --target 2026-09-17 \
+            --codes 00001,00002 --out /tmp/RUN058C_DIAGNOSTIC.json
+      - name: Build bounded decision receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.load(open('/tmp/RUN058C_DIAGNOSTIC.json'))
+          members=d['members']
+          latest_ok=all(x['target_ohlc_all_within_tolerance'] and x['target_volume_within_calibrated_bound'] for x in members)
+          historical_only=all(x['ohlc_mismatch_sessions']>0 for x in members) and latest_ok
+          out={
+            'schema_version':1,
+            'run_id':'TRI-DSA-O-INDEPENDENT-DIAG-20260918-058C',
+            'state':'PASS_TARGET_SESSION_INDEPENDENT_HISTORICAL_ADJUSTMENT_CONFLICT' if historical_only else ('PASS_FULL_INDEPENDENT' if latest_ok and all(x['ohlc_mismatch_sessions']==0 for x in members) else 'STOP_TRANCHE_TARGET_INDEPENDENT_CONFLICT'),
+            'members':members,
+            'target_session_independent_pass':latest_ok,
+            'historical_adjustment_conflict_only':historical_only,
+            'model_http_requests':0,'DeepSeek_API_cost_cny':0,'paid_data_calls':0,'real_orders':0,
+            'next':('Use prior Run050-052 historical adjudication plus fresh target-session independent verification; do not reclassify accepted history solely from qfq adjustment differences.' if historical_only else 'Keep tranche frozen unless full independent pass is already available.' if not latest_ok else 'Fresh independent check fully passes.')
+          }
+          Path('/tmp/RUN058C_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058C_O_INDEPENDENT_DIAGNOSTIC
+          path: |
+            /tmp/RUN058C_DIAGNOSTIC.json
+            /tmp/RUN058C_RESULT.json
+          retention-days: 90
+      - name: Commit sanitized diagnostic result
+        working-directory: research
+        run: |
+          set -euo pipefail
+          cp /tmp/RUN058C_RESULT.json docs/runtime/RUN058C_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN058C_RESULT.json
+          if git diff --cached --quiet; then echo 'No Run058C changes'; else
+            git commit -m 'dsa: record Run058C independent diagnostic'
+            git push
+          fi
