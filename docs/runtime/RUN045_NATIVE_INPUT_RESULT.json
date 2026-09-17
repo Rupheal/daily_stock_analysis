@@ -1,0 +1,22 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-045",
+  "input_contract": "RUN045_THIRD_PUBLISHER_INPUT_REPAIR_v1",
+  "workflow_run": "35196751225",
+  "upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "target": "2026-09-16",
+  "recovery_sha256": "126574ec0196113bbe624e5ff9fc5653dd46d8cef86e9378031ec7db35a54aff",
+  "denominator": 660,
+  "actual_native_data_ready": 608,
+  "isolated": 52,
+  "formal_native_model_outputs": 0,
+  "native_model_http_requests": 0,
+  "fee_cny": "0",
+  "scope": "Actual frozen native data CLI consumption of21-session inputs under stated prospective input contract; not LLM outputs or trade signals",
+  "native_returncode": 0,
+  "historical_predictions_modified": false,
+  "source_strategy_modified": false,
+  "market_history_sha256": "d8d1205709d9c42c500e2990d3b3eeaee3df594854dfbea4bdf3b8c4e06fc9c2",
+  "completed_at": "2026-09-17T07:54:55.558402+00:00",
+  "per_member_coverage_artifact": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/35196751225/artifacts/10486885265",
+  "source_artifact_sha256": "f7b21b885763250efaec4752f50eea220844f73e607142eec242b01143f1cfde"
+}

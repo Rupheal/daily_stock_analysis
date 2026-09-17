@@ -1,0 +1,30 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-048",
+  "model_calls": 0,
+  "fee_cny": "0",
+  "status": "PASS_PRIVATE_REPLAY_SAVED",
+  "formal_BUY": 0,
+  "journal_writes": 0,
+  "private_persistence": {
+    "format": "DSA_PRIVATE_MULTIPART_v1",
+    "save_read_hash_restore": true,
+    "sha256": "2f86d407328e632efe4806ea052e635ef712ebc4734b19025b2209577ad7d5d8",
+    "bytes": 61697,
+    "original_bytes": 59690,
+    "parts": 1,
+    "files": 2
+  },
+  "U_originals_restored": 2,
+  "U_reviews": 44,
+  "U_raw_isolations": 4,
+  "U_corrected_members": 4,
+  "U_release_body_sha256": "a3727e04c801e6fcf7ea047c27d5f0a13c41bdee0de91e9a45a3577336ca5ee5",
+  "O_original_restored": true,
+  "O_complete_answer": true,
+  "O_full_report_accepted": false,
+  "O_remaining_guards": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "completed_at": "2026-09-17T08:04:35.624945+00:00"
+}

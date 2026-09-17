@@ -1,0 +1,80 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-042",
+  "workflow_run": "35194958396",
+  "O_denominator": 660,
+  "attempted_members": 1,
+  "members": [
+    {
+      "code": "01024",
+      "status": "ISOLATED",
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "598f45bb45f82280fdd0e077ff72e614e2216824e043eec1de96b41e642fcd3b",
+        "bytes": 3658933,
+        "original_bytes": 3635311,
+        "parts": 3,
+        "files": 40
+      },
+      "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+      "pre_send_upper_cny": "0.080916",
+      "preflight_sha256": "6eb3eaf58210b5acb6df89ba96ec197f11da2a00c308b83f407df12fe88d5a95",
+      "pre_send_private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "afbbfa3a85a44b0571a67379f87280f1f68a924e7c3e254229ed0471eb0bae28",
+        "bytes": 1239018,
+        "original_bytes": 1228477,
+        "parts": 1,
+        "files": 18
+      },
+      "claim_persisted": true,
+      "native_exit_code": 1,
+      "usage_peak_estimate_cny": "0.042842",
+      "usage": [
+        {
+          "prompt_tokens": 5617,
+          "completion_tokens": 3951,
+          "total_tokens": 9568,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "prompt_cache_hit_tokens": 0,
+          "prompt_cache_miss_tokens": 5617
+        }
+      ],
+      "observed_balance_change_cny": "0.00",
+      "actual_attributable_charge_cny": null,
+      "provider_completion": {
+        "version": "O_PROVIDER_COMPLETION_v1",
+        "status": "PASS",
+        "blockers": [],
+        "raw_sha256": "26de6cd5be6faa8b1ac84b682cb4fa468a172469f6e84d7f426521f0c702b5ad",
+        "content_chars": 7632,
+        "reasoning_chars": 0,
+        "finish_reasons": [
+          "stop"
+        ],
+        "raw_mutated": false,
+        "model_requests": 0
+      },
+      "raw_blockers": [
+        "SEM-001"
+      ],
+      "raw_gate": "BLOCK",
+      "failure_class": "ReleaseQuoteError",
+      "failure_code": "NONREALTIME_CURRENT_PRICE_NOT_TARGET_CLOSE:$.dashboard.data_perspective.price_position.current_price"
+    }
+  ],
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true
+}

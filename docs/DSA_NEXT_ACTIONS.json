@@ -193,7 +193,7 @@
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-17T05:01:47.566565+00:00",
+  "updated_at_utc": "2026-09-17T08:09:46.150872+00:00",
   "user_directive_override": {
     "priority": "urgent",
     "path": "docs/dsa-urgent-user-directive.md",
@@ -429,50 +429,56 @@
     "native_armed": false
   },
   "current_execution": {
-    "run_id": "TRI-DSA-RESUME-20260917-033-040",
+    "run_id": "TRI-DSA-RESUME-20260917-041-048",
     "authoritative_for_current_execution": true,
-    "scope_receipt": "docs/runtime/RUN033_040_RESUME_RESULT.json",
-    "report": "docs/runtime/RUN033_040_RESUME_REPORT.zh-CN.md",
-    "state": "PARTIAL_ACCEPTED_ENGINEERING_DATA_RECOVERY; FORMAL_DUAL_SIGNAL_NO_GO",
-    "gate_a": "Prior Run031 bounded release acceptance retained; not current O full-pool acceptance",
-    "historical_raw_failures_preserved": true,
+    "verified_at": "2026-09-17T08:09:46.150872+00:00",
+    "scope_receipt": "docs/runtime/RUN041_048_RESUME_RESULT.json",
+    "report": "docs/runtime/RUN041_048_RESUME_REPORT.zh-CN.md",
+    "state": "ENGINEERING_AND_BOUNDED_REVIEWS_ACCEPTED; FORMAL_DUAL_SIGNAL_NOT_COMPLETED",
     "current_official_denominator": 660,
-    "current_official_session": "2026-09-17",
     "completed_price_session": "2026-09-16",
-    "actual_O_native_recovery_inputs": 598,
-    "O_input_isolated": 62,
-    "current_formal_native_accepted": 0,
+    "current_official_session": "2026-09-17",
+    "O_actual_native_data_ready": 608,
+    "O_input_isolated": 52,
+    "O_complete_answer_compatibility": "PASS_ONE_PROSPECTIVE_CONFIGURATION_CASE",
+    "O_full_report_semantics": "NO_GO",
     "O_native_full_pool_accepted": false,
     "U_denominator": 45,
-    "U_audited": 45,
-    "U_input_facts_ready": 44,
-    "U_formal_accepted": 0,
+    "U_current_buy_eligible": 44,
+    "U_factual_reports": 44,
+    "U_conditional_policy_plans": 44,
+    "U_actual_bounded_model_reviews": 44,
+    "U_raw_semantic_pass": 40,
+    "U_corrected_release_pass": 44,
+    "U_full_strategy_signals": 0,
+    "U_qualified_BUY": 0,
+    "U_status_metric_rule": "Never summarize these distinct metrics as U0/45; retain raw40+4 failures, release44, and0 executable signals with their reasons.",
+    "U_latest_handoff": "docs/runtime/RUN047_U45_HANDOFF.json",
     "runtime_status_source": "Rupheal/TRIDENT-Foundation@runtime/dsa-shadow-journal-v1:control_room/dsa/runtime/RUNTIME_STATE.json",
     "runtime_approved_last_verified": true,
     "runtime_active_last_verified": true,
-    "authority_read_commit": "be654e71d667b0c3935b5a7dcb42821ba3ad110b",
-    "model_http_requests_this_resume": 2,
-    "estimated_cost_cny": "0.144988",
+    "runtime_state_blob_sha": "27e1bca794800dba3e737cda81f1e5a2d36e4a35",
+    "model_http_requests_this_resume": 3,
+    "estimated_cost_cny": "0.151400",
     "actual_cost_cny": null,
-    "cost_ledger": "docs/runtime/RUN033_040_COST_LEDGER.json",
+    "cost_ledger": "docs/runtime/RUN041_048_COST_LEDGER.json",
     "model_calls_in_progress": false,
-    "latest_actual_run": 35183873567,
+    "latest_actual_run": 35197626299,
     "latest_actual_run_conclusion": "success",
     "cloud_tests": {
-      "passed": 104,
+      "passed": 136,
       "failed": 0,
       "skipped": 0
     },
-    "full_history_persistence": "Run033 public history artifact; source hash receipts persisted. Run039 private raw multipart independently restored. Tencent failed raw save remains missing.",
     "remaining_owner_approval_for_existing_window": false,
     "next": [
-      "Inspect frozen-native supported model configuration with preserved prompt/upstream and a separately versioned prospective research case; no automatic failed-case retries.",
-      "Resolve O raw open-price conflicts with a source that actually includes opening prices; keep all660 and all failures.",
-      "Complete independent U issuer/risk/macro/plan producer and formal45-member acceptance; retain zero-to-three qualified-candidate rule.",
-      "Only after their own gates pass freeze timely independent U/O signals and pass to already approved Entry-v1.",
-      "Do not change Run005 OOS, A0/A3, windows, main, production strategy or real orders."
+      "Refresh official universe and prices to next actual decision target;9/16 engineering cache is not9/17 close.",
+      "Continue U full decision/ranking, source-bound company/sector risk and macro cap; bind accepted buy zone to approved conditional policy plan. Bounded observation reviews do not replace this.",
+      "For O, correct source/session semantics through supported native configuration and input evidence, retain raw report failures; do not alter original prompt/scoring or fake raw PASS.",
+      "Keep all660 denominators;52 remaining cases are32 three-publisher conflicts,16 invalid Sina geometry,3 target gaps and1 short history.",
+      "Only complete timely future AM signals may enter existing approved Entry-v1; no same-day backfill, no main merge, no production promotion, no real orders."
     ],
-    "scheduled_handoff": "Read current_execution and dated facts/receipts; keep established AM09:00 PM16:30 and review times. This batch did not deploy a daily full-pool model runner or grant a new entry. Next reports must refresh the target session and cannot present the9/16 cache as9/17 close."
+    "scheduled_handoff": "Existing AM09:00/PM16:30 tasks read this latest state. No task instructions/times changed in this batch; next scheduled readback remains to be observed. New research workflows are run-specific push triggers, not daily model production."
   },
   "execution_checkpoint_history": [
     {
@@ -617,6 +623,12 @@
       "formal_native_model_outputs_accepted": 0,
       "full_history_persistence": "Next collection saves allowlisted per-stock history; current aggregate is not a reusable full native database",
       "superseded_by": "TRI-DSA-RESUME-20260917-033-040"
+    },
+    {
+      "run_id": "TRI-DSA-RESUME-20260917-033-040",
+      "receipt": "docs/runtime/RUN033_040_RESUME_RESULT.json",
+      "superseded_for_current_status_by": "TRI-DSA-RESUME-20260917-041-048",
+      "historical_results_preserved": true
     }
   ],
   "capital_data_collection": {
@@ -630,5 +642,6 @@
       "Record field-level gaps; never collapse verified Southbound and unidentifiable investor classes into one UNKNOWN"
     ],
     "does_not_modify_current_execution": true
-  }
+  },
+  "current_status_authority": "Only current_execution is the current status entry; other top-level historical records are retained and do not override it."
 }

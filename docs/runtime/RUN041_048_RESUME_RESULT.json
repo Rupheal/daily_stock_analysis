@@ -1,0 +1,120 @@
+{
+  "run_id": "TRI-DSA-RESUME-20260917-041-048",
+  "verified_at": "2026-09-17T08:09:46.150872+00:00",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-033-040",
+  "parent_receipt": "docs/runtime/RUN033_040_RESUME_RESULT.json",
+  "tested_code_commit": "8c4c4aa1b14c54d7278459321c5b9536d0c8cfa6",
+  "branch": "fix/native-private-execution-20260914",
+  "state": "ENGINEERING_AND_BOUNDED_REVIEWS_ACCEPTED; FORMAL_DUAL_SIGNAL_NOT_COMPLETED",
+  "input_price_session": "2026-09-16",
+  "official_universe_session": "2026-09-17",
+  "not_a_20260917_close_or_premarket_prediction": true,
+  "O": {
+    "denominator": 660,
+    "actual_frozen_native_data_ready": 608,
+    "isolated": 52,
+    "new_recovered": 10,
+    "previous_ready_retained": 598,
+    "input_contract": "RUN045_THIRD_PUBLISHER_INPUT_REPAIR_v1",
+    "workflow_run": 35196751225,
+    "upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+    "complete_answer_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+    "complete_answer_verified": true,
+    "complete_answer_workflow": 35194958396,
+    "full_report_accepted": false,
+    "full_pool_native_rank_generated": false,
+    "remaining_report_failures": [
+      "Prior-session low mislabeled today intraday",
+      "Unverified estimated intraday-price wording",
+      "Limited repurchase evidence overstated as no adverse news",
+      "Fundamental period primary lineage incomplete"
+    ],
+    "isolation_reason_counts": {
+      "THIRD_SOURCE_CONFLICT_REMAINS": 32,
+      "SINA_INVALID_BAR_GEOMETRY": 16,
+      "TARGET_MISSING": 3,
+      "LESS_THAN21_BARS": 1
+    }
+  },
+  "U": {
+    "denominator": 45,
+    "current_buy_eligible": 44,
+    "facts_and_conditional_plans": 44,
+    "actual_model_review_rows": 44,
+    "raw_semantic_pass": 40,
+    "raw_semantic_isolated": 4,
+    "separate_corrected_release_pass": 44,
+    "retained_ineligible": [
+      "09618"
+    ],
+    "qualified_BUY": 0,
+    "formal_Top3_generated": false,
+    "full_strategy_acceptance": false,
+    "private_workflow_run": 35196181237,
+    "release_workflow_run": 35197626299,
+    "scope": "Bounded observation reviews. The review prompt disallowed BUY because macro/risk/entry-zone evidence was absent; this is not44 independent strategy rejections of buying.",
+    "plan_implemented": [
+      "Entry-v1 price-band constraint",
+      "single-slot CNY60000 and20%NAV",
+      "total60% cap and maximum3 positions",
+      "no adding or averaging down",
+      "actual-fill based -2% stop, +5%/+10% thirds and Runner",
+      "quote, fee, FX and lot checks separated from report completeness"
+    ],
+    "remaining": [
+      "Full U strategy decision and independent ranking output",
+      "Accepted strategy buy zone and dated macro exposure cap",
+      "Broader verified company/sector risk evidence",
+      "Timely future AM snapshot and downstream execution quotes"
+    ]
+  },
+  "validation": {
+    "workflow_run": 35197626299,
+    "cloud_passed": 136,
+    "failed": 0,
+    "skipped": 0,
+    "private_original_artifacts_restored": 3,
+    "private_derived_save_read_hash_restore": true,
+    "private_receipt": "docs/runtime/RUN048_PRIVATE_REPLAY_RESULT.json",
+    "runtime_state_verified_blob": "27e1bca794800dba3e737cda81f1e5a2d36e4a35",
+    "gate_d_approved": true,
+    "runtime_activated": true,
+    "journal_writes": 0,
+    "simulation_fills_created": 0,
+    "main_commit_unchanged": "1c2b7642f594714be9f0c4d73a08cc492ccd0813",
+    "Run005_A0_A3_modified": false
+  },
+  "cost": {
+    "model_http_requests": 3,
+    "usage_peak_estimate_cny": "0.151400",
+    "actual_charge_cny": null,
+    "actual_charge_status": "NOT_VERIFIED",
+    "ledger": "docs/runtime/RUN041_048_COST_LEDGER.json",
+    "paid_data_calls": 0,
+    "new_subscriptions": 0,
+    "automatic_recharge": false,
+    "platform_base_fees": "NOT_VISIBLE"
+  },
+  "next_execution": {
+    "existing_windows_approval_required_again": false,
+    "schedule_modified": false,
+    "jobs_still_running": false,
+    "next_existing_report": "Existing16:30/09:00 tasks keep their verified trading-calendar conditions. They must read this checkpoint and refresh the target session.",
+    "research_not_automatically_scheduled": [
+      "U full strategy decision/ranking and macro cap",
+      "O semantic quality and wider native samples",
+      "52 unresolved input cases"
+    ],
+    "do_not_repeat_closed_claims": [
+      "Run042",
+      "Run044-B0",
+      "Run044-B1"
+    ],
+    "do_not_claim": [
+      "Daily dual full-pool production proven",
+      "Current usable BUY exists",
+      "All608 O stocks have native model predictions",
+      "All44 U observations are unconstrained buy/avoid evaluations"
+    ]
+  }
+}

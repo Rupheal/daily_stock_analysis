@@ -1,0 +1,13 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-041",
+  "scope_recorded_at": "2026-09-17T08:09:46.150872+00:00",
+  "purpose": "Independent45-member factual dossiers and approved conditional execution-rule plans",
+  "progress_denominator": 45,
+  "budget_cny": "0",
+  "model_calls": 0,
+  "deliverables": [
+    "RUN041_U45_MEMBER_REPORTS.json"
+  ],
+  "historical_predictions_modified": false,
+  "qualified_BUY_created": 0
+}

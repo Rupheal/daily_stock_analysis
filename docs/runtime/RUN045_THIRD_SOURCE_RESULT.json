@@ -1,0 +1,1880 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-045",
+  "native_acceptance_run_id": "TRI-DSA-EXEC-20260917-045",
+  "contract_id": "RUN045_THIRD_PUBLISHER_INPUT_REPAIR_v1",
+  "parent_contract_id": "RUN006_B1_HK_DAILY_RECOVERY_V1",
+  "parent_recovery_sha256": "37e31d46548cc0f719a61481774bc626995237f7c80071a5f14e262112b440c9",
+  "third_result_sha256": "5d16c438f8b07c32738ed4c36550958591d5ce019f05b955882101393402c2f8",
+  "target": "2026-09-16",
+  "O_denominator": 660,
+  "U_denominator": 45,
+  "input_ready": 608,
+  "retained_old_ready": 598,
+  "new_recovered": 10,
+  "isolated": 52,
+  "checks": [
+    {
+      "code": "00081",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-09",
+            "field": "open",
+            "left_raw": 2.87,
+            "right_raw": 2.9149999618530273
+          },
+          {
+            "date": "2026-09-15",
+            "field": "open",
+            "left_raw": 2.705,
+            "right_raw": 2.7300000190734863
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00081/klc2_kl.js",
+      "source_sha256": "35d707be79e5167593bd7f7c9956f135d54c97be7175b972c02a3b946709b720"
+    },
+    {
+      "code": "00187",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00187/klc2_kl.js",
+      "source_sha256": "42e08be79be4f2111cc59763c836f0669d5296fee703e7f3076860f8e66b936d",
+      "adjusted_cache_origin": "Run035 newly captured qfq original",
+      "adjusted_source_sha256": "bbfae866a557e530370fb93999fb14503c41af9c5b78fde42cc9e95347c453af"
+    },
+    {
+      "code": "00392",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00392/klc2_kl.js",
+      "source_sha256": "0e06ca1873ac4f168697db54569ab8f1bf728ca07f40870695844212d5869fbb"
+    },
+    {
+      "code": "00512",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 4.92,
+            "right_raw": 4.95
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00512/klc2_kl.js",
+      "source_sha256": "5ca75d5c0787c4ae1de7a00722108f5755f72eb364b4f4c05805699751a67005",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "00853",
+      "old_reasons": [
+        "ValueError:TARGET_MISSING"
+      ],
+      "status": "ISOLATED",
+      "reason": "TARGET_MISSING"
+    },
+    {
+      "code": "00867",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 11.1,
+            "right_raw": 11.19
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-20",
+            "field": "open",
+            "left_raw": 11.8,
+            "right_raw": 11.890000343322754
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 11.1,
+            "right_raw": 11.1899995803833
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00867/klc2_kl.js",
+      "source_sha256": "a8007d83c3f83404983a5e48d202d27fda7e2016a721d3c0027a208cd5128625",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "00874",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 13.53,
+            "right_raw": 13.39
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00874/klc2_kl.js",
+      "source_sha256": "5b63b15da2573b1090034dd03b3ded0c5e7d3bd1b46af0b71be537a41a054a4d",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "00901",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 74.7,
+            "right_raw": 74.9
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-03",
+            "field": "open",
+            "left_raw": 73.55,
+            "right_raw": 72.5
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 74.7,
+            "right_raw": 74.9000015258789
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00901/klc2_kl.js",
+      "source_sha256": "f00ea14fb08c511e690f3c91341b51661909fc567467f9233a4978831041809f",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "00995",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_TIGHT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00995/klc2_kl.js",
+      "source_sha256": "0c8e9180d13ccf930ddd4e987817e460e6ecfc30d7380000a8f4255538fc9afc"
+    },
+    {
+      "code": "00999",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 7.6,
+            "right_raw": 7.5
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/00999/klc2_kl.js",
+      "source_sha256": "13172fa4c732fceee2c62fd9fb015309dfbe23509e6672e522a543cc961fcbc5",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "01065",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "01112",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 18.58,
+            "right_raw": 17.88
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/01112/klc2_kl.js",
+      "source_sha256": "21baafaae86dc3e153f04d4792a16f823e1d7ff882a8c20e71fec7fd97fea525",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "01333",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "01377",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 319.8,
+            "right_raw": 318.8
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-27",
+            "field": "open",
+            "left_raw": 359.8,
+            "right_raw": 355.0
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 319.8,
+            "right_raw": 318.79998779296875
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/01377/klc2_kl.js",
+      "source_sha256": "726fb5942268d8188c18824a34fee6378800e8941c105229c9d614d01098b96b",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "01456",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "01877",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_ORIGINAL_YAHOO",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 18.23,
+            "right_raw": 18.3
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/01877/klc2_kl.js",
+      "source_sha256": "d651d983f3c8292284dc2ac86f26eb378850768a66e12e5a9a7d06ed47219e78",
+      "native_vs_sina": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "NativeYahoo",
+        "right_publisher": "Sina"
+      },
+      "native_vs_yahoo_raw": {
+        "class": "RAW_PRICE_AGREEMENT_TIGHT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "NativeYahoo",
+        "right_publisher": "YahooRaw"
+      }
+    },
+    {
+      "code": "01908",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 13.13,
+            "right_raw": 13.1
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-20",
+            "field": "open",
+            "left_raw": 15.7,
+            "right_raw": 15.949999809265137
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 13.13,
+            "right_raw": 13.100000381469727
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/01908/klc2_kl.js",
+      "source_sha256": "3d4819fe018bb003d647e7c62d4091df3ee07b4740f9d827a4dcc83d397fed1d",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "01972",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 24.56,
+            "right_raw": 24.1
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "left_raw": 24.34,
+            "right_raw": 24.15999984741211
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 24.56,
+            "right_raw": 24.100000381469727
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/01972/klc2_kl.js",
+      "source_sha256": "bf533c23131dd376176ea98fca7b439ba9086795bd97c51815541ce144d12ab7",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02068",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_TIGHT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-09",
+            "field": "open",
+            "left_raw": 1.8,
+            "right_raw": 1.8200000524520874
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02068/klc2_kl.js",
+      "source_sha256": "5a036fcd21154b96975db654144b9f5a03ecf2606b581ad72941dd34a3e40a20"
+    },
+    {
+      "code": "02096",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "02155",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 6.945,
+            "right_raw": 6.87
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-31",
+            "field": "open",
+            "left_raw": 7.55,
+            "right_raw": 7.605000019073486
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 6.945,
+            "right_raw": 6.869999885559082
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02155/klc2_kl.js",
+      "source_sha256": "8d3de82c51ce9c99394d6a80d090a53d90459f03fc180c8ef28a35907d7578e6",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02157",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "02171",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 13.13,
+            "right_raw": 13.16
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 13.13,
+            "right_raw": 13.15999984741211
+          },
+          {
+            "date": "2026-09-11",
+            "field": "open",
+            "left_raw": 12.47,
+            "right_raw": 12.729999542236328
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02171/klc2_kl.js",
+      "source_sha256": "284e7d5abf95d84145a9479f8fe4245c3ce370cc97904277e9e2e8f651043de0",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02172",
+      "old_reasons": [
+        "ValueError:TARGET_MISSING"
+      ],
+      "status": "ISOLATED",
+      "reason": "TARGET_MISSING"
+    },
+    {
+      "code": "02192",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "02218",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02218/klc2_kl.js",
+      "source_sha256": "bc6ef24abea98f5567508d4ee04767ebcefc457896864ce8765d833a5a8187ce"
+    },
+    {
+      "code": "02238",
+      "old_reasons": [
+        "ValueError:RAW_VOLUME_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 2.19,
+            "right_raw": 2.145
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": false,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 2.19,
+            "right_raw": 2.1449999809265137
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02238/klc2_kl.js",
+      "source_sha256": "7e4d6d7a07b8a8a1aab59215edde906f669c57f4d1c90a138743ef2e704bb817",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02252",
+      "old_reasons": [
+        "ValueError:TARGET_MISSING"
+      ],
+      "status": "ISOLATED",
+      "reason": "TARGET_MISSING"
+    },
+    {
+      "code": "02273",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 27.66,
+            "right_raw": 27.5
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-03",
+            "field": "open",
+            "left_raw": 26.86,
+            "right_raw": 26.940000534057617
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 27.66,
+            "right_raw": 27.5
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02273/klc2_kl.js",
+      "source_sha256": "1f498571eff5b083ce0b149b5f2c211b62c9a8bda4513a5daee843c2484ac8e7",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02315",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 61.6,
+            "right_raw": 64.2
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02315/klc2_kl.js",
+      "source_sha256": "557a8a3435c26c0ca19bb47ae61c1a6ccc1f9a141ea935b937300d32d39ea138",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02402",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "02419",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 61.55,
+            "right_raw": 58.05
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 61.55,
+            "right_raw": 58.04999923706055
+          },
+          {
+            "date": "2026-09-07",
+            "field": "open",
+            "left_raw": 62.0,
+            "right_raw": 60.95000076293945
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02419/klc2_kl.js",
+      "source_sha256": "98fae7954092e3ca77672f2e3d5eb3e52b7a30735e42df530adec34ffaf11d35",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02510",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "02525",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 18.69,
+            "right_raw": 18.3
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": false,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "left_raw": 17.27,
+            "right_raw": 18.5
+          },
+          {
+            "date": "2026-08-19",
+            "field": "high",
+            "left_raw": 17.34,
+            "right_raw": 18.5
+          },
+          {
+            "date": "2026-08-19",
+            "field": "low",
+            "left_raw": 16.91,
+            "right_raw": 18.5
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02525/klc2_kl.js",
+      "source_sha256": "3c427d7bdcf38af88b73c2313d01b02e3ec4a5dcc5db75c2d766f4131758bf5e",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02565",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "02589",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 81.75,
+            "right_raw": 82.5
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-01",
+            "field": "open",
+            "left_raw": 81.0,
+            "right_raw": 81.3499984741211
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 81.75,
+            "right_raw": 82.5
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02589/klc2_kl.js",
+      "source_sha256": "bc74b537cee7d1eeb7890ae3eca4127f002ab9386fc404c5547171393e880ac8",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02595",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 27.52,
+            "right_raw": 27.84
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 27.52,
+            "right_raw": 27.639999389648438
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02595/klc2_kl.js",
+      "source_sha256": "3c6796641b293b8242d845540c22f1aaf914fbf832bf14c83acf14839cb2942e",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02656",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "02676",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-25",
+            "field": "open",
+            "left_raw": 155.1,
+            "right_raw": 156.0
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02676/klc2_kl.js",
+      "source_sha256": "59f2f6ed5032bbfe853cb8f3087466e17cd72da9e077574a230fab49c1acf6e9"
+    },
+    {
+      "code": "02714",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 37.62,
+            "right_raw": 36.1
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-25",
+            "field": "open",
+            "left_raw": 32.9,
+            "right_raw": 33.0
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 37.62,
+            "right_raw": 36.099998474121094
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02714/klc2_kl.js",
+      "source_sha256": "03b2fa2b174f2dac00c517122d99d0b3351313157d3847917f8ef2097c6ea6c7",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02768",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 38.52,
+            "right_raw": 38.42
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 38.52,
+            "right_raw": 38.41999816894531
+          },
+          {
+            "date": "2026-09-07",
+            "field": "open",
+            "left_raw": 38.68,
+            "right_raw": 37.86000061035156
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02768/klc2_kl.js",
+      "source_sha256": "eb3f59bcfd3625342a3e9ce22259f22eef84545280a0baf2e3dc265f24a652bc",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02877",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 8.18,
+            "right_raw": 8.245
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/02877/klc2_kl.js",
+      "source_sha256": "4bdbc287ff0e771b6d6715bd04b9dc683d2a227f610923e4e949a6a8700c9272",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "02922",
+      "old_reasons": [
+        "ValueError:LESS_THAN_21_BARS"
+      ],
+      "status": "ISOLATED",
+      "reason": "LESS_THAN_21_BARS"
+    },
+    {
+      "code": "03661",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "03677",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_TIGHT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 4.91,
+            "right_raw": 4.855000019073486
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/03677/klc2_kl.js",
+      "source_sha256": "20a38321d765b64c67b3a026b6506b95d241413b1fe8752e411fb312c6ca5042"
+    },
+    {
+      "code": "03698",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 4.88,
+            "right_raw": 4.795
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 4.88,
+            "right_raw": 4.795000076293945
+          },
+          {
+            "date": "2026-09-10",
+            "field": "open",
+            "left_raw": 4.845,
+            "right_raw": 4.909999847412109
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/03698/klc2_kl.js",
+      "source_sha256": "12f052bb7b83ce5c8a660b097b6fd7da348bacf38a71a0aad5dfc94b205fca23",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "03866",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "SINA_SUPPORTS_TENCENT_RAW",
+      "sina_vs_tencent": {
+        "class": "RAW_PRICE_AGREEMENT_LOOSE",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [],
+        "accepted": true,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/03866/klc2_kl.js",
+      "source_sha256": "2283e480578e1d4ae42c578659592781d6bd2c8d1d7d81b64c4cb69f6217a224"
+    },
+    {
+      "code": "03933",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 8.325,
+            "right_raw": 8.47
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-03",
+            "field": "open",
+            "left_raw": 8.5,
+            "right_raw": 8.380000114440918
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 8.325,
+            "right_raw": 8.470000267028809
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/03933/klc2_kl.js",
+      "source_sha256": "ae76842b287f7d5771113c76c3b91d17b724a731bca8d236fc4c402d160dad1c",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "06055",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 24.72,
+            "right_raw": 24.44
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-26",
+            "field": "open",
+            "left_raw": 25.58,
+            "right_raw": 25.780000686645508
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 24.72,
+            "right_raw": 24.440000534057617
+          },
+          {
+            "date": "2026-09-16",
+            "field": "open",
+            "left_raw": 22.98,
+            "right_raw": 23.68000030517578
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/06055/klc2_kl.js",
+      "source_sha256": "46ab00cda5ed5fa6526632958d84b291c074a5eb0dabf35251ec7ddcc6da3177",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "06090",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 43.5,
+            "right_raw": 42.38
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/06090/klc2_kl.js",
+      "source_sha256": "41f113837a23174066416091621226df6920dacddf25cef910bf5a6fe2242e76",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "06168",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "06600",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 46.24,
+            "right_raw": 47.0
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-25",
+            "field": "open",
+            "left_raw": 57.0,
+            "right_raw": 56.650001525878906
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 46.24,
+            "right_raw": 47.0
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/06600/klc2_kl.js",
+      "source_sha256": "87d1810bfcfdb2eb79d772ce21bbfcf3d346a5a13fdbbb4561dc4c03fbd5968d",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "06683",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "06687",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "06715",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 77.2,
+            "right_raw": 75.0
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/06715/klc2_kl.js",
+      "source_sha256": "15c9c1ee12ac50196123e95ad6748d08208589c2cb375311b73d9dd51a5cbef4",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "06990",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 490.0,
+            "right_raw": 505.0
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-26",
+            "field": "open",
+            "left_raw": 535.0,
+            "right_raw": 526.0
+          },
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 490.0,
+            "right_raw": 505.0
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/06990/klc2_kl.js",
+      "source_sha256": "adfc13a12f169312c21a5b83f4cb11f1f84804e38c1e22420e4f9cbac10c53c3",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "09636",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 29.84,
+            "right_raw": 28.68
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 29.84,
+            "right_raw": 28.68000030517578
+          },
+          {
+            "date": "2026-09-11",
+            "field": "open",
+            "left_raw": 29.1,
+            "right_raw": 29.0
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/09636/klc2_kl.js",
+      "source_sha256": "341f26f97d8124a0644920bffcca8bbb9c192d41298a68813e36f7023d9e287a",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "09658",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 10.1,
+            "right_raw": 9.915
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/09658/klc2_kl.js",
+      "source_sha256": "2e1244dd2523c45032d2e32364ed978804ecd33845ce25203122b6e8d4b232bb",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "09890",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 10.49,
+            "right_raw": 10.4
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "accepted": false,
+        "reason": "ValueError",
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/09890/klc2_kl.js",
+      "source_sha256": "5fe9e484e7d8e5918b65076fc95159f3e4697d6980f31f1606be307abc2e0755",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "09903",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "sina_vs_tencent": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "left_raw": 395.2,
+            "right_raw": 401.6
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Tencent"
+      },
+      "sina_vs_yahoo": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": false,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "left_raw": 407.0,
+            "right_raw": 135.6666717529297
+          },
+          {
+            "date": "2026-08-19",
+            "field": "high",
+            "left_raw": 408.0,
+            "right_raw": 136.0
+          },
+          {
+            "date": "2026-08-19",
+            "field": "low",
+            "left_raw": 359.0,
+            "right_raw": 119.66666412353516
+          }
+        ],
+        "accepted": false,
+        "left_publisher": "Sina",
+        "right_publisher": "Yahoo"
+      },
+      "source_locator": "https://finance.sina.com.cn/stock/hkstock/09903/klc2_kl.js",
+      "source_sha256": "c88aeec5450874aba7dff7c42eac175dae2ced86ef3f5cfa37e6f30d26f243dc",
+      "reason": "THIRD_SOURCE_CONFLICT_REMAINS"
+    },
+    {
+      "code": "09911",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    },
+    {
+      "code": "09989",
+      "old_reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "status": "ISOLATED",
+      "reason": "INVALID_BAR_GEOMETRY"
+    }
+  ],
+  "generated_at": "2026-09-17T07:54:08.652524+00:00",
+  "model_requests": 0,
+  "fee_cny": "0",
+  "historical_predictions_modified": false,
+  "recovery_sha256": "126574ec0196113bbe624e5ff9fc5653dd46d8cef86e9378031ec7db35a54aff"
+}

@@ -1,0 +1,51 @@
+{
+  "scope": "Run041–048 only; historical costs not reset",
+  "created_at": "2026-09-17T08:06:33.351235+00:00",
+  "rows": [
+    {
+      "run_id": "Run042",
+      "workflow_run": 35194958396,
+      "purpose": "Frozen-native nonthinking compatibility",
+      "http_confirmed": 1,
+      "pre_send_upper_cny": "0.080916",
+      "usage_peak_estimate_cny": "0.042842",
+      "actual_attributable_charge_cny": null,
+      "raw_saved_privately": true
+    },
+    {
+      "run_id": "Run044-B0",
+      "workflow_run": 35196181237,
+      "purpose": "Independent22-member bounded U review",
+      "http_confirmed": 1,
+      "pre_send_upper_cny": "0.099058",
+      "usage_peak_estimate_cny": "0.055212",
+      "actual_attributable_charge_cny": null,
+      "raw_saved_privately": true
+    },
+    {
+      "run_id": "Run044-B1",
+      "workflow_run": 35196181237,
+      "purpose": "Independent22-member bounded U review",
+      "http_confirmed": 1,
+      "pre_send_upper_cny": "0.098264",
+      "usage_peak_estimate_cny": "0.053346",
+      "actual_attributable_charge_cny": null,
+      "raw_saved_privately": true
+    }
+  ],
+  "http_confirmed": 3,
+  "usage_peak_estimate_cny": "0.151400",
+  "pre_send_upper_total_cny": "0.278238",
+  "task_caps_total_cny": "0.50",
+  "actual_attributable_charge_cny": null,
+  "actual_fee_status": "NOT_VERIFIED; unchanged immediate balance is not proof of zero cost",
+  "pricing_source": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "pricing_checked_date": "2026-09-17",
+  "free_replays_model_calls": 0,
+  "new_subscriptions": 0,
+  "automatic_recharge": false,
+  "paid_data_calls": 0,
+  "github_or_platform_base_fees": "NOT_VISIBLE",
+  "parent_cost_ledger": "docs/runtime/RUN033_040_COST_LEDGER.json",
+  "not_a_full_O_scan_quote": true
+}

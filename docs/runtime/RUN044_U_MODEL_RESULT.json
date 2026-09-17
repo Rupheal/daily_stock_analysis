@@ -1,0 +1,128 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-044",
+  "workflow_run": "35196181237",
+  "track": "U",
+  "denominator": 45,
+  "reviewed_eligible_denominator": 44,
+  "members": [
+    {
+      "batch": 0,
+      "members": 22,
+      "http_confirmed": 1,
+      "http_possible": 1,
+      "accepted_reviews": 22,
+      "status": "BOUNDED_U_REVIEWS_VALIDATED",
+      "actual_charge_cny": null,
+      "pre_send_upper_cny": "0.099058",
+      "pre_send_private": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "58cea1f3d532678e358775afef1963d08fec7ef2b6134509dfda765f4f632783",
+        "bytes": 46513,
+        "original_bytes": 44502,
+        "parts": 1,
+        "files": 2
+      },
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 14710,
+        "completion_tokens": 3224,
+        "total_tokens": 17934,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 14710
+      },
+      "usage_peak_estimate_cny": "0.055212",
+      "completion": {
+        "version": "O_PROVIDER_COMPLETION_v1",
+        "status": "PASS",
+        "blockers": [],
+        "raw_sha256": "092c1ba3484635d6b8da29666ca64f0b97bb584c3de48b9b0220b4573940109e",
+        "content_chars": 8272,
+        "reasoning_chars": 0,
+        "finish_reasons": [
+          "stop"
+        ],
+        "raw_mutated": false,
+        "model_requests": 0
+      },
+      "failures": [],
+      "observed_balance_delta_cny": "0.00",
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "8630410db3236c3b2442d2e74f0967a382a0f2d6bf553e9eb1f932e54937b129",
+        "bytes": 79915,
+        "original_bytes": 74252,
+        "parts": 1,
+        "files": 9
+      }
+    },
+    {
+      "batch": 1,
+      "members": 22,
+      "http_confirmed": 1,
+      "http_possible": 1,
+      "accepted_reviews": 22,
+      "status": "BOUNDED_U_REVIEWS_VALIDATED",
+      "actual_charge_cny": null,
+      "pre_send_upper_cny": "0.098264",
+      "pre_send_private": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "57acc8a10dccf1fc156ddc3b7743b1f2d00c1a71dbc4e52dfac04a355d4bab30",
+        "bytes": 45471,
+        "original_bytes": 43460,
+        "parts": 1,
+        "files": 2
+      },
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 14313,
+        "completion_tokens": 3090,
+        "total_tokens": 17403,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 14057
+      },
+      "usage_peak_estimate_cny": "0.053346",
+      "completion": {
+        "version": "O_PROVIDER_COMPLETION_v1",
+        "status": "PASS",
+        "blockers": [],
+        "raw_sha256": "07fd92dd872ce872df3527c1fca98cb25fb7cb752edbbe60adc1c400fb5fa26a",
+        "content_chars": 8138,
+        "reasoning_chars": 0,
+        "finish_reasons": [
+          "stop"
+        ],
+        "raw_mutated": false,
+        "model_requests": 0
+      },
+      "failures": [],
+      "observed_balance_delta_cny": "0.00",
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "6a3f0ebc5a00185067a091ccca4a9ec0a58941cba3f220f90035d8e515e8e16b",
+        "bytes": 77757,
+        "original_bytes": 72094,
+        "parts": 1,
+        "files": 9
+      }
+    }
+  ],
+  "http_confirmed": 2,
+  "http_possible": 2,
+  "bounded_reviews_accepted": 44,
+  "qualified_BUY": 0,
+  "orders": 0,
+  "maximum_cost_cny": "0.40",
+  "actual_charge_cny": null,
+  "public_content": "Metadata only; raw and prose remain owner-only",
+  "production_promotion": false
+}

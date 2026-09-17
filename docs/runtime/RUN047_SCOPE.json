@@ -1,0 +1,14 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-047",
+  "scope_recorded_at": "2026-09-17T08:09:46.150872+00:00",
+  "purpose": "Separate U release views correct four proven factual-language errors without changing decisions",
+  "progress_denominator": 44,
+  "budget_cny": "0",
+  "model_calls": 0,
+  "deliverables": [
+    "RUN047_U_RELEASE_ACCEPTANCE.json",
+    "RUN047_U45_HANDOFF.json"
+  ],
+  "historical_predictions_modified": false,
+  "qualified_BUY_created": 0
+}
