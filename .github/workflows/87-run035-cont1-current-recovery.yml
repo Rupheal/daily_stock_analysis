@@ -1,0 +1,49 @@
+name: DSA Run035 CONT1 raw-endpoint recovery
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN035_CONT1_SCOPE.json]
+permissions: {contents: read, actions: read}
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env: {PYTHONUNBUFFERED: '1', ENV_FILE: /dev/null}
+    steps:
+      - uses: actions/checkout@v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install requests yfinance pytest
+      - run: python -m pytest --noconftest -q tests/test_current_run006_recovery.py tests/test_dual_history_cache.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35180179743
+          github-token: ${{ github.token }}
+          name: RUN033_PUBLIC_HISTORY_CACHE
+          path: parent
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35181236114
+          github-token: ${{ github.token }}
+          name: RUN035_PUBLIC_RECOVERY_INPUTS
+          path: prior-recovery
+      - name: Apply original Run006 contract without rewriting prior audits
+        run: |
+          python - <<'PY'
+          import json,hashlib,subprocess,sys
+          from pathlib import Path
+          def one(name):
+              p=list(Path('parent').rglob(name));assert len(p)==1;return str(p[0])
+          s=json.load(open('docs/runtime/RUN035_CONT1_SCOPE.json'));p=one('HISTORY_CACHE.json')
+          assert hashlib.sha256(Path(p).read_bytes()).hexdigest()==s['parent_cache_sha256']
+          assert hashlib.sha256(Path('prior-recovery/CURRENT_RECOVERY.json').read_bytes()).hexdigest()==s['parent_recovery_sha256']
+          subprocess.run([sys.executable,'scripts/apply_run006_current_recovery.py','--prior-recovery','prior-recovery','--run-id','TRI-DSA-EXEC-20260917-035-CONT1','--parent',p,'--native',one('market-history.json'),'--contract','docs/run006_b1_recovery_contract.json','--universe','docs/runtime/run032_public_cache/O_UNIVERSE.json','--u-universe','docs/runtime/run032_public_cache/U_UNIVERSE.json','--out','/tmp/run035'],check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN035_CONT1_PUBLIC_RECOVERY_INPUTS
+          path: /tmp/run035/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,25 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-035-CONT1",
+  "created_at": "2026-09-17T04:22:06.951862+00:00",
+  "scope": "Apply frozen Run006 raw-source/adjustment/provider-gap routing to NEW current-session inputs; no re-label of full-history strict audit or model outputs.",
+  "parent_run": 35180179743,
+  "parent_cache_sha256": "e70f3dc04ca1a4a2b97dfbcbc4bb2cf638cdce8b51a3386b25f99ffeb5b83ae0",
+  "denominator": 660,
+  "U_denominator": 45,
+  "target_session": "2026-09-16",
+  "budget_cny": "0",
+  "model_requests": 0,
+  "new_tolerance": false,
+  "contract": "docs/run006_b1_recovery_contract.json",
+  "future_inputs_only": true,
+  "Run005_changed": false,
+  "native_model_outputs_claimed": false,
+  "target_deliverables": [
+    "CURRENT_RECOVERY.json",
+    "per-member source bytes and hashes"
+  ],
+  "progress_denominator": 660,
+  "parent_recovery_workflow": 35181236114,
+  "parent_recovery_sha256": "4a1af5390166e3bd809772fa67c43a0fdaa43bfc8f3699fa9ea90e9da433e997",
+  "repair": "Reuse 445 keepers, 4 market/history isolations and 210 Yahoo raw snapshots. Tencent unadjusted endpoint uses kline/kline, as existing Run006 raw-geometry probe; hkfqkline without qfq returned bad params. Only transport/parse failures retried."
+}
