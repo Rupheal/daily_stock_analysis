@@ -1,0 +1,49 @@
+name: DSA Run043 free targeted third-source reconciliation
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN043_SCOPE.json]
+permissions: {contents: read, actions: read}
+concurrency: {group: dsa-run043-free-data, cancel-in-progress: false}
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/scripts
+    steps:
+      - uses: actions/checkout@v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install akshare yfinance pytest
+      - run: python -m pytest --noconftest -q tests/test_third_source_reconciliation.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35180179743
+          github-token: ${{ github.token }}
+          name: RUN033_PUBLIC_HISTORY_CACHE
+          path: parent
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35181701358
+          github-token: ${{ github.token }}
+          name: RUN035_CONT1_PUBLIC_RECOVERY_INPUTS
+          path: prior
+      - name: Reconcile only62 previously isolated members
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess,sys
+          h=list(Path('parent').rglob('HISTORY_CACHE.json'));r=list(Path('prior').rglob('CURRENT_RECOVERY.json'))
+          assert len(h)==len(r)==1
+          subprocess.run([sys.executable,'scripts/reconcile_hk_third_source.py','--prior',str(r[0].parent),'--parent',str(h[0]),'--scope','docs/runtime/RUN043_SCOPE.json','--out','/tmp/run043'],check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN043_PUBLIC_THIRD_SOURCE
+          path: /tmp/run043
+          if-no-files-found: warn
+          retention-days: 90

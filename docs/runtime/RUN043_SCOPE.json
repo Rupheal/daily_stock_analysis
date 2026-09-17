@@ -1,0 +1,17 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-043",
+  "created_at": "2026-09-17T07:33:25.031160+00:00",
+  "target_session": "2026-09-16",
+  "purpose": "Resolve62 current input isolations through independent third publisher, preserving conflicts and660 denominator",
+  "progress_denominator": 62,
+  "budget_cny": "0",
+  "model_calls": 0,
+  "prior_sha256": "37e31d46548cc0f719a61481774bc626995237f7c80071a5f14e262112b440c9",
+  "native_predictions": 0,
+  "no_schedule_change": true,
+  "deliverables": [
+    "THIRD_SOURCE_RESULT.json",
+    "PROSPECTIVE_INPUTS.json",
+    "source original bytes"
+  ]
+}
