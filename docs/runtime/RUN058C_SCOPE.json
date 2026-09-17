@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-INDEPENDENT-DIAG-20260918-058C",
+  "parent_run_id": "TRI-DSA-O-PREFLIGHT-REPAIR-20260918-058B",
+  "target_session": "2026-09-17",
+  "codes": [
+    "00001",
+    "00002"
+  ],
+  "parent_artifact_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "native_history_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "objective": "Determine whether Run058B's independent OHLC disagreement is a target-session conflict or an older adjusted-history disagreement. Zero model requests.",
+  "model_http_requests": 0,
+  "provider_send_authorized": false,
+  "paid_data_calls": 0,
+  "cost_cny": 0,
+  "no_orders": true,
+  "automatic_retry": false,
+  "decision_rule": "If target-session OHLC agrees within 0.005 and latest volume is within the accepted calibration while mismatches are only historical, retain Run057 historical adjudication and narrow fresh child preflight to target-session independent verification plus immutable native-history binding. Otherwise keep tranche frozen."
+}
