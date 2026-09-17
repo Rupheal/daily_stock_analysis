@@ -1,0 +1,282 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-032-GAP5-ARBITRATION",
+  "as_of": "2026-09-17T03:43:03.340620+00:00",
+  "source": {
+    "source_url": "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d260916e.htm",
+    "sha256": "28e08469c617325111d74a9cf791b9c7a23d265ba3f08db327d4419a3ea83a71",
+    "retrieved_at": "2026-09-17T03:38:14.183716+00:00",
+    "price_session": "2026-09-16",
+    "parsed_count": 15337,
+    "rows": {
+      "HK00501": {
+        "code": "HK00501",
+        "name": "OMNIVISION",
+        "currency": "HKD",
+        "previous_close": 67.0,
+        "high": 69.2,
+        "low": 66.2,
+        "close": 69.0,
+        "volume": 261100.0,
+        "turnover": 17856335.0
+      },
+      "HK00638": {
+        "code": "HK00638",
+        "name": "FIBOCOM",
+        "currency": "HKD",
+        "previous_close": 7.0,
+        "high": 7.1,
+        "low": 6.92,
+        "close": 7.1,
+        "volume": 349400.0,
+        "turnover": 2454709.0
+      },
+      "HK00668": {
+        "code": "HK00668",
+        "name": "ANKER",
+        "currency": "HKD",
+        "previous_close": 121.1,
+        "high": 122.8,
+        "low": 119.2,
+        "close": 120.1,
+        "volume": 79100.0,
+        "turnover": 9539910.0
+      },
+      "HK00699": {
+        "code": "HK00699",
+        "name": "JOYSON ELEC",
+        "currency": "HKD",
+        "previous_close": 11.3,
+        "high": 11.33,
+        "low": 11.19,
+        "close": 11.27,
+        "volume": 264030.0,
+        "turnover": 2975197.0
+      },
+      "HK03968": {
+        "code": "HK03968",
+        "name": "CM BANK",
+        "currency": "HKD",
+        "previous_close": 51.2,
+        "high": 51.65,
+        "low": 50.95,
+        "close": 51.35,
+        "volume": 8728071.0,
+        "turnover": 447095571.0
+      }
+    }
+  },
+  "Tencent_manifest": [
+    {
+      "code": "00501",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00501%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.353484+00:00",
+      "sha256": "b306baa2959c73c67f048db4336738b9353af815d58e3a7a175fd4ff935cf662",
+      "rows": 90,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "67.050",
+          "69.000",
+          "69.200",
+          "66.200",
+          "261100.000",
+          {},
+          "0.510",
+          "1785.634"
+        ],
+        [
+          "2026-09-17",
+          "67.500",
+          "68.550",
+          "69.500",
+          "67.500",
+          "44500.00",
+          {},
+          "0",
+          "304.39"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    },
+    {
+      "code": "00638",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00638%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.597726+00:00",
+      "sha256": "fa947d62ee3803acc771a33b41208784cd5edac66b50986dc91f5baf7d7b7d69",
+      "rows": 90,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "7.005",
+          "7.100",
+          "7.100",
+          "6.920",
+          "349400.000",
+          {
+            "cqr": "2026-09-16",
+            "FHcontent": "",
+            "HGcontent": "回购68.28万股，均价10.323元",
+            "paixiri": "",
+            "hgcgContent": "",
+            "ggContent": ""
+          },
+          "0.260",
+          "245.471"
+        ],
+        [
+          "2026-09-17",
+          "6.910",
+          "7.145",
+          "7.275",
+          "6.910",
+          "648800.00",
+          {},
+          "0",
+          "462.60"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    },
+    {
+      "code": "00668",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00668%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.545298+00:00",
+      "sha256": "e55613b472048a55654410fcfcc3911fe697077ca82880fe790f3ea8bb54e7cb",
+      "rows": 56,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "121.100",
+          "120.100",
+          "122.800",
+          "119.200",
+          "79100.000",
+          {},
+          "0.160",
+          "953.991"
+        ],
+        [
+          "2026-09-17",
+          "119.800",
+          "119.000",
+          "122.400",
+          "119.000",
+          "21300.00",
+          {},
+          "0",
+          "256.26"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    },
+    {
+      "code": "00699",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00699%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.542673+00:00",
+      "sha256": "72d4f67762c4df7837f72c735fc86e614f52dfd24777b5391052df897a8285f4",
+      "rows": 90,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "11.310",
+          "11.270",
+          "11.330",
+          "11.190",
+          "264030.000",
+          {},
+          "0.180",
+          "297.520"
+        ],
+        [
+          "2026-09-17",
+          "11.080",
+          "11.750",
+          "11.890",
+          "11.080",
+          "2014000.00",
+          {},
+          "0",
+          "2333.43"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    },
+    {
+      "code": "03968",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk03968%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.342908+00:00",
+      "sha256": "6fbc8baeed0b46b2fa6e56fade0105ed93d56241e79d50083ce51a1f48501d50",
+      "rows": 90,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "51.450",
+          "51.350",
+          "51.650",
+          "50.950",
+          "8728071.000",
+          {},
+          "0.190",
+          "44709.557"
+        ],
+        [
+          "2026-09-17",
+          "50.700",
+          "51.100",
+          "51.300",
+          "50.500",
+          "2473411.00",
+          {},
+          "0",
+          "12589.72"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    }
+  ],
+  "bounded_result": "HKEX target high/low/close/share-volume match Tencent for all five; opening absent from HKEX compact sheet, historical provider agreement not completed",
+  "CM_BANK": {
+    "legacy_comparison": "Tencent/Yahoo volume mismatch preserved",
+    "HKEX_target_volume": 8728071,
+    "Tencent_target_volume": 8728071,
+    "Yahoo_fresh_retry": "429 rate-limited; no retry loop, no synthetic replacement"
+  },
+  "model_requests": 0,
+  "no_backdated_data": true,
+  "formal_output_accepted": false
+}

@@ -155,7 +155,7 @@
       "definition_of_done": "先完成 O 冻结上游单股原生调用、私密文本证据保存/读回/哈希和人工语义复核；再冻结当期官方沪深港股通可买并集并完成 O 全池；之后才启动 U45 正式逐股执行验收；最新覆盖：U独立数据准备不等待O，Drive为首选原件目的地，正式验收门槛不变",
       "id": "G4",
       "priority": 1,
-      "status": "GATEA_VERSIONED_RELEASE_PASS; CURRENT_O_UNIVERSE_660; NATIVE_DATA_656_OF_660; FULL_NATIVE_MODEL_PENDING; U_FORMAL_0_OF_45",
+      "status": "GATEA_VERSIONED_RELEASE_PASS; CURRENT_O_UNIVERSE_660; NATIVE_DATA_COMPOSITE_660_OF_660; FULL_NATIVE_MODEL_PENDING; U_FORMAL_0_OF_45",
       "title": "U45与O全港股通独立覆盖及原生实例验收",
       "previous_status_asof_20260914": "Drive_primary_runner_authorization_and_roundtrip_pending; U_independent_preparation_unblocked; Run012_GitHub_bridge_retained_as_fallback",
       "current_receipt": "docs/runtime/RUN032_RESULT.json",
@@ -191,7 +191,7 @@
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-17T03:35:47.042563+00:00",
+  "updated_at_utc": "2026-09-17T03:46:33.648202+00:00",
   "user_directive_override": {
     "priority": "urgent",
     "path": "docs/dsa-urgent-user-directive.md",
@@ -429,8 +429,8 @@
   "current_execution": {
     "run_id": "TRI-DSA-EXEC-20260917-032",
     "authoritative_for_current_execution": true,
-    "scope_receipt": "docs/runtime/RUN032_FORMAL_EXECUTION_SCOPE.json",
-    "state": "EXECUTING_CURRENT_OFFICIAL_POOL_AND_U_MEMBER_GATES",
+    "scope_receipt": "docs/runtime/RUN032_RESULT.json",
+    "state": "BOUNDED_FREE_RUN032_COMPLETE_FORMAL_MODEL_GATES_PENDING",
     "gate_a": "PASS_WITH_VERSIONED_RELEASE_ADAPTER",
     "gate_a_workflow": 35069757484,
     "historical_raw_failures_preserved": true,
@@ -445,13 +445,13 @@
       "Complete remaining U risk/macro/news/plan inputs and formal outputs; latest approved runtime windows remain active",
       "Only genuinely qualified timely future AM signals can reach Entry-v1; do not fill expired 2026-09-17 morning signals"
     ],
-    "latest_actual_run": 35178119846,
+    "latest_actual_run": 35179162716,
     "latest_actual_run_conclusion": "success",
     "current_official_denominator": 660,
     "current_official_session": "2026-09-17",
     "completed_price_session": "2026-09-16",
-    "O_native_data_ready": 656,
-    "O_data_isolated": 4,
+    "O_native_data_ready": 660,
+    "O_data_isolated": 0,
     "O_native_full_pool_accepted": false,
     "U_formal_accepted": 0,
     "U_denominator": 45,
@@ -460,7 +460,9 @@
     "news_title_relevance_raw": 9,
     "news_title_relevance_reviewed": 8,
     "news_bounded_issuer_evidence_members": 2,
-    "model_http_requests_this_resume": 0
+    "model_http_requests_this_resume": 0,
+    "formal_native_model_outputs_accepted": 0,
+    "full_history_persistence": "Next collection saves allowlisted per-stock history; current aggregate is not a reusable full native database"
   },
   "execution_checkpoint_history": [
     {

@@ -85,5 +85,6 @@ jobs:
             reused/providers/U45_PROVIDER_READINESS.json
             /tmp/RUN032_READINESS.json
             /tmp/run032-o/coverage.json
+            /tmp/run032-o/market-history.json
           if-no-files-found: error
           retention-days: 30

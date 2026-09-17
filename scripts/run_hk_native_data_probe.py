@@ -17,6 +17,25 @@ from datetime import datetime, timezone
 from math import isfinite
 
 
+def export_market_history(database, codes, target, destination):
+    """Allowlist market bars for reuse; never export model/identity/account tables."""
+    allowed=('date','open','high','low','close','volume','amount','pct_chg','ma5','ma10','ma20','volume_ratio','data_source')
+    histories={code:[] for code in codes}
+    if database.exists():
+        con=sqlite3.connect(f'file:{database}?mode=ro',uri=True)
+        try:
+            columns={row[1] for row in con.execute('PRAGMA table_info(stock_daily)')}
+            selected=[k for k in allowed if k in columns]
+            if not {'date','open','high','low','close','volume'}<=set(selected):raise ValueError('MARKET_HISTORY_SCHEMA_MISSING')
+            for code in codes:
+                for raw in con.execute('SELECT '+','.join(selected)+' FROM stock_daily WHERE code=? COLLATE NOCASE AND substr(date,1,10)<=? ORDER BY date',(code,target)):
+                    histories[code].append({k:(None if isinstance(v,float) and not isfinite(v) else v) for k,v in zip(selected,raw)})
+        finally:con.close()
+    result={'schema':'DSA_PUBLIC_MARKET_HISTORY_v1','target_session':target,'requested_denominator':len(codes),'histories':histories,'model_content_included':False,'independent_validation':False}
+    destination.write_text(json.dumps(result,ensure_ascii=False,allow_nan=False)+'\n')
+    return hashlib.sha256(destination.read_bytes()).hexdigest()
+
+
 def audit_database(database, codes, expected_date):
     records = []
     connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True) if database.exists() else None
@@ -117,6 +136,10 @@ def main():
     except Exception as exc:
         audit["error"] = type(exc).__name__ + ": " + str(exc)
     audit["coverage"] = audit_database(database, codes, args.expected_date)
+    try:
+        audit['market_history_sha256']=export_market_history(database,codes,args.expected_date,output/'market-history.json')
+    except Exception as exc:
+        audit['market_history_export_error']=type(exc).__name__+': '+str(exc)
     if (output / "native.log").exists():
         native_log = (output / "native.log").read_text(errors="replace")
         for record in audit["coverage"]:

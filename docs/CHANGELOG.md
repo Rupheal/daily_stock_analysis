@@ -1,5 +1,7 @@
 # Changelog
 
+- Run032 final receipt: real native input recovery 4/4 passed (35179162716); aggregate target-day data readiness 660/660 is separate from formal model outputs 0/660. Add strict market-only historical export for subsequent runs to make model inputs reusable without exposing model/account tables.
+
 - Run032 recovery4: verified Tencent/HKEX target-date evidence for four native data gaps; external cached-input adapter exercises unchanged upstream CLI for only failed symbols, preserves full 660 denominator, and never claims formal model acceptance. Excludes intraday partial bars and leaves unknown turnover unset.
 
 - Run032 handoff: reject HKEX venue/publisher false issuer matches; add directly reviewed Tencent/Kuaishou filing evidence with source hashes, dates, bounded coverage, and real-readiness artifact consumption. Current GateA/official-universe pointers supersede stale queue status; no historical prediction or runtime window change.

@@ -1,7 +1,7 @@
 {
   "run_id": "TRI-DSA-EXEC-20260917-032",
   "checked_at": "2026-09-17T03:35:47.042563+00:00",
-  "status": "CURRENT_UNIVERSE_AND_NATIVE_DATA_PASS_WITH_4_ISOLATED; FORMAL_OUTPUT_PENDING",
+  "status": "DATA_LAYER_COMPLETE_WITH_VERSIONED_INPUT_RECOVERY; FORMAL_MODEL_OUTPUTS_STILL_PENDING",
   "commits": [
     "d0c22492930ebf41558c3aacd37c9794f0562657",
     "ececc11ae313301a608bc66a78a67ddd3254bf61"
@@ -12,9 +12,17 @@
   "artifact_sha256": "44cb12e20a8f046dea2538c42f0068d050cbd8d819305387ced48bb58227514e",
   "O": {
     "current_denominator": 660,
-    "native_target_day_valid": 656,
-    "data_isolated": 4,
-    "native_formal_model_accepted": 0
+    "native_target_day_valid": 660,
+    "data_isolated": 0,
+    "native_formal_model_accepted": 0,
+    "native_target_day_valid_before_recovery": 656,
+    "former_failed_codes": [
+      "00501",
+      "00638",
+      "00668",
+      "00699"
+    ],
+    "recovery_success": 4
   },
   "U": {
     "denominator": 45,
@@ -24,7 +32,12 @@
     "raw_news_title_relevance": 9,
     "corrected_news_title_relevance": 8,
     "bounded_issuer_news_reviewed": 2,
-    "formal_accepted": 0
+    "formal_accepted": 0,
+    "provider_isolation": {
+      "code": "03968",
+      "reason": "VOLUME_LATEST_OUTSIDE_CALIBRATED_BOUND",
+      "target_session": "2026-09-16"
+    }
   },
   "resources": {
     "DeepSeek_model_http_requests": 0,
@@ -43,5 +56,33 @@
     "Bounded issuer filing evidence is not comprehensive news/risk acceptance",
     "Original and release-adapted GateA outputs retain separate lineage",
     "Four failed symbols will be read from the actual uploaded artifact, not reconstructed from historic 22"
-  ]
+  ],
+  "evidence_handoff": {
+    "run_id": 35178784888,
+    "conclusion": "success",
+    "artifact_id": 10478813527,
+    "artifact_sha256": "f795caa2295114c2bf4f9efc1a5c31cde25bb2052d2269ec844039eb8dd413aa",
+    "cloud_tests": 16,
+    "news_reviewed_component_accepted": 2,
+    "formal_U_accepted": 0,
+    "entry": "NO_QUALIFIED_SIGNAL"
+  },
+  "last_checked_at": "2026-09-17T03:46:33.647697+00:00",
+  "recovery4": {
+    "run_id": 35179162716,
+    "conclusion": "success",
+    "artifact_id": 10478764113,
+    "artifact_sha256": "2a99307cef496822900d9fd69ad3be100e81d94276072f3cd933aac8af8e677d",
+    "subset_actual_native_ready": 4,
+    "denominator": 660,
+    "composite_ready": 660,
+    "native_strategy_modified": false,
+    "independent_opening_price_verified": false
+  },
+  "full_history_persistence": {
+    "current_full_pool_artifact": "coverage and target-day summary only; full native database not persisted",
+    "four_recovery_inputs": "complete cached Tencent histories persisted with hashes",
+    "repair": "allowlisted market-history exporter added for subsequent native runs; no model/account tables exported",
+    "reusable_full_pool_history_accepted": false
+  }
 }
