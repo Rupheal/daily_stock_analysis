@@ -11,7 +11,7 @@ import re
 
 from o_semantic_handoff_contract import opening_check, news_count_state
 
-GUARD_VERSION = 'O_POST_OUTPUT_SEMANTIC_GUARDS_v1.2'
+GUARD_VERSION = 'O_POST_OUTPUT_SEMANTIC_GUARDS_v1.3'
 
 
 def numeric(value):
@@ -93,19 +93,35 @@ def _semantic_guards(preflight, original_input, result):
         for path,text in _walk(result):
             if '现价' in text and not any(h in text for h in safe_hints) and live_claim.search(text):
                 findings.append({'code':'SEM001_LIVE_PRICE_LABEL_WITHOUT_REALTIME_QUOTE','guard_id':'SEM-001','severity':'CONDITION','paths':[path]})
+        phase = ctx.get('market_phase_context') or _get(result,'dashboard','phase_decision','phase_context') or {}
+        session = phase.get('session_date')
+        target = preflight.get('target')
+        if session and target and session != target:
+            relative = re.compile(r'(?:今日|今天|本日)(?:的)?(?:盘中)?(?:低点|高点|最低价?|最高价?|开盘价|收盘价)')
+            for path,text in _walk(result):
+                if relative.search(text):
+                    findings.append({'code':'SEM001_PREVIOUS_SESSION_RELABELLED_TODAY','guard_id':'SEM-001','severity':'CONDITION','paths':[path]})
+        for path,text in _walk(result):
+            for match in re.finditer(r'盘中估算价', text):
+                prefix=text[max(0,match.start()-10):match.start()]
+                if not any(x in prefix for x in ('不得','禁止','不可','不能','没有','无')):
+                    findings.append({'code':'SEM001_UNSOURCED_ESTIMATED_INTRADAY_PRICE','guard_id':'SEM-001','severity':'CONDITION','paths':[path]})
 
     # SEM-002: missing native news context cannot justify an absence-of-bad-news claim.
     news_missing = original_input.get('news_context') in (None,'') and not ctx.get('company_news_evidence')
-    if news_missing:
+    bounded_review = preflight.get('risk_review_complete') is False
+    if news_missing or bounded_review:
         absence_patterns=(
             re.compile(r'未见.{0,16}(?:利空|重大利空|负面|处罚|减持|公告)'),
             re.compile(r'未发现.{0,16}(?:利空|重大利空|负面|处罚|减持|公告)'),
             re.compile(r'没有.{0,12}(?:利空|重大利空|负面|处罚|减持|公告)'),
             re.compile(r'暂无.{0,12}(?:利空|重大利空|负面|处罚|减持|公告)'),
+            re.compile(r'近.{0,6}(?:日|天)无.{0,16}(?:利空|负面|处罚|减持|业绩)'),
         )
         for path,text in _walk(result):
             if any(pattern.search(text) for pattern in absence_patterns):
-                findings.append({'code':'SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_MISSING_CONTEXT','guard_id':'SEM-002','severity':'CONDITION','paths':[path,'news_context']})
+                code='SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW' if bounded_review and not news_missing else 'SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_MISSING_CONTEXT'
+                findings.append({'code':code,'guard_id':'SEM-002','severity':'CONDITION','paths':[path,'news_context']})
 
     # SEM-003: when search was not performed, do not add index-membership/weight
     # facts that are absent from the frozen evidence.

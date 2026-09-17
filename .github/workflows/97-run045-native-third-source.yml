@@ -1,0 +1,62 @@
+name: DSA Run045 free native consumption of third-source repair
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN045_SCOPE.json]
+permissions: {contents: read, actions: read}
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest
+      - working-directory: research
+        env: {PYTHONPATH: 'tests:scripts'}
+        run: python -m pytest --noconftest -q tests/test_o_partial_news_and_session_labels.py tests/test_o_single_output_fact_check.py tests/test_o_post_output_contract.py tests/test_o_release_quote_semantics.py tests/test_o_release_gate_contract.py tests/test_release_float32_provenance.py tests/test_u_member_reports.py tests/test_third_source_reconciliation.py tests/test_native_model_configuration.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35180179743
+          github-token: ${{ github.token }}
+          name: RUN033_PUBLIC_HISTORY_CACHE
+          path: parent
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35181701358
+          github-token: ${{ github.token }}
+          name: RUN035_CONT1_PUBLIC_RECOVERY_INPUTS
+          path: prior
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35195186254
+          github-token: ${{ github.token }}
+          name: RUN043_PUBLIC_THIRD_SOURCE
+          path: third
+      - name: Free replay and frozen native CLI consumption
+        run: |
+          python - <<'PY'
+          import subprocess,sys
+          from pathlib import Path
+          h=list(Path('parent').rglob('HISTORY_CACHE.json'));assert len(h)==1
+          subprocess.run([sys.executable,'research/scripts/replay_third_source_inputs.py','--prior','prior','--third','third','--parent',str(h[0]),'--scope','research/docs/runtime/RUN045_SCOPE.json','--out','/tmp/replay045'],check=True)
+          subprocess.run([sys.executable,'research/scripts/run_current_recovery_native.py','--checkout','original','--recovery','/tmp/replay045/CURRENT_RECOVERY.json','--universe','research/docs/runtime/run032_public_cache/O_UNIVERSE.json','--out','/tmp/native045'],check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN045_PUBLIC_NATIVE_REPLAY
+          path: |
+            /tmp/replay045
+            /tmp/native045/NATIVE_RECOVERY_ACCEPTANCE.json
+            /tmp/native045/market-history.json
+          if-no-files-found: warn
+          retention-days: 90

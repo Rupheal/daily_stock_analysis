@@ -1,0 +1,18 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-045",
+  "target_session": "2026-09-16",
+  "created_at": "2026-09-17T07:51:44.256391+00:00",
+  "purpose": "Replay saved62 isolations, recover cached-input selection and whole-window third-publisher adjudication; execute new inputs through unchanged native data CLI",
+  "progress_denominator": 660,
+  "isolations_reviewed": 62,
+  "maximum_model_requests": 0,
+  "budget_cny": "0",
+  "prior_sha256": "37e31d46548cc0f719a61481774bc626995237f7c80071a5f14e262112b440c9",
+  "third_result_sha256": "5d16c438f8b07c32738ed4c36550958591d5ce019f05b955882101393402c2f8",
+  "parent_sha256": "e70f3dc04ca1a4a2b97dfbcbc4bb2cf638cdce8b51a3386b25f99ffeb5b83ae0",
+  "deliverables": [
+    "REPLAY_RESULT.json",
+    "NATIVE_RECOVERY_ACCEPTANCE.json"
+  ],
+  "no_historical_prediction_changes": true
+}
