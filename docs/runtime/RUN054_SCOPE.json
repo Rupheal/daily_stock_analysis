@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-054",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-053",
+  "target_session": "2026-09-17",
+  "scope": "Bind source-located U45 company-event/capital evidence and explicit company/sector risk missingness for formal-strategy input. Deterministic only; no LLM call, ranking, BUY, quote, fill, main merge, schedule change or real order.",
+  "inputs": [
+    "docs/runtime/RUN049_U45_20260917_CLOSE_REFRESH.json",
+    "docs/runtime/RUN041_U45_MEMBER_REPORTS.json",
+    "docs/runtime/RUN047_U45_HANDOFF.json",
+    "docs/runtime/RUN046_U_REVIEW_ACCEPTANCE.json",
+    "docs/runtime/RUN053_U_MACRO_POSITION_CAP.json"
+  ],
+  "acceptance": {
+    "denominator": 45,
+    "eligible": 44,
+    "retain_ineligible": ["09618"],
+    "verified_event_requires_source_url": true,
+    "no_news_hit_must_not_mean_no_risk": true,
+    "capital_top10_absence_must_not_mean_zero_flow": true,
+    "sector_risk_missingness_explicit": true,
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "qualified_BUY_created": 0
+  }
+}
