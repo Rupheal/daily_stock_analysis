@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-TARGET-PREFLIGHT-20260918-058D",
+  "state": "PASS_SELECTIVE_FAIL_CLOSED",
+  "members": [
+    {
+      "code": "00001",
+      "status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "preflight_sha256": "06280a92d9456864ef988b68693160cf7ef3f322d7625b28d8a28257c0864dda",
+      "target": "2026-09-17",
+      "native_history_count": 44,
+      "historical_mismatch_sessions": 40,
+      "target_volume_status": "bounded_provider_reconciliation",
+      "news_search_performed": false
+    },
+    {
+      "code": "00002",
+      "status": "FAIL_POOL_TARGET_PREFLIGHT_V2",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    }
+  ],
+  "ready_for_new_paid_child": [
+    "00001"
+  ],
+  "session_preflight_isolated": [
+    "00002"
+  ],
+  "model_http_requests": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "next": "Create one immutable paid child for 00001 only; never retry 00002 for this target session."
+}
