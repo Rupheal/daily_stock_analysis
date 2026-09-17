@@ -82,6 +82,8 @@ def _sanitize_current_price_fields(node, *, target_close, path="$", changes=None
 def build_release_view(preflight, original_input, pipeline_final):
     if not isinstance(preflight, dict) or not isinstance(original_input, dict) or not isinstance(pipeline_final, dict):
         raise ReleaseQuoteError("RELEASE_INPUT_NOT_MAPPING")
+    if pipeline_final.get('success') is False or pipeline_final.get('error_message'):
+        raise ReleaseQuoteError('RELEASE_NATIVE_ANALYSIS_FAILED')
     raw_before = deepcopy(pipeline_final)
     contract = preflight.get("execution_contract")
     if not isinstance(contract, dict) or contract.get("version") != EXECUTION_CONTRACT_VERSION:

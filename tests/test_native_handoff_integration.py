@@ -81,7 +81,7 @@ return load_news, analyze, format_prompt, state
   holder['format'](self,ctx,ctx.get('stock_name','合成'),news_context=news_context,analysis_context_pack_summary=analysis_context_pack_summary)
   return result
  env=dict(inspect=inspect,json=json,datetime=datetime,timezone=timezone,ContractError=ContractError,
-  NativeInputContractError=ValueError,validate_native_input=lambda p,c:{'validated':True},
+  NativeInputContractError=ValueError,validate_native_input=lambda p,c:{'validated':True},validate_native_history_database=lambda p,d:None,
   canonical_hash=canonical_hash,build_news_handoff=build_news_handoff,prove_prompt_consumption=prove_prompt_consumption,
   check_saved_output=check_saved_output,preflight=pf(),args=SimpleNamespace(news_handoff_v1=enabled),root=tmp_path,
   started='2026-01-05T09:01:00+00:00',target_session='2026-01-05',

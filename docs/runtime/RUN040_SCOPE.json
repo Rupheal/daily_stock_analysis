@@ -1,0 +1,18 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-040",
+  "created_at": "2026-09-17T04:57:26.284330+00:00",
+  "scope": "Free regression of native success flag, SSE final answer completeness and metadata-only release safety; preserve actual failed Run039 raw evidence",
+  "parent_run": 35183191883,
+  "model_requests": 0,
+  "budget_cny": "0",
+  "progress_denominator": 4,
+  "deliverables": [
+    "RUN040_FAILED_OUTPUT_REPLAY.json",
+    "cloud regression results",
+    "versioned post-output contract v4",
+    "future generic preflight binds existing execution contract v2"
+  ],
+  "production_promotion": false,
+  "old_result_mutation": false,
+  "runtime_changed": false
+}

@@ -1,0 +1,38 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-040",
+  "scope": "Actual private failed provider result and native error default replay; not a new model opinion",
+  "parent_workflow_run": 35183191883,
+  "private_index_sha256": "5655e0533f80cfb2ea640ccba31142adb07f672930b5daf1bd75f5d5af86b5ad",
+  "status": "PASS_FAILED_OUTPUT_REMAINS_ISOLATED",
+  "provider_completion": {
+    "version": "O_PROVIDER_COMPLETION_v1",
+    "status": "BLOCK",
+    "blockers": [
+      "PROVIDER_FINAL_CONTENT_EMPTY",
+      "PROVIDER_OUTPUT_TRUNCATED",
+      "PROVIDER_NORMAL_STOP_NOT_PROVEN"
+    ],
+    "raw_sha256": "c77f9638dd603fcdd90a9da3ab4567da0436b92e447300c7bac5d14b94f65df2",
+    "content_chars": 0,
+    "reasoning_chars": 26273,
+    "finish_reasons": [
+      "length"
+    ],
+    "raw_mutated": false,
+    "model_requests": 0
+  },
+  "post_contract_version": "O_POST_OUTPUT_CONTRACT_v4",
+  "post_blockers": [
+    "SEM-001",
+    "NATIVE_ANALYSIS_SUCCESS_NOT_PROVEN",
+    "NATIVE_ANALYSIS_ERROR_PRESENT"
+  ],
+  "release_adapter_rejection": "RELEASE_NATIVE_ANALYSIS_FAILED",
+  "original_files_unchanged": 37,
+  "formal_acceptances_added": 0,
+  "model_requests": 0,
+  "fee_cny": "0",
+  "strategy_changes": false,
+  "runtime_changes": false,
+  "new_preflight_contract_note": "Future generic inputs include the existing v2 contract identifier; no retroactive repair of Run039 input"
+}

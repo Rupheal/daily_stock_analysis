@@ -22,7 +22,7 @@ from o_session_fact_anchor import (
     build_session_fact_anchor_from_preflight, prove_session_fact_anchor,
 )
 
-CONTRACT_VERSION = 'O_POST_OUTPUT_CONTRACT_v3'
+CONTRACT_VERSION = 'O_POST_OUTPUT_CONTRACT_v4'
 CAPTURE_VERSION = 'O_PIPELINE_FINAL_CAPTURE_v1'
 NUMERIC_COUNT_VERSION = 'O_NUMERIC_SEARCH_COUNT_v1'
 FINAL_STAGE = 'PIPELINE_FINALIZED_AFTER_ANALYZE_STOCK_RETURN'
@@ -144,6 +144,12 @@ def evaluate_post_output_contract(preflight, original_input, result, *, capture_
     blockers += sorted({f['guard_id'] for f in audit['findings'] if f.get('guard_id') in SEM_GATES})
     blockers += capture_blocks
     blockers += [f['code'] for f in audit['findings'] if f.get('severity') == 'INTEGRATION_GAP']
+    # Native returns a scored default even after all model attempts fail.
+    # A default Hold/50 is an error result, never an accepted model opinion.
+    if result.get('success') is not True:
+        blockers.append('NATIVE_ANALYSIS_SUCCESS_NOT_PROVEN')
+    if result.get('error_message'):
+        blockers.append('NATIVE_ANALYSIS_ERROR_PRESENT')
     if numeric['status'] == 'BLOCK':
         blockers.append(numeric['code'])
     if numeric['status'] == 'PASS' and (not count['final_stage_verified'] or
@@ -174,13 +180,14 @@ def evaluate_post_output_contract(preflight, original_input, result, *, capture_
 
     blockers = list(dict.fromkeys(blockers))
     allowed = not blockers
-    output = {'schema_version': 3, 'contract_version': CONTRACT_VERSION,
+    output = {'schema_version': 4, 'contract_version': CONTRACT_VERSION,
               'guard_version': audit['guard_version'], 'immutable_source_sha256': canonical_hash(result),
               'deterministic_facts': {'opening_gap': derive_open_gap(original_input), 'news_result_count': count},
               'numeric_count_sidecar': numeric, 'evidence_handoff': handoff,
               'session_fact_handoff': fact_handoff,
               'capture_stage': capture_receipt.get('stage') if isinstance(capture_receipt, dict) else 'UNPROVEN',
               'capture_verified': not capture_blocks,
+              'native_analysis_success_verified':result.get('success') is True and not result.get('error_message'),
               'semantic_audit': audit,
               'formal_semantic_gates': {g: ('BLOCK' if g in blockers else 'PASS') for g in sorted(SEM_GATES)},
               'semantic_contract_pass': allowed,

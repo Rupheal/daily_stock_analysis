@@ -11,7 +11,7 @@ def base_case():
     p={'symbol':'HK01810','target':'2026-01-05','news_count':0}
     i={'context':{'code':'HK01810','date':'2026-01-05',
        'today':{'date':'2026-01-05','open':'10.0'},'yesterday':{'close':'10.2'}},'news_context':None}
-    r={'pattern_analysis':'低开，开盘低于前收','action':'watch',
+    r={'success':True,'error_message':None,'pattern_analysis':'低开，开盘低于前收','action':'watch',
        'news_result_count_known':True,'news_result_count':None,'current_price':None,'search_performed':False}
     return p,i,r
 
@@ -32,6 +32,19 @@ def test_open_gap_is_shared_and_deterministic():
     for price,direction in [('10.0','GAP_DOWN'),('10.3','GAP_UP'),('10.2','FLAT_OPEN')]:
         i['context']['today']['open']=price
         assert derive_open_gap(i)['direction']==direction
+
+
+@pytest.mark.parametrize('success',[False,None,'true',1])
+def test_failed_or_unproven_native_default_cannot_be_accepted(success):
+    p,i,r=base_case();r.update(success=success,operation_advice='持有',sentiment_score=50)
+    out=evaluated(p,i,r)
+    assert 'NATIVE_ANALYSIS_SUCCESS_NOT_PROVEN' in out['promotion_gate']['blockers']
+    assert out['promotion_gate']['status']=='BLOCK'
+
+
+def test_success_flag_does_not_hide_error_message():
+    p,i,r=base_case();r['error_message']='synthetic provider failure'
+    assert 'NATIVE_ANALYSIS_ERROR_PRESENT' in evaluated(p,i,r)['promotion_gate']['blockers']
 
 
 @pytest.mark.parametrize('bad',[None,True,'NaN','Infinity',0,-1])

@@ -79,6 +79,10 @@ def main():
                 after=balance();write(root/'private-balance-after.json',{'currency':'CNY','available_balance':str(after),'retrieved_at':datetime.now(timezone.utc).isoformat()});row['observed_balance_change_cny']=str(before-after)
             except Exception:row['observed_balance_change_cny']=None
             row['actual_attributable_charge_cny']=None
+            from o_provider_completion import inspect_completion
+            completion=inspect_completion((actual/'provider-response.txt').read_bytes())
+            write(actual/'provider-completion-audit.json',completion);row['provider_completion']=completion
+            if completion['status']!='PASS':raise ValueError('|'.join(completion['blockers']))
             post=json.loads((actual/'post-output-contract.json').read_text());gate=post.get('promotion_gate') or {};row['raw_blockers']=gate.get('blockers',[]);row['raw_gate']=gate.get('status')
             if gate.get('status')=='PASS':row['status']='PASS_NATIVE_AUTOMATED_PENDING_MANUAL_REVIEW'
             elif set(row['raw_blockers'])=={'SEM-001'}:

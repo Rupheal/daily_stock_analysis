@@ -59,6 +59,7 @@ def source():
 
 def clean_result():
     return {
+        'success':True,'error_message':None,
         'pattern_analysis': '9月15日小幅低开后冲高回落；这里只描述目标交易日，不声称实时行情。',
         'analysis_summary': '基于9月15日完整日线收盘价26.50元；实时行情缺失。',
         'action': 'watch', 'current_price': None, 'search_performed': False,

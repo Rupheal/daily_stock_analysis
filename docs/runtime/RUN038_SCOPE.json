@@ -5,7 +5,8 @@
   "model_requests": 0,
   "progress_denominator": 45,
   "deliverables": [
-    "RUN038_U45_HANDOFF_AUDIT.json"
+    "RUN038_U45_HANDOFF_AUDIT.json",
+    "RUN038_U45_PUBLIC_FACTS.json"
   ],
   "inputs": [
     "RUN033 strict history",
@@ -14,5 +15,11 @@
   ],
   "changes_to_strategy": false,
   "changes_to_runtime_authorization": false,
-  "orders": false
+  "orders": false,
+  "facts_verified_members": 44,
+  "facts_checks": [
+    "Daily return recalculation",
+    "MA5/10/20 full lookback calculation",
+    "daily volume / preceding five sessions mean volume"
+  ]
 }

@@ -73,6 +73,12 @@ def test_different_numeric_current_price_fails_closed_instead_of_rewriting():
         build_release_view(p, i, raw)
 
 
+def test_native_error_default_never_becomes_release_success():
+    p,i,raw=fixture(False);raw.update(success=False,error_message='synthetic model timeout',sentiment_score=50)
+    with pytest.raises(ReleaseQuoteError,match='RELEASE_NATIVE_ANALYSIS_FAILED'):
+        build_release_view(p,i,raw)
+
+
 def test_unsafe_live_price_text_remains_a_blocker_and_is_never_rewritten():
     p, i, raw = fixture(False)
     raw['analysis_summary'] = '现价26.50元，建议观望'

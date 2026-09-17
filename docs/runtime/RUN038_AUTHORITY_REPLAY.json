@@ -1,0 +1,33 @@
+{
+  "complete_summary_replay_match": true,
+  "journal_sha256": "f9990a1e0e1c5aac45b7fcfcb274277588c5d5599dd4796c34c6a1efe92ff14d",
+  "summary_sha256": "5540014a0f3c80b318ded66325c9828f0fb1bb100b6b0e3073673652e10dcb9a",
+  "commands": 12,
+  "accounts": {
+    "U": {
+      "cash_cny": "300000",
+      "buy_count": 0,
+      "sell_count": 0,
+      "wait_count": 5,
+      "positions_count": 0
+    },
+    "O": {
+      "cash_cny": "300000",
+      "buy_count": 0,
+      "sell_count": 0,
+      "wait_count": 5,
+      "positions_count": 0
+    }
+  },
+  "run_id": "TRI-DSA-EXEC-20260917-038-AUTHORITY",
+  "authority_commit": "be654e71d667b0c3935b5a7dcb42821ba3ad110b",
+  "journal_blob": "df5ded0b3ab844467dedac1646ef765f47bc61a4",
+  "summary_blob": "d9e888b6c94dc87f872e88f5a8e48a625497e820",
+  "runtime_control_blob": "27e1bca794800dba3e737cda81f1e5a2d36e4a35",
+  "runtime_activated": true,
+  "gate_d_approved": true,
+  "read_only": true,
+  "ledger_writes": 0,
+  "signal_artifacts_added": 0,
+  "scope": "Exact approved Entry-v1 ledger engine, fixed authority commit; no record mutation"
+}

@@ -1,0 +1,36 @@
+name: DSA Run040 free failed-output and native integration regression
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN040_SCOPE.json]
+permissions: {contents: read}
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ENV_FILE: /dev/null
+      DSA_FROZEN_SOURCE_ROOT: ${{ github.workspace }}/original
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest httpx
+      - name: Actual frozen formatter and pipeline hooks plus failure regressions
+        working-directory: research
+        env:
+          PYTHONPATH: tests:scripts
+        run: python -m pytest --noconftest -q tests/test_o_provider_completion.py tests/test_o_post_output_contract.py tests/test_o_session_fact_anchor.py tests/test_run025_wrapper_integration.py tests/test_o_release_gate_contract.py tests/test_o_release_quote_semantics.py tests/test_private_multipart.py tests/test_bounded_native_members.py tests/test_hk_member_preflight.py --junitxml=/tmp/RUN040_TESTS.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN040_FREE_REGRESSIONS
+          path: /tmp/RUN040_TESTS.xml
+          retention-days: 90

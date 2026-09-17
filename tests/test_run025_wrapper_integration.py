@@ -100,7 +100,7 @@ return load_news, analyze, format_prompt, pipeline_analyze, state
             'observer_sha256':hashlib.sha256(PROBE.read_bytes()).hexdigest(),'pipeline_module_under_checkout':True}
     env=dict(inspect=inspect,json=json,datetime=datetime,timezone=timezone,
       ContractError=ContractError,NativeInputContractError=ValueError,
-      validate_native_input=lambda p,c:{'validated':True},canonical_hash=canonical_hash,
+      validate_native_input=lambda p,c:{'validated':True},validate_native_history_database=lambda p,d:None,canonical_hash=canonical_hash,
       build_news_handoff=build_news_handoff,prove_prompt_consumption=prove_prompt_consumption,
       build_final_capture=build_final_capture,evaluate_post_output_contract=evaluate_post_output_contract,
       check_saved_output=check_saved_output,preflight=(pf() if handoff_enabled else dict(pf(),news_count=0,allowed_news_urls=[],company_news_evidence=[])),args=SimpleNamespace(news_handoff_v1=handoff_enabled),
