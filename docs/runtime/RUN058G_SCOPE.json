@@ -1,16 +1,18 @@
 {
   "schema_version": 1,
-  "run_id": "TRI-DSA-O-DIAG-20260918-058G",
-  "parent_run_id": "TRI-DSA-O-DIAG-20260918-058F",
-  "target_session": "2026-09-17",
+  "run_id": "TRI-DSA-O-DRY-ACCEPT-20260918-058G-MAIN",
+  "parent": "TRI-DSA-O-DRY-DIAG-20260918-058F",
   "code": "00001",
-  "purpose": "Expose swallowed native input/main failure code with zero model credential and zero Drive writes.",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
   "history_parent_run": 35224980615,
   "history_cache_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "adapter": "O_FROZEN_NATIVE_HISTORY_ADAPTER_v1",
   "model_requests": 0,
-  "paid_data_calls": 0,
+  "provider_credential_permitted": false,
   "drive_writes": 0,
-  "orders": 0,
+  "no_orders": true,
   "automatic_retry": false,
-  "trigger_revision": 1
+  "purpose": "Second zero-model acceptance: intercept original DataFetcherManager.get_daily_data for HK00001 and require exact immutable Run049 native history to reach the dry budget guard. No provider credential or Drive write.",
+  "definition_of_done": "One dry_envelope_validated_not_sent request envelope; exact native history contract PASS; no real provider request."
 }
