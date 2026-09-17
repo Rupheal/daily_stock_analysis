@@ -1,0 +1,98 @@
+name: DSA Run058 O rollout controller acceptance
+
+on:
+  push:
+    branches: [research/run058-o-rollout-controller-20260917]
+    paths:
+      - .github/workflows/104-run058-o-rollout-controller.yml
+      - scripts/build_run058_o_rollout_controller.py
+      - tests/test_run058_o_rollout_controller.py
+      - docs/runtime/RUN058_SCOPE.json
+      - docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058-o-rollout-controller
+  cancel-in-progress: false
+
+jobs:
+  controller:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependency
+        run: pip install pytest
+
+      - name: Run Run058 deterministic tests
+        run: python -m pytest --noconftest -q tests/test_run058_o_rollout_controller.py
+
+      - name: Build one-child launch envelope
+        run: |
+          python scripts/build_run058_o_rollout_controller.py \
+            --scope docs/runtime/RUN058_SCOPE.json \
+            --plan docs/runtime/RUN057_O_NATIVE_PLAN.json \
+            --ledger docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl \
+            --output /tmp/RUN058_O_ROLLOUT_CONTROLLER.json
+
+      - name: Verify zero-model boundary and first child
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/RUN058_O_ROLLOUT_CONTROLLER.json'))
+          assert p['state']=='READY_CHILD_ENVELOPE'
+          assert p['denominator']=={
+              'O_universe':660,
+              'deterministic_ready':608,
+              'retained_isolated':52,
+              'no_repeat_ready':3,
+              'never_called':605,
+          }
+          child=p['selected_child']
+          assert child['micro_batch_id']=='O57-MB-001'
+          assert child['tranche_id']=='O57-TR-01'
+          assert child['codes']==['00001','00002']
+          assert child['member_count']==2
+          assert child['child_hard_cap_cny']=='0.20'
+          assert child['drive_claim_reconciliation_required_before_send'] is True
+          assert child['automatic_retry_after_claim'] is False
+          assert child['provider_send_authorized_by_run058'] is False
+          r=p['resource_accounting']
+          assert r['model_http_requests']==0
+          assert r['paid_data_calls']==0
+          assert r['DeepSeek_API_cost_cny']==0
+          assert r['automatic_recharge'] is False
+          assert r['real_orders']==0
+          assert r['schedule_changes']==0
+          print(json.dumps({'state':p['state'],'child':child['micro_batch_id'],'codes':child['codes'],'hard_cap_cny':child['child_hard_cap_cny']}))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058_O_ROLLOUT_CONTROLLER
+          path: /tmp/RUN058_O_ROLLOUT_CONTROLLER.json
+          retention-days: 90
+
+      - name: Commit sanitized Run058 controller receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp /tmp/RUN058_O_ROLLOUT_CONTROLLER.json docs/runtime/RUN058_O_ROLLOUT_CONTROLLER.json
+          git add docs/runtime/RUN058_O_ROLLOUT_CONTROLLER.json
+          if git diff --cached --quiet; then
+            echo 'No Run058 receipt changes'
+          else
+            git commit -m 'dsa: record Run058 O rollout controller acceptance'
+            git push
+          fi
