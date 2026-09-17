@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-PRD-20260917-049",
+  "state": "AUTHORIZED_IN_PROGRESS",
+  "owner_directive": "Continue research/production-readiness now; do not wait for a qualified BUY. O: finish 660-pool data/input/isolation/full-native ranking chain. U: finish 45-member formal decisions, independent ranking, macro cap, company/sector risk and accepted buy zone.",
+  "parent_source": {
+    "next_actions": "docs/DSA_NEXT_ACTIONS.json",
+    "latest_runtime_receipt": "Rupheal/TRIDENT-Foundation@runtime/dsa-shadow-journal-v1:control_room/dsa/runtime/receipts/DSA_FORMAL_RESUME_20260917_041_048.json"
+  },
+  "runtime_boundary": {
+    "gate_d_approved": true,
+    "runtime_activated": true,
+    "shadow_simulation_only": true,
+    "do_not_change_runtime_schedule": true,
+    "real_orders": false,
+    "main_merge": false,
+    "automatic_recharge": false,
+    "paid_data_scope_expansion": false,
+    "research_does_not_wait_for_buy": true,
+    "execution_only_consumes_timely_formal_same_day_signals": true
+  },
+  "resource_router": {
+    "deterministic_first": [
+      "Python/local parsing and validation",
+      "GitHub Actions deterministic tests and source reconciliation",
+      "free/authorized data refresh",
+      "hashing, deduplication, denominator accounting, isolation classification"
+    ],
+    "model_only_when_needed": [
+      "O original-native semantic output where all deterministic gates have passed",
+      "U formal strategy decision/ranking where evidence package is complete",
+      "conflict resolution that cannot be decided deterministically"
+    ],
+    "no_duplicate_model_calls": true,
+    "no_repeat_closed_claims": true,
+    "cost_accounting_required": true,
+    "platform_tokens_credits_fees_if_not_observable": "UNKNOWN"
+  },
+  "O": {
+    "denominator": 660,
+    "verified_baseline_data_ready": 608,
+    "isolated_baseline": 52,
+    "baseline_isolation": {
+      "THIRD_SOURCE_CONFLICT_REMAINS": 32,
+      "SINA_INVALID_BAR_GEOMETRY": 16,
+      "TARGET_MISSING": 3,
+      "LESS_THAN21_BARS": 1
+    },
+    "work_sequence": [
+      "Recompute current official-universe identity and preserve all 660 denominator rows.",
+      "Refresh/repair only the 52 isolated rows with minimum-necessary source logic; never drop unresolved rows from denominator.",
+      "Re-run frozen-native input contract and classify PASS/ISOLATED with explicit source/session/geometry reason.",
+      "Only deterministic-PASS rows may enter original-native model stage.",
+      "Complete full-pool original-native outputs without altering original prompt/scoring; preserve raw semantic failures separately.",
+      "Build immutable full-pool ranking and Top10/Top3 projection only after full-pool acceptance contract is satisfied."
+    ],
+    "definition_of_done": {
+      "denominator_preserved": 660,
+      "every_row_state_explicit": true,
+      "full_native_rank_generated": true,
+      "raw_failures_not_rewritten": true,
+      "top3_top10_content_addressed": true,
+      "formal_signal_only_if_same_day_and_execution_plan_complete": true
+    }
+  },
+  "U": {
+    "denominator": 45,
+    "buy_eligible_baseline": 44,
+    "retained_ineligible": ["09618"],
+    "work_sequence": [
+      "Refresh all 45 identity/tradability/facts; retain 09618 and any new ineligible rows in denominator.",
+      "Complete source-bound company and sector risk evidence for all eligible members.",
+      "Freeze dated macro exposure cap and document the data/time basis.",
+      "Produce accepted conditional buy zone for each eligible member using Entry-v1-compatible fields; do not fabricate execution quotes.",
+      "Run formal strategy decision across all eligible members with immutable inputs and preserved raw model outputs.",
+      "Generate independent ranking and formal Top3; qualified BUY may be zero and that is an accepted outcome."
+    ],
+    "definition_of_done": {
+      "denominator_preserved": 45,
+      "formal_member_decisions": 44,
+      "macro_cap_dated_and_bound": true,
+      "risk_evidence_bound": true,
+      "buy_zone_bound": true,
+      "formal_top3_generated": true,
+      "qualified_buy_may_equal_zero": true
+    }
+  },
+  "acceptance_order": [
+    "O/U deterministic evidence preparation independently in parallel",
+    "O original-native full-pool acceptance",
+    "U formal decision/ranking acceptance",
+    "Only then can a timely future same-day formal signal be consumed by the already-active Entry-v1 runner"
+  ],
+  "reporting": {
+    "progress_denominator_required": true,
+    "failures_and_isolations_remain_visible": true,
+    "append_only_receipts": true,
+    "update_docs_DSA_NEXT_ACTIONS_after_each_accepted_increment": true
+  }
+}
