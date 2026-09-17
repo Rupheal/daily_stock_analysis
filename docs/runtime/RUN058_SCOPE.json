@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-058",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-057",
+  "target_session": "2026-09-17",
+  "state": "SCOPE_FROZEN_ZERO_MODEL_CONTROLLER",
+  "authoritative_parent_head": "3376894aeb58a12b231abd58e9952199171ceda5",
+  "objective": "Accept a resumable fail-closed controller for the O608 native rollout. Run058 selects at most one next two-member micro-batch from the accepted Run057 plan and emits a child launch envelope only; it does not call a provider, reserve a Drive claim, create rankings, or publish signals.",
+  "inputs": {
+    "run057_plan": "docs/runtime/RUN057_O_NATIVE_PLAN.json",
+    "optional_public_ledger": "docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl"
+  },
+  "frozen_counts": {
+    "O_universe": 660,
+    "deterministic_ready": 608,
+    "retained_isolated": 52,
+    "no_repeat_ready": 3,
+    "never_called": 605,
+    "micro_batch_count": 303,
+    "planning_tranche_count": 31
+  },
+  "controller_contract": {
+    "allowed_terminal_or_hold_states": [
+      "ACCEPTED_NATIVE",
+      "RAW_GATE_BLOCK",
+      "CLAIMED_RECONCILE",
+      "PRIVATE_PRESEND_FAIL",
+      "BALANCE_FAIL",
+      "PROVIDER_FAIL_AFTER_CLAIM",
+      "PRIVATE_FINAL_FAIL",
+      "STOP_TRANCHE"
+    ],
+    "only_never_called_codes_may_be_selected": true,
+    "retained_isolates_never_selected": true,
+    "known_no_repeat_codes_never_selected": ["00700", "01024", "01810"],
+    "one_micro_batch_per_controller_acceptance": true,
+    "selected_batch_must_preserve_run057_order": true,
+    "drive_claim_reconciliation_required_inside_paid_child_before_send": true,
+    "public_ledger_is_not_claim_source_of_truth": true,
+    "private_failure_stops_tranche": true,
+    "ambiguous_claim_stops_tranche": true,
+    "automatic_retry_after_claim": false,
+    "controller_may_send_provider_request": false,
+    "controller_may_create_signal": false,
+    "controller_may_create_order_or_fill": false
+  },
+  "child_contract": {
+    "proposed_child_run_id": "TRI-DSA-O-NATIVE-20260917-058A",
+    "maximum_members": 2,
+    "per_member_hard_cap_cny": "0.10",
+    "child_hard_cap_cny": "0.20",
+    "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+    "required_pre_send_gates": [
+      "fresh_free_member_preflight",
+      "single_request_dry_envelope_per_member",
+      "pre_send_private_save_read_hash_restore",
+      "verified_available_CNY_balance",
+      "durable_Drive_reserve_native_call",
+      "GITHUB_RUN_ATTEMPT_equals_1",
+      "GITHUB_EVENT_NAME_equals_push"
+    ],
+    "required_post_send_gates": [
+      "provider_completion_audit",
+      "post_output_contract",
+      "release_gate_if_SEM_001_only",
+      "final_private_save_read_hash_restore",
+      "sanitized_receipt",
+      "no_signal_publish"
+    ]
+  },
+  "resource_plan": {
+    "route": "L0/L1 deterministic Python + GitHub Actions only",
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "automatic_recharge": false,
+    "new_subscriptions": false,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "definition_of_done": "Cloud tests pass; Run057 content hash is bound; controller emits exactly one READY_CHILD_ENVELOPE for the first still-unprocessed never-called micro-batch or emits a fail-closed hold state; the selected codes are not isolated/no-repeat; Run058 itself spends zero provider cost."
+}
