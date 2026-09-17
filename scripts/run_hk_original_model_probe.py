@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 from hk_budget_guard import ResearchBudget, decode_usage
 from o_native_input_contract import NativeInputContractError, validate_native_input, validate_native_history_database
 from o_native_date_boundary_adapter import patched_yahoo_target_boundary
+from o_frozen_native_history_adapter import patched_frozen_native_history
 from o_semantic_handoff_contract import (CONTRACT_VERSION, FROZEN_UPSTREAM, ContractError,
     canonical_hash, build_news_handoff, prove_prompt_consumption)
 from o_single_output_fact_check import check_saved_output
@@ -47,6 +48,8 @@ def main():
     parser.add_argument('--target-boundary-adapter', action='store_true')
     parser.add_argument('--news-handoff-v1', action='store_true',
         help='Versioned preflight news before native context-pack construction; no implicit request authorization')
+    parser.add_argument('--frozen-native-history-adapter', action='store_true',
+        help='Feed the immutable preflight native history at retrieval boundary; frozen upstream analysis remains unchanged')
     args = parser.parse_args()
     if args.expected_commit != FROZEN_UPSTREAM:
         raise ValueError('SEMANTIC_CONTRACT_REQUIRES_FROZEN_SOURCE')
@@ -108,6 +111,7 @@ def main():
     validated = False
     validation_receipt = None
     adapter_applied_count = 0
+    frozen_history_adapter_receipt = None
     news_handoff = None
     prompt_handoff_receipt = None
     output_semantic_receipt = None
@@ -236,12 +240,15 @@ def main():
     try:
         sys.argv=['main.py','--stocks',args.symbol.lower(),'--no-notify','--no-market-review','--force-run','--workers','1']
         with patch.object(StockAnalysisPipeline,'analyze_stock',pipeline_analyze), patch.object(StockAnalysisPipeline,'_load_persisted_intelligence_context',load_news), patch.object(GeminiAnalyzer,'analyze',analyze), patch.object(GeminiAnalyzer,'_format_prompt',format_prompt), patch.object(httpx.Client,'send',send), patch.object(httpx.AsyncClient,'send',async_send):
-            if args.target_boundary_adapter:
-                with patched_yahoo_target_boundary(target_session) as applied:
-                    status = native_main()
-                    adapter_applied_count = applied['count']
-            else:
+            from contextlib import ExitStack
+            with ExitStack() as stack:
+                boundary_applied = stack.enter_context(patched_yahoo_target_boundary(target_session)) if args.target_boundary_adapter else None
+                frozen_applied = stack.enter_context(patched_frozen_native_history(preflight)) if args.frozen_native_history_adapter else None
                 status = native_main()
+                if boundary_applied is not None:
+                    adapter_applied_count = boundary_applied['count']
+                if frozen_applied is not None:
+                    frozen_history_adapter_receipt = dict(frozen_applied)
     except Exception as exc:
         error = type(exc).__name__+': '+str(exc)
     finally:
@@ -262,6 +269,8 @@ def main():
                 'target_boundary_adapter':bool(args.target_boundary_adapter),
                 'target_boundary_adapter_scope':'Yahoo retrieval boundary/materialization only' if args.target_boundary_adapter else None,
                 'target_boundary_adapter_apply_count':adapter_applied_count,
+                'frozen_native_history_adapter':bool(args.frozen_native_history_adapter),
+                'frozen_native_history_adapter_receipt':frozen_history_adapter_receipt,
                 'process_status':status,'error':error,'budget':budget.state,'manual_approved':False,
                 'news_handoff_version':CONTRACT_VERSION if args.news_handoff_v1 else None,
                 'news_handoff_requested':bool(args.news_handoff_v1),'news_loader_consumed':loader_called,
