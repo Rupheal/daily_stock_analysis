@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-INDEPENDENT-DIAG-20260918-058C",
+  "state": "STOP_TRANCHE_TARGET_INDEPENDENT_CONFLICT",
+  "members": [
+    {
+      "code": "00001",
+      "target": "2026-09-17",
+      "native_count": 44,
+      "tencent_count": 180,
+      "overlap": 44,
+      "ohlc_mismatch_sessions": 40,
+      "first_mismatch": {
+        "date": "2026-07-20",
+        "fields": [
+          {
+            "field": "open",
+            "delta": 0.02865621955311326,
+            "native": 70.67634378044689,
+            "tencent": 70.705
+          },
+          {
+            "field": "high",
+            "delta": 0.031363193663821676,
+            "native": 70.92363680633618,
+            "tencent": 70.955
+          },
+          {
+            "field": "low",
+            "delta": 0.012414374888891189,
+            "native": 69.19258562511111,
+            "tencent": 69.205
+          },
+          {
+            "field": "close",
+            "delta": 0.018366699218745453,
+            "native": 69.73663330078125,
+            "tencent": 69.755
+          }
+        ]
+      },
+      "last_mismatch": {
+        "date": "2026-09-11",
+        "fields": [
+          {
+            "field": "open",
+            "delta": 0.005914116829131899,
+            "native": 68.59908588317087,
+            "tencent": 68.605
+          },
+          {
+            "field": "high",
+            "delta": 0.010782129109770722,
+            "native": 69.04421787089024,
+            "tencent": 69.055
+          }
+        ]
+      },
+      "recent_mismatch_dates": [
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11"
+      ],
+      "target_ohlc": {
+        "open": {
+          "native": 67.55000305175781,
+          "tencent": 67.55,
+          "delta": 3.051757815342171e-06,
+          "within_tolerance": true
+        },
+        "high": {
+          "native": 67.5999984741211,
+          "tencent": 67.6,
+          "delta": 1.5258789005656581e-06,
+          "within_tolerance": true
+        },
+        "low": {
+          "native": 66.6500015258789,
+          "tencent": 66.65,
+          "delta": 1.5258789005656581e-06,
+          "within_tolerance": true
+        },
+        "close": {
+          "native": 67.55000305175781,
+          "tencent": 67.55,
+          "delta": 3.051757815342171e-06,
+          "within_tolerance": true
+        }
+      },
+      "target_ohlc_all_within_tolerance": true,
+      "target_volume_relative_deviation": 0.0013604819569172921,
+      "target_volume_within_calibrated_bound": true,
+      "independent_source_sha256": "3c2b94f662fcd2ef9b422318038aa07f72852b6c6deba1130440d859b5206c65",
+      "retrieved_at": "2026-09-17T22:58:04.145287+00:00"
+    },
+    {
+      "code": "00002",
+      "target": "2026-09-17",
+      "native_count": 44,
+      "tencent_count": 180,
+      "overlap": 44,
+      "ohlc_mismatch_sessions": 26,
+      "first_mismatch": {
+        "date": "2026-07-20",
+        "fields": [
+          {
+            "field": "low",
+            "delta": 0.019021276604206605,
+            "native": 74.88902127660421,
+            "tencent": 74.87
+          },
+          {
+            "field": "close",
+            "delta": 0.009716491699222729,
+            "native": 76.02971649169922,
+            "tencent": 76.02
+          }
+        ]
+      },
+      "last_mismatch": {
+        "date": "2026-09-01",
+        "fields": [
+          {
+            "field": "open",
+            "delta": 0.006878875690887298,
+            "native": 78.0631211243091,
+            "tencent": 78.07
+          },
+          {
+            "field": "high",
+            "delta": 0.006878875690887298,
+            "native": 78.0631211243091,
+            "tencent": 78.07
+          }
+        ]
+      },
+      "recent_mismatch_dates": [
+        "2026-08-18",
+        "2026-08-20",
+        "2026-08-21",
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01"
+      ],
+      "target_ohlc": {
+        "open": {
+          "native": 76.8499984741211,
+          "tencent": 76.85,
+          "delta": 1.5258789005656581e-06,
+          "within_tolerance": true
+        },
+        "high": {
+          "native": 77.1500015258789,
+          "tencent": 77.15,
+          "delta": 1.5258789005656581e-06,
+          "within_tolerance": true
+        },
+        "low": {
+          "native": 75.9000015258789,
+          "tencent": 75.9,
+          "delta": 1.5258789005656581e-06,
+          "within_tolerance": true
+        },
+        "close": {
+          "native": 77.1500015258789,
+          "tencent": 77.15,
+          "delta": 1.5258789005656581e-06,
+          "within_tolerance": true
+        }
+      },
+      "target_ohlc_all_within_tolerance": true,
+      "target_volume_relative_deviation": 0.0017573661353382786,
+      "target_volume_within_calibrated_bound": false,
+      "independent_source_sha256": "6ba92d2085e11eddac19a307c2a1cc605c92da7b089bd802075567b97832242f",
+      "retrieved_at": "2026-09-17T22:58:04.839085+00:00"
+    }
+  ],
+  "target_session_independent_pass": false,
+  "historical_adjustment_conflict_only": false,
+  "model_http_requests": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "next": "Keep tranche frozen unless full independent pass is already available."
+}
