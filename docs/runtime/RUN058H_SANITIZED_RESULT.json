@@ -1,0 +1,80 @@
+{
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058H",
+  "workflow_run": "35286224835",
+  "O_denominator": 660,
+  "attempted_members": 1,
+  "members": [
+    {
+      "code": "00001",
+      "status": "NATIVE_OUTPUT_ISOLATED",
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "2a56279a5302a54f8180b665d5a25762a4d6745afd2f9cb4a29ebc21b0610507",
+        "bytes": 3374825,
+        "original_bytes": 3351191,
+        "parts": 3,
+        "files": 40
+      },
+      "frozen_native_history_adapter": true,
+      "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+      "pre_send_upper_cny": "0.07982",
+      "preflight_sha256": "02a7bbb4a5006da28a442d2b0347065f550e81b34aee1110a128b50d2a08783a",
+      "pre_send_private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "c0f37eed48c5b3abacb3aba9ff4c32f583d78641e2d9d8712ff18755c0cd1554",
+        "bytes": 1232071,
+        "original_bytes": 1221525,
+        "parts": 1,
+        "files": 18
+      },
+      "claim_persisted": true,
+      "native_exit_code": 1,
+      "usage_peak_estimate_cny": "0.034666",
+      "usage": [
+        {
+          "prompt_tokens": 5069,
+          "completion_tokens": 3066,
+          "total_tokens": 8135,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 2381
+        }
+      ],
+      "observed_balance_change_cny": "0.00",
+      "actual_attributable_charge_cny": null,
+      "provider_completion": {
+        "version": "O_PROVIDER_COMPLETION_v1",
+        "status": "PASS",
+        "blockers": [],
+        "raw_sha256": "a6a306d40ddfedb68daf4373c3e0feb2b7933cc91947cd2740d878ffadb6fd46",
+        "content_chars": 6239,
+        "reasoning_chars": 0,
+        "finish_reasons": [
+          "stop"
+        ],
+        "raw_mutated": false,
+        "model_requests": 0
+      },
+      "raw_blockers": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "raw_gate": "BLOCK"
+    }
+  ],
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true
+}

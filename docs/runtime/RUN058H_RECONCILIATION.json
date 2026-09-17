@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058H",
+  "state": "STOP_TRANCHE",
+  "member_statuses": [
+    {
+      "code": "00001",
+      "status": "NATIVE_OUTPUT_ISOLATED",
+      "raw_gate": "BLOCK",
+      "raw_blockers": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "usage_peak_estimate_cny": "0.034666",
+      "observed_balance_change_cny": "0.00",
+      "preflight_sha256": "02a7bbb4a5006da28a442d2b0347065f550e81b34aee1110a128b50d2a08783a",
+      "frozen_native_history_adapter": true
+    }
+  ],
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip_all": true,
+  "qualified_signals": 0,
+  "simulation_ledger_writes": 0,
+  "formal_pool_top3_generated": false,
+  "manual_review_required": true,
+  "automatic_retry": false,
+  "next": "Manual semantic review from private original evidence if one response was confirmed; never auto-retry."
+}
