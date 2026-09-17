@@ -1,0 +1,129 @@
+name: DSA Run056 U45 formal decision and ranking
+
+on:
+  push:
+    branches: [research/run056-u-formal-decision-20260917]
+    paths:
+      - .github/workflows/102-run056-u-formal-decision.yml
+      - scripts/run056_u_formal_decision.py
+      - tests/test_run056_u_formal_decision.py
+      - docs/runtime/RUN056_SCOPE.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run056-u-formal-decision
+  cancel-in-progress: false
+
+jobs:
+  formal-u:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research/scripts
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: research
+          fetch-depth: 0
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install bounded runtime dependencies
+        run: pip install httpx pytest deepseek-recipe==0.1.1
+
+      - name: Run Run056 deterministic contract tests
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_run056_u_formal_decision.py tests/test_private_multipart.py
+
+      - name: Run formal U45 decision and ranking
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+          DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+          DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+          DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+        run: |
+          python research/scripts/run056_u_formal_decision.py \
+            --scope research/docs/runtime/RUN056_SCOPE.json \
+            --member research/docs/runtime/RUN041_U45_MEMBER_REPORTS.json \
+            --close research/docs/runtime/RUN049_U45_20260917_CLOSE_REFRESH.json \
+            --macro research/docs/runtime/RUN053_U_MACRO_POSITION_CAP.json \
+            --risk research/docs/runtime/RUN054_U_RISK_EVIDENCE.json \
+            --zone research/docs/runtime/RUN055_U_STRATEGY_ZONE_CONTRACT.json \
+            --out /tmp/run056
+
+      - name: Verify public Run056 receipt boundaries
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/run056/SANITIZED_U_FORMAL_RESULT.json'))
+          assert p['denominator']==45
+          assert p['eligible']==44
+          assert p['retained_ineligible']==['09618']
+          assert p['resource_accounting']['real_orders']==0
+          assert p['resource_accounting']['simulation_writes']==0
+          assert p['resource_accounting']['auto_recharge'] is False
+          if p['state'].startswith('PASS_FORMAL_U_DECISION'):
+              assert p['formal_valid_rows']==44
+              assert p['resource_accounting']['model_http_requests_confirmed']==2
+              assert p['resource_accounting']['accepted_rows']==44
+              assert len(p['Top10'])==10
+              assert len(p['Top3'])<=3
+              assert p['qualified_BUY']>=len(p['Top3'])
+              assert p['macro_overlay']['position_ceiling_pct']==30
+              assert p['macro_overlay']['changes_native_score_or_rank'] is False
+              ranks=[x['rank'] for x in p['rows']]
+              assert ranks==list(range(1,45))
+              for row in p['rows']:
+                  assert row['order_created'] is False and row['fill_created'] is False
+                  assert row['entry_v1_applied'] is False and row['execution_quote_used'] is False
+                  if row['formal_action']=='BUY':
+                      assert row['zone_status']=='APPROVED_NUMERIC'
+                      assert row['zone_lower_hkd'] is not None and row['zone_upper_hkd'] is not None
+                      assert row['zone_lower_hkd']<=row['zone_upper_hkd']
+                  else:
+                      assert row['zone_status']=='WITHHELD_UNKNOWN'
+                      assert row['zone_lower_hkd'] is None and row['zone_upper_hkd'] is None
+          else:
+              assert p['state']=='NO_GO_INCOMPLETE_FORMAL_PROVIDER_COVERAGE'
+              assert p['qualified_BUY']==0 and p['Top3']==[] and p['Top10']==[]
+          print(json.dumps({'state':p['state'],'qualified_BUY':p['qualified_BUY'],'Top3':p['Top3'],'Top10':p['Top10'],'resources':p['resource_accounting']},ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN056_SANITIZED_U_FORMAL_RESULT
+          path: /tmp/run056/SANITIZED_U_FORMAL_RESULT.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit sanitized Run056 receipt
+        if: success()
+        working-directory: research
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp /tmp/run056/SANITIZED_U_FORMAL_RESULT.json docs/runtime/RUN056_U_FORMAL_RESULT.json
+          git add docs/runtime/RUN056_U_FORMAL_RESULT.json
+          if git diff --cached --quiet; then
+            echo 'No Run056 receipt changes'
+          else
+            git commit -m 'dsa: record Run056 formal U decision receipt'
+            git push
+          fi
