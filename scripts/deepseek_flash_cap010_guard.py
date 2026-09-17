@@ -66,6 +66,9 @@ def install_into_budget_guard():
             if not input_validated:
                 raise RuntimeError('Data gate not passed')
             body = json.loads(request.content)
+            expected_thinking = os.environ.get('DSA_EXPECT_THINKING')
+            if expected_thinking and body.get('thinking') != {'type': expected_thinking}:
+                raise RuntimeError('NATIVE_CONFIG_NOT_PRESENT_ON_WIRE')
             if body.get('model') != self.model or self.model != 'deepseek-flash':
                 raise RuntimeError('Unexpected model')
             if len(request.content) > 100000:

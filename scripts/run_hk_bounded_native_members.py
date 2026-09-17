@@ -55,6 +55,10 @@ def main():
                 raise ValueError('FREE_PREFLIGHT_FAILED:'+detail)
             common=['--symbol','HK'+code,'--checkout',str(a.checkout.resolve()),'--expected-commit',s['frozen_upstream'],'--preflight',str(pre/'preflight.json'),'--limit-cny','0.10','--carry-upper-cny','0','--target-boundary-adapter','--news-handoff-v1']
             env=dict(safe_env,DSA_DEEPSEEK_V41_TOKENIZER=os.environ['DSA_DEEPSEEK_V41_TOKENIZER'],LLM_CHANNELS='deepseek',LLM_DEEPSEEK_PROTOCOL='openai',LLM_DEEPSEEK_BASE_URL='https://api.deepseek.com',LLM_DEEPSEEK_MODELS='deepseek-flash',LITELLM_MODEL='openai/deepseek-flash',LITELLM_FALLBACK_MODELS='',REPORT_INTEGRITY_RETRY='0',MAX_WORKERS='1',DSA_INPUT_TOKEN_MARGIN='2048')
+            if s.get('native_model_configuration'):
+                from o_native_model_configuration import configure
+                env.update(configure(root, s['native_model_configuration']))
+                row['native_model_configuration']=s['native_model_configuration']
             dry=root/'dry';env.update(DSA_BUDGET_PROBE_ONLY='1',LLM_DEEPSEEK_API_KEY='dry-envelope-no-network')
             command(scripts/'run_hk_original_model_probe_run030.py',[*common,'--output',str(dry)],env,root/'dry.stdout')
             budget=json.loads((dry/'budget.json').read_text());req=budget.get('requests') or []
