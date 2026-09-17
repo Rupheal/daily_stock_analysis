@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-053",
+  "target_session": "2026-09-17",
+  "as_of_hkt": "2026-09-17T18:15:00+08:00",
+  "scope": "Freeze a dated DSA Global Relay & Macro Overlay position-ceiling contract for U45 after the Hong Kong close. This layer constrains exposure only; it does not overwrite any native DSA score or create a BUY signal.",
+  "evidence": {
+    "fed": {
+      "fact": "FOMC raised the federal funds target range by 25bp to 3.75%-4.00% on 2026-09-16 by a 12-0 vote; effective implementation begins 2026-09-17.",
+      "source": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "implementation_source": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a1.htm",
+      "classification": "POLICY_TIGHTENING_CONFIRMED"
+    },
+    "rates": {
+      "us_2y_pct": 4.74,
+      "us_10y_pct": 5.01,
+      "market_snapshot_as_of": "2026-09-16",
+      "source": "Bigdata/FMP market tearsheet retrieved 2026-09-17",
+      "classification": "HIGH_DISCOUNT_RATE_PRESSURE"
+    },
+    "oil": {
+      "brent_usd": 102.73,
+      "wti_usd": 100.48,
+      "snapshot_as_of_utc": "2026-09-17T13:24:00Z",
+      "note": "Oil was easing intraday but remained above USD100, so the inflation/geopolitical channel is improved at the margin but not cleared.",
+      "supporting_source": "https://www.reuters.com/business/energy/oil-prices-extend-losses-fears-middle-east-supply-disruptions-ease-2026-09-17/",
+      "classification": "INFLATION_SHOCK_EASING_BUT_ACTIVE"
+    },
+    "hong_kong_market": {
+      "hsi_close": 24604.29,
+      "hsi_change_pct": -0.44,
+      "hstech_close": 4310.74,
+      "hstech_change_pct": -0.34,
+      "source": "https://finance.eastmoney.com/a/202609173877314581.html",
+      "classification": "LOCAL_PRICE_CONFIRMATION_WEAK_NEGATIVE"
+    },
+    "southbound": {
+      "net_buy_hkd_bn": 3.363,
+      "turnover_hkd_bn": 78.010,
+      "consecutive_net_inflow_days": 9,
+      "cumulative_9d_net_buy_hkd_bn": 30.920,
+      "share_of_hsi_market_turnover_pct": 42.03,
+      "source": "https://www.cls.cn/detail/2486288",
+      "classification": "VERIFIED_SOUTHBOUND_ACCUMULATION"
+    },
+    "hibor": {
+      "overnight_pct": 2.17964,
+      "one_month_pct": 2.9,
+      "three_month_pct": 3.10161,
+      "fixing_time_hkt": "2026-09-17T11:15:00+08:00",
+      "source": "https://www.hkab.org.hk/en/rates/hibor",
+      "classification": "HKD_FUNDING_NOT_STRESSED"
+    },
+    "hk_policy_transmission": {
+      "fact": "HKMA raised the Base Rate by 25bp to 4.25% tracking the Fed; major banks reported in Reuters kept best lending rates unchanged at that time.",
+      "source": "https://www.reuters.com/world/asia-pacific/hong-kong-monetary-authority-raises-interest-rates-tracking-fed-move-2026-09-16/",
+      "classification": "FED_TIGHTENING_TRANSMITTED_WITH_PARTIAL_LOCAL_BUFFER"
+    }
+  },
+  "engine_readout": {
+    "US_Overnight": {"state":"DEFENSIVE","reason":"S&P 500 and Dow fell after the hike; Nasdaq was roughly flat, so risk appetite was not a broad capitulation but remained fragile."},
+    "Rates_Bond": {"state":"RISK_OFF","reason":"Fed hike is confirmed, 2Y is elevated and 10Y is near 5%, keeping discount-rate pressure high."},
+    "Asia_Lead": {"state":"NEUTRAL","reason":"Nikkei finished modestly positive and KOSPI near flat; no broad Asia liquidation confirmation."},
+    "China_HK": {"state":"NEUTRAL_DIVERGENCE","reason":"HSI/HSTECH fell modestly while Southbound produced a ninth consecutive net-inflow day and HIBOR showed no funding stress."},
+    "War_Commodity": {"state":"DEFENSIVE_IMPROVING","reason":"Brent and WTI remained above USD100, but both eased materially on the day as supply fears moderated."},
+    "Influence_Narrative": {"state":"POLICY_CONFIRMED","reason":"The relevant high-authority signal is the actual FOMC decision, not commentary; no social-media narrative is allowed to override it without market confirmation."},
+    "HK_Capital_Tide": {"state":"ACCUMULATION_WITH_PRICE_DIVERGENCE","reason":"Verified Southbound accumulation is strong and persistent, but index prices have not yet confirmed a broad risk-on regime."}
+  },
+  "regime": {
+    "label": "NEUTRAL_DIVERGENCE_DEFENSIVE_BIAS",
+    "reference_band_pct": [25,40],
+    "position_ceiling_pct": 30,
+    "rationale": "Confirmed Fed tightening and 5% 10Y yields prevent a high-risk allocation; oil remains an inflation risk. However, nine consecutive Southbound inflow days, low-stress HIBOR, mixed-not-collapsing Asia and falling oil argue against a Global Risk-Off 0-10% cap. A 30% ceiling keeps the account inside the Neutral-Divergence band with a defensive bias."
+  },
+  "position_rules": {
+    "account_exposure_must_not_exceed_pct": 30,
+    "native_score_override_allowed": false,
+    "top3_total_must_fit_inside_cap": true,
+    "final_position_decision": "USER",
+    "upshift_requires": [
+      "HK price confirmation improves while verified Southbound accumulation persists",
+      "10Y yield retreats materially from ~5% or policy-tightening expectations stop rising",
+      "oil falls below the current triple-digit stress regime without a new geopolitical shock"
+    ],
+    "downshift_requires_any": [
+      "oil re-accelerates with yields rising and equities falling (inflationary triple-kill)",
+      "Southbound flips to sustained verified outflow and HSI/HSTECH weaken together",
+      "HKD funding stress materially increases or local liquidity buffer deteriorates"
+    ]
+  },
+  "result": {
+    "status": "PASS_DATED_MACRO_CAP",
+    "formal_macro_cap_available": true,
+    "qualified_buy_signals_created": 0,
+    "simulation_authorized_by_this_run": false
+  },
+  "resources": {
+    "model_http_requests": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "next": "RUN054: freeze U45 capital-tide/event/company-sector risk evidence using 2026-09-17 post-close sources; do not rank until RUN055 buy-zone contract is also accepted."
+}
