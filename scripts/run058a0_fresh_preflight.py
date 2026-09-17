@@ -92,6 +92,20 @@ def tencent_history(code: str, target: str, rawdir: Path):
     rows=tencent_rows(payload,code,target)
     return rows,{"url":resp.url,"retrieved_at":datetime.now(timezone.utc).isoformat(),"sha256":sha_bytes(raw)}
 
+def price_conflicts(primary, independent, limit=20):
+    by={str(r["date"])[:10]:r for r in independent.to_dict("records")}
+    out=[]
+    for left in primary.to_dict("records"):
+        day=str(left["date"])[:10]; right=by.get(day)
+        if not right: continue
+        for k in ("open","high","low","close"):
+            a=float(left[k]); b=float(right[k]); d=abs(a-b)
+            if d>0.005+1e-9:
+                out.append({"date":day,"field":k,"tencent_qfq":a,"native":b,"abs_diff":d,
+                            "ratio":(a/b if b else None)})
+                if len(out)>=limit:return out
+    return out
+
 def build_preflight(code, member, native, tencent, source, universe_raw, target, out):
     from data_provider.tencent_fetcher import TencentFetcher
     from prepare_xiaomi_acceptance import compare_prices
@@ -104,7 +118,17 @@ def build_preflight(code, member, native, tencent, source, universe_raw, target,
     tdf=tdf[tdf["date"].isin(native_dates)].sort_values("date")
     if set(tdf["date"])!=native_dates: raise ValueError("TENCENT_NATIVE_WINDOW_MISMATCH")
     ndf=pd.DataFrame(native).sort_values("date")
-    overlap,reconciliation=compare_prices(tdf,ndf,target,True,minimum_overlap=len(native))
+    diag={"code":code,"target":target,"native_count":len(native),"tencent_count":len(tencent),
+          "conflicts":price_conflicts(tdf,ndf),
+          "native_target":ndf.iloc[-1].to_dict(),"tencent_target":tdf.iloc[-1].to_dict()}
+    write_json(out/"PRICE_DIAGNOSTIC.json",diag)
+    try:
+        overlap,reconciliation=compare_prices(tdf,ndf,target,True,minimum_overlap=len(native))
+    except Exception as exc:
+        diag["compare_error"]=type(exc).__name__+":"+str(exc)
+        write_json(out/"PRICE_DIAGNOSTIC.json",diag)
+        print("RUN058A0_PRICE_DIAGNOSTIC "+json.dumps(diag,ensure_ascii=False,default=str),flush=True)
+        raise
     today,yesterday=tdf.iloc[-1].to_dict(),tdf.iloc[-2].to_dict()
     for row in (today,yesterday):
         if row.get("amount") is not None:

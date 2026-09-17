@@ -75,13 +75,16 @@ jobs:
               assert len(q['validated_native_history'])>=21
           PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: RUN058A0_FRESH_PREFLIGHT
           path: |
             /tmp/run058a0/RUN058A0_FRESH_PREFLIGHT_RESULT.json
             /tmp/run058a0/HK00001/preflight.json
             /tmp/run058a0/HK00002/preflight.json
-          if-no-files-found: error
+            /tmp/run058a0/HK00001/PRICE_DIAGNOSTIC.json
+            /tmp/run058a0/HK00002/PRICE_DIAGNOSTIC.json
+          if-no-files-found: warn
           retention-days: 90
       - name: Commit sanitized fresh preflight receipt
         run: |
