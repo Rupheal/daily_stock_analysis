@@ -22,5 +22,7 @@
     "model_http_requests": 0,
     "paid_data_calls": 0,
     "qualified_BUY_created": 0
-  }
+  },
+  "retry": 2,
+  "retry_note": "CI dependency fixed by installing pytest on the fresh runner; this retry changes no model/data inputs."
 }
