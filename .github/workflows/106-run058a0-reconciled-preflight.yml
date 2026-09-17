@@ -1,0 +1,90 @@
+name: DSA Run058A0 reconciled fresh preflight
+on:
+  push:
+    branches: [research/run058a0-fresh-preflight-20260918]
+    paths:
+      - docs/runtime/RUN058A0_CORPORATE_ACTION_EVIDENCE.json
+      - scripts/run058a0_reconciled_preflight.py
+      - tests/test_run058a0_reconciled_preflight.py
+      - .github/workflows/106-run058a0-reconciled-preflight.yml
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: dsa-run058a0-reconciled
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: true}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest pypdf
+      - name: Test reconciliation primitives
+        working-directory: research
+        run: python -m pytest --noconftest -q tests/test_run058a0_reconciled_preflight.py tests/test_third_source_reconciliation.py tests/test_o_target_session_contract.py tests/test_o_native_input_contract.py
+      - name: Build reconciled fresh preflight
+        run: >
+          python research/scripts/run058a0_reconciled_preflight.py
+          --checkout original
+          --universe research/docs/runtime/run032_public_cache/O_UNIVERSE.json
+          --scope research/docs/runtime/RUN058A0_SCOPE.json
+          --actions research/docs/runtime/RUN058A0_CORPORATE_ACTION_EVIDENCE.json
+          --out /tmp/run058a0r
+      - name: Verify both members accepted and zero-model
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/run058a0r/RUN058A0_FRESH_PREFLIGHT_RESULT.json').read_text())
+          assert r['state']=='PASS_FRESH_PREFLIGHT' and r['fresh_history_all_pass'] is True
+          assert [x['code'] for x in r['members']]==['00001','00002']
+          assert all(x['status'] in {'PASS_ADJUSTED_STRICT','PASS_RUN006_RAW_FALLBACK'} for x in r['members'])
+          assert r['resource_accounting']['model_http_requests']==0 and r['resource_accounting']['deepseek_cost_cny']=='0'
+          for code in ['00001','00002']:
+              p=Path('/tmp/run058a0r')/code/'preflight.json'
+              q=json.loads(p.read_text())
+              assert q['passed'] and q['target']=='2026-09-17' and len(q['validated_native_history'])==21
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN058A0_RECONCILED_FRESH_PREFLIGHT
+          path: /tmp/run058a0r
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Commit sanitized accepted preflights
+        if: success()
+        run: |
+          mkdir -p research/docs/runtime/run058a0_fresh_preflight
+          cp /tmp/run058a0r/RUN058A0_FRESH_PREFLIGHT_RESULT.json research/docs/runtime/
+          cp /tmp/run058a0r/00001/preflight.json research/docs/runtime/run058a0_fresh_preflight/HK00001.json
+          cp /tmp/run058a0r/00002/preflight.json research/docs/runtime/run058a0_fresh_preflight/HK00002.json
+          cp /tmp/run058a0r/00001/RECONCILIATION.json research/docs/runtime/run058a0_fresh_preflight/HK00001_RECONCILIATION.json
+          cp /tmp/run058a0r/00002/RECONCILIATION.json research/docs/runtime/run058a0_fresh_preflight/HK00002_RECONCILIATION.json
+          cd research
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/runtime/RUN058A0_FRESH_PREFLIGHT_RESULT.json docs/runtime/run058a0_fresh_preflight/
+          git diff --cached --quiet || git commit -m "dsa: accept Run058A0 reconciled fresh preflight"
+          git push

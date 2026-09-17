@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "evidence_id": "RUN058A0_OFFICIAL_CORPORATE_ACTIONS_v1",
+  "reviewed_at": "2026-09-18",
+  "items": {
+    "00001": {
+      "issuer": "CK Hutchison Holdings Limited",
+      "event_type": "cash_dividend",
+      "dividend_hkd_per_share": "0.7455",
+      "ex_dividend_date": "2026-09-14",
+      "record_date": "2026-09-15",
+      "payment_date": "2026-09-24",
+      "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300324.pdf",
+      "primary_source": true
+    },
+    "00002": {
+      "issuer": "CLP Holdings Limited",
+      "event_type": "cash_dividend",
+      "dividend_hkd_per_share": "0.63",
+      "ex_dividend_date": "2026-09-02",
+      "record_date": "2026-09-04",
+      "payment_date": "2026-09-15",
+      "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0806/2026080600239.pdf",
+      "primary_source": true
+    }
+  }
+}
