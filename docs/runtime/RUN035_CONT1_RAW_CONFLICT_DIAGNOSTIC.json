@@ -1,0 +1,476 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-038-DIAGNOSTIC",
+  "denominator": 57,
+  "open_only": 39,
+  "rows": [
+    {
+      "code": "00081",
+      "conflicting_fields": {
+        "open": 2
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00187",
+      "conflicting_fields": {
+        "open": 3
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00392",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00512",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00867",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00874",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00901",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00995",
+      "conflicting_fields": {
+        "open": 3
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "00999",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "01065",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "01112",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "01333",
+      "conflicting_fields": {
+        "open": 2,
+        "low": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "01377",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "01456",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "01877",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "01908",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "01972",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02068",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02096",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02155",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02157",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02171",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02192",
+      "conflicting_fields": {
+        "open": 1,
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02218",
+      "conflicting_fields": {
+        "open": 2
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02273",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02315",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02402",
+      "conflicting_fields": {
+        "open": 1,
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02419",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02510",
+      "conflicting_fields": {
+        "low": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02525",
+      "conflicting_fields": {
+        "open": 13,
+        "high": 13,
+        "low": 13,
+        "close": 13
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02565",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02589",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02595",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02656",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "02676",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02714",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02768",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "02877",
+      "conflicting_fields": {
+        "open": 2
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "03661",
+      "conflicting_fields": {
+        "low": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "03677",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "03698",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "03866",
+      "conflicting_fields": {
+        "open": 4
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "03933",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "06055",
+      "conflicting_fields": {
+        "open": 2
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "06090",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "06168",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "06600",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "06683",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "06687",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "06715",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "06990",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "09636",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "09658",
+      "conflicting_fields": {
+        "open": 4
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "09890",
+      "conflicting_fields": {
+        "open": 1
+      },
+      "open_only": true,
+      "days": 21
+    },
+    {
+      "code": "09903",
+      "conflicting_fields": {
+        "open": 19,
+        "high": 19,
+        "low": 19,
+        "close": 19
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "09911",
+      "conflicting_fields": {
+        "high": 1
+      },
+      "open_only": false,
+      "days": 21
+    },
+    {
+      "code": "09989",
+      "conflicting_fields": {
+        "high": 1,
+        "low": 1
+      },
+      "open_only": false,
+      "days": 21
+    }
+  ],
+  "scope": "Cached raw conflict localization; official HKEX compact quotations omit open, so cannot arbitrate open-only conflicts",
+  "model_calls": 0,
+  "cost_cny": "0"
+}

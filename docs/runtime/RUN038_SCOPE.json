@@ -1,0 +1,18 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-038",
+  "purpose": "Audit all45 current U members without importing O scores or fabricating plans",
+  "budget_cny": "0",
+  "model_requests": 0,
+  "progress_denominator": 45,
+  "deliverables": [
+    "RUN038_U45_HANDOFF_AUDIT.json"
+  ],
+  "inputs": [
+    "RUN033 strict history",
+    "RUN035-CONT1 frozen21-session recovery",
+    "RUN032 official union and bounded issuer/news review"
+  ],
+  "changes_to_strategy": false,
+  "changes_to_runtime_authorization": false,
+  "orders": false
+}

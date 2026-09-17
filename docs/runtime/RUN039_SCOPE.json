@@ -1,0 +1,56 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-039",
+  "created_at": "2026-09-17T04:43:45.463714+00:00",
+  "parent_run": "TRI-DSA-EXEC-20260917-033",
+  "parent_workflow_run": 35180179743,
+  "history_cache_sha256": "e70f3dc04ca1a4a2b97dfbcbc4bb2cf638cdce8b51a3386b25f99ffeb5b83ae0",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "codes": [
+    "01024"
+  ],
+  "selection_reason": "Remaining previously scoped member 01024 was never called; Tencent failed attempt remains isolated and is not repeated.",
+  "O_denominator": 660,
+  "target_session": "2026-09-16",
+  "decision_session": "2026-09-17",
+  "maximum_requests": 1,
+  "maximum_cost_cny": "0.10",
+  "per_member_cap_cny": "0.10",
+  "budget_authority": "Latest Owner instruction to continue necessary DSA DeepSeek research within funded available balance; private claim and fresh balance required",
+  "closed_batch_007_reused": false,
+  "automatic_retry": false,
+  "artifact_prefix": "ART-DSA-RUN039-O-MEMBER",
+  "purpose": "One untouched Kuaishou native case after free storage acceptance, using lossless multipart and mandatory pre-send private roundtrip. Full O denominator660 retained.",
+  "progress_denominator": 1,
+  "fee_source_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "pricing_checked_date": "2026-09-17",
+  "peak_input_cny_per_m": "2",
+  "peak_output_cny_per_m": "8",
+  "no_orders": true,
+  "schedule_changes": false,
+  "main_changes": false,
+  "historical_rewrites": false,
+  "manual_private_review_required": true,
+  "parent_failed_workflow": 35181806937,
+  "prior_model_requests": 1,
+  "repair": "Do not repeat Tencent or reconstruct lost output. New remaining-member native path only after independent multipart storage acceptance.",
+  "window_reconciliation_evidence": {
+    "00700": {
+      "old_history_first": "2026-02-09",
+      "old_ohlc_conflict_fields": 246,
+      "last_conflict_date": "2026-05-14",
+      "native_window_first": "2026-07-20",
+      "native_window_rows": 43,
+      "conflicts_in_native_window": 0
+    },
+    "01024": {
+      "old_history_first": "2026-02-09",
+      "old_ohlc_conflict_fields": 362,
+      "last_conflict_date": "2026-06-26",
+      "native_window_first": "2026-07-20",
+      "native_window_rows": 43,
+      "conflicts_in_native_window": 0
+    }
+  },
+  "request_slot_reuse": false,
+  "required_free_storage_run": 35182844843
+}

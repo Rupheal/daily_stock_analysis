@@ -1,0 +1,1693 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-035-CONT1",
+  "workflow_run": 35181701358,
+  "target": "2026-09-16",
+  "official_denominator": 660,
+  "ready": 598,
+  "isolated": 62,
+  "failure_counts": {
+    "ValueError:RAW_SOURCE_CONFLICT": 57,
+    "ValueError:TARGET_MISSING": 3,
+    "ValueError:RAW_VOLUME_CONFLICT": 1,
+    "ValueError:LESS_THAN_21_BARS": 1
+  },
+  "rows": [
+    {
+      "code": "00081",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "d84dff0498b8bcb304ebece2aba17f1286d75e1b5896081a981f13257defa819",
+      "yahoo_raw_sha256": "d84dff0498b8bcb304ebece2aba17f1286d75e1b5896081a981f13257defa819",
+      "tencent_raw_sha256": "7be177c8204f66838ea841d0b0753c3faa9d1376fdc05f6d1f2b063b6207bae9",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00081%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:13.614994+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-09",
+            "field": "open",
+            "yahoo_raw": 2.9149999618530273,
+            "tencent_raw": 2.87
+          },
+          {
+            "date": "2026-09-15",
+            "field": "open",
+            "yahoo_raw": 2.7300000190734863,
+            "tencent_raw": 2.705
+          }
+        ]
+      }
+    },
+    {
+      "code": "00187",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "new_qfq_sha256": "bbfae866a557e530370fb93999fb14503c41af9c5b78fde42cc9e95347c453af",
+      "new_qfq_source": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00187%2Cday%2C%2C%2C180%2Cqfq",
+      "yahoo_raw_reused_sha256": "7f630f2a53d010952743c8e7f7fc440deb63283e472b727b4174c332a77e9358",
+      "yahoo_raw_sha256": "7f630f2a53d010952743c8e7f7fc440deb63283e472b727b4174c332a77e9358",
+      "tencent_raw_sha256": "6c4b877ecedcc53684c3983f231cf2a1e757f533ada315d96ffce68fed05fe62",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00187%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:16.113777+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 3.049999952316284,
+            "tencent_raw": 3.005
+          },
+          {
+            "date": "2026-09-02",
+            "field": "open",
+            "yahoo_raw": 2.880000114440918,
+            "tencent_raw": 2.81
+          },
+          {
+            "date": "2026-09-03",
+            "field": "open",
+            "yahoo_raw": 2.884999990463257,
+            "tencent_raw": 2.85
+          }
+        ]
+      }
+    },
+    {
+      "code": "00392",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "48bb188a86aa0bfe4ff338bad9abfca6f8b088891c621f3a334252ca34790ffe",
+      "yahoo_raw_sha256": "48bb188a86aa0bfe4ff338bad9abfca6f8b088891c621f3a334252ca34790ffe",
+      "tencent_raw_sha256": "8f9253af094b3609772d3c35896f411ec3e3d41a452754144843d6adbcb5c01a",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00392%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:20.046478+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-20",
+            "field": "open",
+            "yahoo_raw": 30.239999771118164,
+            "tencent_raw": 30.38
+          }
+        ]
+      }
+    },
+    {
+      "code": "00512",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "edc25dde754d0a57bd7544b3795387c540ed384fb1ff6c9c9eaee55584bdba7f",
+      "yahoo_raw_sha256": "edc25dde754d0a57bd7544b3795387c540ed384fb1ff6c9c9eaee55584bdba7f",
+      "tencent_raw_sha256": "6f2360dc2f6f867461220c9fe29cf3e8b3542115e799b6cfc5d49944e4eff481",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00512%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:20.947433+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-10",
+            "field": "open",
+            "yahoo_raw": 5.039999961853027,
+            "tencent_raw": 4.995
+          }
+        ]
+      }
+    },
+    {
+      "code": "00853",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:TARGET_MISSING"
+      ],
+      "reused_prior_isolation": true
+    },
+    {
+      "code": "00867",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "c64dfff12a3540a94302ec9aab77efb76ef7d35f895170832770db4f6380bec8",
+      "yahoo_raw_sha256": "c64dfff12a3540a94302ec9aab77efb76ef7d35f895170832770db4f6380bec8",
+      "tencent_raw_sha256": "7379583886e6b02263008d6496b6246a1e184696b276903201478058b6fb307d",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00867%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:26.278378+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-20",
+            "field": "open",
+            "yahoo_raw": 11.890000343322754,
+            "tencent_raw": 11.8
+          }
+        ]
+      }
+    },
+    {
+      "code": "00874",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "4186aca900a77c4979bdd9bcf194ce6311bbacbdf98706c72ed3f3b1808decf6",
+      "yahoo_raw_sha256": "4186aca900a77c4979bdd9bcf194ce6311bbacbdf98706c72ed3f3b1808decf6",
+      "tencent_raw_sha256": "143798b6e10d63261cbc9edd917229eeb02c5a99027ecc2c310371be63b9b5e9",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00874%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:26.408273+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 15.279999732971191,
+            "tencent_raw": 15.09
+          }
+        ]
+      }
+    },
+    {
+      "code": "00901",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "73fe673e91b1c4dea6ee89429bce66e08df516fb76dec04d1da929a7090e5ffe",
+      "yahoo_raw_sha256": "73fe673e91b1c4dea6ee89429bce66e08df516fb76dec04d1da929a7090e5ffe",
+      "tencent_raw_sha256": "d937b62db7c1a66c924c555d7b1aa2426f985e8355230fbfcb5bc2b5956e6363",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00901%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:27.282439+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-03",
+            "field": "open",
+            "yahoo_raw": 72.5,
+            "tencent_raw": 73.55
+          }
+        ]
+      }
+    },
+    {
+      "code": "00995",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "07332acdeeaba79a1d84a64e0ed3496c21aee36c73c3f8c03f1931570c56f5d3",
+      "yahoo_raw_sha256": "07332acdeeaba79a1d84a64e0ed3496c21aee36c73c3f8c03f1931570c56f5d3",
+      "tencent_raw_sha256": "c34deb63dfcc5245435fdb7784ecb036d8052086cfaae2fb334206636093226f",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00995%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:29.260810+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-21",
+            "field": "open",
+            "yahoo_raw": 15.079999923706055,
+            "tencent_raw": 15.19
+          },
+          {
+            "date": "2026-08-31",
+            "field": "open",
+            "yahoo_raw": 15.800000190734863,
+            "tencent_raw": 15.62
+          },
+          {
+            "date": "2026-09-15",
+            "field": "open",
+            "yahoo_raw": 15.569999694824219,
+            "tencent_raw": 15.83
+          }
+        ]
+      }
+    },
+    {
+      "code": "00999",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "0b67e5184c2b481d226c082a5aa7733d0a06b38a56250bad87c30f75d484ecf5",
+      "yahoo_raw_sha256": "0b67e5184c2b481d226c082a5aa7733d0a06b38a56250bad87c30f75d484ecf5",
+      "tencent_raw_sha256": "261f13ac0d496790f4ccecc71981a73c43e448c932c7b6a8d69fba14d2f33ce0",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk00999%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:29.257114+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-16",
+            "field": "open",
+            "yahoo_raw": 7.815000057220459,
+            "tencent_raw": 8.025
+          }
+        ]
+      }
+    },
+    {
+      "code": "01065",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "0098ebda59f5fe9ef3ae0b6367d20250eb69670f95569606bc44856225926a00",
+      "yahoo_raw_sha256": "0098ebda59f5fe9ef3ae0b6367d20250eb69670f95569606bc44856225926a00",
+      "tencent_raw_sha256": "efaa04579fc6125d85cbed8f5401339ccbfdcf3a04832952faa48134b9587296",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01065%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:30.205001+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-27",
+            "field": "high",
+            "yahoo_raw": 3.7899999618530273,
+            "tencent_raw": 3.82
+          }
+        ]
+      }
+    },
+    {
+      "code": "01112",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "cbb026bae118ffc86e2dc55a59857f75e6ded7a763eb0b50151350447b850c2c",
+      "yahoo_raw_sha256": "cbb026bae118ffc86e2dc55a59857f75e6ded7a763eb0b50151350447b850c2c",
+      "tencent_raw_sha256": "0704658ef6fb97e174c55436ca8ff6105d1ed53354527b35a4b13131c5307427",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01112%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:31.427306+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-24",
+            "field": "open",
+            "yahoo_raw": 15.449999809265137,
+            "tencent_raw": 15.27
+          }
+        ]
+      }
+    },
+    {
+      "code": "01333",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "new_qfq_sha256": "467b34182d039140296030ddd370ee0ca911955290578093df8f7ea2400c1f6d",
+      "new_qfq_source": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk01333%2Cday%2C%2C%2C180%2Cqfq",
+      "yahoo_raw_reused_sha256": "51dd3c1b0296dc2a2508747975326565fef0e2da30e151f6c13cdf7f32f5e124",
+      "yahoo_raw_sha256": "51dd3c1b0296dc2a2508747975326565fef0e2da30e151f6c13cdf7f32f5e124",
+      "tencent_raw_sha256": "6b3364d86a371445a63da41b04db3292df9732230f219d88a55955df882e8cc6",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01333%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:36.890735+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-20",
+            "field": "open",
+            "yahoo_raw": 10.800000190734863,
+            "tencent_raw": 10.75
+          },
+          {
+            "date": "2026-09-02",
+            "field": "low",
+            "yahoo_raw": 12.350000381469727,
+            "tencent_raw": 11.99
+          },
+          {
+            "date": "2026-09-16",
+            "field": "open",
+            "yahoo_raw": 11.789999961853027,
+            "tencent_raw": 11.48
+          }
+        ]
+      }
+    },
+    {
+      "code": "01377",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "48edc6e69751108b7dc713ba81d3149347025ee11d2b4ffb07408cb1c9cd8771",
+      "yahoo_raw_sha256": "48edc6e69751108b7dc713ba81d3149347025ee11d2b4ffb07408cb1c9cd8771",
+      "tencent_raw_sha256": "9ef83c173b34a9e076d48efdca2d61db194073375695b2d6c275c34e069360c4",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01377%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:37.734121+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-27",
+            "field": "open",
+            "yahoo_raw": 355.0,
+            "tencent_raw": 359.8
+          }
+        ]
+      }
+    },
+    {
+      "code": "01456",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "new_qfq_sha256": "cfa2e5b2077ec37ba692505a085785a0aa23e0e1cf99a72f344f62accf754f77",
+      "new_qfq_source": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk01456%2Cday%2C%2C%2C180%2Cqfq",
+      "yahoo_raw_reused_sha256": "72ef60d6677ee1f1ae6cd91f019b50a6775da82ab802a896678cf7924dca5123",
+      "yahoo_raw_sha256": "72ef60d6677ee1f1ae6cd91f019b50a6775da82ab802a896678cf7924dca5123",
+      "tencent_raw_sha256": "ec5716e66f9ac341b493a9496d4ad082d2fcb02b069043325aad40b1b3d385f4",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01456%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:39.134879+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-02",
+            "field": "high",
+            "yahoo_raw": 3.9000000953674316,
+            "tencent_raw": 3.935
+          }
+        ]
+      }
+    },
+    {
+      "code": "01877",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "6b3a5fac1ba5afc9570e8f05e62270d2c29d4bc5ad96b875c4e2403171ad443a",
+      "yahoo_raw_sha256": "6b3a5fac1ba5afc9570e8f05e62270d2c29d4bc5ad96b875c4e2403171ad443a",
+      "tencent_raw_sha256": "f3b13426da8b2358cf6b51706965bb0629b8733ae8303bf570236fcd4387b7f4",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01877%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:41.442233+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "yahoo_raw": 18.209999084472656,
+            "tencent_raw": 18.3
+          }
+        ]
+      }
+    },
+    {
+      "code": "01908",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "3a4110a2b56793b165df7c0078b6b20d51f36b4069e7f8e6b8a03154f50ef9e6",
+      "yahoo_raw_sha256": "3a4110a2b56793b165df7c0078b6b20d51f36b4069e7f8e6b8a03154f50ef9e6",
+      "tencent_raw_sha256": "26bd879dd2ff7f8a4322d1affd4e7d72804cf9dc0800b0b5a25d72a0d685f613",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01908%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:42.064687+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-20",
+            "field": "open",
+            "yahoo_raw": 15.949999809265137,
+            "tencent_raw": 15.7
+          }
+        ]
+      }
+    },
+    {
+      "code": "01972",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "5e64fddac03ace8844ebf57aa30b03e51d01e6a6e72cc2509ccc1cb99b631bce",
+      "yahoo_raw_sha256": "5e64fddac03ace8844ebf57aa30b03e51d01e6a6e72cc2509ccc1cb99b631bce",
+      "tencent_raw_sha256": "0140b13c7d05857ade4c4fb4b03165737f629cb0a1a1258d04aa2e12d55dca79",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk01972%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:42.901793+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 24.15999984741211,
+            "tencent_raw": 24.34
+          }
+        ]
+      }
+    },
+    {
+      "code": "02068",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "932d77d7c5c8bcc8c75b94b0334e545efc387426a02f817b9f6eaca2bab73aa5",
+      "yahoo_raw_sha256": "932d77d7c5c8bcc8c75b94b0334e545efc387426a02f817b9f6eaca2bab73aa5",
+      "tencent_raw_sha256": "7e11015bd1c4f674088b4854407776780a2985f23ba8b010fe26cc6dba3434a3",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02068%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:44.286964+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-09",
+            "field": "open",
+            "yahoo_raw": 1.8200000524520874,
+            "tencent_raw": 1.8
+          }
+        ]
+      }
+    },
+    {
+      "code": "02096",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "e82a03d0617e2e29c068917b7c2ad1185844098540d322beec11e4892cb0d8d0",
+      "yahoo_raw_sha256": "e82a03d0617e2e29c068917b7c2ad1185844098540d322beec11e4892cb0d8d0",
+      "tencent_raw_sha256": "3e2d8c9cc1e613f2077d6597a59364320c2e6c92b73a923e4d12c3c5bb7df1e7",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02096%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:44.664552+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-01",
+            "field": "high",
+            "yahoo_raw": 11.100000381469727,
+            "tencent_raw": 11.18
+          }
+        ]
+      }
+    },
+    {
+      "code": "02155",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "9889b9b5b92ebb02dec0afec9e67ea66fad129e330a18e6f86d530a13bedf4e1",
+      "yahoo_raw_sha256": "9889b9b5b92ebb02dec0afec9e67ea66fad129e330a18e6f86d530a13bedf4e1",
+      "tencent_raw_sha256": "0d4f2be38b320bb7cdb8dc07b16512dac44fcde097f71816b6e933a96d47f3f5",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02155%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:44.840065+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-31",
+            "field": "open",
+            "yahoo_raw": 7.605000019073486,
+            "tencent_raw": 7.55
+          }
+        ]
+      }
+    },
+    {
+      "code": "02157",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "0ba9834bf7e4ae2083169fd3effbb5948cdfcccc4444b4f9de93e8fbf57dd336",
+      "yahoo_raw_sha256": "0ba9834bf7e4ae2083169fd3effbb5948cdfcccc4444b4f9de93e8fbf57dd336",
+      "tencent_raw_sha256": "294689173f0a9af5beadddbbc939a8415182ab332749b005da12a71924ac2179",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02157%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:45.142765+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-21",
+            "field": "high",
+            "yahoo_raw": 4.255000114440918,
+            "tencent_raw": 4.29
+          }
+        ]
+      }
+    },
+    {
+      "code": "02171",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "fbc55a244da2f071f0ff08bacb5cfd31c145155af675dd9eb517cc7c748b62bf",
+      "yahoo_raw_sha256": "fbc55a244da2f071f0ff08bacb5cfd31c145155af675dd9eb517cc7c748b62bf",
+      "tencent_raw_sha256": "3ef6fb090d308098dc11f63b1abb883ee8c886b13fb1fead64ec47936274e533",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02171%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:45.504978+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-11",
+            "field": "open",
+            "yahoo_raw": 12.729999542236328,
+            "tencent_raw": 12.47
+          }
+        ]
+      }
+    },
+    {
+      "code": "02172",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:TARGET_MISSING"
+      ],
+      "reused_prior_isolation": true
+    },
+    {
+      "code": "02192",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "79bf221f7c6b357a0497c1679c84c2284eba0f19b846e6ce06623f5658d97bda",
+      "yahoo_raw_sha256": "79bf221f7c6b357a0497c1679c84c2284eba0f19b846e6ce06623f5658d97bda",
+      "tencent_raw_sha256": "fd533cfd78d427bf9667a46f245353b82399696cde8ec8770d51246d49d62863",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02192%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:45.678303+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-27",
+            "field": "open",
+            "yahoo_raw": 7.804999828338623,
+            "tencent_raw": 7.64
+          },
+          {
+            "date": "2026-09-02",
+            "field": "high",
+            "yahoo_raw": 7.53000020980835,
+            "tencent_raw": 7.63
+          }
+        ]
+      }
+    },
+    {
+      "code": "02218",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "512bddd87c67c2f387a3523b447e769f158cee45cde86a0881c9c4f22db280a7",
+      "yahoo_raw_sha256": "512bddd87c67c2f387a3523b447e769f158cee45cde86a0881c9c4f22db280a7",
+      "tencent_raw_sha256": "a8bab4646aaff531602fd4aecfde154a64abf7d2dd98d23e70177f74fa5025d2",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02218%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:46.021886+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 20.600000381469727,
+            "tencent_raw": 20.4
+          },
+          {
+            "date": "2026-08-24",
+            "field": "open",
+            "yahoo_raw": 19.360000610351562,
+            "tencent_raw": 19.43
+          }
+        ]
+      }
+    },
+    {
+      "code": "02238",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_VOLUME_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "179986c1d9c59a9dd9603b2226f4faa69efbf23fcfcf20c037bb61c9d998f21f",
+      "yahoo_raw_sha256": "179986c1d9c59a9dd9603b2226f4faa69efbf23fcfcf20c037bb61c9d998f21f",
+      "tencent_raw_sha256": "83e4362bd2caa96ef648226df69f1665c6e2fe0bf26d2588555a31d7f6e8cfbb",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02238%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:46.540979+00:00",
+      "raw_comparison": {
+        "class": "RAW_PRICE_AGREEMENT_TIGHT",
+        "days": 21,
+        "exact_volume_agreement": false,
+        "conflict_examples": []
+      }
+    },
+    {
+      "code": "02252",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:TARGET_MISSING"
+      ],
+      "reused_prior_isolation": true
+    },
+    {
+      "code": "02273",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "05fc83600e6d31cb514ddd4ea1e0332870a7d677c0c7e71ad1a6f83bec49a98e",
+      "yahoo_raw_sha256": "05fc83600e6d31cb514ddd4ea1e0332870a7d677c0c7e71ad1a6f83bec49a98e",
+      "tencent_raw_sha256": "fe62ed112b2fa558b7b3fa4e9f6dceb303fc7e3dbfe64703e4726bef4ec8b3dd",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02273%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:47.206050+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-03",
+            "field": "open",
+            "yahoo_raw": 26.940000534057617,
+            "tencent_raw": 26.86
+          }
+        ]
+      }
+    },
+    {
+      "code": "02315",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "71922d960e14fe205d318886698814ea2b577e4af085f8e3aa4752a0b937f707",
+      "yahoo_raw_sha256": "71922d960e14fe205d318886698814ea2b577e4af085f8e3aa4752a0b937f707",
+      "tencent_raw_sha256": "706ef9b9c9f3799212f91a8e71fa942d05e19646ae4bc9efe20108ed042b75c2",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02315%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:48.035820+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-26",
+            "field": "open",
+            "yahoo_raw": 64.5999984741211,
+            "tencent_raw": 62.35
+          }
+        ]
+      }
+    },
+    {
+      "code": "02402",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "8743834b11dc8d93b46de493327e315af1888aeeca2fdac6c49a1fa3aee31d67",
+      "yahoo_raw_sha256": "8743834b11dc8d93b46de493327e315af1888aeeca2fdac6c49a1fa3aee31d67",
+      "tencent_raw_sha256": "17ce51ea2f9dc764e14f14b44820a29c431ff71cb390b344d34827c016d9ff6d",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02402%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:50.289881+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-31",
+            "field": "open",
+            "yahoo_raw": 12.5,
+            "tencent_raw": 12.09
+          },
+          {
+            "date": "2026-09-07",
+            "field": "high",
+            "yahoo_raw": 12.329999923706055,
+            "tencent_raw": 12.6
+          }
+        ]
+      }
+    },
+    {
+      "code": "02419",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "893379c39c5ce1b24a16b20ef7130bb151b0a81c864cccf67b20cbfd1ac934b1",
+      "yahoo_raw_sha256": "893379c39c5ce1b24a16b20ef7130bb151b0a81c864cccf67b20cbfd1ac934b1",
+      "tencent_raw_sha256": "5749c52044e5aa51c5a62f1ea326aa6b9cf35f8294056e6dd434a565ef9242c3",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02419%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:50.604061+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-07",
+            "field": "open",
+            "yahoo_raw": 60.95000076293945,
+            "tencent_raw": 62.0
+          }
+        ]
+      }
+    },
+    {
+      "code": "02510",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "d445e0bc4cb7dd1fc97330eeb4cf86593bf73d0c30d866b5d69809be0250c0d1",
+      "yahoo_raw_sha256": "d445e0bc4cb7dd1fc97330eeb4cf86593bf73d0c30d866b5d69809be0250c0d1",
+      "tencent_raw_sha256": "504a9b48213250782eb7883306dc6fcee3577720ed314dc758003e293b475fee",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02510%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:51.166228+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-31",
+            "field": "low",
+            "yahoo_raw": 13.510000228881836,
+            "tencent_raw": 13.3
+          }
+        ]
+      }
+    },
+    {
+      "code": "02525",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "74ea04b7d42b875885f63006f9e9bacd8466a17cfd17b552d7181823ad2a5bd8",
+      "yahoo_raw_sha256": "74ea04b7d42b875885f63006f9e9bacd8466a17cfd17b552d7181823ad2a5bd8",
+      "tencent_raw_sha256": "a53d4194b55aec619bb724d3301953cdaf9d7bf2e4b6ff03559561cfa15f28f2",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02525%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:51.740475+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": false,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 18.5,
+            "tencent_raw": 17.27
+          },
+          {
+            "date": "2026-08-19",
+            "field": "high",
+            "yahoo_raw": 18.5,
+            "tencent_raw": 17.34
+          },
+          {
+            "date": "2026-08-19",
+            "field": "low",
+            "yahoo_raw": 18.5,
+            "tencent_raw": 16.91
+          }
+        ]
+      }
+    },
+    {
+      "code": "02565",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "f36f40bfeae3df144d12190f92e73047a46dc098cd5b064295c3d9964dfcc878",
+      "yahoo_raw_sha256": "f36f40bfeae3df144d12190f92e73047a46dc098cd5b064295c3d9964dfcc878",
+      "tencent_raw_sha256": "58bdbc8920c2c26889da46ffb2fe447ff01340c1a846401430c94011e714ad20",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02565%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:52.339014+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-01",
+            "field": "high",
+            "yahoo_raw": 5.570000171661377,
+            "tencent_raw": 5.595
+          }
+        ]
+      }
+    },
+    {
+      "code": "02589",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "bb8fac397ead34bf1156e8a5edff69a44e40fcb8a999f7590a5a7631a8c1c9c2",
+      "yahoo_raw_sha256": "bb8fac397ead34bf1156e8a5edff69a44e40fcb8a999f7590a5a7631a8c1c9c2",
+      "tencent_raw_sha256": "201ff6e60c2e379a06595d6fe67ceb3c586b57fff9909cd59508d2bdba152854",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02589%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:52.893438+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-01",
+            "field": "open",
+            "yahoo_raw": 81.3499984741211,
+            "tencent_raw": 81.0
+          }
+        ]
+      }
+    },
+    {
+      "code": "02595",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "437270d8ebfc3a411e75a5b92776c978cc94a54603953cb739c5634958b463a5",
+      "yahoo_raw_sha256": "437270d8ebfc3a411e75a5b92776c978cc94a54603953cb739c5634958b463a5",
+      "tencent_raw_sha256": "2982b80fcaa003ff88cdc38500c7dfefe8213f3957d9e20692c840980588c19e",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02595%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:53.176962+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "yahoo_raw": 27.639999389648438,
+            "tencent_raw": 27.84
+          }
+        ]
+      }
+    },
+    {
+      "code": "02656",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "d79edf2d519e9be407a2abbf7b4a5d85945fc82d8e8dabb7e4b532023e509d4a",
+      "yahoo_raw_sha256": "d79edf2d519e9be407a2abbf7b4a5d85945fc82d8e8dabb7e4b532023e509d4a",
+      "tencent_raw_sha256": "d97749e33088595ac63120e3af6ac59352ddd9d9e0554f7a22615f0cdeb49503",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02656%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:55.801482+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-09",
+            "field": "high",
+            "yahoo_raw": 9.805000305175781,
+            "tencent_raw": 10.12
+          }
+        ]
+      }
+    },
+    {
+      "code": "02676",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "1fa1cab64e4d22b4ab2f353a80d7002483aef20ea6ea81db979e99f60aff2c39",
+      "yahoo_raw_sha256": "1fa1cab64e4d22b4ab2f353a80d7002483aef20ea6ea81db979e99f60aff2c39",
+      "tencent_raw_sha256": "9ac15cdf1341c27a1be8d371a1c466a493cecf8771678c21b43bc10d2eaffc2b",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02676%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:56.847404+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-25",
+            "field": "open",
+            "yahoo_raw": 156.0,
+            "tencent_raw": 155.1
+          }
+        ]
+      }
+    },
+    {
+      "code": "02714",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "b71c3f1626cc3b263af22bba5871833a79c5ace3f1b3f13e36989b3ffa2ed1e9",
+      "yahoo_raw_sha256": "b71c3f1626cc3b263af22bba5871833a79c5ace3f1b3f13e36989b3ffa2ed1e9",
+      "tencent_raw_sha256": "88e4b6247e88a156a57f3ce3177c562add337b7d53e2952a48bb9ab1dc1562be",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02714%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:58.531061+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-25",
+            "field": "open",
+            "yahoo_raw": 33.0,
+            "tencent_raw": 32.9
+          }
+        ]
+      }
+    },
+    {
+      "code": "02768",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "a9dbab95dbe02fee9ad4a1466920cecdfbc374ba2cd01ba143120ecffde58e6f",
+      "yahoo_raw_sha256": "a9dbab95dbe02fee9ad4a1466920cecdfbc374ba2cd01ba143120ecffde58e6f",
+      "tencent_raw_sha256": "3fd51e59e021c680b8a1123cd9409eb0183e064f579db85a9f5e4561e67e9a4a",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02768%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:58.910068+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-07",
+            "field": "open",
+            "yahoo_raw": 37.86000061035156,
+            "tencent_raw": 38.68
+          }
+        ]
+      }
+    },
+    {
+      "code": "02877",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "331ee2a5a285c1d9a3b8c72237cd6a00a65fb13a4d915e29e15ba7f49903993b",
+      "yahoo_raw_sha256": "331ee2a5a285c1d9a3b8c72237cd6a00a65fb13a4d915e29e15ba7f49903993b",
+      "tencent_raw_sha256": "cc6a4256b30ff3cc62ef86058d3a0663ac52efe8489e57bceddcb280ee9c95c1",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk02877%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:23:59.207166+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 8.0600004196167,
+            "tencent_raw": 8.015
+          },
+          {
+            "date": "2026-08-25",
+            "field": "open",
+            "yahoo_raw": 8.045000076293945,
+            "tencent_raw": 8.0
+          }
+        ]
+      }
+    },
+    {
+      "code": "02922",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:LESS_THAN_21_BARS"
+      ],
+      "new_qfq_sha256": "5c4275055cf33b5f9eca4adf764c2ff8b1b9cdb7b3b205c94981e3a04b05a10a",
+      "new_qfq_source": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk02922%2Cday%2C%2C%2C180%2Cqfq",
+      "reused_prior_isolation": true
+    },
+    {
+      "code": "03661",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "cc276456fad3a011cc8c9f003cda43825c7ce86e3026b76073253e4ce0b748ad",
+      "yahoo_raw_sha256": "cc276456fad3a011cc8c9f003cda43825c7ce86e3026b76073253e4ce0b748ad",
+      "tencent_raw_sha256": "5732a2bce81bb431c1a8e255ee2638499db84c908243bb4ef41b1d87aef35c9b",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk03661%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:00.885336+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-07",
+            "field": "low",
+            "yahoo_raw": 86.0,
+            "tencent_raw": 85.5
+          }
+        ]
+      }
+    },
+    {
+      "code": "03677",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "064434805c346b083e150b4a8ba0f5b12c665727f4a46de9f7ab9cecca778601",
+      "yahoo_raw_sha256": "064434805c346b083e150b4a8ba0f5b12c665727f4a46de9f7ab9cecca778601",
+      "tencent_raw_sha256": "2a4c1b409a1244923ba44196d388a5ec22297d3a46c9676b5e8be8d7d0cb22b4",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk03677%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:01.542160+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "yahoo_raw": 4.855000019073486,
+            "tencent_raw": 4.9
+          }
+        ]
+      }
+    },
+    {
+      "code": "03698",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "d796be50c15967e9f68a8609498c5df2b55a108f72a7b94897a3293e0a7f10b6",
+      "yahoo_raw_sha256": "d796be50c15967e9f68a8609498c5df2b55a108f72a7b94897a3293e0a7f10b6",
+      "tencent_raw_sha256": "fc204f507e965952d86e6080d7ba14a8fdba6ca87fa33420fecdd6a223f4fddb",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk03698%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:01.724627+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-10",
+            "field": "open",
+            "yahoo_raw": 4.909999847412109,
+            "tencent_raw": 4.845
+          }
+        ]
+      }
+    },
+    {
+      "code": "03866",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "25ef0029dbf223034929e3750d5069c9785fda9173ecd201c7436f3b56db52a4",
+      "yahoo_raw_sha256": "25ef0029dbf223034929e3750d5069c9785fda9173ecd201c7436f3b56db52a4",
+      "tencent_raw_sha256": "1124f25066062326631d9cc89c7af57d55ec49c2b14aede5e644090a0ff9109a",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk03866%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:02.603265+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-04",
+            "field": "open",
+            "yahoo_raw": 5.364999771118164,
+            "tencent_raw": 5.34
+          },
+          {
+            "date": "2026-09-08",
+            "field": "open",
+            "yahoo_raw": 5.199999809265137,
+            "tencent_raw": 5.16
+          },
+          {
+            "date": "2026-09-10",
+            "field": "open",
+            "yahoo_raw": 5.190000057220459,
+            "tencent_raw": 5.09
+          }
+        ]
+      }
+    },
+    {
+      "code": "03933",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "a34702c9ac5bda6d280ed6077ef256cd3342b2578d3bb3d3f266ffa5c6d22a12",
+      "yahoo_raw_sha256": "a34702c9ac5bda6d280ed6077ef256cd3342b2578d3bb3d3f266ffa5c6d22a12",
+      "tencent_raw_sha256": "e68e418eb224709b661bc513abdf55c3ea0ef7a1b4bd387dff65a0b11ec28006",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk03933%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:03.588643+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-03",
+            "field": "open",
+            "yahoo_raw": 8.380000114440918,
+            "tencent_raw": 8.5
+          }
+        ]
+      }
+    },
+    {
+      "code": "06055",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "8c0471c44efb1858445e615c9a701e4f1448a112f8950e6db9dfffc6586588ad",
+      "yahoo_raw_sha256": "8c0471c44efb1858445e615c9a701e4f1448a112f8950e6db9dfffc6586588ad",
+      "tencent_raw_sha256": "4cfa4a2eb202ff5b9e33923484210da77f605a8633703cfde248d22e5709473f",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06055%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:04.464265+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-26",
+            "field": "open",
+            "yahoo_raw": 25.780000686645508,
+            "tencent_raw": 25.58
+          },
+          {
+            "date": "2026-09-16",
+            "field": "open",
+            "yahoo_raw": 23.68000030517578,
+            "tencent_raw": 22.98
+          }
+        ]
+      }
+    },
+    {
+      "code": "06090",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "4b4a64633117b9a31590dbedba36319042e169a21f4bd4fd9caa4cf4dec6aa9c",
+      "yahoo_raw_sha256": "4b4a64633117b9a31590dbedba36319042e169a21f4bd4fd9caa4cf4dec6aa9c",
+      "tencent_raw_sha256": "18b1d2523b845cab54fcd772bf8ce514b7e38f21c4ed029fd3cbcab680082bd7",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06090%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:05.171082+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-10",
+            "field": "open",
+            "yahoo_raw": 43.959999084472656,
+            "tencent_raw": 43.76
+          }
+        ]
+      }
+    },
+    {
+      "code": "06168",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "cde11028dfb041ad6b3bd1bdd3f772fae03a0ac4bd7fd44234b85b375b60e11a",
+      "yahoo_raw_sha256": "cde11028dfb041ad6b3bd1bdd3f772fae03a0ac4bd7fd44234b85b375b60e11a",
+      "tencent_raw_sha256": "e3a62f9e54e4377c4f321830401a9293fbd692a2223dafc64585c534adc82f79",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06168%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:06.068976+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-26",
+            "field": "high",
+            "yahoo_raw": 15.270000457763672,
+            "tencent_raw": 15.76
+          }
+        ]
+      }
+    },
+    {
+      "code": "06600",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "0f564bb6fb8f6b9c79e587d175ec74f9a0fb30fdc8ef451aa432738f9ab30d45",
+      "yahoo_raw_sha256": "0f564bb6fb8f6b9c79e587d175ec74f9a0fb30fdc8ef451aa432738f9ab30d45",
+      "tencent_raw_sha256": "29b5184157626ea6ce2627786c115cf90130072b2d9999d95840d96a8917ca2c",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06600%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:06.911877+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-25",
+            "field": "open",
+            "yahoo_raw": 56.650001525878906,
+            "tencent_raw": 57.0
+          }
+        ]
+      }
+    },
+    {
+      "code": "06683",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "new_qfq_sha256": "1b5dacc4dc6386ba3f27cc79c92b0870fdc1603148fab7e052357459c481976a",
+      "new_qfq_source": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk06683%2Cday%2C%2C%2C180%2Cqfq",
+      "yahoo_raw_reused_sha256": "4d9c3e9277c625de1a67bfd8e52b100c5e4d9814e71af7293266e13491ca3edc",
+      "yahoo_raw_sha256": "4d9c3e9277c625de1a67bfd8e52b100c5e4d9814e71af7293266e13491ca3edc",
+      "tencent_raw_sha256": "67c44467f7acf6526bde131dda7fc706f1dd4b492fff07c5ad7e140cfda9a99d",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06683%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:08.334897+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-08",
+            "field": "high",
+            "yahoo_raw": 3.9649999141693115,
+            "tencent_raw": 3.995
+          }
+        ]
+      }
+    },
+    {
+      "code": "06687",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "30c32c63bf6de4b15866a73599ed9cec919e54d7082ee487517673bbef1e6180",
+      "yahoo_raw_sha256": "30c32c63bf6de4b15866a73599ed9cec919e54d7082ee487517673bbef1e6180",
+      "tencent_raw_sha256": "dc76a3d1ee2a405d07eb850db7cfcd8177176fc887d43fba61368d6a966c973b",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06687%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:07.757084+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-24",
+            "field": "high",
+            "yahoo_raw": 14.869999885559082,
+            "tencent_raw": 15.85
+          }
+        ]
+      }
+    },
+    {
+      "code": "06715",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "151a62bc6d4a12b6048bc46707311119e45e17c1f2cba813e2bf1b02a43047db",
+      "yahoo_raw_sha256": "151a62bc6d4a12b6048bc46707311119e45e17c1f2cba813e2bf1b02a43047db",
+      "tencent_raw_sha256": "9a329ae771a9e0f8800b42ceb0cebc3c8002384ed2d31de9209e967392fedae8",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06715%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:08.601040+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-11",
+            "field": "open",
+            "yahoo_raw": 70.0,
+            "tencent_raw": 69.55
+          }
+        ]
+      }
+    },
+    {
+      "code": "06990",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "82b35e66520fa26d6b6f57ba7fc5790f2cc4d3ae09c17b92d2cfa6e4345baac3",
+      "yahoo_raw_sha256": "82b35e66520fa26d6b6f57ba7fc5790f2cc4d3ae09c17b92d2cfa6e4345baac3",
+      "tencent_raw_sha256": "19e6824cdf8d6338f6f8011a23c6e5a15f6f08a1f42ab888257be29a7ff39e4b",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk06990%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:10.888535+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-26",
+            "field": "open",
+            "yahoo_raw": 526.0,
+            "tencent_raw": 535.0
+          }
+        ]
+      }
+    },
+    {
+      "code": "09636",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "5e8726d39794930e5e7bb857decb92485ea7ff1f4506d7a269220f008d002e8a",
+      "yahoo_raw_sha256": "5e8726d39794930e5e7bb857decb92485ea7ff1f4506d7a269220f008d002e8a",
+      "tencent_raw_sha256": "52eb0a7286b4e620b54a155b27a2befda764f82c331cd3e3a8a7b5b0b82a8d66",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk09636%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:11.352309+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-11",
+            "field": "open",
+            "yahoo_raw": 29.0,
+            "tencent_raw": 29.1
+          }
+        ]
+      }
+    },
+    {
+      "code": "09658",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "b2fbb03a4b3260b236df6be285c5490e415ca9185864d1fa06746212b9fa0ea0",
+      "yahoo_raw_sha256": "b2fbb03a4b3260b236df6be285c5490e415ca9185864d1fa06746212b9fa0ea0",
+      "tencent_raw_sha256": "e86e9786fb8e1e0497cb4b7b08e5678f85cca39aacb9893897280ef266789643",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk09658%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:11.733951+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 11.369999885559082,
+            "tencent_raw": 11.26
+          },
+          {
+            "date": "2026-09-07",
+            "field": "open",
+            "yahoo_raw": 9.96500015258789,
+            "tencent_raw": 9.9
+          },
+          {
+            "date": "2026-09-08",
+            "field": "open",
+            "yahoo_raw": 10.029999732971191,
+            "tencent_raw": 9.675
+          }
+        ]
+      }
+    },
+    {
+      "code": "09890",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "new_qfq_sha256": "b2db37077fd7222e9a8f839fee1e5f845f28473e2949159ac6d524e082f65916",
+      "new_qfq_source": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk09890%2Cday%2C%2C%2C180%2Cqfq",
+      "yahoo_raw_reused_sha256": "b458410c9003720ee34e1b0efceb79298fbd95e3e95e9ca655d35afd263fd938",
+      "yahoo_raw_sha256": "b458410c9003720ee34e1b0efceb79298fbd95e3e95e9ca655d35afd263fd938",
+      "tencent_raw_sha256": "c8e1f444afb2857dfa345776fab7217336539d6850f2d288dc3b084505ec0313",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk09890%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:12.881838+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-28",
+            "field": "open",
+            "yahoo_raw": 10.34000015258789,
+            "tencent_raw": 10.42
+          }
+        ]
+      }
+    },
+    {
+      "code": "09903",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "2adbb657f1d9c909bd7d683c9fa665359cd26ff40aefc046ef9dff2a67d3f19b",
+      "yahoo_raw_sha256": "2adbb657f1d9c909bd7d683c9fa665359cd26ff40aefc046ef9dff2a67d3f19b",
+      "tencent_raw_sha256": "cf7f0df53613cdcc33449a6c6f380238addeffef9b9e16678faf546a493e1c0e",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk09903%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:12.186839+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": false,
+        "conflict_examples": [
+          {
+            "date": "2026-08-19",
+            "field": "open",
+            "yahoo_raw": 135.6666717529297,
+            "tencent_raw": 407.0
+          },
+          {
+            "date": "2026-08-19",
+            "field": "high",
+            "yahoo_raw": 136.0,
+            "tencent_raw": 408.0
+          },
+          {
+            "date": "2026-08-19",
+            "field": "low",
+            "yahoo_raw": 119.66666412353516,
+            "tencent_raw": 359.0
+          }
+        ]
+      }
+    },
+    {
+      "code": "09911",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "088e947dc3d9f47736fdb79a82ed93788d848341a343d451c322ed7b15f5b740",
+      "yahoo_raw_sha256": "088e947dc3d9f47736fdb79a82ed93788d848341a343d451c322ed7b15f5b740",
+      "tencent_raw_sha256": "09060f7cec73ad3ff39b2a17fa853f7562a3e22a58a7e8ca096cff151053cccf",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk09911%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:12.574987+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-09-08",
+            "field": "high",
+            "yahoo_raw": 9.149999618530273,
+            "tencent_raw": 9.195
+          }
+        ]
+      }
+    },
+    {
+      "code": "09989",
+      "target": "2026-09-16",
+      "route": "ISOLATED",
+      "reasons": [
+        "ValueError:RAW_SOURCE_CONFLICT"
+      ],
+      "yahoo_raw_reused_sha256": "503cae2b51a54ddd31bbecc9e85aa7ada475f22cbf287499e17998900a4c3711",
+      "yahoo_raw_sha256": "503cae2b51a54ddd31bbecc9e85aa7ada475f22cbf287499e17998900a4c3711",
+      "tencent_raw_sha256": "f852daa77971075eafaa19c8b222ee79bc01b2f397ec8b9f11ec4f477aab2235",
+      "tencent_raw_source": "https://web.ifzq.gtimg.cn/appstock/app/kline/kline?param=hk09989%2Cday%2C%2C%2C180",
+      "raw_available_at": "2026-09-17T04:24:13.730322+00:00",
+      "raw_comparison": {
+        "class": "RAW_SOURCE_CONFLICT",
+        "days": 21,
+        "exact_volume_agreement": true,
+        "conflict_examples": [
+          {
+            "date": "2026-08-24",
+            "field": "high",
+            "yahoo_raw": 4.349999904632568,
+            "tencent_raw": 4.43
+          },
+          {
+            "date": "2026-08-26",
+            "field": "low",
+            "yahoo_raw": 4.335000038146973,
+            "tencent_raw": 4.22
+          }
+        ]
+      }
+    }
+  ],
+  "recovery_artifact_sha256": "37e31d46548cc0f719a61481774bc626995237f7c80071a5f14e262112b440c9",
+  "native_predictions": 0
+}
