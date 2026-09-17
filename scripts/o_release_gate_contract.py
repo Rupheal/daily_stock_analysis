@@ -33,7 +33,7 @@ def evaluate_release_gate(raw_post_output_contract, release_bundle):
     release_audit = bundle.get("release_audit")
     if not isinstance(receipt, dict) or not isinstance(release_audit, dict):
         raise ReleaseGateError("RELEASE_GATE_RECEIPT_OR_AUDIT_MISSING")
-    if receipt.get("version") != RELEASE_VERSION or receipt.get("release_status") != "PASS":
+    if receipt.get("version") not in {"O_RELEASE_QUOTE_SEMANTICS_v1", RELEASE_VERSION} or receipt.get("release_status") != "PASS":
         raise ReleaseGateError("RELEASE_QUOTE_ADAPTER_NOT_PASSED")
     if receipt.get("raw_pipeline_result_mutated") is not False or receipt.get("strategy_fields_changed") is not False:
         raise ReleaseGateError("RELEASE_ADAPTER_INVARIANT_FAILED")
@@ -72,7 +72,7 @@ def evaluate_release_gate(raw_post_output_contract, release_bundle):
         "raw_native_pipeline_semantic_pass": False,
         "raw_native_pipeline_preserved": True,
         "raw_blockers_preserved": raw_blockers,
-        "release_adapter_version": RELEASE_VERSION,
+        "release_adapter_version": receipt['version'],
         "release_view_semantic_pass": True,
         "release_sanitized_paths": list(receipt.get("sanitized_paths") or []),
         "strategy_fields_changed": False,

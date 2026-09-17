@@ -14,10 +14,11 @@ from copy import deepcopy
 from decimal import Decimal, InvalidOperation
 from hashlib import sha256
 import json
+import struct
 
 from o_single_output_fact_check import check_saved_output
 
-VERSION = "O_RELEASE_QUOTE_SEMANTICS_v1"
+VERSION = "O_RELEASE_QUOTE_SEMANTICS_v2"
 EXECUTION_CONTRACT_VERSION = "O_GATE_A_EXECUTION_CONTRACT_v2"
 
 
@@ -48,7 +49,7 @@ def _semantic_001_findings(audit):
     return [f for f in (audit.get("findings") or []) if f.get("guard_id") == "SEM-001"]
 
 
-def _sanitize_current_price_fields(node, *, target_close, path="$", changes=None):
+def _sanitize_current_price_fields(node, *, target_close, native_close=None, path="$", changes=None):
     if changes is None:
         changes = []
     if isinstance(node, dict):
@@ -58,7 +59,11 @@ def _sanitize_current_price_fields(node, *, target_close, path="$", changes=None
             if key == "current_price":
                 numeric = _number(value)
                 if numeric is not None:
-                    if numeric != target_close:
+                    # Accept only the exact float32 representation already present
+                    # in the unchanged native input. This is not a price tolerance.
+                    float32_close = _number(struct.unpack('!f', struct.pack('!f', float(target_close)))[0])
+                    representation_match = numeric == native_close == float32_close
+                    if numeric != target_close and not representation_match:
                         raise ReleaseQuoteError(
                             "NONREALTIME_CURRENT_PRICE_NOT_TARGET_CLOSE:" + child_path
                         )
@@ -68,13 +73,14 @@ def _sanitize_current_price_fields(node, *, target_close, path="$", changes=None
                         "source": "target_session_completed_close",
                         "original_value": str(numeric),
                         "release_value": None,
+                        "numeric_basis": "exact_target_close" if numeric == target_close else "exact_native_input_float32_representation",
                     })
                     continue
-            _sanitize_current_price_fields(value, target_close=target_close,
+            _sanitize_current_price_fields(value, target_close=target_close, native_close=native_close,
                                            path=child_path, changes=changes)
     elif isinstance(node, list):
         for index, value in enumerate(node):
-            _sanitize_current_price_fields(value, target_close=target_close,
+            _sanitize_current_price_fields(value, target_close=target_close, native_close=native_close,
                                            path=f"{path}[{index}]", changes=changes)
     return changes
 
@@ -104,7 +110,9 @@ def build_release_view(preflight, original_input, pipeline_final):
         close = _number(today.get("close"))
         if close is None or close <= 0:
             raise ReleaseQuoteError("RELEASE_TARGET_CLOSE_UNPROVEN")
-        changes = _sanitize_current_price_fields(release, target_close=close)
+        native_today = (original_input.get('context') or {}).get('today') or {}
+        native_close = _number(native_today.get('close'))
+        changes = _sanitize_current_price_fields(release, target_close=close, native_close=native_close)
     else:
         close = None
 
@@ -132,6 +140,7 @@ def build_release_view(preflight, original_input, pipeline_final):
         "release_view_sha256": _hash(release),
         "sanitized_paths": [row["path"] for row in changes],
         "sanitized_count": len(changes),
+        "sanitization_basis": [row['numeric_basis'] for row in changes],
         "raw_sem001_codes": sorted({str(f.get("code")) for f in _semantic_001_findings(raw_audit)}),
         "release_sem001_codes": [],
         "strategy_fields_changed": False,
