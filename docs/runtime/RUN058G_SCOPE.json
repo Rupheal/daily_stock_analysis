@@ -11,5 +11,6 @@
   "paid_data_calls": 0,
   "drive_writes": 0,
   "orders": 0,
-  "automatic_retry": false
+  "automatic_retry": false,
+  "trigger_revision": 1
 }
