@@ -1,0 +1,194 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-032-RECOVERY4",
+  "parent_workflow_run": 35178119846,
+  "parent_denominator": 660,
+  "parent_native_ready": 656,
+  "target": "2026-09-16",
+  "official_membership_session": "2026-09-17",
+  "codes": [
+    "00501",
+    "00638",
+    "00668",
+    "00699"
+  ],
+  "source_hashes": {
+    "00501-tencent.json": "b306baa2959c73c67f048db4336738b9353af815d58e3a7a175fd4ff935cf662",
+    "00638-tencent.json": "fa947d62ee3803acc771a33b41208784cd5edac66b50986dc91f5baf7d7b7d69",
+    "00668-tencent.json": "e55613b472048a55654410fcfcc3911fe697077ca82880fe790f3ea8bb54e7cb",
+    "00699-tencent.json": "72d4f67762c4df7837f72c735fc86e614f52dfd24777b5391052df897a8285f4",
+    "hkex-20260916.json": "401f1163a98c7e162e22e7a4ff02b04a2fc27d3ed2dbcc232c0fb3a519bf2934"
+  },
+  "sources": [
+    {
+      "code": "00501",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00501%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.353484+00:00",
+      "sha256": "b306baa2959c73c67f048db4336738b9353af815d58e3a7a175fd4ff935cf662",
+      "rows": 90,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "67.050",
+          "69.000",
+          "69.200",
+          "66.200",
+          "261100.000",
+          {},
+          "0.510",
+          "1785.634"
+        ],
+        [
+          "2026-09-17",
+          "67.500",
+          "68.550",
+          "69.500",
+          "67.500",
+          "44500.00",
+          {},
+          "0",
+          "304.39"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    },
+    {
+      "code": "00638",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00638%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.597726+00:00",
+      "sha256": "fa947d62ee3803acc771a33b41208784cd5edac66b50986dc91f5baf7d7b7d69",
+      "rows": 90,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "7.005",
+          "7.100",
+          "7.100",
+          "6.920",
+          "349400.000",
+          {
+            "cqr": "2026-09-16",
+            "FHcontent": "",
+            "HGcontent": "回购68.28万股，均价10.323元",
+            "paixiri": "",
+            "hgcgContent": "",
+            "ggContent": ""
+          },
+          "0.260",
+          "245.471"
+        ],
+        [
+          "2026-09-17",
+          "6.910",
+          "7.145",
+          "7.275",
+          "6.910",
+          "648800.00",
+          {},
+          "0",
+          "462.60"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    },
+    {
+      "code": "00668",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00668%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.545298+00:00",
+      "sha256": "e55613b472048a55654410fcfcc3911fe697077ca82880fe790f3ea8bb54e7cb",
+      "rows": 56,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "121.100",
+          "120.100",
+          "122.800",
+          "119.200",
+          "79100.000",
+          {},
+          "0.160",
+          "953.991"
+        ],
+        [
+          "2026-09-17",
+          "119.800",
+          "119.000",
+          "122.400",
+          "119.000",
+          "21300.00",
+          {},
+          "0",
+          "256.26"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    },
+    {
+      "code": "00699",
+      "source_url": "https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk00699%2Cday%2C%2C%2C90%2Cqfq",
+      "retrieved_at": "2026-09-17T03:37:35.542673+00:00",
+      "sha256": "72d4f67762c4df7837f72c735fc86e614f52dfd24777b5391052df897a8285f4",
+      "rows": 90,
+      "last_bars": [
+        [
+          "2026-09-16",
+          "11.310",
+          "11.270",
+          "11.330",
+          "11.190",
+          "264030.000",
+          {},
+          "0.180",
+          "297.520"
+        ],
+        [
+          "2026-09-17",
+          "11.080",
+          "11.750",
+          "11.890",
+          "11.080",
+          "2014000.00",
+          {},
+          "0",
+          "2333.43"
+        ]
+      ],
+      "keys": [
+        "qfqday",
+        "qt",
+        "prec",
+        "vcm",
+        "fsStartDate",
+        "version"
+      ]
+    }
+  ],
+  "frozen_at": "2026-09-17T03:41:43.119814+00:00",
+  "scope": "actual frozen native data path for only four failed codes using a versioned external input recovery; frozen scoring/prompt unchanged; not formal original-model acceptance",
+  "budget_cny": 0,
+  "model_requests": 0,
+  "contract": "docs/run006_b1_recovery_contract.json",
+  "no_main_merge": true,
+  "no_historical_rewrite": true,
+  "denominator_never_shrunk": true
+}

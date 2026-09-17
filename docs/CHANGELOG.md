@@ -1,5 +1,7 @@
 # Changelog
 
+- Run032 recovery4: verified Tencent/HKEX target-date evidence for four native data gaps; external cached-input adapter exercises unchanged upstream CLI for only failed symbols, preserves full 660 denominator, and never claims formal model acceptance. Excludes intraday partial bars and leaves unknown turnover unset.
+
 - Run032 handoff: reject HKEX venue/publisher false issuer matches; add directly reviewed Tencent/Kuaishou filing evidence with source hashes, dates, bounded coverage, and real-readiness artifact consumption. Current GateA/official-universe pointers supersede stale queue status; no historical prediction or runtime window change.
 
 - Run032 Recovery1: reuse same-session official source snapshots with hash/date guards after SZSE cloud transport failure; reuse U45 independent price evidence, improve bilingual recent-news fallback, and permit evidence-bound reviewed-news handoff without requiring a new catalyst every day. Preserve first failure and all native historical outputs.

@@ -1,0 +1,51 @@
+name: DSA Run032 four isolated native data recovery
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/run032_recovery4/MANIFEST.json]
+permissions: {contents: read, actions: read}
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest
+      - working-directory: research
+        run: python -m pytest --noconftest -q tests/test_run032_recovery4.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35178119846
+          github-token: ${{ github.token }}
+          name: RUN032_FORMAL_READINESS
+          path: parent
+      - name: Verify four-code retry matches actual parent failures
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=list(Path('parent').rglob('coverage.json'));assert len(p)==1
+          d=json.loads(p[0].read_text());m=json.load(open('research/docs/runtime/run032_recovery4/MANIFEST.json'))
+          assert d['coverage_denominator']==m['parent_denominator']==660
+          assert d['current_valid_count']==m['parent_native_ready']==656
+          missing=sorted(x['code'].lower().removeprefix('hk') for x in d['coverage'] if x['status']!='current_valid_bar')
+          assert missing==sorted(m['codes'])
+          PY
+      - name: Run four repaired data inputs through frozen original CLI
+        run: python research/scripts/run032_native_recovery4.py --checkout original --cache research/docs/runtime/run032_recovery4 --out /tmp/recovery4
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN032_NATIVE_RECOVERY4
+          path: /tmp/recovery4/RECOVERY4_RESULT.json
+          if-no-files-found: error
+          retention-days: 30
