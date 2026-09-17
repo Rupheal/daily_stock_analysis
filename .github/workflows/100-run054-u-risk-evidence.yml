@@ -1,0 +1,78 @@
+name: DSA Run054 U45 risk evidence binding
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN054_SCOPE.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run054-u-risk-evidence
+  cancel-in-progress: false
+
+jobs:
+  run054:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Run deterministic tests
+        run: python -m pytest --noconftest -q tests/test_run054_u_risk_evidence.py
+
+      - name: Build Run054 risk evidence receipt
+        run: |
+          python scripts/run054_u_risk_evidence.py \
+            --close-refresh docs/runtime/RUN049_U45_20260917_CLOSE_REFRESH.json \
+            --member-reports docs/runtime/RUN041_U45_MEMBER_REPORTS.json \
+            --handoff docs/runtime/RUN047_U45_HANDOFF.json \
+            --review-acceptance docs/runtime/RUN046_U_REVIEW_ACCEPTANCE.json \
+            --macro-cap docs/runtime/RUN053_U_MACRO_POSITION_CAP.json \
+            --out /tmp/RUN054_U_RISK_EVIDENCE.json
+
+      - name: Verify fail-closed boundaries
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/RUN054_U_RISK_EVIDENCE.json'))
+          assert p['counts']['denominator']==45
+          assert p['counts']['eligible']==44
+          assert p['counts']['ineligible_retained']==1
+          assert p['result']['risk_evidence_bound'] is True
+          assert p['result']['risk_evidence_complete_for_all_members'] is False
+          assert p['result']['qualified_BUY_created']==0
+          assert p['result']['ranking_created'] is False
+          assert p['resources']['model_http_requests']==0
+          assert p['resources']['paid_data_calls']==0
+          print(json.dumps(p['counts']))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN054_U_RISK_EVIDENCE
+          path: /tmp/RUN054_U_RISK_EVIDENCE.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit Run054 receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp /tmp/RUN054_U_RISK_EVIDENCE.json docs/runtime/RUN054_U_RISK_EVIDENCE.json
+          git add docs/runtime/RUN054_U_RISK_EVIDENCE.json
+          if git diff --cached --quiet; then
+            echo 'No Run054 receipt changes'
+          else
+            git commit -m 'dsa: record Run054 U45 risk evidence binding'
+            git push
+          fi
