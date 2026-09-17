@@ -1,0 +1,90 @@
+name: DSA Run058J free O target preflight 00003 00004
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - .github/workflows/113-run058j-o-target-preflight.yml
+      - docs/runtime/RUN058J_SCOPE.json
+permissions: {contents: read, actions: read}
+concurrency: {group: dsa-run058j-o-preflight, cancel-in-progress: false}
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: fix/native-private-execution-20260914, path: research, persist-credentials: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest requests
+      - working-directory: research
+        run: python -m pytest --noconftest -q tests/test_hk_pool_rollout_preflight_v2.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35224980615
+          github-token: ${{ github.token }}
+          name: RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE
+          path: parent
+      - name: Bind exact frozen O660 history
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('research/docs/runtime/RUN058J_SCOPE.json'))
+          matches=[p for p in Path('parent').rglob('market-history.json') if hashlib.sha256(p.read_bytes()).hexdigest()==s['history_cache_sha256']]
+          assert len(matches)==1
+          d=json.loads(matches[0].read_text()); assert d['target_session']==s['target_session']
+          for c in s['codes']: assert 'hk'+c in (d.get('histories') or {})
+          Path('/tmp/history-path').write_text(str(matches[0].resolve()))
+          PY
+      - name: Run free v2 preflights only
+        run: |
+          set +e
+          mkdir -p /tmp/run058j
+          for C in 00003 00004; do
+            python research/scripts/prepare_hk_pool_rollout_preflight_v2.py --code "$C" --target 2026-09-17 --universe research/docs/runtime/run032_public_cache/O_UNIVERSE.json --cache "$(cat /tmp/history-path)" --plan research/docs/runtime/RUN057_O_NATIVE_PLAN.json --out "/tmp/run058j/$C"
+            echo "$?" > "/tmp/run058j/$C.rc"
+          done
+          exit 0
+      - name: Build sanitized receipt
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          rows=[]
+          for code in ['00003','00004']:
+              root=Path('/tmp/run058j')/code;rc=int((Path('/tmp/run058j')/(code+'.rc')).read_text())
+              p=root/'preflight.json';f=root/'FREE_PREFLIGHT_STATUS.json'
+              if rc==0 and p.exists():
+                  d=json.loads(p.read_text());rows.append({'code':code,'status':'PASS_POOL_TARGET_PREFLIGHT_V2','preflight_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'target':d['target'],'native_history_count':d['native_history_window']['count'],'historical_mismatch_sessions':d['price_reconciliation']['historical_cross_provider_diagnostic']['ohlc_mismatch_sessions'],'target_volume_status':d['price_reconciliation']['fresh_target_session']['volume']['latest_status'],'news_search_performed':d['news_search_performed']})
+              else:
+                  reason='UNKNOWN_FREE_PREFLIGHT_FAILURE'
+                  if f.exists():reason=json.loads(f.read_text()).get('reason') or reason
+                  rows.append({'code':code,'status':'FAIL_POOL_TARGET_PREFLIGHT_V2','reason':reason})
+          ready=[x['code'] for x in rows if x['status'].startswith('PASS_')]
+          isolated=[x['code'] for x in rows if not x['status'].startswith('PASS_')]
+          out={'schema_version':1,'run_id':'TRI-DSA-O-PREFLIGHT-20260918-058J','state':'PASS_SELECTIVE_FAIL_CLOSED','members':rows,'ready_for_frozen_history_dry':ready,'session_preflight_isolated':isolated,'model_http_requests':0,'paid_data_calls':0,'drive_writes':0,'real_orders':0,'simulation_writes':0,'automatic_retry':False}
+          Path('/tmp/RUN058J_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n');print(json.dumps(out,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058J_TARGET_PREFLIGHT
+          path: |
+            /tmp/RUN058J_RESULT.json
+            /tmp/run058j/00003/preflight.json
+            /tmp/run058j/00003/FREE_PREFLIGHT_STATUS.json
+            /tmp/run058j/00004/preflight.json
+            /tmp/run058j/00004/FREE_PREFLIGHT_STATUS.json
+          if-no-files-found: warn
+          retention-days: 90
