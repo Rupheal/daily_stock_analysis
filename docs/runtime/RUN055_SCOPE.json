@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-055",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-054",
+  "target_session": "2026-09-17",
+  "state": "SCOPE_FROZEN_DETERMINISTIC_ONLY",
+  "objective": "Freeze the U45 strategy-buy-zone contract before formal U decisions/ranking, without inventing execution quotes or numeric zones from insufficient evidence.",
+  "inputs": [
+    "docs/runtime/RUN038_U45_PUBLIC_FACTS.json",
+    "docs/runtime/RUN047_U45_HANDOFF.json",
+    "docs/runtime/RUN053_U_MACRO_POSITION_CAP.json",
+    "docs/runtime/RUN054_U_RISK_EVIDENCE.json"
+  ],
+  "denominator": 45,
+  "eligible_expected": 44,
+  "retained_ineligible": ["09618"],
+  "contract_requirements": [
+    "strategy_buy_zone is distinct from Entry-v1 execution band and future firm ask",
+    "strategy_buy_zone may use only evidence available by the formal strategy-decision cutoff",
+    "future/current execution quote must never be used to construct or widen a strategy zone",
+    "numeric lower/upper bounds require an accepted formal strategy rationale and source-bound inputs",
+    "insufficient risk/support evidence yields WITHHELD_UNKNOWN rather than fabricated bounds",
+    "macro position cap is attached independently and must not overwrite model score/rank",
+    "missing company/sector risk remains explicit and may force WATCH or BLOCKED_DATA in Run056",
+    "09618 remains in the 45-member denominator as ineligible until separately changed by verified evidence",
+    "final executable range is computed only later as strategy_buy_zone intersect Entry-v1 band",
+    "Run055 creates no BUY, rank, Shadow signal, quote, order, or fill"
+  ],
+  "resource_plan": {
+    "route": "L0/L1 deterministic Python and GitHub Actions only",
+    "expected_model_http_requests": 0,
+    "budget_cny": 0,
+    "paid_data_calls": 0,
+    "automatic_recharge": false
+  },
+  "shadow_boundaries": {
+    "runtime_activated_remains": true,
+    "signal_writes_from_run055": 0,
+    "simulation_writes_from_run055": 0,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "definition_of_done": "Contract schema and deterministic validator/tests pass; all 45 members remain accounted for; no numeric zone is created merely from technical prices or missing-risk inputs; Run056 may consume the accepted contract for formal per-member decisions/zones/ranking."
+}
