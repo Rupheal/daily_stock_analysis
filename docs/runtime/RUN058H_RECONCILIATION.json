@@ -1,0 +1,47 @@
+{
+  "schema_version": 2,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058H",
+  "state": "STOP_TRANCHE",
+  "accepted_member": false,
+  "ledger_row": {
+    "run_id": "TRI-DSA-O-NATIVE-20260918-058H",
+    "micro_batch_id": "O57-MB-001",
+    "codes": [
+      "00001",
+      "00002"
+    ],
+    "status": "STOP_TRANCHE",
+    "member_outcomes": {
+      "00001": {
+        "status": "ISOLATED",
+        "fresh_preflight_status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+        "model_http_requests_confirmed": 0,
+        "model_http_requests_possible": 0,
+        "claim_persisted": false,
+        "pre_send_upper_cny": "0.07982",
+        "usage_peak_estimate_cny": null,
+        "observed_balance_change_cny": null,
+        "pre_send_private_roundtrip": false,
+        "private_final_roundtrip": false,
+        "provider_completion": null,
+        "raw_gate": null,
+        "raw_blockers": null,
+        "failure_class": "StoreError",
+        "failure_code": "StoreError"
+      },
+      "00002": {
+        "status": "TARGET_SESSION_ISOLATED",
+        "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
+        "provider_request_permitted": false
+      }
+    },
+    "model_http_requests_confirmed": 0,
+    "model_http_requests_possible": 0,
+    "maximum_cost_cny": "0.10",
+    "actual_attributable_charge_cny": null,
+    "automatic_retry": false
+  },
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "automatic_retry": false
+}
