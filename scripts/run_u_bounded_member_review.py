@@ -15,7 +15,7 @@ from run_hk_bounded_native_members import private_save,balance
 from dsa_drive_store import DriveStore,scoped_token
 from o_provider_completion import inspect_completion
 
-VERSION='U_INHERITED_QUALITATIVE_REVIEW_v1'
+VERSION='U_INHERITED_QUALITATIVE_REVIEW_v2'
 SYSTEM='''你是升级版U港股中短交易的逐股分析组件，与O原版独立。只使用所给已核验事实及明确缺口，不补外部记忆。遵循用户既有量价趋势、新闻催化、资金潮汐和宏观约束；不引入数值因子权重，不声称胜率。缺乏新利好不是自动否决；没有查到已验证新闻不等于没有风险。资金仅单通道时不能合并，不推断外资或机构身份。宏观缺口不是市场看空结论。
 本轮是此前完整日线的盘中工程验收，不是当日盘前预测。宏观仓位上限和完整风险复核未齐时不得给BUY，只能OBSERVE或AVOID。观察分析可验收，不能冒充买入。不得用今日/盘中描述前一日的日线。不得改变Entry-v1/B+C，不能自行定价、假设持仓或新增策略。逐股解释支持与反对条件；第二买点和加仓在冻结模拟账户中禁止。买点不能用获知前价格回填。
 只输出JSON对象{"members":[...]}。每项必须有code,decision(OBSERVE或AVOID),trend,news_state,capital_state,evidence_ids,thesis,counterpoint。后三个状态原样复用输入。evidence_ids至少包括本股price和technical证据，可引用本股其他输入ID；禁止新来源。thesis和counterpoint各用简短中文，不能包含任何阿拉伯数字，不重复报价/指标值，不提任何其他股票或未经输入证明的事实。只讨论输入明确支持的趋势、量能和限制。不得输出分数、排名或自由交易点位。覆盖requested_codes恰好每只一次。'''
@@ -31,6 +31,13 @@ def validate_member(row,source):
     import re
     for k in ('thesis','counterpoint'):
         if not isinstance(row[k],str) or not 8<=len(row[k])<=500 or re.search(r'\d',row[k]):raise ValueError('U_REVIEW_UNSUPPORTED_NUMERIC_CLAIM')
+    text=row['thesis']+row['counterpoint'];facts=source['facts']
+    if '现价' in text:raise ValueError('U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME')
+    if '动能柱' in text and facts.get('macd') is None:raise ValueError('U_MACD_CLAIM_WITHOUT_INPUT')
+    if '动能柱转正' in text:raise ValueError('U_MACD_TRANSITION_WITHOUT_PREVIOUS_VALUE')
+    if '动能柱为负' in text and facts['macd']['histogram_2x']>=0:raise ValueError('U_MACD_SIGN_CONFLICT')
+    if '超卖' in text and facts['rsi14']>=30:raise ValueError('U_RSI_OVERSOLD_CONFLICT')
+    if '放量上行' in text and (facts['return_1d_pct']<=0 or facts['volume_vs_previous5'] is None or facts['volume_vs_previous5']<=1):raise ValueError('U_PRICE_VOLUME_DIRECTION_CONFLICT')
     return row
 
 

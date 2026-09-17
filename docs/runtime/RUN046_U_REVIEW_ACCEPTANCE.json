@@ -1,0 +1,95 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-046",
+  "scope": "Free independent raw evidence replay and bounded qualitative review; no full strategy/BUY acceptance",
+  "available_at": "2026-09-17T07:55:32.384968+00:00",
+  "input_packet_sha256": "ee96665a02a59649af1cf6b9aa430cc482ea7f79a40f82f986c43f835183cf95",
+  "target_session": "2026-09-16",
+  "U_denominator": 45,
+  "eligible_denominator": 44,
+  "structurally_returned": 44,
+  "bounded_semantic_reviews_accepted": 40,
+  "accepted_codes": [
+    "00700",
+    "03690",
+    "09988",
+    "01211",
+    "01810",
+    "03888",
+    "03896",
+    "03986",
+    "02513",
+    "06082",
+    "00981",
+    "06166",
+    "06682",
+    "09880",
+    "02556",
+    "01428",
+    "09999",
+    "02359",
+    "06160",
+    "03968",
+    "09992",
+    "00100",
+    "02899",
+    "02318",
+    "00939",
+    "00992",
+    "00883",
+    "01347",
+    "03993",
+    "02269",
+    "00388",
+    "01801",
+    "02382",
+    "01024",
+    "09626",
+    "00941",
+    "01787",
+    "00175",
+    "06181",
+    "03308"
+  ],
+  "isolated": [
+    {
+      "code": "00005",
+      "reason": "U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME"
+    },
+    {
+      "code": "09926",
+      "reason": "U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME"
+    },
+    {
+      "code": "02020",
+      "reason": "U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME"
+    },
+    {
+      "code": "09660",
+      "reason": "U_RSI_OVERSOLD_CONFLICT"
+    }
+  ],
+  "ineligible_codes": [
+    "09618"
+  ],
+  "conditional_policy_plans": 44,
+  "qualified_BUY": 0,
+  "formal_snapshot_created": false,
+  "model_calls": 0,
+  "fee_cny": "0",
+  "raw_sources": [
+    {
+      "batch": 0,
+      "provider_response_sha256": "092c1ba3484635d6b8da29666ca64f0b97bb584c3de48b9b0220b4573940109e",
+      "original_version": "U_INHERITED_QUALITATIVE_REVIEW_v1",
+      "replayed_version": "U_INHERITED_QUALITATIVE_REVIEW_v2"
+    },
+    {
+      "batch": 1,
+      "provider_response_sha256": "07fd92dd872ce872df3527c1fca98cb25fb7cb752edbbe60adc1c400fb5fa26a",
+      "original_version": "U_INHERITED_QUALITATIVE_REVIEW_v1",
+      "replayed_version": "U_INHERITED_QUALITATIVE_REVIEW_v2"
+    }
+  ],
+  "manual_review": "All44 supplied thesis/counterpoint pairs inspected; quantitative and time-language errors isolated. Opinion confidence is not factual completeness.",
+  "decision_constraint": "Run044 explicitly requested observation reviews because full macro/risk gates were absent. All OBSERVE must not be presented as44 independent model rejections of BUY."
+}

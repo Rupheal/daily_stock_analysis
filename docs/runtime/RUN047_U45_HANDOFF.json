@@ -1,0 +1,4313 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-047-HANDOFF",
+  "track": "U",
+  "U_denominator": 45,
+  "audited_members": 45,
+  "official_eligibility_asof": "2026-09-17",
+  "target_session": "2026-09-16",
+  "identity_ready": 45,
+  "buy_eligible": 44,
+  "feature_input_21_ready": 44,
+  "strict_full_history_ready": 30,
+  "news_retrieval_ready": 44,
+  "bounded_primary_reviewed": 2,
+  "bounded_U_reports_verified": 44,
+  "bounded_U_model_reviews_accepted": 44,
+  "conditional_policy_plans": 44,
+  "formal_U_accepted": 0,
+  "formal_acceptance_scope": "Legacy full signal metric. Separate from completed bounded reports/reviews and BUY eligibility.",
+  "failure_counts": {
+    "FORMAL_U_SIGNAL_ARTIFACT_MISSING": 44,
+    "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED": 44,
+    "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF": 43,
+    "NOT_IN_CURRENT_OFFICIAL_BUY_UNION_RETAIN_U_DENOMINATOR": 1,
+    "NO_CURRENT_ACCEPTED_21_SESSION_INPUT_IN_THIS_CACHE": 1,
+    "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED": 15
+  },
+  "Top3": [],
+  "Top10": [],
+  "rows": [
+    {
+      "code": "00700",
+      "name": "TENCENT",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": true,
+      "primary_review_scope": "Verified recent issuer repurchases only",
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "433.3999938964844",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "429.0659939575195560",
+          "439.9009938049316660"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "03690",
+      "name": "MEITUAN-W",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "74.44999694824219",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "73.70549697875976810",
+          "75.56674690246582285"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09618",
+      "name": "JD.com, Inc.",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": false,
+      "lot_from_current_official": null,
+      "feature_input_21_ready": false,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": null,
+      "news_retrieval_ready": false,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": false,
+      "bounded_U_model_review_accepted": false,
+      "score": null,
+      "rank": null,
+      "entry_plan": null,
+      "failures": [
+        "NOT_IN_CURRENT_OFFICIAL_BUY_UNION_RETAIN_U_DENOMINATOR",
+        "NO_CURRENT_ACCEPTED_21_SESSION_INPUT_IN_THIS_CACHE",
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF"
+      ],
+      "execution_requirements": [],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09988",
+      "name": "BABA-W",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "106.19999694824219",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "105.13799697875976810",
+          "107.79299690246582285"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "01211",
+      "name": "BYD COMPANY",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "79.19999694824219",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "78.40799697875976810",
+          "80.38799690246582285"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "01810",
+      "name": "XIAOMI-W",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 200,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "26.18000030517578",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "25.91820030212402220",
+          "26.57270030975341670"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 200,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "03888",
+      "name": "KINGSOFT",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 200,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "24.219999313354492",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "23.977799320220947080",
+          "24.583299303054809380"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 200,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "03896",
+      "name": "KINGSOFT CLOUD",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 2000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "4.965000152587891",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "4.915350151062012090",
+          "5.039475154876709365"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 2000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "03986",
+      "name": "GIGADEVICE",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "450.0",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "445.5000",
+          "456.7500"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02513",
+      "name": "Z.AI",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "720.0",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "712.8000",
+          "730.8000"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "06082",
+      "name": "BIREN TECH",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 200,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "32.880001068115234",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "32.551201057434081660",
+          "33.373201084136962510"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 200,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00981",
+      "name": "SMIC",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 500,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "63.650001525878906",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "63.013501510620116940",
+          "64.604751548767089590"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 500,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "06166",
+      "name": "CIG",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 50,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "121.1",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "119.8890",
+          "122.9165"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 50,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "06682",
+      "name": "PHANCY",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "25.079999923706055",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "24.829199924468994450",
+          "25.456199922561645825"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09880",
+      "name": "UBTECH ROBOTICS",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 50,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "77.4000015258789",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "76.6260015106201110",
+          "78.5610015487670835"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 50,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02556",
+      "name": "MARKETINGFORCE",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "50.349998474121094",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "49.846498489379883060",
+          "51.105248451232910410"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "01428",
+      "name": "BRIGHT SMART",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 2000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "7.039999961853027",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "6.969599962234496730",
+          "7.145599961280822405"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 2000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09999",
+      "name": "NTES",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "186.8",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "184.9320",
+          "189.6020"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02359",
+      "name": "WUXI APPTEC",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "195.10000610351562",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "193.14900604248046380",
+          "198.02650619506835430"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "06160",
+      "name": "BEONE MEDICINES",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "206.60000610351562",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "204.53400604248046380",
+          "209.69900619506835430"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "03968",
+      "name": "CM BANK",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 500,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "51.349998474121094",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "50.836498489379883060",
+          "52.120248451232910410"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 500,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09992",
+      "name": "POP MART",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 200,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "152.60000610351562",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "151.07400604248046380",
+          "154.88900619506835430"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 200,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00100",
+      "name": "MINIMAX-W",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 20,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "238.0",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "235.6200",
+          "241.5700"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 20,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02899",
+      "name": "ZIJIN MINING",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 2000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "34.41999816894531",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "34.07579818725585690",
+          "34.93629814147948965"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 2000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02318",
+      "name": "PING AN",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 500,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "52.8",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "52.2720",
+          "53.5920"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 500,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00939",
+      "name": "CCB",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 1000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "9.635000228881836",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "9.538650226593017640",
+          "9.779525232315063540"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 1000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00992",
+      "name": "LENOVO GROUP",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 2000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "33.79999923706055",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "33.46199924468994450",
+          "34.30699922561645825"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 2000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00883",
+      "name": "CNOOC",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 1000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "24.36",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "24.11640",
+          "24.72540"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 1000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "01347",
+      "name": "HUA HONG GRACE",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 1000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "111.9000015258789",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "110.7810015106201110",
+          "113.5785015487670835"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 1000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00005",
+      "name": "HSBC HOLDINGS",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 400,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "160.89999389648438",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "159.29099395751953620",
+          "163.31349380493164570"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 400,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "03993",
+      "name": "CMOC",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 3000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "15.67",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "15.51330",
+          "15.90505"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 3000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02269",
+      "name": "WUXI BIO",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 500,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "49.939998626708984",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "49.440598640441894160",
+          "50.689098606109618760"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 500,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00388",
+      "name": "HKEX",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "395.6",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "391.6440",
+          "401.5340"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "01801",
+      "name": "INNOVENT BIO",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 500,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "94.0999984741211",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "93.1589984893798890",
+          "95.5114984512329165"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 500,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09926",
+      "name": "AKESO",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 1000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "90.4000015258789",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "89.4960015106201110",
+          "91.7560015487670835"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 1000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02382",
+      "name": "SUNNY OPTICAL",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "68.5",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "67.8150",
+          "69.5275"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "01024",
+      "name": "KUAISHOU-W",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": true,
+      "primary_review_scope": "Verified recent issuer repurchases only",
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "29.65999984741211",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "29.36339984893798890",
+          "30.10489984512329165"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09626",
+      "name": "BILIBILI-W",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 20,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "118.0999984741211",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "116.9189984893798890",
+          "119.8714984512329165"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 20,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00941",
+      "name": "CHINA MOBILE",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 500,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "79.35",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "78.55650",
+          "80.54025"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 500,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "01787",
+      "name": "SD GOLD",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 250,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "24.579999923706055",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "24.334199924468994450",
+          "24.948699922561645825"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 250,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "02020",
+      "name": "ANTA SPORTS",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 200,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "72.35",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "71.62650",
+          "73.43525"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 200,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "00175",
+      "name": "GEELY AUTO",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 1000,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "16.110000610351562",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "15.948900604248046380",
+          "16.351650619506835430"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 1000,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "09660",
+      "name": "HORIZONROBOT-W",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 600,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "4.050000190734863",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "4.009500188827514370",
+          "4.110750193595885945"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 600,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "06181",
+      "name": "LAOPU GOLD",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 100,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": true,
+      "full_native_window_bars": 43,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "374.3999938964844",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "370.6559939575195560",
+          "380.0159938049316660"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 100,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    },
+    {
+      "code": "03308",
+      "name": "ZJ INNOLIGHT",
+      "identity_inherited_verified": true,
+      "current_buy_eligible": true,
+      "lot_from_current_official": 50,
+      "feature_input_21_ready": true,
+      "full_native_window_independent_ready": false,
+      "full_native_window_bars": 35,
+      "news_retrieval_ready": true,
+      "reviewed_issuer_primary_evidence": false,
+      "primary_review_scope": null,
+      "full_risk_coverage_proven": false,
+      "formal_U_signal_accepted": false,
+      "bounded_U_report_verified": true,
+      "bounded_U_model_review_accepted": true,
+      "score": null,
+      "rank": null,
+      "entry_plan": {
+        "state": "CONDITIONAL_POLICY_PLAN_NOT_BUY_SIGNAL",
+        "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+        "reference_daily_close": "1137.0",
+        "reference_price_time": null,
+        "entry_policy_envelope_hkd": [
+          "1125.6300",
+          "1154.0550"
+        ],
+        "executable_buy_zone": null,
+        "band_semantics": "Intersect with a separately accepted U buy zone, comparable raw price basis and valid future AM window. No tick rounding or fill is inferred.",
+        "first_buy": "One accepted U Top3 candidate only; execute approved intersection during Entry-v1 window.",
+        "second_buy": null,
+        "add_condition": "PROHIBITED_FOR_FROZEN_SHADOW_ACCOUNT",
+        "cash_ticket_ceiling_cny": "60000",
+        "single_security_nav_cap_pct": 20,
+        "account_gross_cap_pct": 60,
+        "max_positions": 3,
+        "max_new_securities_per_session": 1,
+        "position_pct_now": 0,
+        "macro_constrained_position_pct": null,
+        "board_lot": 50,
+        "minimum_entry_lots": 3,
+        "sizing": "Largest multiple of3 board lots within min(CNY60000,20%NAV,remaining60%gross cap,remaining macro cap), including verified FX and fees; no value until evidence is available.",
+        "hard_stop": {
+          "basis": "actual_fill_price",
+          "multiplier": "0.98",
+          "sell": "all_remaining",
+          "gap": "actual worse executable price, never guaranteed loss limit"
+        },
+        "tp1": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.05",
+          "sell": "one_third_original_integer_lots"
+        },
+        "tp2": {
+          "basis": "actual_fill_price",
+          "multiplier": "1.10",
+          "sell": "one_third_original_integer_lots"
+        },
+        "runner": {
+          "sell": "accepted_rank_decay_confirmation_then_future_executable_quote",
+          "milestones": "20%,30%,40%... alerts only"
+        },
+        "hold_window": "5–20 actual trading days research observation; not an automatic time stop",
+        "requires_before_signal": [
+          "accepted_U_BUY_and_rank",
+          "accepted_U_buy_zone",
+          "verified_macro_cap",
+          "timely_AM_freeze",
+          "comparable_price_basis"
+        ],
+        "requires_at_execution": [
+          "timestamped_firm_ask_after_signal_and_order",
+          "ask_quantity_units",
+          "tradability",
+          "verified_fees",
+          "verified_FX",
+          "board_lot"
+        ],
+        "real_account_holdings": "NOT_PROVIDED_NOT_INFERRED",
+        "fills_created": 0
+      },
+      "failures": [
+        "FULL_NATIVE_WINDOW_STRICT_HISTORY_NOT_VERIFIED",
+        "PRIMARY_ISSUER_CONTEXT_NOT_REVIEWED_IN_THIS_HANDOFF",
+        "FORMAL_U_SIGNAL_ARTIFACT_MISSING",
+        "U_BUY_ZONE_AND_MACRO_CAP_NOT_ACCEPTED"
+      ],
+      "execution_requirements": [
+        "timestamped_firm_ask_after_signal_and_order",
+        "ask_quantity_units",
+        "tradability",
+        "verified_fees",
+        "verified_FX",
+        "board_lot"
+      ],
+      "execution_quote_is_not_a_report_gate": true
+    }
+  ],
+  "model_calls": 0,
+  "fee_cny": "0",
+  "runtime_authorization_is_not_a_data_gate": true,
+  "scope": "Real current per-member handoff readiness; neither a prediction nor a strategy promotion. No O scores used.",
+  "qualified_signal_missing_does_not_mean_market_bearish": true,
+  "not_available_for_prior_AM": true,
+  "simulated_trades_created": 0,
+  "source_sha256": {
+    "universe": "c3daf9be490106a29eee1f9cbd5ab0d6c3651c7bddbc7e5a4acef7b374c7107f",
+    "official": "4d649ced819fb1f75cbacb235ef98a42000a3e2b563b6079a4ab321666a420be",
+    "recovery": "37e31d46548cc0f719a61481774bc626995237f7c80071a5f14e262112b440c9",
+    "history": "158820cec0a3ddd36c386e3005d65dfd7b2b37d2b2bddd4b5b4330424ec5728f",
+    "news": "8667899683ac7a40a4284d0a609417ad1e36a4ee50d0d5d6cfa637272c5c2381",
+    "reviews": "bdc3ad33ac8bbaf7f1b3ca95da0796255fc14476e371835b336ff67867f69538",
+    "member_reports": "ee96665a02a59649af1cf6b9aa430cc482ea7f79a40f82f986c43f835183cf95",
+    "model_review": "3ac2a407a1eda52841ce6cf09445cab1f6cc4e920d7b6beb21d0470a7e543fb3"
+  },
+  "audited_at": "2026-09-17T07:59:31.985974+00:00"
+}

@@ -1,0 +1,44 @@
+name: DSA Run048 free private replay and final regression
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN048_SCOPE.json]
+permissions: {contents: read}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ENV_FILE: /dev/null
+      DSA_FROZEN_SOURCE_ROOT: ${{ github.workspace }}/original
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest httpx
+      - name: Current source and native integration regressions
+        working-directory: research
+        env: {PYTHONPATH: 'tests:scripts'}
+        run: python -m pytest --noconftest -q tests/test_o_provider_completion.py tests/test_o_post_output_contract.py tests/test_o_session_fact_anchor.py tests/test_run025_wrapper_integration.py tests/test_o_release_gate_contract.py tests/test_o_release_quote_semantics.py tests/test_private_multipart.py tests/test_bounded_native_members.py tests/test_hk_member_preflight.py tests/test_native_model_configuration.py tests/test_release_float32_provenance.py tests/test_o_partial_news_and_session_labels.py tests/test_u_member_reports.py tests/test_u_report_release_view.py tests/test_u_handoff_progress.py tests/test_third_source_reconciliation.py --junitxml=/tmp/RUN048_TESTS.xml
+      - name: Restore exact originals and save separate corrected U views
+        env:
+          DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+          DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+          DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+          DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+        run: python research/scripts/persist_current_review_replays.py --packet research/docs/runtime/RUN041_U45_MEMBER_REPORTS.json --scope research/docs/runtime/RUN048_SCOPE.json --out /tmp/run048
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN048_SANITIZED_FREE_REPLAY
+          path: |
+            /tmp/RUN048_TESTS.xml
+            /tmp/run048/SANITIZED_REPLAY_RECEIPT.json
+          retention-days: 90

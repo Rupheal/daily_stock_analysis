@@ -1,0 +1,33 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-048",
+  "created_at": "2026-09-17T08:01:40.288339+00:00",
+  "purpose": "Free exact private original recovery, corrected U release persistence, and final focused regression",
+  "progress_denominator": 3,
+  "maximum_model_requests": 0,
+  "budget_cny": "0",
+  "packet_sha256": "ee96665a02a59649af1cf6b9aa430cc482ea7f79a40f82f986c43f835183cf95",
+  "artifact_prefix": "ART-DSA-RUN048-PRIVATE-REPLAY",
+  "u_originals": [
+    {
+      "artifact_id": "ART-DSA-RUN044-U-REVIEW-B0",
+      "sha256": "8630410db3236c3b2442d2e74f0967a382a0f2d6bf553e9eb1f932e54937b129"
+    },
+    {
+      "artifact_id": "ART-DSA-RUN044-U-REVIEW-B1",
+      "sha256": "6a3f0ebc5a00185067a091ccca4a9ec0a58941cba3f220f90035d8e515e8e16b"
+    }
+  ],
+  "o_original": {
+    "artifact_id": "ART-DSA-RUN042-O-CONFIG-01024",
+    "sha256": "598f45bb45f82280fdd0e077ff72e614e2216824e043eec1de96b41e642fcd3b"
+  },
+  "deliverables": [
+    "private corrected U review",
+    "private O replay audit",
+    "public metadata-only persistence receipt",
+    "JUnit test result"
+  ],
+  "no_history_changes": true,
+  "no_schedule_changes": true,
+  "no_orders": true
+}

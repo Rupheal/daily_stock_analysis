@@ -49,3 +49,9 @@ def test_fact_or_action_fabrication_is_isolated(key,value):
 def test_duplicate_member_cannot_inflate_coverage():
     m,r=sample()
     with pytest.raises(ValueError,match='MEMBER_SET'):validate_response(json.dumps({'members':[r,r]}),[m])
+
+
+@pytest.mark.parametrize('claim,expected',[('目前现价位于支撑上方，等待进一步确认。','U_LIVE_PRICE_WORD_WITHOUT_PRICE_TIME'),('动能柱转正，价格方向仍需进一步确认。','U_MACD_TRANSITION_WITHOUT_PREVIOUS_VALUE'),('价格进入超卖区域，存在潜在修复可能。','U_RSI_OVERSOLD_CONFLICT')])
+def test_real_run044_classes_rejected_without_repeat_call(claim,expected):
+    m,r=sample();m=deepcopy(m);m['facts']['rsi14']=35;m['facts']['macd']={'histogram_2x':1}
+    r['thesis']=claim;a,f=validate_response(json.dumps({'members':[r]}),[m]);assert not a and f[0]['reason']==expected

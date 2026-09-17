@@ -1,0 +1,37 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-046-O",
+  "workflow_run": 35194958396,
+  "scope": "Free replay of new nonthinking configuration; preserved raw output",
+  "provider_completion": {
+    "version": "O_PROVIDER_COMPLETION_v1",
+    "status": "PASS",
+    "blockers": [],
+    "raw_sha256": "26de6cd5be6faa8b1ac84b682cb4fa468a172469f6e84d7f426521f0c702b5ad",
+    "content_chars": 7632,
+    "reasoning_chars": 0,
+    "finish_reasons": [
+      "stop"
+    ],
+    "raw_mutated": false,
+    "model_requests": 0
+  },
+  "float32_representation_repair_proven": true,
+  "replayed_guard_version": "O_POST_OUTPUT_SEMANTIC_GUARDS_v1.3",
+  "semantic_guard_ids": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "finding_codes": [
+    "FINANCIAL_PERIOD_PRIMARY_LINEAGE_INCOMPLETE",
+    "SEM001_LIVE_PRICE_FIELD_WITHOUT_REALTIME_QUOTE",
+    "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+    "SEM001_UNSOURCED_ESTIMATED_INTRADAY_PRICE",
+    "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW"
+  ],
+  "full_report_accepted": false,
+  "raw_preserved": true,
+  "new_model_calls": 0,
+  "fee_cny": "0",
+  "frozen_upstream_modified": false,
+  "strategy_modified": false
+}
