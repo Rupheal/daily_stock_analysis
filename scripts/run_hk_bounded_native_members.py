@@ -49,7 +49,18 @@ def main():
         if stop:row['status']='ISOLATED_AFTER_PRIVATE_OR_SHARED_FAILURE';rows.append(row);continue
         try:
             pre=root/'preflight'
-            rc=command(scripts/'prepare_hk_member_acceptance.py',['--code',code,'--target',s['target_session'],'--universe',str(universe),'--cache',str(a.cache.resolve()),'--out',str(pre)],safe_env,root/'preflight.stdout')
+            builder=s.get('preflight_builder','REVIEWED_ISSUER_V1')
+            if builder=='REVIEWED_ISSUER_V1':
+                preflight_script=scripts/'prepare_hk_member_acceptance.py'
+                preflight_args=['--code',code,'--target',s['target_session'],'--universe',str(universe),'--cache',str(a.cache.resolve()),'--out',str(pre)]
+            elif builder=='O_POOL_TARGET_PREFLIGHT_V2':
+                plan=repo/'docs/runtime/RUN057_O_NATIVE_PLAN.json'
+                preflight_script=scripts/'prepare_hk_pool_rollout_preflight_v2.py'
+                preflight_args=['--code',code,'--target',s['target_session'],'--universe',str(universe),'--cache',str(a.cache.resolve()),'--plan',str(plan),'--out',str(pre)]
+            else:
+                raise ValueError('UNKNOWN_PREFLIGHT_BUILDER')
+            row['preflight_builder']=builder
+            rc=command(preflight_script,preflight_args,safe_env,root/'preflight.stdout')
             if rc or not (pre/'preflight.json').exists():
                 detail=json.loads((pre/'FREE_PREFLIGHT_STATUS.json').read_text()).get('reason','') if (pre/'FREE_PREFLIGHT_STATUS.json').exists() else ''
                 raise ValueError('FREE_PREFLIGHT_FAILED:'+detail)
