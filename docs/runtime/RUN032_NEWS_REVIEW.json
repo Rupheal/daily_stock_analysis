@@ -1,0 +1,27 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-032-NEWS-REVIEW",
+  "raw_relevance_ready": 9,
+  "reviewed_title_relevance_ready": 8,
+  "formal_news_ready": 0,
+  "corrections": [
+    {
+      "code": "00388",
+      "retrieval_ready": true,
+      "previous_relevance_ready": true,
+      "relevance_ready": false,
+      "reason": "All five hits are a generic exchange search page or HKEX venue tags for unrelated issuers",
+      "rejected_titles": [
+        "HKEX Market Search Result - hkex.com.hk",
+        "Hong Kong Ferry Holdings Co. Ltd.收入明細 – HKEX:50 - TradingView",
+        "Hong Kong Food Investment Holdings Limited的Price to book forward – HKEX:60 - TradingView",
+        "Hong Kong Gold Industry Group Limited收入明細 – HKEX:2623 - TradingView",
+        "AEON Stores (Hong Kong) Co., Limited收入明細 – HKEX:984 - TradingView"
+      ]
+    }
+  ],
+  "model_requests": 0,
+  "does_not_modify_parent": true,
+  "original_probe_sha256": "cb845334d053363c204087a4860732d901d92113f5082579b2a7c7e61ffbcccc",
+  "parent_source_path": "docs/runtime/run032_public_cache/U45_NEWS_MULTISOURCE.json",
+  "parent_source_sha256": "8667899683ac7a40a4284d0a609417ad1e36a4ee50d0d5d6cfa637272c5c2381"
+}

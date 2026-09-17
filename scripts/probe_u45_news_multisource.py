@@ -62,6 +62,21 @@ def clean_alias(s: str) -> str:
     return re.sub(r"-(?:W|SW)$", "", s.strip(), flags=re.I)
 
 
+def issuer_title_matches(title: str, terms: list[str]) -> bool:
+    # A market venue tag or RSS publisher is not an issuer mention. In
+    # particular, HKEX:50 must not be attributed to HKEX the listed company.
+    body=title.rsplit(' - ',1)[0].casefold()
+    body=re.sub(r'\bhkex\s*:\s*\d+\b','',body)
+    if re.fullmatch(r'\s*hkex market search result\s*',body):return False
+    for term in terms:
+        term=clean_alias(term).casefold()
+        if not term:continue
+        if term.isascii():
+            if re.search(r'(?<![a-z0-9])'+re.escape(term)+r'(?![a-z0-9])',body):return True
+        elif term in body:return True
+    return False
+
+
 def dedupe_key(title: str, published: str | None) -> str:
     normalized_title=" ".join(str(title or "").casefold().split())
     normalized_pub=" ".join(str(published or "").split())
@@ -122,7 +137,7 @@ def google_once(term: str, timeout: float, cutoff: datetime, relevance_terms: li
                 is_recent=cutoff<=dt.astimezone(timezone.utc)<=datetime.now(timezone.utc)
             except Exception:
                 pass
-            hit=any(t in title.casefold() for t in terms)
+            hit=issuer_title_matches(title,terms)
             recent += int(is_recent); title_hits += int(hit); recent_title_hits += int(is_recent and hit)
             row={'title':title,'published':pub,'url':link,'recent':is_recent,'issuer_title_hit':hit}
             if is_recent and hit:

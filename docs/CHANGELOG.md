@@ -1,5 +1,7 @@
 # Changelog
 
+- Run032 handoff: reject HKEX venue/publisher false issuer matches; add directly reviewed Tencent/Kuaishou filing evidence with source hashes, dates, bounded coverage, and real-readiness artifact consumption. Current GateA/official-universe pointers supersede stale queue status; no historical prediction or runtime window change.
+
 - Run032 Recovery1: reuse same-session official source snapshots with hash/date guards after SZSE cloud transport failure; reuse U45 independent price evidence, improve bilingual recent-news fallback, and permit evidence-bound reviewed-news handoff without requiring a new catalyst every day. Preserve first failure and all native historical outputs.
 
 All notable changes to this project will be documented in this file.

@@ -1,0 +1,95 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-032-PRIMARY",
+  "collected_and_reviewed_at": "2026-09-17T03:34:52.684058+00:00",
+  "scope": "bounded issuer repurchase evidence only; not all-news coverage or formal U acceptance",
+  "sources": [
+    {
+      "code": "00700",
+      "url": "https://www.tencent.com/wp-content/uploads/2026/09/e_Next-Day-Disclosure-Return_20260916.pdf",
+      "available_at": "2026-09-17T03:30:49.697877+00:00",
+      "sha256": "3c5089b0f0949e112cedb626b1143efbb1a2b53afba28d8789b33fc2ab9affb8",
+      "bytes": 91361,
+      "http_status": 200,
+      "published_date": "2026-09-16",
+      "publication_precision": "date_only",
+      "page": 5
+    },
+    {
+      "code": "01024",
+      "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4180637/HKEX-EPS_20260916_12334729_0.PDF",
+      "available_at": "2026-09-17T03:31:56.604910+00:00",
+      "sha256": "0b2fdceded3bffa58a62dfb88b04a22c1c7256f3d48ceada9c1b993bc053278f",
+      "published_date": "2026.09.16",
+      "publication_precision": "date_only",
+      "title": "Next Day Disclosure Return",
+      "bytes": 94497,
+      "feed_id": 8137491
+    },
+    {
+      "code": "01024",
+      "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4179674/HKEX-EPS_20260911_12330165_0.PDF",
+      "available_at": "2026-09-17T03:32:06.979662+00:00",
+      "sha256": "8fb8db26a316cb8da02d9647f4d4b4653ec22f6eab024d0edaad6de72400fa8f",
+      "published_date": "2026.09.11",
+      "publication_precision": "date_only",
+      "title": "Next Day Disclosure Return",
+      "bytes": 94003,
+      "feed_id": 8136018
+    }
+  ],
+  "facts": [
+    {
+      "code": "00700",
+      "event_date": "2026-09-16",
+      "kind": "ISSUER_SHARE_REPURCHASE",
+      "shares": 231000,
+      "currency": "HKD",
+      "amount": "100448848.5",
+      "low": "432.8",
+      "high": "438.8",
+      "source_sha256": "3c5089b0f0949e112cedb626b1143efbb1a2b53afba28d8789b33fc2ab9affb8",
+      "page": 5
+    },
+    {
+      "code": "01024",
+      "event_date": "2026-09-16",
+      "kind": "ISSUER_SHARE_REPURCHASE",
+      "shares": 504000,
+      "currency": "HKD",
+      "amount": "14970463.2",
+      "low": "29.6",
+      "high": "29.78",
+      "source_sha256": "0b2fdceded3bffa58a62dfb88b04a22c1c7256f3d48ceada9c1b993bc053278f",
+      "page": 6
+    },
+    {
+      "code": "01024",
+      "event_date": "2026-09-11",
+      "kind": "ISSUER_SHARE_REPURCHASE",
+      "shares": 400000,
+      "currency": "HKD",
+      "amount": "12523080",
+      "low": "31.22",
+      "high": "31.38",
+      "source_sha256": "8fb8db26a316cb8da02d9647f4d4b4653ec22f6eab024d0edaad6de72400fa8f",
+      "page": 6
+    }
+  ],
+  "opinions": [],
+  "deduplication": "issuer/code/event-date/type; same repurchase referenced in multiple form sections counted once",
+  "issuer_feed_links": {
+    "00700": "https://www.tencent.com/investors/announcements/",
+    "01024": "https://ir.kuaishou.com/corporate-filings/announcements-circulars"
+  },
+  "kuaishou_delegation": "Official page embeds Euroland companycode=ky-kute; feed ID matched to attachment prID; PDF issuer/code checked",
+  "coverage_complete": false,
+  "limits": [
+    "Publication date only; precise first-publication time is unknown",
+    "Available-at uses actual current retrieval; not claimed available in earlier AM decisions",
+    "Kuaishou feed returned 50 of 102 records; not an exhaustive historical filing audit",
+    "Buyback is verified issuer buying, not proof of foreign/local institution flow or a buy signal",
+    "No macro, suspension or execution-price clearance follows from these filings"
+  ],
+  "no_historical_prediction_changes": true,
+  "model_http_requests": 0
+}

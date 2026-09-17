@@ -1,0 +1,35 @@
+name: DSA Run032 reviewed evidence handoff without new model calls
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN032_PRIMARY_REVIEW.json]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install requests pytest
+      - name: Validate news evidence and identity regression cases
+        run: python -m pytest --noconftest -q tests/test_u45_reviewed_news_handoff.py tests/test_news_issuer_false_positives.py tests/test_u45_news_readiness.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35178119846
+          github-token: ${{ github.token }}
+          name: RUN032_FORMAL_READINESS
+          path: parent-artifacts
+      - name: Consume real completed data receipt and reviewed issuer filings
+        run: python scripts/advance_run032_reviewed_evidence.py --artifacts parent-artifacts --review docs/runtime/RUN032_PRIMARY_REVIEW.json --evidence docs/runtime/RUN032_PRIMARY_EVIDENCE.json --title-review docs/runtime/RUN032_NEWS_REVIEW.json --out /tmp/RUN032_HANDOFF.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN032_REVIEWED_HANDOFF
+          path: /tmp/RUN032_HANDOFF.json
+          if-no-files-found: error
+          retention-days: 30

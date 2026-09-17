@@ -1,0 +1,53 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-032-PRIMARY-REVIEW",
+  "target_session": "2026-09-16",
+  "source_evidence_sha256": "cc198baf5a4a6b03cb9c1abbfc37609e6c351f7eb6e8569758d008d97c832a28",
+  "decision_at": "2026-09-17T03:34:52.684058+00:00",
+  "members": [
+    {
+      "code": "00700",
+      "status": "PASS_REVIEWED_COVERAGE",
+      "reviewer": "Codex direct issuer PDF text + table-image inspection",
+      "reviewed_at": "2026-09-17T03:34:52.684058+00:00",
+      "sources": [
+        {
+          "url": "https://www.tencent.com/wp-content/uploads/2026/09/e_Next-Day-Disclosure-Return_20260916.pdf",
+          "sha256": "3c5089b0f0949e112cedb626b1143efbb1a2b53afba28d8789b33fc2ab9affb8",
+          "available_at": "2026-09-17T03:30:49.697877+00:00"
+        }
+      ],
+      "limitations_disclosed": true,
+      "company_identity_verified": true,
+      "facts_opinions_separated": true,
+      "deduplicated": true,
+      "coverage_scope": "Verified recent issuer repurchases only",
+      "coverage_complete": false,
+      "formal_u_accepted": false
+    },
+    {
+      "code": "01024",
+      "status": "PASS_REVIEWED_COVERAGE",
+      "reviewer": "Codex direct issuer PDF text + table-image inspection",
+      "reviewed_at": "2026-09-17T03:34:52.684058+00:00",
+      "sources": [
+        {
+          "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4180637/HKEX-EPS_20260916_12334729_0.PDF",
+          "sha256": "0b2fdceded3bffa58a62dfb88b04a22c1c7256f3d48ceada9c1b993bc053278f",
+          "available_at": "2026-09-17T03:31:56.604910+00:00"
+        },
+        {
+          "url": "https://ea-cdn.eurolandir.com/press-releases-attachments/4179674/HKEX-EPS_20260911_12330165_0.PDF",
+          "sha256": "8fb8db26a316cb8da02d9647f4d4b4653ec22f6eab024d0edaad6de72400fa8f",
+          "available_at": "2026-09-17T03:32:06.979662+00:00"
+        }
+      ],
+      "limitations_disclosed": true,
+      "company_identity_verified": true,
+      "facts_opinions_separated": true,
+      "deduplicated": true,
+      "coverage_scope": "Verified recent issuer repurchases only",
+      "coverage_complete": false,
+      "formal_u_accepted": false
+    }
+  ]
+}

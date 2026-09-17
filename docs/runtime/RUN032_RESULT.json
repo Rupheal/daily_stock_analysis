@@ -1,0 +1,47 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-032",
+  "checked_at": "2026-09-17T03:35:47.042563+00:00",
+  "status": "CURRENT_UNIVERSE_AND_NATIVE_DATA_PASS_WITH_4_ISOLATED; FORMAL_OUTPUT_PENDING",
+  "commits": [
+    "d0c22492930ebf41558c3aacd37c9794f0562657",
+    "ececc11ae313301a608bc66a78a67ddd3254bf61"
+  ],
+  "first_failed_run": 35177566103,
+  "accepted_free_run": 35178119846,
+  "artifact_id": 10478573566,
+  "artifact_sha256": "44cb12e20a8f046dea2538c42f0068d050cbd8d819305387ced48bb58227514e",
+  "O": {
+    "current_denominator": 660,
+    "native_target_day_valid": 656,
+    "data_isolated": 4,
+    "native_formal_model_accepted": 0
+  },
+  "U": {
+    "denominator": 45,
+    "buy_eligible": 44,
+    "price_ready": 45,
+    "independent_price_volume_ready": 44,
+    "raw_news_title_relevance": 9,
+    "corrected_news_title_relevance": 8,
+    "bounded_issuer_news_reviewed": 2,
+    "formal_accepted": 0
+  },
+  "resources": {
+    "DeepSeek_model_http_requests": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "paid_data_calls": 0,
+    "platform_resource_fees": "NOT_VISIBLE_NOT_ASSERTED_ZERO"
+  },
+  "no_main_merge": true,
+  "schedule_changes": 0,
+  "authority_journal_writes": 0,
+  "qualified_signals": 0,
+  "production_promotion": false,
+  "limitations": [
+    "Data-only native CLI is not native LLM scoring",
+    "Daily target-bar readiness is not full historical integrity or prediction accuracy",
+    "Bounded issuer filing evidence is not comprehensive news/risk acceptance",
+    "Original and release-adapted GateA outputs retain separate lineage",
+    "Four failed symbols will be read from the actual uploaded artifact, not reconstructed from historic 22"
+  ]
+}
