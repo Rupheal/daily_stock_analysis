@@ -84,7 +84,7 @@ def sina_raw(code,target,out):
 
 def official_action(item,out):
     r=requests.get(item["source_url"],timeout=(8,30));r.raise_for_status();raw=r.content;out.write_bytes(raw)
-    text="\n".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(raw)))
+    text="\n".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(raw)).pages)
     required=[item["issuer"].split(" Limited")[0],item["dividend_hkd_per_share"],item["ex_dividend_date"].replace("-"," ")]
     # PDF renders the date in long English form; validate issuer/code/amount and ex-date components separately.
     if item["issuer"].split(" Limited")[0] not in text or item["dividend_hkd_per_share"] not in text:
