@@ -1,0 +1,99 @@
+name: DSA Run055 U45 strategy buy-zone contract acceptance
+
+on:
+  push:
+    branches: [research/run055-u-zone-acceptance-20260917]
+    paths:
+      - .github/workflows/101-run055-u-strategy-zone.yml
+      - scripts/build_run055_u_strategy_zone_contract.py
+      - tests/test_run055_u_strategy_zone_contract.py
+      - docs/runtime/RUN055_SCOPE.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run055-u-strategy-zone
+  cancel-in-progress: false
+
+jobs:
+  run055:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install deterministic test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Run Run055 fail-closed tests
+        run: python -m pytest --noconftest -q tests/test_run055_u_strategy_zone_contract.py
+
+      - name: Build Run055 strategy-zone contract
+        run: |
+          python scripts/build_run055_u_strategy_zone_contract.py \
+            --facts docs/runtime/RUN038_U45_PUBLIC_FACTS.json \
+            --handoff docs/runtime/RUN047_U45_HANDOFF.json \
+            --macro docs/runtime/RUN053_U_MACRO_POSITION_CAP.json \
+            --risk docs/runtime/RUN054_U_RISK_EVIDENCE.json \
+            --output /tmp/RUN055_U_STRATEGY_ZONE_CONTRACT.json
+
+      - name: Verify Run055 acceptance boundaries
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/RUN055_U_STRATEGY_ZONE_CONTRACT.json'))
+          assert p['state']=='PASS_CONTRACT_ONLY_FORMAL_MEMBER_ZONES_PENDING_RUN056'
+          assert p['denominator']==45
+          assert p['eligible']==44
+          assert p['retained_ineligible']==['09618']
+          assert p['macro_position_ceiling_pct']==30
+          assert p['counts']['members']==45
+          assert p['counts']['approved_numeric_zones']==0
+          assert p['counts']['pending_formal_decision']==44
+          assert p['counts']['withheld_unknown']==1
+          assert p['counts']['risk_missingness_explicit']==45
+          assert p['counts']['qualified_buy_created']==0
+          assert p['resource_accounting']['model_http_requests']==0
+          assert p['resource_accounting']['paid_data_calls']==0
+          assert p['resource_accounting']['DeepSeek_API_cost_cny']==0
+          assert p['resource_accounting']['real_orders']==0
+          assert p['resource_accounting']['shadow_signal_writes']==0
+          assert p['resource_accounting']['shadow_simulation_writes']==0
+          assert len(p['input_sha256'])==4
+          for row in p['rows']:
+              assert row['lower'] is None and row['upper'] is None
+              assert row['buy_permission_from_run055'] is False
+              assert row['execution_quote_used_to_construct_zone'] is False
+              assert row['later_price_move_can_widen_zone'] is False
+              assert row['entry_v1_band_applied_at_strategy_zone_stage'] is False
+          print(json.dumps({'state':p['state'],'counts':p['counts'],'resources':p['resource_accounting']}))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN055_U_STRATEGY_ZONE_CONTRACT
+          path: /tmp/RUN055_U_STRATEGY_ZONE_CONTRACT.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit Run055 receipt on research branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp /tmp/RUN055_U_STRATEGY_ZONE_CONTRACT.json docs/runtime/RUN055_U_STRATEGY_ZONE_CONTRACT.json
+          git add docs/runtime/RUN055_U_STRATEGY_ZONE_CONTRACT.json
+          if git diff --cached --quiet; then
+            echo 'No Run055 receipt changes'
+          else
+            git commit -m 'dsa: record Run055 U45 strategy-zone acceptance'
+            git push
+          fi
