@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-PREFLIGHT-20260918-058J",
+  "parent_run_id": "TRI-DSA-O-REVIEW-20260918-058I",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "codes": [
+    "00003",
+    "00004"
+  ],
+  "O_denominator": 660,
+  "retained_historical_isolations": 52,
+  "newly_permanent_semantic_isolations": [
+    "00001"
+  ],
+  "target_session_isolated_from_prior": [
+    "00002"
+  ],
+  "no_repeat_codes": [
+    "00001",
+    "00700",
+    "01024",
+    "01810"
+  ],
+  "parent_artifact_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "history_cache_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "preflight_contract": "POOL_TARGET_V2",
+  "preflight_plan": "docs/runtime/RUN057_O_NATIVE_PLAN.json",
+  "model_http_requests_authorized": 0,
+  "paid_data_calls_authorized": 0,
+  "drive_writes_authorized": 0,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "automatic_retry": false,
+  "definition_of_done": "Fresh target-session v2 preflight for 00003/00004 only. Preserve failures. No model/provider call, no Drive write, no ranking."
+}
