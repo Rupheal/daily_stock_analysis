@@ -1,0 +1,23 @@
+{
+  "schema_version":1,
+  "run_id":"TRI-DSA-RESUME-20260917-049-056",
+  "parent_run_id":"TRI-DSA-RESUME-20260917-041-048",
+  "registered_from_branch_head":"4200d1cf34d84df4af77d479a3def478216547dd",
+  "owner_directive":"Continue research/production preparation now; do not wait for a BUY. O: finish 660 coverage/input contract/isolation/full native ranking chain. U: finish 45-name formal decisions/independent ranking/macro cap/company-sector risk/acceptable buy zones.",
+  "concurrency_check":{"in_progress_actions_on_branch":0,"RUN049_name_found_before_registration":false},
+  "denominator":8,
+  "work_units":[
+    {"id":"RUN049","stream":"O","scope":"reproduce/classify 16 Sina invalid-bar geometry cases from raw->normalizer without relaxing OHLC contract"},
+    {"id":"RUN050","stream":"O","scope":"adjudicate 3 TARGET_MISSING plus 1 LESS_THAN21_BARS using session/listing/suspension evidence; no fabricated bars"},
+    {"id":"RUN051","stream":"O","scope":"adjudicate 32 third-publisher conflicts using bounded source/session/corporate-action evidence; preserve all 660 denominator"},
+    {"id":"RUN052","stream":"O","scope":"freeze revised O input readiness manifest and only if eligible prepare full-pool native ranking run; no silent isolation drops"},
+    {"id":"RUN053","stream":"U","scope":"freeze dated macro/capital exposure-cap contract as separate decision layer; existing capital data remains bounded evidence until accepted"},
+    {"id":"RUN054","stream":"U","scope":"freeze source-bound company/sector risk evidence contract and missingness/fail-closed states for 45-name pool"},
+    {"id":"RUN055","stream":"U","scope":"bind accepted strategy buy-zone contract to native decision zone intersect Entry-v1 band; no quote/fill inference"},
+    {"id":"RUN056","stream":"U","scope":"run formal U strategy-decision and independent ranking acceptance when RUN053-055 inputs pass; bounded prior 44 reviews are not final ranking"}
+  ],
+  "current_baseline":{"O_denominator":660,"O_ready":608,"O_isolated":52,"O_isolation":{"THIRD_SOURCE_CONFLICT_REMAINS":32,"SINA_INVALID_BAR_GEOMETRY":16,"TARGET_MISSING":3,"LESS_THAN21_BARS":1},"O_full_pool_rank_generated":false,"U_denominator":45,"U_buy_eligible":44,"U_formal_Top3_generated":false,"U_qualified_BUY":0,"U_full_strategy_acceptance":false},
+  "resource_route":{"deterministic_and_public_source_first":true,"model_calls_only_after_input_gates":true,"duplicate_model_calls_forbidden":true,"new_paid_data":false,"auto_recharge":false,"separate_Work_Codex":false,"expected_initial_external_spend_cny":0,"platform_infrastructure_cost":"UNKNOWN"},
+  "runtime_boundaries":{"gate_d_active":true,"shadow_runtime_unchanged":true,"no_same_day_backfill":true,"no_real_orders":true,"no_main_merge":true,"no_runtime_rule_change":true,"only_timely_future_AM_qualified_signals_can_enter_runtime":true},
+  "acceptance_rule":"Each unit must persist denominator, exact source/input hashes where applicable, tests/receipts, failed/isolated rows and cost. Missing or conflicting evidence remains explicit and does not disappear from denominator."
+}
