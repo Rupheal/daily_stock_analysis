@@ -1,0 +1,63 @@
+name: DSA Run033 reusable independent market histories
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN033_SCOPE.json]
+permissions: {contents: read, actions: read}
+concurrency: {group: dsa-formal-dual-readiness, cancel-in-progress: false}
+jobs:
+  histories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest
+      - working-directory: research
+        run: python -m pytest --noconftest -q tests/test_market_history_allowlist.py tests/test_dual_history_cache.py tests/test_run032_recovery4.py
+      - name: Freeze actual completed session and validate cached official pool
+        run: |
+          PYTHONPATH=research/scripts python - <<'PY'
+          from o_target_session_contract import resolve_target_session
+          from datetime import datetime,timezone
+          from zoneinfo import ZoneInfo
+          from pathlib import Path
+          import json
+          a=json.load(open('research/docs/runtime/RUN033_SCOPE.json')); now=datetime.now(timezone.utc)
+          assert resolve_target_session(now).target_session.isoformat()==a['target_session']
+          assert now.astimezone(ZoneInfo('Asia/Hong_Kong')).date().isoformat()==a['decision_session']
+          Path('/tmp/target').write_text(a['target_session']);Path('/tmp/decision').write_text(a['decision_session'])
+          PY
+          python research/scripts/reuse_verified_hk_snapshot.py --cache research/docs/runtime/run032_public_cache --session "$(cat /tmp/decision)" --out /tmp/pool
+      - name: Persist original native market history (prior run had no retained history)
+        run: |
+          python research/scripts/run_hk_native_data_probe.py --checkout original --universe /tmp/pool/O_UNIVERSE.json --scope O_full_pool_data_only --expected-date "$(cat /tmp/target)" --decision-session "$(cat /tmp/decision)" --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --target-boundary-adapter --timeout 1500 --output /tmp/native > /tmp/native-only.log 2>&1
+      - name: Reuse four isolated repairs and compare independent histories
+        run: python research/scripts/audit_dual_history_cache.py --native /tmp/native/market-history.json --universe /tmp/pool/O_UNIVERSE.json --u-universe /tmp/pool/U_UNIVERSE.json --recovery-cache research/docs/runtime/run032_recovery4 --out /tmp/dual-history
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN033_PUBLIC_HISTORY_CACHE
+          path: |
+            /tmp/native/market-history.json
+            /tmp/native/coverage.json
+            /tmp/dual-history/
+          if-no-files-found: error
+          retention-days: 90

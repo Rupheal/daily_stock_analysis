@@ -1,0 +1,23 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-033",
+  "created_at": "2026-09-17T03:57:56.241117+00:00",
+  "parent_run": "TRI-DSA-EXEC-20260917-032",
+  "parent_commit": "c225c22de6291fb49e7db397a16dbdc4da4ce37e",
+  "target_session": "2026-09-16",
+  "decision_session": "2026-09-17",
+  "O_denominator": 660,
+  "U_denominator": 45,
+  "budget_model_cny": "0",
+  "paid_data_cny": "0",
+  "model_requests": 0,
+  "purpose": "Persist missing full-history bytes once and independently validate, reusing accepted four-code recovery. No model scoring or new signal implied.",
+  "original_full_history_was_not_saved": true,
+  "deliverables": [
+    "market-history.json",
+    "HISTORY_CACHE.json",
+    "HISTORY_READINESS.json"
+  ],
+  "schedule_changes": false,
+  "main_changes": false,
+  "journal_changes": false
+}
