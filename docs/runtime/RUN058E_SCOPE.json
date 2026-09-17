@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058E",
+  "parent_run_id": "TRI-DSA-O-TARGET-PREFLIGHT-20260918-058D",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "parent_workflow_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "history_cache_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "codes": [
+    "00001"
+  ],
+  "O_denominator": 660,
+  "retained_isolated": 52,
+  "preflight_contract": "POOL_TARGET_V2",
+  "preflight_plan": "docs/runtime/RUN057_O_NATIVE_PLAN.json",
+  "preflight_parent_receipt": "docs/runtime/RUN058D_RESULT.json",
+  "preflight_expected_sha256": "06280a92d9456864ef988b68693160cf7ef3f322d7625b28d8a28257c0864dda",
+  "session_isolated_codes": [
+    "00002"
+  ],
+  "no_repeat_codes": [
+    "00700",
+    "01024",
+    "01810"
+  ],
+  "maximum_requests": 1,
+  "maximum_cost_cny": "0.10",
+  "per_member_cap_cny": "0.10",
+  "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+  "artifact_prefix": "ART-DSA-RUN058E-O-NATIVE",
+  "budget_authority": "Existing funded DSA authorization; no automatic recharge; one member hard cap CNY0.10",
+  "selection_reason": "Run058D selectively passed 00001 target-session preflight v2; 00002 remains fail-closed for this target session",
+  "automatic_retry": false,
+  "provider_send_authorized": true,
+  "provider_send_authorization_scope": "Only code 00001, at most one provider request, hard cap CNY0.10",
+  "manual_private_review_required": true,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "schedule_changes": false,
+  "main_changes": false,
+  "historical_rewrites": false,
+  "required_pre_send_gates": [
+    "fresh_free_pool_target_preflight_v2",
+    "single_request_dry_envelope",
+    "pre_send_private_save_read_hash_restore",
+    "verified_available_CNY_balance",
+    "durable_Drive_reserve_native_call",
+    "GITHUB_RUN_ATTEMPT_equals_1",
+    "GITHUB_EVENT_NAME_equals_push"
+  ],
+  "required_post_send_gates": [
+    "provider_completion_audit",
+    "post_output_contract",
+    "release_gate_if_SEM_001_only",
+    "final_private_save_read_hash_restore",
+    "sanitized_receipt",
+    "no_signal_publish"
+  ],
+  "definition_of_done": "00001 is reconciled exactly once with immutable private evidence; no more than one provider request or CNY0.10 cap; any ambiguous/private/semantic failure stops; no ranking/order/fill is produced."
+}
