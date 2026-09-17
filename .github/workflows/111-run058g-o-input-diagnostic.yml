@@ -1,0 +1,87 @@
+name: DSA Run058G O swallowed-failure diagnostic
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN058G_SCOPE.json]
+permissions: {contents: read, actions: read}
+concurrency: {group: dsa-run058g-o-diagnostic, cancel-in-progress: false}
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: fix/native-private-execution-20260914, path: research, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with: {repository: ZhuLinsen/daily_stock_analysis, ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7, path: original, persist-credentials: false}
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest deepseek-recipe==0.1.1
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35224980615
+          github-token: ${{ github.token }}
+          name: RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE
+          path: parent
+      - name: Build accepted v2 preflight
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('research/docs/runtime/RUN058G_SCOPE.json'))
+          matches=[p for p in Path('parent').rglob('market-history.json') if hashlib.sha256(p.read_bytes()).hexdigest()==s['history_cache_sha256']]
+          assert len(matches)==1
+          Path('/tmp/history-path').write_text(str(matches[0].resolve()))
+          PY
+          python research/scripts/prepare_hk_pool_rollout_preflight_v2.py --code 00001 --target 2026-09-17 --universe research/docs/runtime/run032_public_cache/O_UNIVERSE.json --cache "$(cat /tmp/history-path)" --plan research/docs/runtime/RUN057_O_NATIVE_PLAN.json --out /tmp/preflight
+      - name: Run observer with dummy model credential
+        run: |
+          mkdir -p /tmp/config
+          python - <<'PY'
+          import json
+          open('/tmp/config/native-model-config.json','w').write(json.dumps({'model_list':[{'model_name':'openai/deepseek-flash','litellm_params':{'model':'openai/deepseek-flash','api_base':'https://api.deepseek.com','api_key':'os.environ/LLM_DEEPSEEK_API_KEY','extra_body':{'thinking':{'type':'disabled'}}}}]}))
+          PY
+          set +e
+          DSA_BUDGET_PROBE_ONLY=1           DSA_DEEPSEEK_V41_TOKENIZER="${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json"           DSA_INPUT_TOKEN_MARGIN=2048 DSA_EXPECT_THINKING=disabled           LITELLM_CONFIG=/tmp/config/native-model-config.json           LLM_CHANNELS=deepseek LLM_DEEPSEEK_PROTOCOL=openai LLM_DEEPSEEK_BASE_URL=https://api.deepseek.com           LLM_DEEPSEEK_MODELS=deepseek-flash LITELLM_MODEL=openai/deepseek-flash LITELLM_FALLBACK_MODELS=''           LLM_DEEPSEEK_API_KEY=dry-envelope-no-network           python research/scripts/run_hk_original_model_probe_run030.py --symbol HK00001 --checkout original --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7 --preflight /tmp/preflight/preflight.json --output /tmp/dry --limit-cny 0.10 --carry-upper-cny 0 --target-boundary-adapter --news-handoff-v1
+          echo $? > /tmp/dry.rc
+          exit 0
+      - name: Emit diagnostic
+        run: |
+          python - <<'PY'
+          import json,re
+          from pathlib import Path
+          s=json.load(open('/tmp/dry/probe-summary.json'))
+          b=json.load(open('/tmp/dry/budget.json')) if Path('/tmp/dry/budget.json').exists() else {}
+          allowed=lambda x: x if isinstance(x,str) and re.fullmatch(r'[A-Za-z0-9_|:.-]{1,200}',x) else None
+          out={'schema_version':1,'run_id':'TRI-DSA-O-DIAG-20260918-058G','code':'00001',
+               'dry_process_exit':int(Path('/tmp/dry.rc').read_text()),'native_process_status':s.get('process_status'),
+               'input_validated':s.get('input_validated'),'input_validation_error_code':allowed(s.get('input_validation_error_code')),
+               'native_main_failure_reason':allowed(s.get('native_main_failure_reason')),
+               'news_loader_consumed':s.get('news_loader_consumed'),'news_prompt_consumed':s.get('news_prompt_consumed'),
+               'budget_request_count':len(b.get('requests') or []),'model_http_requests':0,'drive_writes':0,'orders':0}
+          Path('/tmp/RUN058G_RESULT.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n');print(json.dumps(out,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with: {name: RUN058G_SANITIZED_DIAGNOSTIC, path: /tmp/RUN058G_RESULT.json, retention-days: 90}
