@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-050",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-049",
+  "scope": "Adjudicate the three RUN049 TARGET_MISSING rows and one LESS_THAN21_BARS row using official session/listing/suspension evidence. No fabricated bars and no historical-isolation erasure.",
+  "target_session": "2026-09-17",
+  "input_receipts": {
+    "run049_o52_repair_path": "docs/runtime/RUN049_O52_REPAIR.json",
+    "run049_o52_repair_blob_sha": "a00146778a61a1495a696a91a1735742260d16e4",
+    "registered_scope_path": "docs/runtime/RUN049_056_SCOPE.json",
+    "registered_scope_blob_sha": "4a5ee16d6f83eb0aead2692b3541b3e3c3e3b4c2"
+  },
+  "denominator": {
+    "O_universe": 660,
+    "prior_isolated": 52,
+    "run050_rows": 4,
+    "removed_from_denominator": 0
+  },
+  "adjudications": [
+    {
+      "code": "00853.HK",
+      "prior_reason": "TARGET_MISSING",
+      "decision": "RETAIN_ISOLATED_SUSPENDED",
+      "expected_target_session_bar": false,
+      "reason": "HKEX announced suspension of trading in stock code 00853 from 09:00 on 2026-09-01. A 2026-09-17 trading bar must not be fabricated.",
+      "evidence": [
+        {
+          "source": "HKEXnews",
+          "type": "exchange_suspension_notice",
+          "published": "2026-09-01",
+          "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2026/0901/2026090100149.htm"
+        }
+      ]
+    },
+    {
+      "code": "02172.HK",
+      "prior_reason": "TARGET_MISSING",
+      "decision": "RETAIN_ISOLATED_SUSPENDED",
+      "expected_target_session_bar": false,
+      "reason": "HKEX title-search evidence records an EXCHANGE NOTICE - SUSPENSION OF TRADING on 2026-09-01 and an issuer notice covering suspension. No 2026-09-17 trading bar is expected absent a verified resumption notice.",
+      "evidence": [
+        {
+          "source": "HKEXnews",
+          "type": "issuer_title_search",
+          "published": "2026-09-01",
+          "url": "https://www1.hkexnews.hk/search/titlesearch.xhtml?category=0&lang=EN&market=SEHK&stockId=1000157447"
+        }
+      ]
+    },
+    {
+      "code": "02252.HK",
+      "prior_reason": "TARGET_MISSING",
+      "decision": "RETAIN_ISOLATED_SUSPENDED",
+      "expected_target_session_bar": false,
+      "reason": "HKEX announced suspension of trading in stock code 02252 from 09:00 on 2026-09-01. A 2026-09-17 trading bar must not be fabricated.",
+      "evidence": [
+        {
+          "source": "HKEXnews",
+          "type": "exchange_suspension_notice",
+          "published": "2026-09-01",
+          "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2026/0901/2026090100158_c.htm"
+        }
+      ]
+    },
+    {
+      "code": "02922.HK",
+      "prior_reason": "LESS_THAN21_BARS",
+      "decision": "RETAIN_ISOLATED_TEMPORARY_COUNTER_INSUFFICIENT_HISTORY",
+      "expected_target_session_bar": true,
+      "reason": "HKEX records 02922 as a temporary counter established from 2026-09-14 for the 1-for-4 share subdivision of Realord Technology 01196. Only four target-code daily bars by 2026-09-17 is structurally plausible. Historical bars must not be silently backfilled from 01196 without an accepted corporate-action identity/price-transform contract.",
+      "evidence": [
+        {
+          "source": "HKEX",
+          "type": "trading_arrangement_notice",
+          "published": "2026-09-10",
+          "url": "https://www.hkex.com.hk/eng/market/sec_tradinfo/tradarng/tradarng_news/currentmonth/e2922c_260910.htm"
+        },
+        {
+          "source": "HKEX",
+          "type": "newly_listed_securities_register",
+          "effective": "2026-09-14",
+          "url": "https://www.hkex.com.hk/Services/Trading/Securities/Trading-News/Newly-Listed-Securities?sc_lang=en"
+        }
+      ]
+    }
+  ],
+  "result": {
+    "status": "PASS_BOUNDED_STRUCTURAL_ADJUDICATION",
+    "run050_rows_reviewed": 4,
+    "released_from_isolation": 0,
+    "retained_structural_isolations": 4,
+    "fabricated_bars": 0,
+    "historical_identity_backfills": 0,
+    "O_denominator_after_run050": 660,
+    "prior_isolated_denominator_after_run050": 52
+  },
+  "limitations": [
+    "RUN050 adjudicates only the 3 TARGET_MISSING and 1 LESS_THAN21_BARS rows registered in RUN049_056_SCOPE.",
+    "This receipt does not adjudicate the 32 THIRD_SOURCE_CONFLICT_REMAINS rows; those belong to RUN051.",
+    "This receipt does not release any historical isolation or create any model score/ranking.",
+    "For 02172 the evidence used is HKEX's official title-search record of the suspension notice; no unverified resumption assumption is made."
+  ],
+  "resources": {
+    "model_http_requests": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "next": "RUN051: adjudicate the 32 third-publisher conflicts with bounded source/session/corporate-action evidence; keep all 660 names in the denominator. In parallel, the already-ready O subset may be prepared for native execution without treating isolated rows as released."
+}
