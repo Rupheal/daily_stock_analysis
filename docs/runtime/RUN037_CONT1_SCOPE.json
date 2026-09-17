@@ -1,0 +1,73 @@
+{
+  "run_id": "TRI-DSA-EXEC-20260917-037-CONT1",
+  "created_at": "2026-09-17T04:41:06.351307+00:00",
+  "parent_run": "TRI-DSA-EXEC-20260917-033",
+  "parent_workflow_run": 35180179743,
+  "history_cache_sha256": "e70f3dc04ca1a4a2b97dfbcbc4bb2cf638cdce8b51a3386b25f99ffeb5b83ae0",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "codes": [
+    "00700",
+    "01024"
+  ],
+  "selection_reason": "Only these two currently have bounded manually reviewed primary issuer evidence; this is technical acceptance sampling, not pool prescreening/ranking. All other O members retained as unaccepted.",
+  "O_denominator": 660,
+  "target_session": "2026-09-16",
+  "decision_session": "2026-09-17",
+  "maximum_requests": 2,
+  "maximum_cost_cny": "0.20",
+  "per_member_cap_cny": "0.10",
+  "budget_authority": "Latest Owner instruction to continue necessary DSA DeepSeek research within funded available balance; private claim and fresh balance required",
+  "closed_batch_007_reused": false,
+  "automatic_retry": false,
+  "artifact_prefix": "ART-DSA-RUN037-CONT1-FREE-MEMBER",
+  "purpose": "Free exact current native envelope and owner-only multipart save/read/hash/restore; no actual DeepSeek key or call",
+  "progress_denominator": 2,
+  "fee_source_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "pricing_checked_date": "2026-09-17",
+  "peak_input_cny_per_m": "2",
+  "peak_output_cny_per_m": "8",
+  "no_orders": true,
+  "schedule_changes": false,
+  "main_changes": false,
+  "historical_rewrites": false,
+  "manual_private_review_required": true,
+  "parent_failed_workflow": 35181530433,
+  "prior_model_requests": 0,
+  "repair": "Workflow binding retained old Run034 id; align exact new scope identity; initial workflow made no model/storage calls",
+  "window_reconciliation_evidence": {
+    "00700": {
+      "old_history_first": "2026-02-09",
+      "old_ohlc_conflict_fields": 246,
+      "last_conflict_date": "2026-05-14",
+      "native_window_first": "2026-07-20",
+      "native_window_rows": 43,
+      "conflicts_in_native_window": 0
+    },
+    "01024": {
+      "old_history_first": "2026-02-09",
+      "old_ohlc_conflict_fields": 362,
+      "last_conflict_date": "2026-06-26",
+      "native_window_first": "2026-07-20",
+      "native_window_rows": 43,
+      "conflicts_in_native_window": 0
+    }
+  },
+  "request_slot_reuse": false,
+  "model_free_storage_probe": true,
+  "authorized_model_requests": 0,
+  "private_replay_parents": [
+    {
+      "label": "old_native",
+      "sha256": "a428902c3bb95ea355d496756a3ec2e749206cd676d8cfa87f6e2f910f0482a3",
+      "artifact_id": "ART-DSA-RUN031-CONT1-GATEA-O-SINGLE"
+    },
+    {
+      "label": "old_dry",
+      "sha256": "c3e3eb1515506043c5990c59d84a6034b0139f8a81004b0cdf323cd75494d631",
+      "artifact_id": "ART-DSA-RUN034-CONT1-O-MEMBER-00700"
+    }
+  ],
+  "actual_batch_budget_cny": "0",
+  "maximum_cost_note": "Inherited envelope guard size only; actual scope explicitly zero sends",
+  "parent_failed_run": 35182652229
+}
