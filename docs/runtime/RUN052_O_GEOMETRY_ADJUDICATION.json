@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-052",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-051",
+  "scope": "Re-adjudicate the 16 RUN049 INVALID_BAR_GEOMETRY rows without silently normalizing historical OHLC values. Separate single-field geometry failures from multi-field failures and require an accepted source/corporate-action transform before historical release.",
+  "target_session": "2026-09-17",
+  "input_receipts": {
+    "run035_isolations_path": "docs/runtime/RUN035_CONT1_ISOLATIONS.json",
+    "run035_raw_conflict_path": "docs/runtime/RUN035_CONT1_RAW_CONFLICT_DIAGNOSTIC.json",
+    "run045_third_source_path": "docs/runtime/RUN045_THIRD_SOURCE_RESULT.json",
+    "run049_o52_repair_path": "docs/runtime/RUN049_O52_REPAIR.json"
+  },
+  "denominator": {
+    "O_universe": 660,
+    "prior_isolated": 52,
+    "run052_geometry_rows": 16,
+    "removed_from_denominator": 0
+  },
+  "geometry_rows": [
+    {"code":"01065","localized_conflicting_fields":{"high":1}},
+    {"code":"01333","localized_conflicting_fields":{"open":2,"low":1}},
+    {"code":"01456","localized_conflicting_fields":{"high":1}},
+    {"code":"02096","localized_conflicting_fields":{"high":1}},
+    {"code":"02157","localized_conflicting_fields":{"high":1}},
+    {"code":"02192","localized_conflicting_fields":{"open":1,"high":1}},
+    {"code":"02402","localized_conflicting_fields":{"open":1,"high":1}},
+    {"code":"02510","localized_conflicting_fields":{"low":1}},
+    {"code":"02565","localized_conflicting_fields":{"high":1}},
+    {"code":"02656","localized_conflicting_fields":{"high":1}},
+    {"code":"03661","localized_conflicting_fields":{"low":1}},
+    {"code":"06168","localized_conflicting_fields":{"high":1}},
+    {"code":"06683","localized_conflicting_fields":{"high":1}},
+    {"code":"06687","localized_conflicting_fields":{"high":1}},
+    {"code":"09911","localized_conflicting_fields":{"high":1}},
+    {"code":"09989","localized_conflicting_fields":{"high":1,"low":1}}
+  ],
+  "classification": {
+    "single_high_or_low_field_anomaly": ["01065","01456","02096","02157","02510","02565","02656","03661","06168","06683","06687","09911"],
+    "multi_field_anomaly": ["01333","02192","02402","09989"],
+    "accepted_provider_normalization_repairs": [],
+    "accepted_corporate_action_transforms": [],
+    "accepted_authoritative_source_overrides": []
+  },
+  "adjudication": {
+    "released": [],
+    "retained_isolated": ["01065","01333","01456","02096","02157","02192","02402","02510","02565","02656","03661","06168","06683","06687","09911","09989"],
+    "retained_reason": "INVALID_BAR_GEOMETRY_UNRESOLVED_HISTORICAL_WINDOW",
+    "decision": "RETAIN_ALL_16_FAIL_CLOSED"
+  },
+  "rationale": [
+    "The raw-conflict diagnostic localized these cases to high/low/open geometry rather than a simple missing target bar.",
+    "RUN045's third-publisher pass did not produce an accepted corrected 21-session geometry for these names; it explicitly retained them as INVALID_BAR_GEOMETRY.",
+    "RUN049 shows valid 2026-09-17 target-session bars for all 16, but a valid current bar cannot repair an invalid historical feature window.",
+    "No accepted split/consolidation/dividend/temporary-counter transform is present in the existing evidence for these 16. Applying a guessed adjustment would violate the frozen no-silent-normalization contract.",
+    "Therefore RUN052 distinguishes the failure shape but preserves all 16 historical isolations until a source-specific or corporate-action transform is explicitly evidenced and reproducible."
+  ],
+  "result": {
+    "status": "PASS_BOUNDED_GEOMETRY_REVIEW_WITH_ALL_16_RETAINED",
+    "reviewed": 16,
+    "released": 0,
+    "retained": 16,
+    "O_denominator_after_run052": 660,
+    "prior_isolated_denominator_after_run052": 52,
+    "silent_normalizations": 0,
+    "fabricated_bars": 0
+  },
+  "limitations": [
+    "This is a bounded evidence adjudication over the accepted cached raw evidence; it does not claim a fresh exchange-grade historical OHLC download for every row.",
+    "A later verified corporate-action transform or authoritative source may release a row only through a new append-only receipt.",
+    "RUN052 does not create model scores, rankings, BUY signals, or simulated fills."
+  ],
+  "resources": {
+    "model_http_requests": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "schedule_changes": 0
+  },
+  "next": "RUN053: freeze a dated Global Relay & Macro Overlay position-ceiling contract. RUN054: refresh U45 capital/event evidence and company/sector risk. In parallel, prepare safe resumable original-native O execution for the non-isolated members; retained isolates remain in denominator and failure ledger."
+}
