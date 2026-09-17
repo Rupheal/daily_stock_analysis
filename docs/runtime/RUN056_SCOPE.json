@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260917-056",
+  "parent_run_id": "TRI-DSA-RESUME-20260917-055",
+  "target_session": "2026-09-17",
+  "track": "U",
+  "state": "SCOPE_FROZEN_FORMAL_DECISION_RANKING",
+  "objective": "Create the first current-session formal U45 per-member decision/ranking and source-bound strategy buy zones after Run053 macro-cap, Run054 risk evidence and Run055 strategy-zone contract acceptance. Preserve raw provider material privately; public output is structured metadata/decisions only.",
+  "denominator": 45,
+  "eligible_expected": 44,
+  "retained_ineligible": ["09618"],
+  "inputs": [
+    "docs/runtime/RUN041_U45_MEMBER_REPORTS.json",
+    "docs/runtime/RUN049_U45_20260917_CLOSE_REFRESH.json",
+    "docs/runtime/RUN053_U_MACRO_POSITION_CAP.json",
+    "docs/runtime/RUN054_U_RISK_EVIDENCE.json",
+    "docs/runtime/RUN055_U_STRATEGY_ZONE_CONTRACT.json"
+  ],
+  "decision_contract": {
+    "model_decisions": ["BUY_CANDIDATE", "WATCH", "AVOID", "BLOCKED_DATA"],
+    "score_semantics": "0-100 cross-sectional U strategy-priority score under one frozen rubric; not a probability, return forecast, or position size",
+    "rank_semantics": "Deterministic descending score rank among model-valid eligible U members; macro cap must not change score/rank",
+    "formal_buy_rule": "BUY is accepted only when model_decision is BUY_CANDIDATE and a source-bound numeric strategy zone resolves from allowed verified anchors without schema/risk-contract violation",
+    "top3_rule": "Top3 contains only accepted formal BUY rows, ordered by rank. Fewer than three is valid and means keep remaining capacity in cash.",
+    "top10_rule": "Top10 is the ten highest-ranked model-valid eligible rows for observation; inclusion does not imply BUY.",
+    "macro_rule": "Run053 30% account ceiling attaches after ranking and cannot alter model score/rank or manufacture a BUY.",
+    "execution_rule": "No firm quote, Entry-v1 intersection, order, fill, fee/FX sizing, or simulated journal write occurs in Run056.",
+    "missingness_rule": "Company/sector/capital/news missingness stays explicit. Model may return WATCH or BLOCKED_DATA; absence of verified bad news is never treated as evidence of safety.",
+    "legacy_rule": "Run004 pilot weights/ranking and Run044 OBSERVE labels are not promoted as current formal rankings or BUY decisions."
+  },
+  "zone_contract": {
+    "allowed_anchor_names": [
+      "PRIOR_SUPPORT20",
+      "PRIOR_MA20",
+      "PRIOR_MA10",
+      "PRIOR_MA5",
+      "PRIOR_CLOSE",
+      "CURRENT_LOW",
+      "CURRENT_OPEN",
+      "CURRENT_CLOSE"
+    ],
+    "model_outputs_anchor_names_not_arbitrary_prices": true,
+    "numeric_bounds_are_resolved_deterministically_from_verified_anchor_values": true,
+    "BUY_CANDIDATE_requires_two_non_NONE_anchors": true,
+    "non_BUY_requires_NONE_anchors": true,
+    "future_quote_may_not_construct_or_widen_zone": true,
+    "entry_v1_intersection_deferred": true
+  },
+  "provider_plan": {
+    "provider": "DeepSeek",
+    "model": "deepseek-flash",
+    "batches": 2,
+    "members_per_batch": 22,
+    "maximum_requests": 2,
+    "maximum_cost_cny": "0.60",
+    "auto_recharge": false,
+    "private_raw_destination": "Google Drive primary via existing DSA Drive runner credentials",
+    "public_raw_content": false
+  },
+  "formal_reason_code_set": [
+    "TREND_POSITIVE",
+    "TREND_NEGATIVE",
+    "RELATIVE_STRENGTH",
+    "RELATIVE_WEAKNESS",
+    "MOMENTUM_IMPROVING",
+    "MOMENTUM_WEAK",
+    "VOLUME_CONFIRMING",
+    "VOLUME_WEAK",
+    "SUPPORT_HOLD",
+    "SUPPORT_AT_RISK",
+    "CAPITAL_ACCUMULATION_VERIFIED",
+    "CAPITAL_OUTFLOW_VERIFIED",
+    "CAPITAL_EVIDENCE_LIMITED",
+    "ISSUER_EVENT_SUPPORTIVE",
+    "ISSUER_EVENT_RISK",
+    "COMPANY_RISK_COVERAGE_LIMITED",
+    "SECTOR_RISK_NOT_SOURCE_BOUND",
+    "DATA_SEMANTIC_RISK",
+    "OVEREXTENDED",
+    "NO_EDGE"
+  ],
+  "zone_thesis_code_set": [
+    "SUPPORT_RETEST",
+    "MA_RECLAIM",
+    "CLOSE_HOLD",
+    "BREAKOUT_RETEST",
+    "WITHHOLD"
+  ],
+  "resource_accounting_required": [
+    "model_http_requests",
+    "provider_model",
+    "request_batches",
+    "usage_tokens_when_exposed",
+    "pre_send_cost_upper_cny",
+    "observed_balance_delta_cny_when_available",
+    "actual_charge_cny_when_exposed",
+    "accepted_rows",
+    "isolated_rows",
+    "qualified_BUY",
+    "real_orders"
+  ],
+  "boundaries": {
+    "main_merge": false,
+    "force_push": false,
+    "schedule_changes": false,
+    "production_promotion": false,
+    "real_orders": 0,
+    "simulation_writes": 0,
+    "automatic_recharge": false
+  },
+  "definition_of_done": "Two bounded provider batches cover all 44 eligible U members exactly once; raw requests/responses are privately persisted and hash-restorable; structured outputs pass schema/fact/anchor validation; one deterministic global ranking is created; numeric strategy zones exist only for validated BUY_CANDIDATE rows; Top3 contains only accepted BUY rows and may contain fewer than three; macro cap is attached separately; no order/fill/simulation write is created."
+}
