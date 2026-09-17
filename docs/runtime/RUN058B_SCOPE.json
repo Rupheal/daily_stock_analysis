@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-PREFLIGHT-REPAIR-20260918-058B",
+  "parent_run_id": "TRI-DSA-O-NATIVE-20260917-058A",
+  "failed_workflow_run": 35283829684,
+  "failure_state": "STOP_TRANCHE",
+  "root_cause": "RUN058A fed DSA_PUBLIC_MARKET_HISTORY_v1 directly into prepare_hk_member_acceptance.py, which requires DSA_DUAL_REUSABLE_HISTORY_v1 member objects with native/tencent/independent_source. The failure occurred in free preflight before any Drive native-call claim or provider request.",
+  "target_session": "2026-09-17",
+  "codes": [
+    "00001",
+    "00002"
+  ],
+  "parent_artifact_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "native_history_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "repair": "Use a pool-specific free preflight that binds the immutable native cache, independently checks Tencent OHLC overlap and calibrated latest volume, and admits zero issuer-news items without claiming that a news search found nothing.",
+  "model_http_requests": 0,
+  "provider_send_authorized": false,
+  "paid_data_calls": 0,
+  "cost_cny": 0,
+  "automatic_retry": false,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "schedule_changes": 0,
+  "main_changes": false,
+  "definition_of_done": "Cloud unit tests pass and both 00001/00002 produce passed pool preflights against the exact Run049 O history cache; zero provider credentials are exposed to the preflight step and zero model requests occur. If either member fails a genuine data check, retain STOP_TRANCHE."
+}
