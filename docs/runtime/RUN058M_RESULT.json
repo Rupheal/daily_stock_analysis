@@ -1,0 +1,128 @@
+{
+  "analyzer_sem001_findings": [
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.dashboard.core_conclusion.position_advice.has_position"
+      ]
+    },
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.dashboard.battle_plan.sniper_points.stop_loss"
+      ]
+    },
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.pattern_analysis"
+      ]
+    },
+    {
+      "code": "SEM001_UNSOURCED_ESTIMATED_INTRADAY_PRICE",
+      "paths": [
+        "$.dashboard.phase_decision.data_limitations[0]"
+      ]
+    },
+    {
+      "code": "SEM001_UNSOURCED_ESTIMATED_INTRADAY_PRICE",
+      "paths": [
+        "$.risk_warning"
+      ]
+    }
+  ],
+  "analyzer_sem002_findings": [
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.battle_plan.action_checklist[3]",
+        "news_context"
+      ]
+    },
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.news_summary",
+        "news_context"
+      ]
+    }
+  ],
+  "analyzer_sem003_findings": [],
+  "analyzer_semantic_gates": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "code": "00003",
+  "disposition": "PERMANENT_ISOLATE_NO_RETRY",
+  "model_http_requests_added": 0,
+  "pipeline_sem001_findings": [
+    {
+      "code": "SEM001_LIVE_PRICE_FIELD_WITHOUT_REALTIME_QUOTE",
+      "paths": [
+        "dashboard.data_perspective.price_position.current_price",
+        "current_price"
+      ]
+    },
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.dashboard.core_conclusion.position_advice.has_position"
+      ]
+    },
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.dashboard.battle_plan.sniper_points.stop_loss"
+      ]
+    },
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.pattern_analysis"
+      ]
+    },
+    {
+      "code": "SEM001_UNSOURCED_ESTIMATED_INTRADAY_PRICE",
+      "paths": [
+        "$.dashboard.phase_decision.data_limitations[0]"
+      ]
+    },
+    {
+      "code": "SEM001_UNSOURCED_ESTIMATED_INTRADAY_PRICE",
+      "paths": [
+        "$.risk_warning"
+      ]
+    }
+  ],
+  "pipeline_sem002_findings": [
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.battle_plan.action_checklist[3]",
+        "news_context"
+      ]
+    },
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.news_summary",
+        "news_context"
+      ]
+    }
+  ],
+  "pipeline_sem003_findings": [],
+  "pipeline_semantic_gates": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "private_restore_hash_verified": true,
+  "provider_response_sha256": "775b22964c432ba724741fa30180d32afd25e577afd069b023189a056c9bdd45",
+  "provider_sem002_pattern_present": false,
+  "raw_content_public": false,
+  "repeat_model_request_permitted": false,
+  "saved_post_output_blockers": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "schema_version": 1
+}
