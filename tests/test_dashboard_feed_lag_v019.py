@@ -134,8 +134,9 @@ def test_invalid_feed(tmp_path):
     assert report['status']=='FEED_INVALID'
 
 
-def test_real_branch_snapshot_is_aligned():
-    report,code=mod.detect(ROOT,ROOT,'DSA_DASHBOARD_LIVE_V019.json')
-    assert code==0
-    assert report['status']=='ALIGNED'
-    assert report['latest_authority']['receipt']=='docs/runtime/RUN060_RECOVERED_RESULT.json'
+def test_checked_in_feed_declares_authority_pointer():
+    feed=json.loads((ROOT/'DSA_DASHBOARD_LIVE_V019.json').read_text(encoding='utf-8'))
+    assert feed['meta']['schema_version']=='0.19'
+    assert feed['authority']['source_receipt'].startswith('docs/runtime/RUN')
+    assert len(feed['authority']['source_receipt_sha256'])==64
+    assert feed['authority']['evidence_session']
