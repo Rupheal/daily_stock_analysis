@@ -1,125 +1,146 @@
 {
-  "meta":{
-    "schema_version":"0.19",
-    "generated_at":"2026-09-18T13:18:00Z",
-    "source_commit":"b2985dde8c3f7111ae5ee32c05bc652d9eee9039",
-    "branch":"research/dsa-dashboard-v019-20260918",
-    "latest_validated_run":"TRI-DSA-RESUME-20260918-060-RECOVERED",
-    "evidence_timestamp":"2026-09-18T10:50:55Z"
+  "meta": {
+    "schema_version": "0.19",
+    "generated_at": "2026-09-18T13:53:16.435328Z",
+    "source_commit": "17bbc63fb96eb475c2bc4f6b43ef12529f51d709",
+    "branch": "research/dsa-dashboard-v019-20260918",
+    "latest_validated_run": "TRI-DSA-RESUME-20260918-060-RECOVERED",
+    "evidence_timestamp": "2026-09-18T13:53:16.435328Z"
   },
-  "authority":{
-    "canonical_feed_path":"DSA_DASHBOARD_LIVE_V019.json",
-    "source_receipt":"docs/runtime/RUN060_RECOVERED_RESULT.json",
-    "source_receipt_sha256":"1bafa0c0abdceb7ec2c367e2e60795553874a9396916433a4677938dd0acc285",
-    "source_run_id":"TRI-DSA-RESUME-20260918-060-RECOVERED",
-    "source_workflow_run":35335286449,
-    "source_artifact_digest":"sha256:a1f576dec1d1ca6812ae4a72390bd21b92863f3151e9a6216446426d75dbc136",
-    "evidence_session":"2026-09-18",
-    "evidence_class":"CURRENT_SESSION_CORE_DATA_REFRESH",
-    "strategy_acceptance":"NONE_FORMAL_SIGNAL_GENERATED_FALSE",
-    "supersedes_v018_feed_evidence_session":"2026-09-16"
+  "authority": {
+    "canonical_feed_path": "DSA_DASHBOARD_LIVE_V019.json",
+    "source_receipt": "docs/runtime/RUN060_RECOVERED_RESULT.json",
+    "source_receipt_sha256": "1bafa0c0abdceb7ec2c367e2e60795553874a9396916433a4677938dd0acc285",
+    "source_run_id": "TRI-DSA-RESUME-20260918-060-RECOVERED",
+    "source_workflow_run": 35335286449,
+    "source_artifact_digest": "sha256:a1f576dec1d1ca6812ae4a72390bd21b92863f3151e9a6216446426d75dbc136",
+    "evidence_session": "2026-09-18",
+    "evidence_class": "CURRENT_SESSION_CORE_DATA_REFRESH",
+    "strategy_acceptance": "NONE_FORMAL_SIGNAL_GENERATED_FALSE",
+    "authority_branch": "fix/native-private-execution-20260914",
+    "authority_commit": "17bbc63fb96eb475c2bc4f6b43ef12529f51d709",
+    "sync_mode": "EVENT_DRIVEN_SANITIZED_BRIDGE"
   },
-  "system":{
-    "overall_state":"WAIT",
-    "current_stage":"CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
-    "next_action":"Use Run060 artifact as immutable 2026-09-18 input for zero-model current-session sentinel preflight.",
-    "last_successful_gate":"CORE_DATA_REFRESH_PASS",
-    "blocking_gate":"CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
-    "error_code":null
+  "system": {
+    "overall_state": "WAIT",
+    "current_stage": "CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
+    "next_action": "Use Run060 artifact as immutable 2026-09-18 input for zero-model current-session sentinel preflight.",
+    "last_successful_gate": "CORE_DATA_REFRESH_PASS",
+    "blocking_gate": "CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
+    "error_code": null
   },
-  "O":{
-    "denominator":660,
-    "data_ready":657,
-    "data_isolated":3,
-    "attempted":0,
-    "accepted":0,
-    "top3":[],
-    "signal":"WAIT",
-    "qualified_buy":false,
-    "latest_session":"2026-09-18",
-    "model_http_requests":0,
-    "input_tokens":0,
-    "output_tokens":0,
-    "total_tokens":0,
-    "estimated_or_actual_cost":0,
-    "evidence_status":"CORE_DATA_REFRESH_PASS; FORMAL_SIGNAL_NOT_GENERATED"
+  "O": {
+    "denominator": 660,
+    "data_ready": 657,
+    "data_isolated": 3,
+    "attempted": 0,
+    "accepted": 0,
+    "top3": [],
+    "signal": "WAIT",
+    "qualified_buy": false,
+    "latest_session": "2026-09-18",
+    "model_http_requests": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "estimated_or_actual_cost": 0.0,
+    "evidence_status": "CORE_DATA_REFRESH_PASS; FORMAL_SIGNAL_NOT_GENERATED"
   },
-  "U":{
-    "denominator":45,
-    "data_ready":45,
-    "data_isolated":0,
-    "buy_eligible":44,
-    "attempted":0,
-    "accepted":0,
-    "top3":[],
-    "signal":"WAIT",
-    "qualified_buy":false,
-    "evidence_status":"CORE_DATA_REFRESH_PASS; FORMAL_SIGNAL_NOT_GENERATED"
+  "U": {
+    "denominator": 45,
+    "data_ready": 45,
+    "data_isolated": 0,
+    "buy_eligible": 44,
+    "attempted": 0,
+    "accepted": 0,
+    "top3": [],
+    "signal": "WAIT",
+    "qualified_buy": false,
+    "evidence_status": "CORE_DATA_REFRESH_PASS; FORMAL_SIGNAL_NOT_GENERATED"
   },
-  "data_health":{
-    "fresh_preflight":"PENDING_ZERO_MODEL_SENTINEL_PREFLIGHT",
-    "provider":"CORE_DATA_REFRESH_PASS",
-    "session":"PASS:2026-09-18",
-    "OHLC":"O657/660; U45/45 CURRENT",
-    "volume":"MARKET_HISTORY_HASH_FROZEN; SENTINEL_RECHECK_PENDING",
-    "news":"NOT_VERIFIED_BY_RUN060",
-    "issuer":"NOT_VERIFIED_BY_RUN060",
-    "manifest":"RUN060_IMMUTABLE_INPUT_READY"
+  "data_health": {
+    "fresh_preflight": "PENDING_ZERO_MODEL_SENTINEL_PREFLIGHT",
+    "provider": "CORE_DATA_REFRESH_PASS",
+    "session": "PASS:2026-09-18",
+    "OHLC": "O657/660; U45/45 CURRENT",
+    "volume": "MARKET_HISTORY_HASH_FROZEN; SENTINEL_RECHECK_PENDING",
+    "news": "NOT_VERIFIED_BY_CURRENT_CORE_REFRESH",
+    "issuer": "NOT_VERIFIED_BY_CURRENT_CORE_REFRESH",
+    "manifest": "CURRENT_SESSION_IMMUTABLE_INPUT_READY"
   },
-  "observer":{
-    "pass_fail":"NOT_RUN_AFTER_RUN060",
-    "block_count":0,
-    "latest_error_code":null
+  "observer": {
+    "pass_fail": "NOT_RUN_AFTER_CURRENT_CORE_REFRESH",
+    "block_count": 0,
+    "latest_error_code": null
   },
-  "storage":{
-    "save":"SOURCE_ARTIFACT_RECOVERED",
-    "independent_read":"SOURCE_ARTIFACT_DIGEST_RECORDED",
-    "sha_match":"SOURCE_ARTIFACT_DIGEST_RECORDED",
-    "revision_check":"BRANCH_HEAD_B2985DDE",
-    "restore_verified":"NOT_EVALUATED_CURRENT_CYCLE",
-    "source_artifact_digest_verified":"RECORDED_FROM_WORKFLOW_ARTIFACT"
+  "storage": {
+    "save": "SOURCE_ARTIFACT_RECOVERED",
+    "independent_read": "SOURCE_ARTIFACT_DIGEST_RECORDED",
+    "sha_match": "SOURCE_ARTIFACT_DIGEST_RECORDED",
+    "revision_check": "17bbc63fb96e",
+    "restore_verified": "NOT_EVALUATED_CURRENT_CYCLE",
+    "source_artifact_digest_verified": "RECORDED_FROM_WORKFLOW_ARTIFACT"
   },
-  "budget":{
-    "affordability":"NO_MODEL_REQUEST_REQUIRED_FOR_NEXT_SENTINEL",
-    "request_limit":0,
-    "actual_request_count":0,
-    "tokens":{"input":0,"output":0,"total":0},
-    "cost":0
+  "budget": {
+    "affordability": "NO_MODEL_REQUEST_REQUIRED_FOR_NEXT_SENTINEL",
+    "request_limit": 0,
+    "actual_request_count": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "total": 0
+    },
+    "cost": 0.0
   },
-  "simulation":{
-    "eligibility":"WAIT_NOT_ELIGIBLE_NO_FORMAL_SIGNAL",
-    "account_A":"NOT_VERIFIED",
-    "account_B":"NOT_VERIFIED",
-    "cash":"NOT_VERIFIED",
-    "positions":"NOT_VERIFIED",
-    "pnl":"NOT_VERIFIED",
-    "pending_signal":"WAIT"
+  "simulation": {
+    "eligibility": "WAIT_NOT_ELIGIBLE_NO_FORMAL_SIGNAL",
+    "account_A": "NOT_VERIFIED",
+    "account_B": "NOT_VERIFIED",
+    "cash": "NOT_VERIFIED",
+    "positions": "NOT_VERIFIED",
+    "pnl": "NOT_VERIFIED",
+    "pending_signal": "WAIT"
   },
-  "shadow_week":{
-    "date":"2026-09-18",
-    "data_pass_rate":"CORE_REFRESH_PASS_SENTINEL_PENDING",
-    "observer_block_rate":"NOT_RUN_AFTER_RUN060",
-    "model_success_rate":"NOT_APPLICABLE_NO_MODEL_CALL",
-    "cost_per_accepted_analysis":"NOT_APPLICABLE",
-    "O_coverage":"data 657/660; formal 0/660",
-    "U_coverage":"data 45/45; buy-eligible 44/45; formal 0/45",
-    "top3_turnover":"NOT_VERIFIED",
-    "signal_persistence":"WAIT",
-    "BUY_WAIT":"WAIT",
-    "simulation_eligibility":"WAIT_NOT_ELIGIBLE_NO_FORMAL_SIGNAL"
+  "shadow_week": {
+    "date": "2026-09-18",
+    "data_pass_rate": "CORE_REFRESH_PASS_SENTINEL_PENDING",
+    "observer_block_rate": "NOT_RUN_AFTER_CURRENT_CORE_REFRESH",
+    "model_success_rate": "NOT_APPLICABLE_NO_MODEL_CALL",
+    "cost_per_accepted_analysis": "NOT_APPLICABLE",
+    "O_coverage": "data 657/660; formal 0/660",
+    "U_coverage": "data 45/45; buy-eligible 44/45; formal 0/45",
+    "top3_turnover": "NOT_VERIFIED",
+    "signal_persistence": "WAIT",
+    "BUY_WAIT": "WAIT",
+    "simulation_eligibility": "WAIT_NOT_ELIGIBLE_NO_FORMAL_SIGNAL"
   },
-  "debug":{
-    "provider_error":null,
-    "preflight_error":"CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
-    "observer_error":"NOT_RUN_AFTER_RUN060",
-    "drive_error":null,
-    "model_error":null,
-    "recovery_state":"CORE_DATA_REFRESH_PASS_COMMIT_STEP_CONCURRENCY_FAIL_RECOVERED",
-    "recovery_condition":"Run zero-model current-session sentinel preflight against immutable Run060 input; do not reinterpret data readiness as formal strategy acceptance.",
-    "O_invalid":[
-      {"code":"00853","status":"invalid_or_stale","latest_date":"2026-09-17","bars":44},
-      {"code":"02172","status":"invalid_or_stale","latest_date":"2026-09-17","bars":44},
-      {"code":"02252","status":"invalid_or_stale","latest_date":"2026-09-17","bars":44}
+  "debug": {
+    "provider_error": null,
+    "preflight_error": "CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
+    "observer_error": "NOT_RUN_AFTER_CURRENT_CORE_REFRESH",
+    "drive_error": null,
+    "model_error": null,
+    "recovery_state": "CORE_DATA_REFRESH_PASS_COMMIT_STEP_CONCURRENCY_FAIL",
+    "recovery_condition": "Use Run060 artifact as immutable 2026-09-18 input for zero-model current-session sentinel preflight.",
+    "O_invalid": [
+      {
+        "code": "00853",
+        "status": "invalid_or_stale",
+        "latest_date": "2026-09-17",
+        "bars": 44
+      },
+      {
+        "code": "02172",
+        "status": "invalid_or_stale",
+        "latest_date": "2026-09-17",
+        "bars": 44
+      },
+      {
+        "code": "02252",
+        "status": "invalid_or_stale",
+        "latest_date": "2026-09-17",
+        "bars": 44
+      }
     ]
   }
 }
