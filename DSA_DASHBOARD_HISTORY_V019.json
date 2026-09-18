@@ -1,0 +1,44 @@
+{
+  "schema_version":"0.19",
+  "append_only":true,
+  "days":[
+    {
+      "date":"2026-09-16",
+      "latest_validated_run":"TRI-DSA-EXEC-20260916-GATEA-019",
+      "data_pass_rate":"PARTIAL",
+      "observer_block_rate":"1 model-free preauth boundary block",
+      "model_success_rate":"NOT_APPLICABLE_NO_MODEL_CALL",
+      "model_requests":0,
+      "input_tokens":0,
+      "output_tokens":0,
+      "total_tokens":0,
+      "cost":0,
+      "O_coverage":"formal 0; denominator not yet frozen in v0.18 feed",
+      "U_coverage":"formal 0/45; identity/price/volume 45/45",
+      "top3_turnover":"NOT_VERIFIED",
+      "signal_persistence":"WAIT",
+      "BUY_WAIT":"WAIT",
+      "simulation_eligibility":"WAIT_NOT_ELIGIBLE",
+      "blocking_gate":"FROZEN_NATIVE_END_EXCLUSIVE_CURRENT_DATE"
+    },
+    {
+      "date":"2026-09-18",
+      "latest_validated_run":"TRI-DSA-RESUME-20260918-060-RECOVERED",
+      "data_pass_rate":"CORE_REFRESH_PASS_SENTINEL_PENDING",
+      "observer_block_rate":"NOT_RUN_AFTER_RUN060",
+      "model_success_rate":"NOT_APPLICABLE_NO_MODEL_CALL",
+      "model_requests":0,
+      "input_tokens":0,
+      "output_tokens":0,
+      "total_tokens":0,
+      "cost":0,
+      "O_coverage":"data 657/660; formal 0/660",
+      "U_coverage":"data 45/45; buy-eligible 44/45; formal 0/45",
+      "top3_turnover":"NOT_VERIFIED",
+      "signal_persistence":"WAIT",
+      "BUY_WAIT":"WAIT",
+      "simulation_eligibility":"WAIT_NOT_ELIGIBLE_NO_FORMAL_SIGNAL",
+      "blocking_gate":"CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING"
+    }
+  ]
+}
