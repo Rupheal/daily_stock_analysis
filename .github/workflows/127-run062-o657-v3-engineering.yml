@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      PYTHONPATH: ${{ github.workspace }}/scripts
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
       TZ: Asia/Hong_Kong
     steps:
       - uses: actions/checkout@v5
