@@ -11,7 +11,7 @@
   "balance_safety_reserve_cny": "0.00",
   "max_shards": 16,
   "max_parallel": 8,
-  "continuation_rule": "Only prior missing operational members may be reconsidered. Prior member-local explicit exclusions are never rescued. Confirmed sends and durable uncertain claims are never repeated. Shared-infrastructure-unprocessed and budget-deferred names may continue. Use all currently available approved DeepSeek capacity, subject to the per-member CNY0.10 hard cap and no automatic recharge.",
+  "continuation_rule": "Only prior missing operational members may be reconsidered. Prior member-local explicit exclusions are never rescued. Confirmed sends and durable uncertain claims are never repeated. Shared-infrastructure-unprocessed and budget-deferred names may continue. Use all currently available approved DeepSeek capacity. Default per-member pre-send cap remains CNY0.10; if and only if that cap blocks an otherwise valid dry envelope, it may be raised only as needed up to the user-authorized CNY2.00 ceiling. No automatic recharge.",
   "automatic_retry": false,
   "real_orders": 0,
   "simulation_writes": 0,
@@ -24,6 +24,11 @@
     "effective_immediately": true,
     "automatic_recharge": false,
     "per_member_hard_cap_cny": "0.10",
-    "no_repeat_enforced": true
-  }
+    "no_repeat_enforced": true,
+    "authorized_per_member_ceiling_cny": "2.00",
+    "default_operational_pre_send_cap_cny": "0.10",
+    "escalation_without_reapproval": true,
+    "escalation_rule": "Keep 0.10 as the default pre-send cap while it passes. If a valid member is blocked only because the dry envelope exceeds 0.10, raise that member's cap only as needed, up to 2.00, without asking again."
+  },
+  "per_member_authorized_ceiling_cny": "2.00"
 }
