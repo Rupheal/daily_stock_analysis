@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-RECOVER-20260918-075",
+  "trigger_reason": "Explicitly recover 100 Run073 PROVEN_UNSENT_RUNNER_BUG members after common/common_base fix.",
+  "parent_result": "docs/runtime/RUN073_O657_FORMAL_RESULT.json",
+  "expected_parent_missing": 101,
+  "expected_proven_unsent_nameerror": 100,
+  "preserve_blocked_shared_drive_case": [
+    "06979"
+  ],
+  "authorized_per_member_ceiling_cny": "2.00",
+  "automatic_recharge": false,
+  "no_repeat": true,
+  "real_orders": 0
+}
