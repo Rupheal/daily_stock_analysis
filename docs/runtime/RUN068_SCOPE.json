@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-REVIEW-20260918-068",
+  "parent_run_id": "TRI-DSA-O-NATIVE-20260918-067",
+  "parent_workflow_run": 35338215374,
+  "code": "00008",
+  "micro_batch_id": "O57-MB-004",
+  "parent_artifact_prefix": "ART-DSA-RUN067-O-NATIVE",
+  "parent_member_run_id": "TRI-DSA-O-NATIVE-20260918-067-00008",
+  "parent_private_index_sha256": "f8051275d85735984511a16f7ff28f56523c619d20c79e445586debeaafbf3fe",
+  "provider_response_sha256_expected": "a012adc9968fbe542b9e8f67ae1560c02df45bccd373f29823c60115913c831e",
+  "raw_blockers_expected": ["SEM-001","SEM-002"],
+  "purpose": "Restore exact private multipart for 00008, recompute semantic findings, and publish only sanitized guard attribution. Never expose raw model content.",
+  "model_requests": 0,
+  "drive_writes": 0,
+  "paid_data_calls": 0,
+  "automatic_retry": false,
+  "repeat_model_request_permitted": false,
+  "no_orders": true,
+  "no_raw_public": true
+}
