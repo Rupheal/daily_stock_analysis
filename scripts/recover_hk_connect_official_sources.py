@@ -59,13 +59,11 @@ def fetch_one(name,spec,out,session,attempts):
             validate(name,data,session)
             (out/name).write_bytes(data)
             a.update(status="received",http_status=r.status_code,bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
-            row["attempts"].append(a); row.update(status="received",bytes=len(data),sha256=a["sha256"],successful_attempt=i)
-            return row
+            a["completed_at"]=datetime.now(timezone.utc).isoformat()\n            row["attempts"].append(a); row.update(status="received",bytes=len(data),sha256=a["sha256"],successful_attempt=i,started_at=row["attempts"][0]["started_at"],completed_at=a["completed_at"])\n            return row
         except Exception as exc:
-            a.update(status="failed",error=type(exc).__name__+":"+str(exc)[:180]); row["attempts"].append(a)
+            a.update(status="failed",error=type(exc).__name__+":"+str(exc)[:180],completed_at=datetime.now(timezone.utc).isoformat()); row["attempts"].append(a)
             if i<attempts: time.sleep(i)
-    row["status"]="failed"; row["error"]=row["attempts"][-1]["error"]
-    return row
+    row["status"]="failed"; row["error"]=row["attempts"][-1]["error"]; row["started_at"]=row["attempts"][0]["started_at"]; row["completed_at"]=row["attempts"][-1]["completed_at"]\n    return row
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--session",required=True);ap.add_argument("--out",type=Path,required=True);ap.add_argument("--attempts",type=int,default=3)
