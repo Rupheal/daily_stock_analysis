@@ -1,0 +1,70 @@
+from __future__ import annotations
+import argparse, json, os, sqlite3, subprocess, sys, statistics
+from pathlib import Path
+from prepare_hk_pool_rollout_preflight_v2 import prepare as prepare_v2
+from o_native_model_configuration import configure
+
+def main():
+    ap=argparse.ArgumentParser()
+    ap.add_argument("--checkout",type=Path,required=True)
+    ap.add_argument("--cache",type=Path,required=True)
+    ap.add_argument("--out",type=Path,required=True)
+    a=ap.parse_args(); a.out.mkdir(parents=True,exist_ok=False)
+    repo=Path(__file__).resolve().parents[1]
+    pre=a.out/"preflight"
+    prepare_v2("00001","2026-09-17",repo/"docs/runtime/run032_public_cache/O_UNIVERSE.json",
+               a.cache,repo/"docs/runtime/RUN057_O_NATIVE_PLAN.json",pre)
+
+    env={k:v for k,v in os.environ.items() if not any(z in k.upper() for z in ("SECRET","TOKEN","API_KEY","WEBHOOK","DSA_DRIVE"))}
+    env.update({
+      "DSA_DEEPSEEK_V41_TOKENIZER":os.environ["DSA_DEEPSEEK_V41_TOKENIZER"],
+      "LLM_CHANNELS":"deepseek","LLM_DEEPSEEK_PROTOCOL":"openai","LLM_DEEPSEEK_BASE_URL":"https://api.deepseek.com",
+      "LLM_DEEPSEEK_MODELS":"deepseek-flash","LITELLM_MODEL":"openai/deepseek-flash","LITELLM_FALLBACK_MODELS":"",
+      "REPORT_INTEGRITY_RETRY":"0","MAX_WORKERS":"1","DSA_INPUT_TOKEN_MARGIN":"2048",
+      "DSA_BUDGET_PROBE_ONLY":"1","LLM_DEEPSEEK_API_KEY":"dry-envelope-no-network",
+    })
+    env.update(configure(a.out,"O_DEEPSEEK_FLASH_NONTHINKING_v1"))
+    cmd=[sys.executable,str(repo/"scripts/run_hk_original_model_probe_run030.py"),
+         "--symbol","HK00001","--checkout",str(a.checkout.resolve()),
+         "--expected-commit","089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+         "--preflight",str((pre/"preflight.json").resolve()),"--output",str(a.out/"dry"),
+         "--limit-cny","0.10","--carry-upper-cny","0","--target-boundary-adapter","--news-handoff-v1"]
+    p=subprocess.run(cmd,env=env,text=True,capture_output=True,timeout=600)
+
+    pf=json.loads((pre/"preflight.json").read_text())
+    expected=pf["validated_native_history"]
+    db=a.out/"dry"/"original-data.db"
+    with sqlite3.connect("file:"+str(db)+"?mode=ro",uri=True) as con:
+        rows=con.execute("SELECT date,volume FROM stock_daily WHERE code=? COLLATE NOCASE ORDER BY date",("HK00001",)).fetchall()
+    by_ref={str(x["date"])[:10]:float(x["volume"]) for x in expected}
+    diffs=[]
+    for date,vol in rows:
+        d=str(date)[:10]; actual=float(vol); ref=by_ref[d]
+        absdiff=abs(actual-ref)
+        reldiff=(absdiff/ref) if ref else (0.0 if actual==0 else None)
+        diffs.append({"date":d,"preflight_volume":ref,"native_db_volume":actual,"abs_diff":absdiff,"rel_diff":reldiff,"exact":actual==ref})
+    nonexact=[x for x in diffs if not x["exact"]]
+    rels=[x["rel_diff"] for x in nonexact if x["rel_diff"] is not None]
+    result={
+      "schema_version":1,
+      "run_id":"TRI-DSA-O-VOLUME-DIAG-20260918-058G",
+      "returncode":p.returncode,
+      "history_rows":len(rows),
+      "expected_rows":len(expected),
+      "nonexact_volume_sessions":len(nonexact),
+      "max_relative_deviation":max(rels) if rels else 0.0,
+      "median_relative_deviation":statistics.median(rels) if rels else 0.0,
+      "max_absolute_deviation":max((x["abs_diff"] for x in nonexact),default=0.0),
+      "target_session":"2026-09-17",
+      "target_session_row":next(x for x in diffs if x["date"]=="2026-09-17"),
+      "nonexact_rows":nonexact,
+      "model_http_requests":0,
+      "provider_credentials_used":False,
+      "drive_claims":0,
+      "DeepSeek_API_cost_cny":0,
+      "paid_data_calls":0,
+      "real_orders":0
+    }
+    (a.out/"RUN058G_RESULT.json").write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
+    print(json.dumps({k:v for k,v in result.items() if k!="nonexact_rows"},ensure_ascii=False))
+if __name__=="__main__": main()
