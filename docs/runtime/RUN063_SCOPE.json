@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-CURRENT-PREFLIGHT-20260918-063",
+  "parent_batch_close": "docs/runtime/RUN062_RESULT.json",
+  "parent_current_refresh": "docs/runtime/RUN060_RECOVERED_RESULT.json",
+  "target_session": "2026-09-18",
+  "decision_session": "2026-09-18",
+  "micro_batch_id": "O57-MB-004",
+  "codes": ["00008","00010"],
+  "run060_workflow_run": 35335286449,
+  "run060_artifact_name": "RUN060_CURRENT_OFFICIAL_CLOSE_EVIDENCE",
+  "O_universe_sha256": "6415847af25e86f201bb69759f6ecef053cfc69079809200650dd8b74550daf8",
+  "O_market_history_sha256": "e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224",
+  "model_http_requests": 0,
+  "provider_send_authorized": false,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false
+}
