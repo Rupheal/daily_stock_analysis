@@ -11,5 +11,7 @@
   "authorized_per_member_ceiling_cny": "2.00",
   "automatic_recharge": false,
   "no_repeat": true,
-  "real_orders": 0
+  "real_orders": 0,
+  "trigger_revision": 2,
+  "workflow_yaml_fix": "block_mappings_applied"
 }
