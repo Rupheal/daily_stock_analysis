@@ -1,0 +1,102 @@
+name: DSA O formal Top3 final acceptance
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/RUN072_O657_FORMAL_RESULT.json'
+      - 'docs/runtime/RUN073_O657_FORMAL_RESULT.json'
+      - 'docs/runtime/RUN074_O657_FORMAL_RESULT.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-o-formal-top3-final-acceptance
+  cancel-in-progress: false
+
+jobs:
+  accept:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: ${{ github.workspace }}/scripts
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install pytest
+      - name: Validate final acceptance contract
+        run: python -m pytest --noconftest -q tests/test_finalize_o_formal_acceptance_v3.py
+      - name: Select newest available formal receipt
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          candidates=[
+            Path('docs/runtime/RUN074_O657_FORMAL_RESULT.json'),
+            Path('docs/runtime/RUN073_O657_FORMAL_RESULT.json'),
+            Path('docs/runtime/RUN072_O657_FORMAL_RESULT.json'),
+          ]
+          p=next((x for x in candidates if x.exists()),None)
+          if not p: raise SystemExit('NO_O_FORMAL_RECEIPT')
+          Path('/tmp/o-formal-source').write_text(str(p))
+          print('O_FORMAL_SOURCE',p)
+          PY
+      - name: Evaluate final acceptance
+        id: gate
+        continue-on-error: true
+        run: |
+          python scripts/finalize_o_formal_acceptance_v3.py \
+            --result "$(cat /tmp/o-formal-source)" \
+            --policy docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json \
+            --out /tmp/O_FORMAL_ACCEPTANCE_20260918.json
+      - name: Publish accepted Top3 only when gate passes
+        if: steps.gate.outcome == 'success'
+        run: |
+          cp /tmp/O_FORMAL_ACCEPTANCE_20260918.json docs/runtime/O_FORMAL_ACCEPTANCE_20260918.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.load(open('/tmp/O_FORMAL_ACCEPTANCE_20260918.json'))
+          assert a['status']=='ACCEPTED_O_FORMAL_TOP3'
+          out={
+            'schema_version':1,
+            'session':a['target_session'],
+            'source_run_id':a['source_run_id'],
+            'status':'ACCEPTED_O_FORMAL_TOP3',
+            'official_O_denominator':a['official_O_denominator'],
+            'operational_O_denominator':a['operational_O_denominator'],
+            'ranking_eligible_count':a['ranking_eligible_count'],
+            'base_excluded_count':a['base_excluded_count'],
+            'additional_excluded_count':a['additional_excluded_count'],
+            'Top3':a['Top3'],
+            'Top10':a['Top10'],
+            'qualified_buy_in_Top3':a['qualified_buy_in_Top3'],
+            'execution_signal_generated':False,
+            'real_orders':0,
+            'simulation_writes':0
+          }
+          Path('docs/runtime/O_FORMAL_TOP3_20260918.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          p=Path('docs/DSA_NEXT_ACTIONS.json');d=json.load(open(p))
+          for row in d.get('next_actions',[]):
+              if row.get('id')=='G4':
+                  row['current_O_formal_acceptance']='docs/runtime/O_FORMAL_ACCEPTANCE_20260918.json'
+                  row['current_O_top3']='docs/runtime/O_FORMAL_TOP3_20260918.json'
+                  row['status']='O_FORMAL_TOP3_ACCEPTED; U_FORMAL_DECISION44_OF45_WAIT_NO_BUY'
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          PY
+          git add docs/runtime/O_FORMAL_ACCEPTANCE_20260918.json docs/runtime/O_FORMAL_TOP3_20260918.json docs/DSA_NEXT_ACTIONS.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          git commit -m 'dsa: accept O formal Top3 for 2026-09-18'
+          git fetch origin fix/native-private-execution-20260914
+          git rebase origin/fix/native-private-execution-20260914
+          git push origin HEAD:fix/native-private-execution-20260914
+      - name: Record not-ready state without failing continuation chain
+        if: steps.gate.outcome != 'success'
+        run: |
+          cat /tmp/O_FORMAL_ACCEPTANCE_20260918.json || true
+          echo "O_FORMAL_TOP3_NOT_READY"
