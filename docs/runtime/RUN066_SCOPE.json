@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-066",
+  "parent_free_dry_run_id": "TRI-DSA-O-FREE-DRY-20260918-062",
+  "parent_free_dry_result": "docs/runtime/RUN062_RESULT.json",
+  "target_session": "2026-09-18",
+  "decision_session": "2026-09-18",
+  "codes": [
+    "00008"
+  ],
+  "deferred_ready_codes": [
+    "00010"
+  ],
+  "micro_batch_id": "O57-MB-004",
+  "tranche_id": "O57-TR-01",
+  "O_denominator": 660,
+  "retained_historical_isolations": 52,
+  "current_history_parent_workflow": 35336247845,
+  "current_history_artifact_name": "RUN058U_20260918_SESSION_ROLLOVER",
+  "history_cache_sha256": "e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224",
+  "preflight_contract": "POOL_TARGET_V2",
+  "preflight_plan": "docs/runtime/RUN058U_SESSION_PLAN.json",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "frozen_native_history_adapter": true,
+  "news_coverage_limitation_v1": true,
+  "expected_parent_dry": {
+    "code": "00008",
+    "status": "PASS_CURRENT_FROZEN_DRY",
+    "pre_send_peak_upper_cny": "0.079956",
+    "model_http_requests": 0
+  },
+  "prior_same_session_provider_requests_for_code": 0,
+  "prior_attempts_no_send": [
+    {
+      "run": "TRI-DSA-O-NATIVE-20260918-064",
+      "workflow_run": 35337473172,
+      "confirmed_requests": 0
+    },
+    {
+      "run": "TRI-DSA-O-NATIVE-20260918-063",
+      "workflow_run": 35337502541,
+      "confirmed_requests": 0
+    }
+  ],
+  "maximum_requests": 1,
+  "maximum_cost_cny": "0.10",
+  "per_member_cap_cny": "0.10",
+  "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+  "artifact_prefix": "ART-DSA-RUN066-O-NATIVE",
+  "provider_send_authorized": true,
+  "provider_send_authorization_scope": "Only HK00008. One provider request maximum. Hard cap CNY0.10. No automatic recharge. 00010 remains unsent until private semantic review of 00008.",
+  "automatic_retry": false,
+  "manual_private_review_required": true,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "schedule_changes": false,
+  "main_changes": false,
+  "historical_rewrites": false,
+  "stop_if_any_pre_send_gate_fails": true,
+  "definition_of_done": "Fresh current-session preflight and dry gate pass; pre-send raw evidence roundtrip and durable Drive claim pass; at most one real provider request for HK00008; original evidence saved/read/hash-restored; no ranking, signal publication, simulated fill or real order."
+}
