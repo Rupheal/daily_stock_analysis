@@ -66,3 +66,14 @@ def test_base_excluded_row_fails():
     u,p=base()
     with pytest.raises(ValueError,match='BASE_EXCLUDED'):
         aggregate(u,p,[('a',{'members':[row('00006',60)]})])
+
+def test_shared_unprocessed_blocks_closure_and_is_not_exclusion():
+    u,p=base()
+    rows=[row('00001',70),row('00002',60),row('00003',50),
+          {'code':'00004','status':'SHARED_FAILURE_UNPROCESSED','ranking_eligible':False,'failure_code':'DRIVE'},
+          {'code':'00005','status':'SKIPPED_AFTER_SHARED_STOP','ranking_eligible':False,'failure_code':'SHARED_STOP'}]
+    o=aggregate(u,p,[('s',{'members':rows})])
+    assert o['state']=='PARTIAL_O_FORMAL_CORE_PROCESSING'
+    assert o['missing_count']==2
+    assert o['shared_unprocessed_count']==2
+    assert o['additional_excluded_count']==0
