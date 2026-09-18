@@ -3,7 +3,7 @@
   "ledger_id": "DSA-O-CURRENT-SESSION-MODEL-LEDGER-20260918",
   "session": "2026-09-18",
   "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
-  "policy": "Never repeat a confirmed provider send for the same code/session/frozen upstream. Unsent/dry/preflight attempts do not count as a model send.",
+  "policy": "Never repeat a confirmed provider send OR a durable claimed request whose send/response outcome is uncertain for the same code/session/frozen upstream. Dry/preflight attempts without a durable claim do not count.",
   "confirmed_provider_sends": [
     {
       "code": "00008",
@@ -72,5 +72,6 @@
   ],
   "current_confirmed_send_count": 4,
   "real_orders": 0,
-  "simulation_writes": 0
+  "simulation_writes": 0,
+  "no_repeat_uncertain_claims": []
 }
