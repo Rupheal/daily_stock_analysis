@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: dsa-run063-o-00008-sentinel
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   sentinel:
@@ -106,7 +106,13 @@ jobs:
           print('RUN063_HISTORY_BIND_PASS')
           PY
 
+      - name: Fail closed because parallel Run064 owns MB004 provider authority
+        run: |
+          echo "DISARMED_BY_PARALLEL_RUN064_NO_PROVIDER_CALL"
+          exit 1
+
       - name: Execute at most one provider request for 00008 with Drive persistence
+        if: ${{ false }}
         working-directory: research
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
