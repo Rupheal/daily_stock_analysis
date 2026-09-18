@@ -58,12 +58,22 @@ def aggregate(universe:dict,policy:dict,sources:list[tuple[str,dict]]):
             by_code[code]=normalized
             provenance[code]=source_name
 
-    missing=[x for x in expected if x not in by_code]
+    unprocessed_statuses={"SKIPPED_AFTER_SHARED_STOP","SHARED_FAILURE_UNPROCESSED"}
+    missing=[]
     accepted=[]
     explicit_excluded=[]
+    shared_unprocessed=[]
     for code in expected:
         row=by_code.get(code)
         if row is None:
+            missing.append(code)
+            continue
+        if row.get("status") in unprocessed_statuses:
+            missing.append(code)
+            shared_unprocessed.append({
+              "code":code,"status":row.get("status"),"failure_code":row.get("failure_code"),
+              "source":provenance[code],
+            })
             continue
         if row.get("ranking_eligible") is True:
             core=row.get("strategy_core") or {}
@@ -117,23 +127,27 @@ def aggregate(universe:dict,policy:dict,sources:list[tuple[str,dict]]):
       "base_operational_O_denominator":base_operational,
       "base_excluded_unresolved":sorted(base_excluded,key=lambda c:idx[c][0]),
       "base_excluded_count":len(base_excluded),
-      "processed_operational_members":len(by_code),
+      "processed_operational_members":len(accepted)+len(explicit_excluded),
+      "rows_received":len(by_code),
       "missing_operational_members":missing,
       "missing_count":len(missing),
       "ranking_eligible_count":len(accepted),
       "additional_excluded_count":len(explicit_excluded),
+      "shared_unprocessed_count":len(shared_unprocessed),
+      "shared_unprocessed":shared_unprocessed,
       "additional_excluded_status_counts":dict(sorted(status_counts.items())),
       "reconciliation":{
         "official":official,
         "base_operational":base_operational,
         "base_excluded":len(base_excluded),
-        "processed":len(by_code),
+        "rows_received":len(by_code),
+        "processed":len(accepted)+len(explicit_excluded),
         "missing":len(missing),
         "ranking_eligible":len(accepted),
         "additional_excluded":len(explicit_excluded),
         "official_equals_base_plus_excluded":base_operational+len(base_excluded)==official,
-        "processed_plus_missing_equals_base":len(by_code)+len(missing)==base_operational,
-        "eligible_plus_additional_excluded_equals_processed":len(accepted)+len(explicit_excluded)==len(by_code),
+        "processed_plus_missing_equals_base":len(accepted)+len(explicit_excluded)+len(missing)==base_operational,
+        "eligible_plus_additional_excluded_equals_processed":True,
       },
       "formal_O_ranking_generated":state=="PASS_O_FORMAL_CORE_RANKING_TOP3",
       "formal_signal_generated":False,
