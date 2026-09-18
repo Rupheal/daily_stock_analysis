@@ -1,0 +1,58 @@
+{
+  "schema_version": "dsa-shadow-close-diagnostic-v1",
+  "cycle_date_hkt": "2026-09-18",
+  "branch": "fix/native-private-execution-20260914",
+  "restored_checkpoint_head": "e1e26e5da4ec76b21853d18d577b4889e8432a82",
+  "mode": "MODEL_FREE_DIAGNOSTICS_ONLY",
+  "authorization": {
+    "provider_send_authorized_by_run058": false,
+    "model_workflow_eligible": false,
+    "reason": "Run058 controller blocks provider send; no verified post-close current-cycle GitHub Actions receipt exists after 2026-09-18 16:00 HKT."
+  },
+  "usage_current_cycle": {
+    "model_requests": 0,
+    "tokens": 0,
+    "incremental_cost_cny": 0.0
+  },
+  "gates": {
+    "fresh_data": "FAIL_CLOSED_NOT_VERIFIED_CURRENT_CYCLE",
+    "provider": "BLOCKED_BEFORE_SEND",
+    "observer": "NOT_RUN_CURRENT_CYCLE",
+    "drive_save_read_hash_restore": "NOT_RUN_CURRENT_CYCLE"
+  },
+  "provider_failures_current_cycle": 0,
+  "observer_failures_current_cycle": 0,
+  "last_validated_snapshot": {
+    "o_denominator": 660,
+    "o_data_ready": 608,
+    "o_isolated": 52,
+    "o_isolation_breakdown": {
+      "three_source_conflicts": 32,
+      "invalid_sina_bar_geometry": 16,
+      "target_gaps": 3,
+      "short_history": 1
+    },
+    "u_denominator": 45,
+    "u_buy_eligible": 44,
+    "u_bounded_reviews": 44,
+    "u_raw_semantic_passes": 40,
+    "qualified_signals": 0,
+    "o_status": "WAIT",
+    "u_status": "WAIT",
+    "buy_signals": 0,
+    "real_orders": 0
+  },
+  "anomalies": [
+    "docs/DSA_NEXT_ACTIONS.json is stale relative to newer Run058 controller evidence."
+  ],
+  "blockers": [
+    "No verified GitHub Actions run after 2026-09-18 16:00 HKT.",
+    "provider_send_authorized_by_run058=false."
+  ],
+  "preservation": {
+    "main_merged": false,
+    "permissions_broadened": false,
+    "auto_recharge": false,
+    "canonical_claim_native_overwritten": false
+  }
+}
