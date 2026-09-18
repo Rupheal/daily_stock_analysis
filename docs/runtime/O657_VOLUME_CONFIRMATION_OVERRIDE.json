@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "policy_id": "DSA-O657-VOLUME-CONFIRMATION-OVERRIDE-v1",
+  "status": "ACTIVE_SYSTEMIC_CONTRACT_CORRECTION",
+  "effective_from_commit": "CURRENT",
+  "target_session": "2026-09-18",
+  "rationale": [
+    "Run060 already accepted 657 O members as current-session valid native inputs.",
+    "Early Run072 evidence shows independent Tencent volume disagreement would exclude a large fraction of those 657 despite valid native data.",
+    "The O model consumes frozen original-native volume, not Tencent volume; Tencent is an independent confirmation source.",
+    "Therefore independent session/OHLC remains a hard confirmation, while cross-provider volume deviation is diagnostic and must not by itself remove a Run060-valid member."
+  ],
+  "hard_checks": [
+    "member belongs to official universe and is not one of the three base unresolved exclusions",
+    "Run060 native cache contains the member and exact target session",
+    "native history has at least 21 bars",
+    "independent Tencent target session exists",
+    "target-session OHLC agrees within calibrated absolute tolerance"
+  ],
+  "diagnostic_only": [
+    "cross-provider target-session volume relative deviation"
+  ],
+  "superseded_failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
+  "one_time_reconsideration_rule": "A member excluded earlier in Run072 solely by the superseded volume hard gate may be reconsidered exactly once under this corrected contract. This is a systemic contract correction, not a bespoke symbol rescue. Any other member-local exclusion remains no-rescue.",
+  "modifies_original_O_prompt_or_scoring": false,
+  "model_calls_added_by_policy": 0,
+  "schedule_changes": 0,
+  "main_merge": false,
+  "real_orders": 0
+}
