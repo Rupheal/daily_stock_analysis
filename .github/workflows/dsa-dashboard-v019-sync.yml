@@ -1,0 +1,114 @@
+name: DSA Dashboard v0.19 sanitized sync bridge
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/RUN*_RESULT.json'
+      - 'docs/runtime/RUN*_RECOVERED_RESULT.json'
+      - '.github/workflows/dsa-dashboard-v019-sync.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-dashboard-v019-sanitized-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout authoritative execution branch snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: fix/native-private-execution-20260914
+          path: authority
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Checkout Dashboard v0.19 research branch
+        uses: actions/checkout@v4
+        with:
+          ref: research/dsa-dashboard-v019-20260918
+          path: dashboard
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build sanitized feed from newest compatible authority receipt
+        id: bridge
+        run: |
+          python dashboard/scripts/dashboard_sync_bridge_v019.py \
+            --dashboard-root dashboard \
+            --authority-root authority \
+            --authority-commit "$GITHUB_SHA" \
+            --out /tmp/dashboard-sync.json
+          cat /tmp/dashboard-sync.json
+          python - /tmp/dashboard-sync.json "$GITHUB_OUTPUT" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['status'] in {'UPDATED_ALIGNED','NOOP_ALREADY_ALIGNED'}, r
+          with open(sys.argv[2],'a',encoding='utf-8') as f:
+              f.write('changed=' + ('true' if r['changed'] else 'false') + '\n')
+              f.write('authority_run=' + str(r['authority_run_id']) + '\n')
+              f.write('authority_session=' + str(r['authority_session']) + '\n')
+          PY
+
+      - name: Fail-closed compare generated feed to authoritative checkout
+        run: |
+          python dashboard/scripts/dashboard_feed_lag_detector_v019.py \
+            --dashboard-root dashboard \
+            --authority-root authority \
+            --feed DSA_DASHBOARD_LIVE_V019.json \
+            --out /tmp/dashboard-feed-lag.json
+          python - /tmp/dashboard-feed-lag.json <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['status']=='ALIGNED', r
+          print('ALIGNED',r['latest_authority']['run_id'],r['latest_authority']['session'])
+          PY
+
+      - name: Install deterministic test dependency
+        if: steps.bridge.outputs.changed == 'true'
+        run: python -m pip install pytest
+
+      - name: Regression gate before publishing changed feed
+        if: steps.bridge.outputs.changed == 'true'
+        working-directory: dashboard
+        run: |
+          python -m pytest --noconftest -q \
+            tests/test_dashboard_v019.py \
+            tests/test_dashboard_feed_lag_v019.py \
+            tests/test_dashboard_sync_bridge_v019.py \
+            tests/test_dashboard_v018.py
+
+      - name: Publish only sanitized Dashboard feed/history
+        if: steps.bridge.outputs.changed == 'true'
+        working-directory: dashboard
+        env:
+          AUTHORITY_RUN: ${{ steps.bridge.outputs.authority_run }}
+          AUTHORITY_SESSION: ${{ steps.bridge.outputs.authority_session }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add DSA_DASHBOARD_LIVE_V019.json DSA_DASHBOARD_HISTORY_V019.json
+          git diff --cached --quiet && { echo "No sanitized changes to publish"; exit 0; }
+          git commit -m "chore(dsa-dashboard): sync sanitized feed from ${AUTHORITY_RUN} (${AUTHORITY_SESSION})"
+          git push origin HEAD:research/dsa-dashboard-v019-20260918
+
+      - name: Assert frozen boundaries
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/dashboard-sync.json'))
+          assert r['status'] in {'UPDATED_ALIGNED','NOOP_ALREADY_ALIGNED'}
+          print('MODEL_HTTP_REQUESTS=0')
+          print('REAL_ORDERS=0')
+          print('SCHEDULE_CHANGES=0')
+          print('MAIN_MERGE=0')
+          PY
