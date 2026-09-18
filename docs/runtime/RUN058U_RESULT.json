@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-SZSE-RECOVERY-20260918-058U",
+  "state": "STOP_MB003_FREE_GATE",
+  "target_session": "2026-09-18",
+  "official_source_recovery": {
+    "schema_version": 1,
+    "run_id": "TRI-DSA-O-SOURCE-RECOVERY-20260918-058U",
+    "session": "2026-09-18",
+    "complete_official_bundle": true,
+    "sources": [
+      {
+        "file": "sse-list.json",
+        "url": "https://query.sse.com.cn/commonQuery.do?sqlId=COMMON_SSE_JYFW_HGT_XXPL_BDZQQD_L&isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&keyword=",
+        "attempts": [
+          {
+            "attempt": 1,
+            "started_at": "2026-09-18T10:46:12.142731+00:00",
+            "status": "received",
+            "http_status": 200,
+            "bytes": 231567,
+            "sha256": "063695b47e7ea42e9f86552fc55dd786ba8303c9188ee41bc1ac37fefd4eb182",
+            "completed_at": "2026-09-18T10:46:14.054978+00:00"
+          }
+        ],
+        "status": "received",
+        "bytes": 231567,
+        "sha256": "063695b47e7ea42e9f86552fc55dd786ba8303c9188ee41bc1ac37fefd4eb182",
+        "successful_attempt": 1,
+        "started_at": "2026-09-18T10:46:12.142731+00:00",
+        "completed_at": "2026-09-18T10:46:14.054978+00:00"
+      },
+      {
+        "file": "szse-list.json",
+        "url": "https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=SGT_GGTBDQD&TABKEY=tab1&PAGENO=1",
+        "attempts": [
+          {
+            "attempt": 1,
+            "started_at": "2026-09-18T10:46:14.055513+00:00",
+            "status": "failed",
+            "error": "ConnectionError:('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
+            "completed_at": "2026-09-18T10:46:16.474441+00:00"
+          },
+          {
+            "attempt": 2,
+            "started_at": "2026-09-18T10:46:17.474538+00:00",
+            "status": "received",
+            "http_status": 200,
+            "bytes": 2270,
+            "sha256": "7a7539827fcbadeab33b9d788d495b71027d050fe54c450b8c7547fe031d4ea3",
+            "completed_at": "2026-09-18T10:46:17.955476+00:00"
+          }
+        ],
+        "status": "received",
+        "bytes": 2270,
+        "sha256": "7a7539827fcbadeab33b9d788d495b71027d050fe54c450b8c7547fe031d4ea3",
+        "successful_attempt": 2,
+        "started_at": "2026-09-18T10:46:14.055513+00:00",
+        "completed_at": "2026-09-18T10:46:17.955476+00:00"
+      },
+      {
+        "file": "szse-list.xlsx",
+        "url": "https://www.szse.cn/api/report/ShowReport?SHOWTYPE=xlsx&CATALOGID=SGT_GGTBDQD&TABKEY=tab1",
+        "attempts": [
+          {
+            "attempt": 1,
+            "started_at": "2026-09-18T10:46:17.955495+00:00",
+            "status": "received",
+            "http_status": 200,
+            "bytes": 25486,
+            "sha256": "1b38abd579f72622326c597cbea5ed477d4ceabb8ca598de37580015459edae5",
+            "completed_at": "2026-09-18T10:46:18.561396+00:00"
+          }
+        ],
+        "status": "received",
+        "bytes": 25486,
+        "sha256": "1b38abd579f72622326c597cbea5ed477d4ceabb8ca598de37580015459edae5",
+        "successful_attempt": 1,
+        "started_at": "2026-09-18T10:46:17.955495+00:00",
+        "completed_at": "2026-09-18T10:46:18.561396+00:00"
+      },
+      {
+        "file": "hkex-securities.xlsx",
+        "url": "https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx",
+        "attempts": [
+          {
+            "attempt": 1,
+            "started_at": "2026-09-18T10:46:18.561876+00:00",
+            "status": "received",
+            "http_status": 200,
+            "bytes": 1406418,
+            "sha256": "07e4eeeaf28467761b62d7c36b93f65221fef5838cfd839a48ea0ad5fb730329",
+            "completed_at": "2026-09-18T10:46:20.293966+00:00"
+          }
+        ],
+        "status": "received",
+        "bytes": 1406418,
+        "sha256": "07e4eeeaf28467761b62d7c36b93f65221fef5838cfd839a48ea0ad5fb730329",
+        "successful_attempt": 1,
+        "started_at": "2026-09-18T10:46:18.561876+00:00",
+        "completed_at": "2026-09-18T10:46:20.293966+00:00"
+      }
+    ],
+    "model_http_requests": 0,
+    "provider_credentials_used": false,
+    "drive_writes": 0,
+    "paid_data_calls": 0,
+    "DeepSeek_API_cost_cny": 0,
+    "real_orders": 0
+  },
+  "official_universe": {
+    "old_denominator": 660,
+    "new_denominator": 660,
+    "exact_member_order_match": true,
+    "added": [],
+    "removed": [],
+    "new_universe_sha256": "33f8819644cb43d997b50d54bdac3b431d9e82a9daaf9a6fdf089d4f75097d2f"
+  },
+  "market_history_sha256": "e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224",
+  "members": [
+    {
+      "code": "00005",
+      "status": "FAIL_FREE_PREFLIGHT",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    },
+    {
+      "code": "00006",
+      "status": "FAIL_FREE_PREFLIGHT",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    }
+  ],
+  "dry_00005": {},
+  "ready_for_paid_sentinel": [],
+  "session_isolated": [
+    "00005",
+    "00006"
+  ],
+  "model_http_requests": 0,
+  "provider_credentials_used": false,
+  "drive_writes": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "next": "Keep paid rollout frozen; resolve zero-model gate first."
+}
