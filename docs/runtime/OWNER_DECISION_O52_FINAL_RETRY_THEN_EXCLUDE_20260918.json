@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "decision_id": "DSA-OWNER-O52-FINAL-RETRY-20260918",
+  "decided_at_local": "2026-09-18T18:29:00+08:00",
+  "scope": "O historical-data isolation set of 52 members",
+  "owner_instruction": "After quota recovers next week, give the 52 historical-data isolates one final bounded pass. Any member still failing after that pass is removed from the O production/ranking pool; do not keep spending cycles on it.",
+  "execution_rule": {
+    "timing": "NEXT_WEEK_AFTER_OWNER_CONFIRMS_QUOTA_RECOVERED",
+    "automatic_quota_detection": false,
+    "retry_rounds_max": 1,
+    "preserve_existing_failure_history": true,
+    "no_repeat_loops": true,
+    "no_automatic_recharge": true,
+    "no_new_subscription": true,
+    "use_existing_free_and_authorized_sources_first": true,
+    "unresolved_after_final_pass_status": "OWNER_EXCLUDED_AFTER_FINAL_RETRY"
+  },
+  "universe_semantics": {
+    "official_master_universe_denominator": 660,
+    "official_master_universe_is_not_rewritten": true,
+    "production_eligible_pool_may_exclude_unresolved_after_final_pass": true,
+    "ranking_reports_must_disclose_official_denominator_and_production_eligible_denominator_separately": true,
+    "excluded_members_remain_in_audit_history": true
+  },
+  "current_o52_breakdown": {
+    "THIRD_SOURCE_CONFLICT_REMAINS": 32,
+    "TARGET_MISSING": 3,
+    "INVALID_BAR_GEOMETRY": 16,
+    "LESS_THAN_21_BARS": 1,
+    "total": 52
+  },
+  "effect_now": {
+    "members_removed_now": 0,
+    "model_calls_now": 0,
+    "paid_data_calls_now": 0,
+    "schedule_changes_now": 0,
+    "shadow_runtime_changed": false,
+    "real_orders": 0
+  },
+  "next": "Wait for Owner confirmation that quota has recovered next week, then run one final O52 clearance pass. Freeze remaining failures as OWNER_EXCLUDED_AFTER_FINAL_RETRY and continue O production without further remediation loops."
+}
