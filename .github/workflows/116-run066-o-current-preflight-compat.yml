@@ -1,0 +1,112 @@
+name: DSA Run066 current-preflight compatibility dry proof
+
+on:
+  push:
+    branches: [research/run066-o-current-preflight-compat-20260918]
+    paths:
+      - .github/workflows/116-run066-o-current-preflight-compat.yml
+      - scripts/prepare_run061_current_preflight.py
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  dry-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, fetch-depth: 0}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt requests deepseek-recipe==0.1.1
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35335286449
+          github-token: ${{ github.token }}
+          name: RUN060_CURRENT_OFFICIAL_CLOSE_EVIDENCE
+          path: parent
+      - name: Bind exact Run060 inputs
+        run: |
+          python - <<'PY'
+          import hashlib,shutil
+          from pathlib import Path
+          uh='6415847af25e86f201bb69759f6ecef053cfc69079809200650dd8b74550daf8'
+          hh='e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224'
+          um=[];hm=[]
+          for p in Path('parent').rglob('*'):
+              if not p.is_file():continue
+              h=hashlib.sha256(p.read_bytes()).hexdigest()
+              if h==uh:um.append(p)
+              if h==hh:hm.append(p)
+          assert len(um)==1 and len(hm)==1
+          shutil.copy2(um[0],'/tmp/run066-u.json');shutil.copy2(hm[0],'/tmp/run066-h.json')
+          PY
+      - name: Prove both dry envelopes with no provider or Drive credentials
+        working-directory: research
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+        run: |
+          python scripts/diagnose_run065_mb004_dry.py --checkout ../original --cache /tmp/run066-h.json --universe /tmp/run066-u.json --out /tmp/run066
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.load(open('/tmp/run066/RUN065_RESULT.json'))
+          assert r['model_http_requests']==0 and r['provider_credentials_used'] is False and r['drive_claims']==0
+          rows=[]
+          for m in r['members']:
+              q=(m.get('budget') or {}).get('requests') or []
+              assert len(q)==1,(m['code'],q,m.get('probe_summary'))
+              assert q[0]['status']=='dry_envelope_validated_not_sent',(m['code'],q)
+              rows.append({'code':m['code'],'preflight_sha256':m['preflight_sha256'],
+                           'dry_status':q[0]['status'],'pre_send_peak_upper_cny':q[0]['pre_send_peak_upper_cny']})
+          out={'schema_version':1,'run_id':'TRI-DSA-O-DRY-PROOF-20260918-066',
+               'state':'PASS_BOTH_CURRENT_SESSION_DRY','target_session':'2026-09-18',
+               'micro_batch_id':'O57-MB-004','members':rows,'ready_for_paid_child':['00008','00010'],
+               'model_http_requests':0,'DeepSeek_API_cost_cny':0,'provider_credentials_used':False,
+               'drive_claims':0,'real_orders':0,'automatic_retry':False}
+          Path('/tmp/RUN066_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN066_CURRENT_SESSION_DRY_PROOF
+          path: /tmp/RUN066_RESULT.json
+          retention-days: 90
+      - name: Commit proof receipt
+        working-directory: research
+        run: |
+          cp /tmp/RUN066_RESULT.json docs/runtime/RUN066_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN066_RESULT.json
+          if git diff --cached --quiet; then echo no-change; else git commit -m 'dsa: record Run066 current-session dry proof';git push;fi
