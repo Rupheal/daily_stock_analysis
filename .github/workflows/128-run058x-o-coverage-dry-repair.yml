@@ -1,0 +1,195 @@
+name: DSA Run058X MB004 coverage-adapter dry repair
+
+on:
+  push:
+    branches: [research/run058x-o-coverage-dry-repair-20260918]
+    paths:
+      - .github/workflows/128-run058x-o-coverage-dry-repair.yml
+      - docs/runtime/RUN058X_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058x-o-coverage-dry-repair
+  cancel-in-progress: false
+
+jobs:
+  dry-repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: research/run058x-o-coverage-dry-repair-20260918
+          path: research
+          fetch-depth: 0
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt pytest requests httpx deepseek-recipe==0.1.1
+
+      - name: Verify zero-model scope and adapter regression
+        working-directory: research
+        run: |
+          python -m pytest --noconftest -q             tests/test_o_news_coverage_limitation.py             tests/test_o_frozen_native_history_adapter.py             tests/test_o_native_input_contract.py             tests/test_deepseek_flash_cap010_guard.py             tests/test_o_provider_completion.py             tests/test_o_release_gate_contract.py
+          python - <<'PY'
+          import json
+          s=json.load(open('docs/runtime/RUN058X_SCOPE.json'))
+          w=json.load(open('docs/runtime/RUN058W_RESULT.json'))
+          assert s['codes']==['00008','00010'] and s['target_session']=='2026-09-18'
+          assert s['repair']=='PORT_ONLY_RUN058R_VERIFIED_O_NEWS_COVERAGE_LIMITATION_v1'
+          assert w['micro_batch_id']=='O57-MB-004'
+          assert all(x['status']=='PASS_POOL_TARGET_PREFLIGHT_V2' for x in w['members'])
+          assert s['model_http_requests']==0 and s['provider_credentials_allowed'] is False
+          print('RUN058X_SCOPE_PASS')
+          PY
+
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35336247845
+          github-token: ${{ github.token }}
+          name: RUN058U_20260918_SESSION_ROLLOVER
+          path: /tmp/u
+
+      - name: Bind current-session inputs
+        working-directory: research
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('docs/runtime/RUN058X_SCOPE.json'))
+          mh=list(Path('/tmp/u').rglob('market-history.json')); assert len(mh)==1
+          assert hashlib.sha256(mh[0].read_bytes()).hexdigest()==s['market_history_sha256']
+          up=list(Path('/tmp/u').rglob('O_UNIVERSE.json')); assert len(up)==1
+          uv=json.loads(up[0].read_text()); assert uv['member_count']==660 and uv['effective_session']=='2026-09-18'
+          pp=list(Path('/tmp/u').rglob('RUN058U_SESSION_PLAN.json')); assert len(pp)==1
+          pl=json.loads(pp[0].read_text()); assert pl['target_session']=='2026-09-18'
+          Path('/tmp/history').write_text(str(mh[0].resolve()))
+          Path('/tmp/universe').write_text(str(up[0].resolve()))
+          Path('/tmp/plan').write_text(str(pp[0].resolve()))
+          PY
+
+      - name: Re-run fresh preflights and dry envelopes
+        working-directory: research
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+        run: |
+          set +e
+          mkdir -p /tmp/pre
+          for code in 00008 00010; do
+            python scripts/prepare_hk_pool_rollout_preflight_v2.py               --code "$code" --target 2026-09-18               --universe "$(cat /tmp/universe)"               --cache "$(cat /tmp/history)"               --plan "$(cat /tmp/plan)"               --out "/tmp/pre/$code"
+            echo $? > "/tmp/pre/rc-$code"
+            if test ! -f "/tmp/pre/$code/preflight.json"; then continue; fi
+            PYTHONPATH="$PWD:$PWD/scripts"             DSA_BUDGET_PROBE_ONLY=1             LLM_DEEPSEEK_API_KEY=dry-envelope-no-network             LLM_CHANNELS=deepseek             LLM_DEEPSEEK_PROTOCOL=openai             LLM_DEEPSEEK_BASE_URL=https://api.deepseek.com             LLM_DEEPSEEK_MODELS=deepseek-flash             LITELLM_MODEL=openai/deepseek-flash             LITELLM_FALLBACK_MODELS=''             DSA_DEEPSEEK_V41_TOKENIZER="${DSA_DEEPSEEK_V41_TOKENIZER}"             DSA_NATIVE_MODEL_CONFIGURATION=O_DEEPSEEK_FLASH_NONTHINKING_v1             REPORT_INTEGRITY_RETRY=0 MAX_WORKERS=1 DSA_INPUT_TOKEN_MARGIN=2048             python scripts/run_hk_original_model_probe_run030.py               --symbol "HK$code" --checkout ../original               --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7               --preflight "/tmp/pre/$code/preflight.json"               --output "/tmp/dry-$code"               --limit-cny 0.10 --carry-upper-cny 0               --target-boundary-adapter --news-handoff-v1               --frozen-native-history-adapter --news-coverage-limitation-v1
+            echo $? > "/tmp/dry-rc-$code"
+          done
+          exit 0
+
+      - name: Build strict dry acceptance
+        working-directory: research
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          rows=[];ready=[]
+          for code in ('00008','00010'):
+              pf=Path('/tmp/pre')/code/'preflight.json'
+              row={'code':code}
+              if not pf.exists():
+                  f=Path('/tmp/pre')/code/'FREE_PREFLIGHT_STATUS.json'
+                  row.update(status='FAIL_FREE_PREFLIGHT',
+                             reason=json.loads(f.read_text()).get('reason') if f.exists() else 'UNKNOWN_FREE_PREFLIGHT_FAILURE')
+              else:
+                  p=json.loads(pf.read_text())
+                  row.update(status='PASS_POOL_TARGET_PREFLIGHT_V2',
+                             preflight_sha256=hashlib.sha256(pf.read_bytes()).hexdigest(),
+                             history_count=p['native_history_window']['count'],
+                             target_volume_status=p['price_reconciliation']['fresh_target_session']['volume']['latest_status'])
+                  bp=Path('/tmp/dry-'+code)/'budget.json';sp=Path('/tmp/dry-'+code)/'probe-summary.json'
+                  if bp.exists() and sp.exists():
+                      b=json.loads(bp.read_text());q=b.get('requests') or [];s=json.loads(sp.read_text())
+                      dry={
+                        'request_count':len(q),
+                        'request_status':q[0].get('status') if len(q)==1 else None,
+                        'pre_send_peak_upper_cny':q[0].get('pre_send_peak_upper_cny') if len(q)==1 else None,
+                        'input_validated':s.get('input_validated'),
+                        'coverage_adapter':s.get('news_coverage_limitation_adapter'),
+                        'coverage_version':s.get('news_coverage_limitation_version'),
+                        'frozen_history_adapter':s.get('frozen_native_history_adapter'),
+                        'news_prompt_consumed':s.get('news_prompt_consumed')
+                      }
+                      row['dry']=dry
+                      ok=(dry['request_count']==1 and dry['request_status']=='dry_envelope_validated_not_sent'
+                          and dry['input_validated'] is True and dry['coverage_adapter'] is True
+                          and dry['coverage_version']=='O_NEWS_COVERAGE_LIMITATION_v1'
+                          and dry['frozen_history_adapter'] is True
+                          and float(dry['pre_send_peak_upper_cny'])<=0.10)
+                      if ok: ready.append(code)
+                  else: row['dry']={'status':'DRY_OUTPUT_MISSING'}
+              rows.append(row)
+          out={
+            'schema_version':1,
+            'run_id':'TRI-DSA-O-MB004-DRY-REPAIR-20260918-058X',
+            'state':'PASS_DRY_SENTINEL_READY' if ready else 'STOP_DRY_NOT_READY',
+            'target_session':'2026-09-18','micro_batch_id':'O57-MB-004',
+            'members':rows,'ready_members':ready,
+            'next_paid_sentinel':ready[0] if ready else None,
+            'deferred_ready_members':ready[1:] if len(ready)>1 else [],
+            'model_http_requests':0,'provider_credentials_used':False,'drive_writes':0,
+            'DeepSeek_API_cost_cny':0,'paid_data_calls':0,'real_orders':0,
+            'automatic_retry':False,
+            'next':'Create one immutable paid sentinel for first ready member only.' if ready else 'Do not send provider; diagnose dry gate.'
+          }
+          Path('/tmp/RUN058X_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          if not ready: raise SystemExit(2)
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058X_MB004_DRY_REPAIR
+          path: |
+            /tmp/RUN058X_RESULT.json
+            /tmp/pre/
+          retention-days: 90
+
+      - name: Commit sanitized Run058X result
+        working-directory: research
+        run: |
+          set -euo pipefail
+          cp /tmp/RUN058X_RESULT.json docs/runtime/RUN058X_RESULT.json
+          git add docs/runtime/RUN058X_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'dsa: record Run058X MB004 dry repair'
+          git push origin HEAD:research/run058x-o-coverage-dry-repair-20260918
