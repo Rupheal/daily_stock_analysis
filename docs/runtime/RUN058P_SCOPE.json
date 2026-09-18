@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-BATCH-CLOSE-20260918-058P",
+  "target_session": "2026-09-17",
+  "micro_batch_id": "O57-MB-002",
+  "codes": ["00003","00004"],
+  "member_dispositions": {
+    "00003": "PERMANENT_ISOLATE_NO_RETRY",
+    "00004": "PERMANENT_ISOLATE_NO_RETRY"
+  },
+  "evidence": {
+    "run058l_workflow": 35299663030,
+    "run058m_result": "docs/runtime/RUN058M_RESULT.json",
+    "run058n_workflow": 35300054393,
+    "run058o_result": "docs/runtime/RUN058O_RESULT.json"
+  },
+  "model_http_requests_confirmed": 2,
+  "usage_peak_estimate_cny": "0.074578",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip_all": true,
+  "terminal_ledger_status": "RAW_GATE_BLOCK",
+  "qualified_signals": 0,
+  "simulation_writes": 0,
+  "real_orders": 0,
+  "automatic_retry": false,
+  "raw_content_public": false,
+  "expected_next_micro_batch": "O57-MB-003",
+  "expected_next_codes": ["00005","00006"],
+  "model_http_requests_authorized": 0,
+  "paid_data_calls_authorized": 0,
+  "drive_writes_authorized": 0,
+  "no_main_merge": true,
+  "no_schedule_change": true,
+  "definition_of_done": "Append exactly one terminal O57-MB-002 ledger row, validate no duplicate/conflict, run zero-model controller, and prove the next child is O57-MB-003 00005/00006 with provider_send_authorized_by_run058=false."
+}
