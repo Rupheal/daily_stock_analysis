@@ -1,0 +1,88 @@
+{
+  "run_id": "TRI-DSA-O-NATIVE-20260918-067",
+  "workflow_run": "35338215374",
+  "O_denominator": 660,
+  "attempted_members": 2,
+  "members": [
+    {
+      "code": "00008",
+      "status": "NATIVE_OUTPUT_ISOLATED",
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "f8051275d85735984511a16f7ff28f56523c619d20c79e445586debeaafbf3fe",
+        "bytes": 3419375,
+        "original_bytes": 3395748,
+        "parts": 3,
+        "files": 40
+      },
+      "frozen_native_history_adapter": true,
+      "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+      "pre_send_upper_cny": "0.079698",
+      "preflight_sha256": "de90b5ca89557a47cb01b813e821fcc184de45629ba7be56794268d092f1b2ac",
+      "pre_send_private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "ba1f34e0c47468838117d19bfd82157e4d6f3e7fc28f7a16454f0312fa33ea79",
+        "bytes": 1231251,
+        "original_bytes": 1220709,
+        "parts": 1,
+        "files": 18
+      },
+      "claim_persisted": true,
+      "native_exit_code": 1,
+      "usage_peak_estimate_cny": "0.035832",
+      "usage": [
+        {
+          "prompt_tokens": 5008,
+          "completion_tokens": 3227,
+          "total_tokens": 8235,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 2192
+        }
+      ],
+      "observed_balance_change_cny": "0.00",
+      "actual_attributable_charge_cny": null,
+      "provider_completion": {
+        "version": "O_PROVIDER_COMPLETION_v1",
+        "status": "PASS",
+        "blockers": [],
+        "raw_sha256": "a012adc9968fbe542b9e8f67ae1560c02df45bccd373f29823c60115913c831e",
+        "content_chars": 6458,
+        "reasoning_chars": 0,
+        "finish_reasons": [
+          "stop"
+        ],
+        "raw_mutated": false,
+        "model_requests": 0
+      },
+      "raw_blockers": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "raw_gate": "BLOCK"
+    },
+    {
+      "code": "00010",
+      "status": "ISOLATED_AFTER_PRIVATE_OR_SHARED_FAILURE",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "qualified_signal": false,
+      "private_persistence": null
+    }
+  ],
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.20",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true
+}

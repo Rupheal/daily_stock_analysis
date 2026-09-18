@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-067",
+  "state": "PENDING_PRIVATE_SEMANTIC_REVIEW",
+  "micro_batch_id": "O57-MB-004",
+  "codes": [
+    "00008",
+    "00010"
+  ],
+  "attempted_members": 2,
+  "member_statuses": [
+    {
+      "code": "00008",
+      "status": "NATIVE_OUTPUT_ISOLATED",
+      "raw_gate": "BLOCK",
+      "raw_blockers": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "usage_peak_estimate_cny": "0.035832",
+      "observed_balance_change_cny": "0.00",
+      "preflight_sha256": "de90b5ca89557a47cb01b813e821fcc184de45629ba7be56794268d092f1b2ac",
+      "frozen_native_history_adapter": true,
+      "failure_code": null
+    },
+    {
+      "code": "00010",
+      "status": "ISOLATED_AFTER_PRIVATE_OR_SHARED_FAILURE",
+      "raw_gate": null,
+      "raw_blockers": null,
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "usage_peak_estimate_cny": null,
+      "observed_balance_change_cny": null,
+      "preflight_sha256": null,
+      "frozen_native_history_adapter": null,
+      "failure_code": null
+    }
+  ],
+  "sent_codes": [
+    "00008"
+  ],
+  "unsent_codes": [
+    "00010"
+  ],
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.20",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip_all_sent": true,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "automatic_retry": false,
+  "rollout_ledger_advanced": false,
+  "next": "Restore and semantically review every sent private response. Never retry any sent member. Only after all sent members are dispositioned may the batch ledger advance or a never-sent member receive a new child."
+}
