@@ -10,8 +10,8 @@
     "02252"
   ],
   "base_excluded_count": 3,
-  "processed_operational_members": 556,
-  "rows_received": 657,
+  "processed_operational_members": 547,
+  "rows_received": 547,
   "missing_operational_members": [
     "00100",
     "00135",
@@ -71,12 +71,15 @@
     "06821",
     "06855",
     "06862",
+    "06865",
     "06869",
     "06872",
     "06881",
     "06886",
+    "06936",
     "06938",
     "06951",
+    "06963",
     "06969",
     "06979",
     "06990",
@@ -84,6 +87,7 @@
     "07630",
     "07666",
     "07688",
+    "09611",
     "09626",
     "09630",
     "09633",
@@ -93,6 +97,7 @@
     "09660",
     "09678",
     "09688",
+    "09690",
     "09696",
     "09699",
     "09858",
@@ -110,638 +115,35 @@
     "09973",
     "09980",
     "09981",
+    "09985",
+    "09987",
     "09988",
+    "09989",
     "09992",
     "09993",
-    "09995"
+    "09995",
+    "09999"
   ],
-  "missing_count": 101,
+  "missing_count": 110,
   "ranking_eligible_count": 278,
-  "additional_excluded_count": 278,
-  "shared_unprocessed_count": 101,
-  "shared_unprocessed": [
-    {
-      "code": "00100",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00135",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00537",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00811",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00817",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00819",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00826",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00839",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_00.json"
-    },
-    {
-      "code": "00857",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_01.json"
-    },
-    {
-      "code": "00867",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_01.json"
-    },
-    {
-      "code": "00880",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_01.json"
-    },
-    {
-      "code": "00881",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_01.json"
-    },
-    {
-      "code": "00883",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_01.json"
-    },
-    {
-      "code": "02553",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_02.json"
-    },
-    {
-      "code": "02556",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_02.json"
-    },
-    {
-      "code": "02565",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_02.json"
-    },
-    {
-      "code": "02575",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_02.json"
-    },
-    {
-      "code": "02577",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_02.json"
-    },
-    {
-      "code": "02579",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_02.json"
-    },
-    {
-      "code": "02583",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_02.json"
-    },
-    {
-      "code": "02586",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02588",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02589",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02590",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02591",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02595",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02600",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02601",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_03.json"
-    },
-    {
-      "code": "02602",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_04.json"
-    },
-    {
-      "code": "02607",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_04.json"
-    },
-    {
-      "code": "02609",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_04.json"
-    },
-    {
-      "code": "02610",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_04.json"
-    },
-    {
-      "code": "02611",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_04.json"
-    },
-    {
-      "code": "02616",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_04.json"
-    },
-    {
-      "code": "02617",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_04.json"
-    },
-    {
-      "code": "06186",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_05.json"
-    },
-    {
-      "code": "06196",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_05.json"
-    },
-    {
-      "code": "06600",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_05.json"
-    },
-    {
-      "code": "06613",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_05.json"
-    },
-    {
-      "code": "06636",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_05.json"
-    },
-    {
-      "code": "06651",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06655",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06656",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06658",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06666",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06675",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06680",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06681",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_06.json"
-    },
-    {
-      "code": "06682",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_07.json"
-    },
-    {
-      "code": "06687",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_07.json"
-    },
-    {
-      "code": "06690",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_07.json"
-    },
-    {
-      "code": "06693",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_07.json"
-    },
-    {
-      "code": "06808",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_08.json"
-    },
-    {
-      "code": "06809",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_08.json"
-    },
-    {
-      "code": "06818",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_08.json"
-    },
-    {
-      "code": "06821",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_08.json"
-    },
-    {
-      "code": "06855",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_08.json"
-    },
-    {
-      "code": "06862",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_08.json"
-    },
-    {
-      "code": "06869",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06872",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06881",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06886",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06938",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06951",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06969",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_10.json"
-    },
-    {
-      "code": "06979",
-      "status": "SHARED_FAILURE_UNPROCESSED",
-      "failure_code": "DRIVE_WRITE_TRANSPORT_AMBIGUOUS",
-      "source": "SHARD_RESULT_10.json"
-    },
-    {
-      "code": "06990",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_10.json"
-    },
-    {
-      "code": "06993",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_10.json"
-    },
-    {
-      "code": "07630",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_10.json"
-    },
-    {
-      "code": "07666",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_10.json"
-    },
-    {
-      "code": "07688",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09626",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09630",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09633",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09636",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09637",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09658",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_12.json"
-    },
-    {
-      "code": "09660",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_12.json"
-    },
-    {
-      "code": "09678",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_12.json"
-    },
-    {
-      "code": "09688",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_12.json"
-    },
-    {
-      "code": "09696",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_12.json"
-    },
-    {
-      "code": "09699",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_12.json"
-    },
-    {
-      "code": "09858",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_12.json"
-    },
-    {
-      "code": "09863",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_13.json"
-    },
-    {
-      "code": "09868",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_13.json"
-    },
-    {
-      "code": "09887",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_13.json"
-    },
-    {
-      "code": "09888",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_13.json"
-    },
-    {
-      "code": "09896",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_13.json"
-    },
-    {
-      "code": "09899",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_13.json"
-    },
-    {
-      "code": "09903",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09911",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09926",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09927",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09969",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09973",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09980",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09981",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_14.json"
-    },
-    {
-      "code": "09988",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_15.json"
-    },
-    {
-      "code": "09992",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_15.json"
-    },
-    {
-      "code": "09993",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_15.json"
-    },
-    {
-      "code": "09995",
-      "status": "PROVEN_UNSENT_RUNNER_BUG",
-      "failure_code": "NameError",
-      "source": "SHARD_RESULT_15.json"
-    }
-  ],
+  "additional_excluded_count": 269,
+  "shared_unprocessed_count": 0,
+  "shared_unprocessed": [],
   "additional_excluded_status_counts": {
     "CORE_REJECTED_NO_RETRY": 74,
     "EXCLUDED_AFTER_CLAIM_NO_RETRY": 1,
-    "EXCLUDED_PREFLIGHT_NO_RESCUE": 200,
+    "EXCLUDED_PREFLIGHT_NO_RESCUE": 191,
     "PRIVATE_FINAL_FAIL_NO_RETRY": 3
   },
   "reconciliation": {
     "official": 660,
     "base_operational": 657,
     "base_excluded": 3,
-    "rows_received": 657,
-    "processed": 556,
-    "missing": 101,
+    "rows_received": 547,
+    "processed": 547,
+    "missing": 110,
     "ranking_eligible": 278,
-    "additional_excluded": 278,
+    "additional_excluded": 269,
     "official_equals_base_plus_excluded": true,
     "processed_plus_missing_equals_base": true,
     "eligible_plus_additional_excluded_equals_processed": true
@@ -5679,7 +5081,7 @@
       "universe_index": 140,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_01.json"
+      "source": "SHARD_RESULT_00.json"
     },
     {
       "code": "00856",
@@ -5703,7 +5105,7 @@
       "universe_index": 145,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_01.json"
+      "source": "SHARD_RESULT_02.json"
     },
     {
       "code": "00917",
@@ -6687,7 +6089,7 @@
       "universe_index": 425,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_04.json"
+      "source": "SHARD_RESULT_03.json"
     },
     {
       "code": "02618",
@@ -6695,7 +6097,7 @@
       "universe_index": 432,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_05.json"
+      "source": "SHARD_RESULT_03.json"
     },
     {
       "code": "02643",
@@ -7191,7 +6593,7 @@
       "universe_index": 575,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_05.json"
+      "source": "SHARD_RESULT_04.json"
     },
     {
       "code": "06618",
@@ -7199,7 +6601,7 @@
       "universe_index": 578,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_05.json"
+      "source": "SHARD_RESULT_04.json"
     },
     {
       "code": "06683",
@@ -7207,7 +6609,7 @@
       "universe_index": 589,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "INVALID_NATIVE_BAR_GEOMETRY",
-      "source": "SHARD_RESULT_07.json"
+      "source": "SHARD_RESULT_05.json"
     },
     {
       "code": "06699",
@@ -7215,7 +6617,7 @@
       "universe_index": 593,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_07.json"
+      "source": "SHARD_RESULT_05.json"
     },
     {
       "code": "06715",
@@ -7223,7 +6625,7 @@
       "universe_index": 594,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_07.json"
+      "source": "SHARD_RESULT_06.json"
     },
     {
       "code": "06745",
@@ -7231,7 +6633,7 @@
       "universe_index": 595,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_07.json"
+      "source": "SHARD_RESULT_06.json"
     },
     {
       "code": "06806",
@@ -7239,7 +6641,7 @@
       "universe_index": 596,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_08.json"
+      "source": "SHARD_RESULT_07.json"
     },
     {
       "code": "06826",
@@ -7247,31 +6649,7 @@
       "universe_index": 601,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_08.json"
-    },
-    {
-      "code": "06865",
-      "name": "福莱特玻璃",
-      "universe_index": 604,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06936",
-      "name": "顺丰控股",
-      "universe_index": 609,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_09.json"
-    },
-    {
-      "code": "06963",
-      "name": "阳光保险",
-      "universe_index": 612,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_10.json"
+      "source": "SHARD_RESULT_07.json"
     },
     {
       "code": "07618",
@@ -7287,23 +6665,7 @@
       "universe_index": 621,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09611",
-      "name": "龙旗科技",
-      "universe_index": 622,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_11.json"
-    },
-    {
-      "code": "09690",
-      "name": "途虎－Ｗ",
-      "universe_index": 632,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_12.json"
+      "source": "SHARD_RESULT_10.json"
     },
     {
       "code": "09880",
@@ -7311,7 +6673,7 @@
       "universe_index": 638,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_13.json"
+      "source": "SHARD_RESULT_12.json"
     },
     {
       "code": "09890",
@@ -7319,48 +6681,16 @@
       "universe_index": 641,
       "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
       "failure_code": "INVALID_NATIVE_BAR_GEOMETRY",
-      "source": "SHARD_RESULT_13.json"
-    },
-    {
-      "code": "09985",
-      "name": "卫龙美味",
-      "universe_index": 652,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_15.json"
-    },
-    {
-      "code": "09987",
-      "name": "百胜中国",
-      "universe_index": 653,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_15.json"
-    },
-    {
-      "code": "09989",
-      "name": "海普瑞",
-      "universe_index": 655,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_15.json"
-    },
-    {
-      "code": "09999",
-      "name": "网易",
-      "universe_index": 659,
-      "status": "EXCLUDED_PREFLIGHT_NO_RESCUE",
-      "failure_code": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
-      "source": "SHARD_RESULT_15.json"
+      "source": "SHARD_RESULT_12.json"
     }
   ],
   "run_id": "TRI-DSA-O-CONT-20260918-073",
   "decision_session": "2026-09-18",
   "model_http_requests_this_wave": 0,
-  "uncertain_no_repeat_claims_this_wave": 100,
+  "uncertain_no_repeat_claims_this_wave": 0,
   "usage_peak_estimate_cny_this_wave": "0",
   "deferred_for_budget_count": 0,
-  "blocked_no_repeat_missing_count": 0,
+  "blocked_no_repeat_missing_count": 100,
   "continuation_parent": "docs/runtime/RUN072_O657_FORMAL_RESULT.json",
   "automatic_retry": false,
   "schedule_changes": 0,
