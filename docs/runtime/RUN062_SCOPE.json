@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-FREE-DRY-20260918-062",
+  "target_session": "2026-09-18",
+  "decision_session": "2026-09-18",
+  "parent_run_id": "TRI-DSA-O-SZSE-RECOVERY-20260918-058U",
+  "parent_workflow_run": 35336247845,
+  "parent_artifact_name": "RUN058U_20260918_SESSION_ROLLOVER",
+  "micro_batch_id": "O57-MB-004",
+  "codes": [
+    "00008",
+    "00010"
+  ],
+  "prior_failed_current_codes": [
+    "00005",
+    "00006"
+  ],
+  "historical_isolates_retained": 52,
+  "model_http_requests_authorized": 0,
+  "provider_send_authorized": false,
+  "drive_writes_authorized": 0,
+  "paid_data_calls_authorized": 0,
+  "automatic_retry": false,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "rule": "Fresh 2026-09-18 v2 preflight and frozen-history dry only. Select at most one sentinel; no real provider credential."
+}
