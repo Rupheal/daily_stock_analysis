@@ -227,7 +227,11 @@ def main():
             write(root/"private-claim.json",claim)
 
             actual=root/"native";actualenv=dict(env,DSA_BUDGET_PROBE_ONLY="0",LLM_DEEPSEEK_API_KEY=os.environ["DEEPSEEK_API_KEY"])
-            rc=command(scripts/"run_hk_original_model_probe_run030.py",[*common,"--output",str(actual)],actualenv,root/"native.stdout")
+            rc=command(
+              scripts/"run_hk_original_model_probe_run030.py",
+              [*common_base,"--limit-cny",str(effective_cap),"--output",str(actual)],
+              actualenv,root/"native.stdout"
+            )
             row["native_exit_code"]=rc
             b=json.loads((actual/"budget.json").read_text());requests=b.get("requests") or []
             row["model_http_requests_possible"]=len(requests)
