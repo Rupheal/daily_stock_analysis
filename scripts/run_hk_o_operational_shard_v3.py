@@ -211,6 +211,7 @@ def main():
             completion=inspect_completion((actual/"provider-response.txt").read_bytes())
             write(actual/"provider-completion-audit.json",completion)
             row["provider_completion_status"]=completion["status"]
+            row["provider_response_sha256"]=completion.get("raw_sha256")
             if completion["status"]!="PASS":
                 row["status"]="PROVIDER_FAILED_NO_RETRY";row["failure_code"]="|".join(completion["blockers"])[:180]
                 provider_fail_streak+=1
