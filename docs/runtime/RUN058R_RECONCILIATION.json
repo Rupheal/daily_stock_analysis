@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058R",
+  "state": "STOP_BATCH",
+  "micro_batch_id": "O57-MB-003",
+  "code": "00005",
+  "peer_isolated": "00006",
+  "member_status": {
+    "status": null,
+    "raw_gate": null,
+    "raw_blockers": null,
+    "model_http_requests_confirmed": null,
+    "model_http_requests_possible": null,
+    "usage_peak_estimate_cny": null,
+    "observed_balance_change_cny": null,
+    "preflight_sha256": null,
+    "frozen_native_history_adapter": null
+  },
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "automatic_retry": false,
+  "rollout_ledger_advanced": false,
+  "next": "Private semantic review; never retry sent 00005. 00006 remains target-session isolate."
+}
