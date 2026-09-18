@@ -1,0 +1,52 @@
+{
+  "analyzer_sem001_findings": [],
+  "analyzer_sem002_findings": [
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.battle_plan.action_checklist[3]",
+        "news_context"
+      ]
+    }
+  ],
+  "analyzer_sem003_findings": [],
+  "analyzer_semantic_gates": [
+    "SEM-002"
+  ],
+  "code": "00008",
+  "disposition": "PERMANENT_ISOLATE_NO_RETRY",
+  "model_http_requests_added": 0,
+  "pipeline_sem001_findings": [
+    {
+      "code": "SEM001_LIVE_PRICE_FIELD_WITHOUT_REALTIME_QUOTE",
+      "paths": [
+        "dashboard.data_perspective.price_position.current_price",
+        "current_price"
+      ]
+    }
+  ],
+  "pipeline_sem002_findings": [
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.battle_plan.action_checklist[3]",
+        "news_context"
+      ]
+    }
+  ],
+  "pipeline_sem003_findings": [],
+  "pipeline_semantic_gates": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "private_restore_hash_verified": true,
+  "provider_response_sha256": "a012adc9968fbe542b9e8f67ae1560c02df45bccd373f29823c60115913c831e",
+  "provider_sem002_pattern_present": false,
+  "raw_content_public": false,
+  "repeat_model_request_permitted": false,
+  "saved_post_output_blockers": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "schema_version": 1
+}
