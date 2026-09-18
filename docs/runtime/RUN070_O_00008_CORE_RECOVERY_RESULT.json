@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-CORE-RECOVERY-20260918-070",
+  "target_session": "2026-09-18",
+  "code": "00008",
+  "state": "PASS_CURRENT_CORE_RECOVERY",
+  "ranking_eligible": true,
+  "strategy_core": {
+    "action": "watch",
+    "sentiment_score": 42,
+    "decision_type": "hold",
+    "action_family": "hold",
+    "score_family": "hold",
+    "guardrail_reason_present": false
+  },
+  "strategy_core_sha256": "410243938a6f21d37a6302d95b85927230be0f98f45962e5d62854b270cbfdc7",
+  "raw_result_sha256": "7971eb79a01deec82cad9ddfb75000f12f500552265ab4e21501d7a87b976a66",
+  "provider_response_sha256": "a012adc9968fbe542b9e8f67ae1560c02df45bccd373f29823c60115913c831e",
+  "narrative_release_status": "QUARANTINED",
+  "semantic_guards": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "hard_semantic_count": 0,
+  "core_semantic_count": 0,
+  "narrative_semantic_count": 3,
+  "blockers": [],
+  "model_http_requests_added": 0,
+  "repeat_model_request_permitted": false,
+  "real_orders": 0,
+  "raw_content_public": false
+}
