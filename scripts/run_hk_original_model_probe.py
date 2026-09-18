@@ -21,6 +21,7 @@ from hk_budget_guard import ResearchBudget, decode_usage
 from o_native_input_contract import NativeInputContractError, validate_native_input, validate_native_history_database
 from o_native_date_boundary_adapter import patched_yahoo_target_boundary
 from o_frozen_native_history_adapter import patched_frozen_native_history
+from o_news_coverage_limitation import apply_coverage_limitation, VERSION as COVERAGE_LIMITATION_VERSION
 from o_semantic_handoff_contract import (CONTRACT_VERSION, FROZEN_UPSTREAM, ContractError,
     canonical_hash, build_news_handoff, prove_prompt_consumption)
 from o_single_output_fact_check import check_saved_output
@@ -48,6 +49,8 @@ def main():
     parser.add_argument('--target-boundary-adapter', action='store_true')
     parser.add_argument('--news-handoff-v1', action='store_true',
         help='Versioned preflight news before native context-pack construction; no implicit request authorization')
+    parser.add_argument('--news-coverage-limitation-v1', action='store_true',
+        help='Append a versioned incomplete-news-coverage limitation to the evidence handoff; no native prompt-template or scoring change')
     parser.add_argument('--frozen-native-history-adapter', action='store_true',
         help='Feed the immutable preflight native history at retrieval boundary; frozen upstream analysis remains unchanged')
     args = parser.parse_args()
@@ -139,6 +142,8 @@ def main():
         skeleton = {'code':code,'date':target_session,'today':{'date':target_session},'news_window_days':window}
         news_handoff = build_news_handoff(preflight,skeleton,
             expected_preflight_hash=canonical_hash(preflight),decision_at=started)
+        if args.news_coverage_limitation_v1:
+            news_handoff = apply_coverage_limitation(news_handoff, preflight)
         text = news_handoff['news_context']
         if existing not in (None,'',text):
             raise ContractError('EXISTING_NATIVE_NEWS_CONFLICT')
@@ -164,6 +169,8 @@ def main():
                 raise ContractError('PREFLIGHT_NEWS_LOADER_NOT_CONSUMED')
             verified = build_news_handoff(preflight,context,
                 expected_preflight_hash=canonical_hash(preflight),decision_at=started)
+            if args.news_coverage_limitation_v1:
+                verified = apply_coverage_limitation(verified, preflight)
             if observed_input['news_context'] != verified['news_context']:
                 raise ContractError('PREFLIGHT_NEWS_ARGUMENT_DROPPED_OR_CHANGED')
             if 'news_context_missing' in str(observed_input['analysis_context_pack_summary']):
@@ -279,6 +286,9 @@ def main():
                 'news_handoff_version':CONTRACT_VERSION if args.news_handoff_v1 else None,
                 'news_handoff_requested':bool(args.news_handoff_v1),'news_loader_consumed':loader_called,
                 'news_prompt_consumed':bool(prompt_handoff_receipt),
+                'news_coverage_limitation_adapter':bool(args.news_coverage_limitation_v1),
+                'news_coverage_limitation_version':COVERAGE_LIMITATION_VERSION if args.news_coverage_limitation_v1 else None,
+                'news_coverage_limitation_receipt':(news_handoff or {}).get('coverage_limitation_adapter') if args.news_coverage_limitation_v1 else None,
                 'output_semantic_verdict':output_semantic_receipt.get('semantic_verdict') if output_semantic_receipt else 'NOT_REVIEWED',
                 'post_output_contract_version':POST_OUTPUT_VERSION,
                 'post_output_promotion_gate':output_contract_receipt['promotion_gate'],
