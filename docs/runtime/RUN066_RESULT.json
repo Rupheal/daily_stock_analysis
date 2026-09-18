@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-DRY-PROOF-20260918-066",
+  "state": "PASS_BOTH_CURRENT_SESSION_DRY",
+  "target_session": "2026-09-18",
+  "micro_batch_id": "O57-MB-004",
+  "members": [
+    {
+      "code": "00008",
+      "preflight_sha256": "3003a992dcb6a86f2fd891c7ab9515bd702eb5ee1f00852931cca7d5df22ecc7",
+      "dry_status": "dry_envelope_validated_not_sent",
+      "pre_send_peak_upper_cny": "0.079698"
+    },
+    {
+      "code": "00010",
+      "preflight_sha256": "5abab7b9d2bc090147f89e04bf7007666f2cbe35d9aa200989929813325c9204",
+      "dry_status": "dry_envelope_validated_not_sent",
+      "pre_send_peak_upper_cny": "0.07971"
+    }
+  ],
+  "ready_for_paid_child": [
+    "00008",
+    "00010"
+  ],
+  "model_http_requests": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "provider_credentials_used": false,
+  "drive_claims": 0,
+  "real_orders": 0,
+  "automatic_retry": false
+}
