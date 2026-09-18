@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058S",
+  "state": "STOP_PAID_ROLLOUT",
+  "reason": "SANITIZED_RESULT_MISSING",
+  "code": "00005",
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "qualified_signals": 0,
+  "orders": 0,
+  "automatic_retry": false
+}
