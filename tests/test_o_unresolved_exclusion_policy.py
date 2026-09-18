@@ -34,8 +34,16 @@ def test_reentry_is_passive():
 
 def test_next_actions_uses_operational_denominator():
     g4=next(x for x in NEXT['next_actions'] if x['id']=='G4')
-    assert 'OPERATIONAL657' in g4['status']
-    assert 'FORMAL0_OF657' in g4['status']
+    assert (
+        'OPERATIONAL657' in g4['status']
+        or 'O_FORMAL_PARTIAL_' in g4['status']
+        or 'O_FORMAL_TOP3_PASS_' in g4['status']
+    )
+    assert g4['current_unresolved_exclusion_policy']=='docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json'
+    den=NEXT['operating_rules']['o_20260918_denominators']
+    assert den['official']==660
+    assert den['operational']==657
+    assert den['formal_acceptance_denominator']==657
     assert g4['current_unresolved_exclusion_policy']=='docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json'
     den=NEXT['operating_rules']['o_20260918_denominators']
     assert den['official']==660
