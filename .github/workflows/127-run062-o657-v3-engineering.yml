@@ -136,10 +136,14 @@ jobs:
           git add docs/runtime/RUN062_O657_V3_ENGINEERING_RESULT.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+Rupheal@users.noreply.github.com'
-          git commit -m 'dsa: record O657 v3 current-session engineering gate'
-          git fetch origin fix/native-private-execution-20260914
-          git rebase origin/fix/native-private-execution-20260914
-          git push origin HEAD:fix/native-private-execution-20260914
+          if git diff --cached --quiet; then
+            echo "no-change"
+          else
+            git commit -m 'dsa: record O657 v3 current-session engineering gate'
+            git fetch origin fix/native-private-execution-20260914
+            git rebase origin/fix/native-private-execution-20260914
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
       - name: Assert zero paid/model boundary
         run: |
           echo MODEL_HTTP_REQUESTS=0
