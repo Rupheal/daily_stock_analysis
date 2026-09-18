@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-MB004-DRY-REPAIR-20260918-058X",
+  "state": "PASS_DRY_SENTINEL_READY",
+  "target_session": "2026-09-18",
+  "micro_batch_id": "O57-MB-004",
+  "members": [
+    {
+      "code": "00008",
+      "status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "preflight_sha256": "e9809f3768f29115258847234d8329664d6a2485fd7f06a593812d7da32bc7b1",
+      "history_count": 45,
+      "target_volume_status": "bounded_provider_reconciliation",
+      "dry": {
+        "request_count": 1,
+        "request_status": "dry_envelope_validated_not_sent",
+        "pre_send_peak_upper_cny": "0.079956",
+        "input_validated": true,
+        "coverage_adapter": true,
+        "coverage_version": "O_NEWS_COVERAGE_LIMITATION_v1",
+        "frozen_history_adapter": true,
+        "news_prompt_consumed": true
+      }
+    },
+    {
+      "code": "00010",
+      "status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "preflight_sha256": "8f986c02238d240d64cb12714d6dd02098405e25b76cd310c77f30e0fcd3b78c",
+      "history_count": 45,
+      "target_volume_status": "exact",
+      "dry": {
+        "request_count": 1,
+        "request_status": "dry_envelope_validated_not_sent",
+        "pre_send_peak_upper_cny": "0.079968",
+        "input_validated": true,
+        "coverage_adapter": true,
+        "coverage_version": "O_NEWS_COVERAGE_LIMITATION_v1",
+        "frozen_history_adapter": true,
+        "news_prompt_consumed": true
+      }
+    }
+  ],
+  "ready_members": [
+    "00008",
+    "00010"
+  ],
+  "next_paid_sentinel": "00008",
+  "deferred_ready_members": [
+    "00010"
+  ],
+  "model_http_requests": 0,
+  "provider_credentials_used": false,
+  "drive_writes": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "automatic_retry": false,
+  "next": "Create one immutable paid sentinel for first ready member only."
+}
