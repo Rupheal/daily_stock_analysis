@@ -216,12 +216,11 @@ jobs:
           DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
           DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
         run: |
-          python scripts/run_hk_o_operational_shard_v3.py \
+          bash scripts/run_o_shard_with_heartbeat.sh "/tmp/run073-${{ matrix.shard }}" \
             --checkout ../original --cache /tmp/plan/input/O_HISTORY.json --universe /tmp/plan/input/O_UNIVERSE.json \
             --policy docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json \
             --scope "/tmp/plan/scopes/scope-${{ matrix.shard }}.json" \
-            --codes-file "/tmp/plan/codes/shard-${{ matrix.shard }}.json" \
-            --out "/tmp/run073-${{ matrix.shard }}"
+            --codes-file "/tmp/plan/codes/shard-${{ matrix.shard }}.json"
       - name: Sanitize continuation shard
         if: always()
         env:
