@@ -72,6 +72,25 @@ jobs:
           print('ALIGNED',r['latest_authority']['run_id'],r['latest_authority']['session'])
           PY
 
+      - name: Validate /tri dsa ui route against synchronized authority
+        run: |
+          set +e
+          python dashboard/scripts/dashboard_ui_router_v019.py \
+            --dashboard-root dashboard \
+            --authority-root authority \
+            --out /tmp/tri-dsa-ui-route.json
+          rc=$?
+          set -e
+          python - /tmp/tri-dsa-ui-route.json "$rc" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]));rc=int(sys.argv[2])
+          assert rc==0, (rc,r)
+          assert r['route_state']=='CURRENT_AUTHORITY_ALIGNED', r
+          assert r['selected_version']=='v0.19', r
+          assert r['read_only'] is True
+          print('/tri dsa ui ->',r['selected_version'],r['badge'],r['authority_run'],r['authority_session'])
+          PY
+
       - name: Install deterministic test dependency
         if: steps.bridge.outputs.changed == 'true'
         run: python -m pip install pytest
@@ -84,6 +103,7 @@ jobs:
             tests/test_dashboard_v019.py \
             tests/test_dashboard_feed_lag_v019.py \
             tests/test_dashboard_sync_bridge_v019.py \
+            tests/test_dashboard_ui_router_v019.py \
             tests/test_dashboard_v018.py
 
       - name: Publish only sanitized Dashboard feed/history
