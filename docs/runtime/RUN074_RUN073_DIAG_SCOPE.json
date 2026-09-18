@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-RUN073-DIAG-20260918-074",
+  "source_workflow_run": 35375006619,
+  "source_shard": "00",
+  "code": "00100",
+  "source_artifact_id": "ART-DSA-RUN073-O-CONT-S00-00100",
+  "source_member_run_id": "TRI-DSA-O-CONT-20260918-073-S00-00100",
+  "purpose": "Zero-model private restore of one Run073 claim-before-send failure to determine shared engineering root cause. Publish only sanitized status/error/budget metadata.",
+  "model_http_requests": 0,
+  "drive_writes": 0,
+  "repeat_model_request_permitted": false,
+  "no_orders": true,
+  "raw_content_public": false
+}
