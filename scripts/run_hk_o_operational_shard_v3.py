@@ -152,8 +152,7 @@ def main():
             )
             if rc or not (pre/"preflight.json").exists():
                 detail=json.loads((pre/"FREE_PREFLIGHT_STATUS.json").read_text()).get("reason","") if (pre/"FREE_PREFLIGHT_STATUS.json").exists() else "FREE_PREFLIGHT_FAILED"
-                row["status"]="EXCLUDED_PREFLIGHT_NO_RESCUE";row["failure_code"]=detail;rows.append(row)
-                write(root/"member-summary.json",row)
+                row["status"]="EXCLUDED_PREFLIGHT_NO_RESCUE";row["failure_code"]=detail
                 continue
 
             common=[
