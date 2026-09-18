@@ -1,0 +1,110 @@
+name: DSA Run063 MB004 current-session zero-model preflight
+
+on:
+  push:
+    branches: [research/run063-o-mb004-current-preflight-20260918]
+    paths:
+      - .github/workflows/113-run063-o-mb004-current-preflight.yml
+      - docs/runtime/RUN063_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, fetch-depth: 0}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt requests
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35335286449
+          github-token: ${{ github.token }}
+          name: RUN060_CURRENT_OFFICIAL_CLOSE_EVIDENCE
+          path: parent
+      - name: Bind exact Run060 inputs
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('research/docs/runtime/RUN063_SCOPE.json'))
+          um=[];hm=[]
+          for p in Path('parent').rglob('*'):
+              if not p.is_file():continue
+              h=hashlib.sha256(p.read_bytes()).hexdigest()
+              if h==s['O_universe_sha256']:um.append(p)
+              if h==s['O_market_history_sha256']:hm.append(p)
+          assert len(um)==1 and len(hm)==1
+          u=json.loads(um[0].read_text());m=json.loads(hm[0].read_text())
+          assert len(u['members'])==660 and u['full_union_verified'] is True
+          assert m['target_session']=='2026-09-18'
+          for c in s['codes']:assert 'hk'+c in m['histories']
+          Path('/tmp/u').write_text(str(um[0].resolve()));Path('/tmp/h').write_text(str(hm[0].resolve()))
+          PY
+      - name: Run MB004 preflights
+        run: |
+          set +e;mkdir -p /tmp/run063
+          python research/scripts/prepare_run061_current_preflight.py --code 00008 --target 2026-09-18 --universe "$(cat /tmp/u)" --cache "$(cat /tmp/h)" --plan research/docs/runtime/RUN057_O_NATIVE_PLAN.json --out /tmp/run063/00008
+          r1=$?
+          python research/scripts/prepare_run061_current_preflight.py --code 00010 --target 2026-09-18 --universe "$(cat /tmp/u)" --cache "$(cat /tmp/h)" --plan research/docs/runtime/RUN057_O_NATIVE_PLAN.json --out /tmp/run063/00010
+          r2=$?
+          echo "$r1 $r2" >/tmp/run063/rc.txt; exit 0
+      - name: Build receipt
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('/tmp/run063');rc=[int(x) for x in (root/'rc.txt').read_text().split()]
+          rows=[]
+          for code,r in zip(['00008','00010'],rc):
+              p=root/code/'preflight.json';f=root/code/'FREE_PREFLIGHT_STATUS.json'
+              if r==0 and p.exists():
+                  d=json.loads(p.read_text())
+                  rows.append({'code':code,'status':'PASS_CURRENT_TARGET_PREFLIGHT','preflight_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                    'history_count':len(d['validated_native_history']),'target_volume_status':d['price_reconciliation']['fresh_target_session']['volume']['latest_status']})
+              else:
+                  reason=json.loads(f.read_text()).get('reason') if f.exists() else 'UNKNOWN'
+                  rows.append({'code':code,'status':'FAIL_CURRENT_TARGET_PREFLIGHT','reason':reason})
+          ready=[x['code'] for x in rows if x['status']=='PASS_CURRENT_TARGET_PREFLIGHT']
+          out={'schema_version':1,'run_id':'TRI-DSA-O-CURRENT-PREFLIGHT-20260918-063','state':'PASS_ALL_READY' if len(ready)==2 else ('PASS_SELECTIVE_FAIL_CLOSED' if ready else 'STOP_MB004_NO_READY_MEMBER'),
+               'target_session':'2026-09-18','micro_batch_id':'O57-MB-004','members':rows,'ready_for_paid_child':ready,
+               'model_http_requests':0,'DeepSeek_API_cost_cny':0,'paid_data_calls':0,'real_orders':0,'simulation_writes':0,'automatic_retry':False,
+               'next':'Create one immutable paid child containing only ready members; re-run current-session preflight before send.' if ready else 'Close MB004 RAW_GATE_BLOCK and select next batch.'}
+          Path('/tmp/RUN063_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN063_MB004_CURRENT_PREFLIGHT
+          path: |
+            /tmp/RUN063_RESULT.json
+            /tmp/run063/00008/preflight.json
+            /tmp/run063/00008/FREE_PREFLIGHT_STATUS.json
+            /tmp/run063/00010/preflight.json
+            /tmp/run063/00010/FREE_PREFLIGHT_STATUS.json
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Commit receipt
+        working-directory: research
+        run: |
+          cp /tmp/RUN063_RESULT.json docs/runtime/RUN063_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN063_RESULT.json
+          if git diff --cached --quiet; then echo no-change; else git commit -m 'dsa: record Run063 MB004 current preflight';git push;fi
