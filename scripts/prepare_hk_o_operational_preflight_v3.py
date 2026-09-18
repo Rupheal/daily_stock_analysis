@@ -9,9 +9,11 @@ Tencent target-session check is the bounded confirmation allowed by policy.
 No model call, no retry loop, no signal.
 """
 from __future__ import annotations
-import argparse,hashlib,json,math
+import argparse,hashlib,json,math,sys
 from datetime import datetime,timezone
 from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path: sys.path.insert(0,str(ROOT))
 import requests
 
 from prepare_hk_pool_rollout_preflight import (
@@ -175,9 +177,14 @@ if __name__=="__main__":
         print(json.dumps(prepare(a.code,a.target,a.universe,a.cache,a.policy,a.out),ensure_ascii=False))
     except Exception as exc:
         import re
-        reason=str(exc) if re.fullmatch(r"[A-Z][A-Z0-9_ :.-]{2,180}",str(exc)) else type(exc).__name__
+        shared=isinstance(exc,ModuleNotFoundError)
+        if shared:
+            reason="MODULE_DEPENDENCY_MISSING:"+str(getattr(exc,"name",None) or "UNKNOWN")
+        else:
+            reason=str(exc) if re.fullmatch(r"[A-Z][A-Z0-9_ :.-]{2,180}",str(exc)) else type(exc).__name__
         a.out.mkdir(parents=True,exist_ok=True)
         atomic_json(a.out/"FREE_PREFLIGHT_STATUS.json",{
-          "status":"EXCLUDE_UNRESOLVED_FOR_SESSION","reason":reason,"model_requests":0,"repeat_rescue":False
+          "status":"SHARED_RUNTIME_FAILURE" if shared else "EXCLUDE_UNRESOLVED_FOR_SESSION",
+          "reason":reason,"model_requests":0,"repeat_rescue":False
         })
         raise
