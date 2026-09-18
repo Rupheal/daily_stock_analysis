@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-BATCH-CLOSE-20260918-062",
+  "target_session": "2026-09-18",
+  "closed_micro_batch": "O57-MB-003",
+  "closed_codes": ["00005","00006"],
+  "terminal_status": "RAW_GATE_BLOCK",
+  "member_statuses": {
+    "00005": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
+    "00006": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+  },
+  "evidence": {
+    "run061_result": "docs/runtime/RUN061_RESULT.json"
+  },
+  "model_http_requests_confirmed": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "expected_next_micro_batch": "O57-MB-004",
+  "expected_next_codes": ["00008","00010"],
+  "provider_send_authorized": false
+}
