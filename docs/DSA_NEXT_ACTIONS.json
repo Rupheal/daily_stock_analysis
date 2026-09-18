@@ -152,15 +152,16 @@
       "title": "受约束的单股模型输出与真实消费者验收"
     },
     {
-      "definition_of_done": "Independently finish O frozen-native full official pool and U45 per-member formal signals, preserve failure denominators and original outputs, then verify genuine timely future Entry-v1 fill. U preparation does not wait for O. Already approved runtime windows require no repeated approval.",
+      "definition_of_done": "Independently finish O frozen-native formal results across the current operational O pool and U45 per-member formal decisions, while preserving the full official O universe as an audit denominator. Unresolved O symbols are excluded after the bounded no-rescue policy and do not block O acceptance; reconcile operational + explicit exclusions = official. Then verify genuine timely future Entry-v1 fill. U preparation does not wait for O.",
       "id": "G4",
       "priority": 1,
-      "status": "CURRENT_O_NATIVE_INPUT598_OF660; CURRENT_FORMAL_O0_OF660; U_FACTS44_OF45_AND_FORMAL0_OF45; PRIVATE_STORAGE_PASS; NO_NEW_SHADOW_BUY",
+      "status": "O_OFFICIAL660_OPERATIONAL657_EXCLUDED3_FORMAL0_OF657; U_FORMAL_DECISION44_OF45_WAIT_NO_BUY; PRIVATE_STORAGE_PASS; NO_NEW_SHADOW_BUY",
       "title": "U45与O全港股通独立覆盖及原生实例验收",
       "previous_status_asof_20260914": "Drive_primary_runner_authorization_and_roundtrip_pending; U_independent_preparation_unblocked; Run012_GitHub_bridge_retained_as_fallback",
       "current_receipt": "docs/runtime/RUN033_040_RESUME_RESULT.json",
       "previous_status_preserved_run032": "SEMANTIC_HANDOFF_003_OFFLINE_PASS; ORIGINAL_OUTPUT_NO_GO; COUNT_FALSE_POSITIVE_CORRECTED; NO_NEW_PROVIDER_CALL; U_PREPARATION_UNBLOCKED",
-      "previous_status_preserved_run040": "GATEA_VERSIONED_RELEASE_PASS; CURRENT_O_UNIVERSE_660; NATIVE_DATA_COMPOSITE_660_OF_660; FULL_NATIVE_MODEL_PENDING; U_FORMAL_0_OF_45"
+      "previous_status_preserved_run040": "GATEA_VERSIONED_RELEASE_PASS; CURRENT_O_UNIVERSE_660; NATIVE_DATA_COMPOSITE_660_OF_660; FULL_NATIVE_MODEL_PENDING; U_FORMAL_0_OF_45",
+      "current_unresolved_exclusion_policy": "docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json"
     },
     {
       "definition_of_done": "冻结规则、PIT证据与交易时点，可复算成本后指标，接受/拒绝/不足均有证据",
@@ -183,17 +184,28 @@
     "no_orders": true,
     "no_schedule_changes": true,
     "on_blocked": "Continue independent authorized work and retain blocked item",
-    "progress": "Completed mandatory items / frozen total; keep missing/waiting/failed in denominator",
+    "progress": "Report official denominator, operational denominator and exclusions separately. Missing/unresolved O members remain in the audit reconciliation, not indefinitely in the operational ranking denominator.",
     "repeat_gate": "Only for changed code/data or a concrete unresolved risk",
     "two_unsuccessful_fix_cycles": "Reassess architecture and use a verifiable bounded alternative",
     "existing_dsa_prompt_updates_authorized": false,
     "schedule_note": "Latest explicit user instruction: no task or schedule modifications this resume; previous task updates are historical only.",
-    "u_preparation_requires_o_acceptance": false
+    "u_preparation_requires_o_acceptance": false,
+    "o_unresolved_symbols": "Official universe is retained for audit, but unresolved symbols leave the operational/ranking denominator after one normal refresh plus at most one model-free confirmation. No repeated bespoke rescue and no paid model calls for status rescue. Re-entry only through a later normal refresh.",
+    "o_20260918_denominators": {
+      "official": 660,
+      "operational": 657,
+      "excluded_unresolved": [
+        "00853",
+        "02172",
+        "02252"
+      ],
+      "formal_acceptance_denominator": 657
+    }
   },
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-17T08:09:46.150872+00:00",
+  "updated_at_utc": "2026-09-18T14:21:00Z",
   "user_directive_override": {
     "priority": "urgent",
     "path": "docs/dsa-urgent-user-directive.md",
