@@ -1,0 +1,136 @@
+name: DSA Run074 diagnose Run073 claim-before-send failure
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/RUN074_RUN073_DIAG_SCOPE.json'
+      - '.github/workflows/132-run074-run073-private-diag.yml'
+permissions:
+  contents: write
+concurrency:
+  group: dsa-run074-run073-private-diag
+  cancel-in-progress: false
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install httpx
+      - name: Restore exact private Run073 member bundle
+        run: |
+          python - <<'PY'
+          import json,os,httpx
+          from pathlib import Path
+          from scripts.dsa_drive_store import DriveStore,scoped_token,API,StoreError
+          from scripts.dsa_private_multipart import restore
+          s=json.load(open('docs/runtime/RUN074_RUN073_DIAG_SCOPE.json'))
+          root=Path('/tmp/run074');root.mkdir()
+          aid=s['source_artifact_id']+'-INDEX'
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c)
+              st=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              q="'"+os.environ['DSA_DRIVE_FOLDER_ID']+"' in parents and trashed=false and appProperties has { key='artifact_id' and value='"+aid+"' }"
+              rows=st.request('GET',API+'/files',params={'q':q,'fields':'files(id,appProperties),nextPageToken','pageSize':100}).json()
+              files=rows.get('files') or []
+              if rows.get('nextPageToken') or len(files)!=1: raise StoreError('PRIVATE_INDEX_LOOKUP_NOT_UNIQUE')
+              props=files[0].get('appProperties') or {}
+              if props.get('run_id')!=s['source_member_run_id']: raise StoreError('PRIVATE_INDEX_RUN_ID_MISMATCH')
+              idx=root/'index.json';st.recover(files[0]['id'],props['sha256'],idx)
+              manifest=json.loads(idx.read_bytes());parts=[]
+              for n,row in enumerate(manifest.get('private_storage') or []):
+                  p=root/('p%03d.bin'%n);st.recover(row['file_id'],row['sha256'],p);parts.append(p.read_bytes())
+              restored=restore(manifest,parts)
+              dst=root/'bundle';dst.mkdir()
+              for name,data in restored.items():
+                  p=dst/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+              print('RUN074_PRIVATE_RESTORE_PASS',len(restored))
+          PY
+      - name: Build sanitized root-cause receipt
+        run: |
+          python - <<'PY'
+          import json,re
+          from pathlib import Path
+          root=Path('/tmp/run074/bundle')
+          def one(pattern):
+              rows=list(root.rglob(pattern));return rows[0] if rows else None
+          member=one('member-summary.json')
+          probe=one('probe-summary.json')
+          budget=one('budget.json')
+          native_stdout=one('native.stdout')
+          data={'schema_version':1,'run_id':'TRI-DSA-O-RUN073-DIAG-20260918-074','code':'00100',
+                'model_http_requests_added':0,'drive_writes':0,'raw_content_public':False}
+          if member:
+              m=json.load(open(member))
+              data['member']={k:m.get(k) for k in (
+                'status','failure_code','claim_persisted','model_http_requests_confirmed',
+                'model_http_requests_possible','pre_send_upper_cny','effective_cap_cny',
+                'authorized_ceiling_cny','cap_escalated','provider_completion_status')}
+          if probe:
+              p=json.load(open(probe))
+              data['probe']={k:p.get(k) for k in (
+                'input_validated','input_validation_error_code','process_status','error',
+                'native_main_failure_reason','pipeline_final_capture_proven',
+                'semantic_contract_pass','post_output_promotion_gate')}
+          if budget:
+              b=json.load(open(budget))
+              data['budget']={
+                'limit_cny':b.get('limit_cny'),'carry_upper_cny':b.get('carry_upper_cny'),
+                'request_count':len(b.get('requests') or []),
+                'request_statuses':[x.get('status') for x in b.get('requests') or []],
+                'pre_send_upper':[x.get('pre_send_peak_upper_cny') for x in b.get('requests') or []],
+                'hard_caps':[x.get('hard_cap_cny') for x in b.get('requests') or []],
+              }
+          if native_stdout:
+              text=native_stdout.read_text(errors='replace')
+              safe=[]
+              for pat in [
+                  r'ORIGINAL_PROBE_SUMMARY\s+(\{.*\})',
+                  r'(RUN028_[A-Z0-9_]+)',
+                  r'(ORIGINAL_NAMESPACE_PRELOADED:[A-Za-z0-9_.,:-]+)',
+                  r'(NATIVE_CONFIG_NOT_PRESENT_ON_WIRE)',
+                  r'(Data gate not passed)',
+                  r'(Unexpected model)',
+                  r'(AUTHORIZED_[A-Z0-9_]+)',
+              ]:
+                  for m in re.finditer(pat,text):
+                      val=m.group(1)
+                      if val.startswith('{'):
+                          try:
+                              j=json.loads(val); safe.append({'probe_error':j.get('error'),'native_failure':j.get('native_main_failure_reason')})
+                          except Exception: pass
+                      else: safe.append(val)
+              data['sanitized_stdout_markers']=safe[:20]
+          if not member: data['member_missing']=True
+          Path('/tmp/RUN074_RESULT.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(data,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN074_RUN073_PRIVATE_DIAG_SANITIZED
+          path: /tmp/RUN074_RESULT.json
+          retention-days: 90
+      - name: Commit sanitized diagnostic
+        run: |
+          cp /tmp/RUN074_RESULT.json docs/runtime/RUN074_RUN073_DIAG_RESULT.json
+          git add docs/runtime/RUN074_RUN073_DIAG_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m 'dsa: diagnose Run073 claim-before-send failure'
+            git fetch origin fix/native-private-execution-20260914
+            git rebase origin/fix/native-private-execution-20260914
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
