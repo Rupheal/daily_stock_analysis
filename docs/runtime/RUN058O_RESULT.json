@@ -1,0 +1,80 @@
+{
+  "analyzer_sem001_findings": [
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.dashboard.battle_plan.sniper_points.stop_loss"
+      ]
+    }
+  ],
+  "analyzer_sem002_findings": [
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.intelligence.risk_alerts[3]",
+        "news_context"
+      ]
+    },
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.battle_plan.action_checklist[3]",
+        "news_context"
+      ]
+    }
+  ],
+  "analyzer_sem003_findings": [],
+  "analyzer_semantic_gates": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "code": "00004",
+  "disposition": "PERMANENT_ISOLATE_NO_RETRY",
+  "model_http_requests_added": 0,
+  "pipeline_sem001_findings": [
+    {
+      "code": "SEM001_LIVE_PRICE_FIELD_WITHOUT_REALTIME_QUOTE",
+      "paths": [
+        "dashboard.data_perspective.price_position.current_price",
+        "current_price"
+      ]
+    },
+    {
+      "code": "SEM001_PREVIOUS_SESSION_RELABELLED_TODAY",
+      "paths": [
+        "$.dashboard.battle_plan.sniper_points.stop_loss"
+      ]
+    }
+  ],
+  "pipeline_sem002_findings": [
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.intelligence.risk_alerts[3]",
+        "news_context"
+      ]
+    },
+    {
+      "code": "SEM002_ADVERSE_NEWS_ABSENCE_CLAIM_WITH_INCOMPLETE_REVIEW",
+      "paths": [
+        "$.dashboard.battle_plan.action_checklist[3]",
+        "news_context"
+      ]
+    }
+  ],
+  "pipeline_sem003_findings": [],
+  "pipeline_semantic_gates": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "private_restore_hash_verified": true,
+  "provider_response_sha256": "c9089f4e95cafe87d3cc52bc210404791efc6a149a60e7384bbc5ea7b5de4346",
+  "provider_sem002_pattern_present": false,
+  "raw_content_public": false,
+  "repeat_model_request_permitted": false,
+  "saved_post_output_blockers": [
+    "SEM-001",
+    "SEM-002"
+  ],
+  "schema_version": 1
+}
