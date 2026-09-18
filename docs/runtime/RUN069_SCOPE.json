@@ -9,7 +9,9 @@
   "tranche_id": "O57-TR-01",
   "target_session": "2026-09-18",
   "decision_session": "2026-09-18",
-  "codes": ["00010"],
+  "codes": [
+    "00010"
+  ],
   "O_denominator": 660,
   "history_cache_sha256": "e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224",
   "current_universe_sha256": "6415847af25e86f201bb69759f6ecef053cfc69079809200650dd8b74550daf8",
@@ -23,9 +25,15 @@
   "per_member_cap_cny": "0.10",
   "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
   "artifact_prefix": "ART-DSA-RUN069-O-NATIVE",
-  "prior_mb004_sent_codes": ["00008"],
-  "prior_mb004_unsent_codes": ["00010"],
-  "no_repeat_codes": ["00008"],
+  "prior_mb004_sent_codes": [
+    "00008"
+  ],
+  "prior_mb004_unsent_codes": [
+    "00010"
+  ],
+  "no_repeat_codes": [
+    "00008"
+  ],
   "prior_model_http_requests_confirmed_for_00010": 0,
   "provider_send_authorized": true,
   "provider_send_authorization_scope": "HK00010 only after fresh 2026-09-18 current-session preflight and dry envelope; one provider request maximum; CNY0.10 hard cap. HK00008 is no-repeat.",
@@ -36,5 +44,6 @@
   "schedule_changes": false,
   "main_changes": false,
   "historical_rewrites": false,
-  "definition_of_done": "HK00010 receives at most one provider request. Pre-send/private/claim/provider/post-output/final-private evidence must be preserved. Never retry HK00008. No rank, signal, order or fill."
+  "definition_of_done": "HK00010 receives at most one provider request. Pre-send/private/claim/provider/post-output/final-private evidence must be preserved. Never retry HK00008. No rank, signal, order or fill.",
+  "trigger_revision": 1
 }
