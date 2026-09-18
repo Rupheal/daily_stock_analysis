@@ -1,0 +1,93 @@
+name: DSA Run065 MB004 zero-model dry diagnostic
+
+on:
+  push:
+    branches: [research/run065-o-mb004-dry-diagnostic-20260918]
+    paths:
+      - .github/workflows/115-run065-o-mb004-dry-diagnostic.yml
+      - scripts/diagnose_run065_mb004_dry.py
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+    steps:
+      - uses: actions/checkout@v5
+        with: {path: research, fetch-depth: 0}
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install -r research/requirements.txt requests deepseek-recipe==0.1.1
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35335286449
+          github-token: ${{ github.token }}
+          name: RUN060_CURRENT_OFFICIAL_CLOSE_EVIDENCE
+          path: parent
+      - name: Bind exact Run060 current inputs
+        run: |
+          python - <<'PY'
+          import hashlib,json,shutil
+          from pathlib import Path
+          uh='6415847af25e86f201bb69759f6ecef053cfc69079809200650dd8b74550daf8'
+          hh='e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224'
+          um=[];hm=[]
+          for p in Path('parent').rglob('*'):
+              if not p.is_file():continue
+              h=hashlib.sha256(p.read_bytes()).hexdigest()
+              if h==uh:um.append(p)
+              if h==hh:hm.append(p)
+          assert len(um)==1 and len(hm)==1
+          assert json.loads(hm[0].read_text())['target_session']=='2026-09-18'
+          shutil.copy2(um[0],'/tmp/run065-u.json');shutil.copy2(hm[0],'/tmp/run065-h.json')
+          PY
+      - name: Reproduce MB004 dry envelopes with no provider or Drive credentials
+        working-directory: research
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+        run: |
+          python scripts/diagnose_run065_mb004_dry.py --checkout ../original --cache /tmp/run065-h.json --universe /tmp/run065-u.json --out /tmp/run065
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN065_MB004_ZERO_MODEL_DRY_DIAGNOSTIC
+          path: /tmp/run065/RUN065_RESULT.json
+          retention-days: 90
+      - name: Commit diagnostic receipt
+        working-directory: research
+        run: |
+          cp /tmp/run065/RUN065_RESULT.json docs/runtime/RUN065_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN065_RESULT.json
+          if git diff --cached --quiet; then echo no-change; else git commit -m 'dsa: record Run065 MB004 dry diagnosis';git push;fi
