@@ -77,3 +77,26 @@ def test_shared_unprocessed_blocks_closure_and_is_not_exclusion():
     assert o['missing_count']==2
     assert o['shared_unprocessed_count']==2
     assert o['additional_excluded_count']==0
+
+def test_prior_formal_ranking_can_feed_continuation_without_missing_rows():
+    u,p=base()
+    prior={
+      'ranking':[
+        {'code':'00001','sentiment_score':70,'action':'buy','decision_type':'buy','action_family':'buy',
+         'strategy_core_sha256':'a'*64,'raw_result_sha256':'b'*64,'provider_response_sha256':'c'*64,
+         'narrative_release_status':'QUARANTINED'},
+        {'code':'00002','sentiment_score':60,'action':'buy','decision_type':'buy','action_family':'buy',
+         'strategy_core_sha256':'d'*64,'raw_result_sha256':'e'*64,'provider_response_sha256':'f'*64,
+         'narrative_release_status':'QUARANTINED'},
+      ],
+      'additional_exclusions':[
+        {'code':'00003','status':'EXCLUDED_PREFLIGHT_NO_RESCUE','failure_code':'DATA'}
+      ]
+    }
+    continuation={'members':[row('00004',50),row('00005',40)]}
+    o=aggregate(u,p,[('prior',prior),('new',continuation)])
+    assert o['state']=='PASS_O_FORMAL_CORE_RANKING_TOP3'
+    assert o['missing_count']==0
+    assert o['ranking_eligible_count']==4
+    assert o['additional_excluded_count']==1
+    assert [x['code'] for x in o['Top3']]==['00001','00002','00004']
