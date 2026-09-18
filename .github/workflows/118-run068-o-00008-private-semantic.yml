@@ -1,0 +1,99 @@
+name: DSA Run068 private semantic attribution 00008
+
+on:
+  push:
+    branches: [research/run068-o-00008-private-semantic-20260918]
+    paths:
+      - .github/workflows/118-run068-o-00008-private-semantic.yml
+      - docs/runtime/RUN068_SCOPE.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-run068-private-semantic
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: ${{ github.workspace }}/scripts
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - run: pip install httpx
+      - name: Verify zero-model private-review scope
+        run: |
+          python -m py_compile scripts/review_private_o_semantics.py
+          python - <<'PY'
+          import json
+          s=json.load(open('docs/runtime/RUN068_SCOPE.json'))
+          assert s['code']=='00008' and s['micro_batch_id']=='O57-MB-004'
+          assert s['model_requests']==0 and s['drive_writes']==0 and s['paid_data_calls']==0
+          assert s['repeat_model_request_permitted'] is False and s['automatic_retry'] is False
+          assert s['raw_blockers_expected']==['SEM-001','SEM-002']
+          print('RUN068_SCOPE_PASS')
+          PY
+      - name: Restore exact private multipart
+        run: |
+          python - <<'PY'
+          import os,json,httpx
+          from pathlib import Path
+          from dsa_drive_store import DriveStore,scoped_token,API,StoreError
+          from dsa_private_multipart import restore
+          s=json.load(open('docs/runtime/RUN068_SCOPE.json'))
+          aid=s['parent_artifact_prefix']+'-'+s['code']+'-INDEX'
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c)
+              st=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              q="'"+os.environ['DSA_DRIVE_FOLDER_ID']+"' in parents and trashed=false and appProperties has { key='artifact_id' and value='"+aid+"' }"
+              rows=st.request('GET',API+'/files',params={'q':q,'fields':'files(id,appProperties),nextPageToken','pageSize':100}).json()
+              f=rows.get('files') or []
+              if rows.get('nextPageToken') or len(f)!=1: raise StoreError('RUN067_INDEX_LOOKUP_NOT_UNIQUE')
+              props=f[0].get('appProperties') or {}
+              if props.get('sha256')!=s['parent_private_index_sha256'] or props.get('run_id')!=s['parent_member_run_id']:
+                  raise StoreError('RUN067_INDEX_IDENTITY_MISMATCH')
+              Path('/tmp/private').mkdir()
+              idx=Path('/tmp/index.json')
+              st.recover(f[0]['id'],s['parent_private_index_sha256'],idx)
+              m=json.loads(idx.read_bytes());parts=[]
+              for n,x in enumerate(m.get('private_storage') or []):
+                  p=Path('/tmp')/('p%03d.bin'%n)
+                  st.recover(x['file_id'],x['sha256'],p);parts.append(p.read_bytes())
+              files=restore(m,parts)
+              for name,data in files.items():
+                  p=Path('/tmp/private')/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+          print(json.dumps({'restore':'PASS','files':len(files),'model_requests':0,'drive_writes':0}))
+          PY
+      - name: Attribute semantic blockers without exposing raw text
+        run: |
+          python scripts/review_private_o_semantics.py             --root /tmp/private             --code 00008             --expected-provider-sha256 a012adc9968fbe542b9e8f67ae1560c02df45bccd373f29823c60115913c831e             --out /tmp/RUN068_RESULT.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/RUN068_RESULT.json'))
+          assert r['code']=='00008' and r['private_restore_hash_verified'] is True
+          assert r['provider_response_sha256']=='a012adc9968fbe542b9e8f67ae1560c02df45bccd373f29823c60115913c831e'
+          assert r['model_http_requests_added']==0 and r['raw_content_public'] is False
+          assert r['repeat_model_request_permitted'] is False
+          print(json.dumps({'code':r['code'],'disposition':r['disposition'],'gates':r['pipeline_semantic_gates']}))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN068_SANITIZED_SEMANTIC_ATTRIBUTION
+          path: /tmp/RUN068_RESULT.json
+          retention-days: 90
+      - name: Commit sanitized result
+        run: |
+          cp /tmp/RUN068_RESULT.json docs/runtime/RUN068_RESULT.json
+          git add docs/runtime/RUN068_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --cached --quiet; then echo no-change; else git commit -m 'dsa: attribute Run067 00008 semantics privately';git push;fi
