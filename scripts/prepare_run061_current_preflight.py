@@ -92,7 +92,7 @@ def build(code,target,universe,cache,plan,independent,source):
       "volume_change_ratio":round(today["volume"]/yesterday["volume"],2) if yesterday["volume"] else None}
     validate_daily_context(context,target)
     return {
-      "passed":True,"symbol":"HK"+code,"stock_name":member["official_name"],
+      "passed":True,"prices_passed":True,"symbol":"HK"+code,"stock_name":member["official_name"],
       "prepared_at":datetime.now(timezone.utc).isoformat(),"target":target,
       "today":today,"yesterday":yesterday,"facts":daily_consistency_facts(context),
       "validated_native_history":native,
