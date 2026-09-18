@@ -25,6 +25,26 @@ def extract_members(obj:dict):
         return obj["members"]
     if isinstance(obj.get("member_statuses"),list):
         return obj["member_statuses"]
+    if isinstance(obj.get("ranking"),list):
+        rows=[]
+        for x in obj["ranking"]:
+            rows.append({
+              "code":x.get("code"),"status":"CORE_ACCEPTED","ranking_eligible":True,
+              "strategy_core":{
+                "sentiment_score":x.get("sentiment_score"),"action":x.get("action"),
+                "decision_type":x.get("decision_type"),"action_family":x.get("action_family"),
+              },
+              "strategy_core_sha256":x.get("strategy_core_sha256"),
+              "raw_result_sha256":x.get("raw_result_sha256"),
+              "provider_response_sha256":x.get("provider_response_sha256"),
+              "narrative_release_status":x.get("narrative_release_status"),
+            })
+        for x in obj.get("additional_exclusions") or []:
+            rows.append({
+              "code":x.get("code"),"status":x.get("status") or "EXPLICIT_EXCLUSION",
+              "ranking_eligible":False,"failure_code":x.get("failure_code"),
+            })
+        return rows
     if obj.get("code") and "ranking_eligible" in obj:
         return [obj]
     return []
@@ -151,6 +171,7 @@ def aggregate(universe:dict,policy:dict,sources:list[tuple[str,dict]]):
       },
       "formal_O_ranking_generated":state=="PASS_O_FORMAL_CORE_RANKING_TOP3",
       "formal_signal_generated":False,
+      "ranking":accepted,
       "Top3":top3,
       "Top10":top10,
       "qualified_buy_in_Top3":sum(x.get("action_family")=="buy" for x in top3),
