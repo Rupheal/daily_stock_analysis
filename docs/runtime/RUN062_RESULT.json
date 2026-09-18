@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-FREE-DRY-20260918-062",
+  "state": "STOP_MB004_FREE_GATE",
+  "target_session": "2026-09-18",
+  "micro_batch_id": "O57-MB-004",
+  "members": [
+    {
+      "code": "00008",
+      "preflight_returncode": 0,
+      "status": "FAIL_DRY",
+      "preflight_sha256": "b8781a2f7b290b1d1dd86d9493a8b4773e631239e7ba8d3237466048d6d270a8",
+      "target_volume_status": "bounded_provider_reconciliation",
+      "historical_mismatch_sessions": 7,
+      "request_count": 0,
+      "dry_request_status": null,
+      "pre_send_peak_upper_cny": null,
+      "input_validated": true,
+      "frozen_history_adapter_count": 1,
+      "coverage_limitation_applied": true,
+      "news_prompt_consumed": true
+    },
+    {
+      "code": "00010",
+      "preflight_returncode": 0,
+      "status": "FAIL_DRY",
+      "preflight_sha256": "d6c3b89d6451ff905e593c8cc10a05aac374f536c14f7e38f928e661ee7291b7",
+      "target_volume_status": "exact",
+      "historical_mismatch_sessions": 14,
+      "request_count": 0,
+      "dry_request_status": null,
+      "pre_send_peak_upper_cny": null,
+      "input_validated": true,
+      "frozen_history_adapter_count": 1,
+      "coverage_limitation_applied": true,
+      "news_prompt_consumed": true
+    }
+  ],
+  "ready_for_paid_sentinel": [],
+  "selected_sentinel": null,
+  "model_http_requests": 0,
+  "provider_credentials_used": false,
+  "drive_writes": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false
+}
