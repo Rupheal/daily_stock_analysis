@@ -127,6 +127,8 @@ jobs:
                 'history_cache_sha256':p['history_cache_sha256'],'artifact_prefix':'ART-DSA-RUN073-O-CONT-S'+sid,
                 'maximum_requests':sh['maximum_requests'],'maximum_cost_cny':sh['maximum_cost_cny'],
                 'per_member_hard_cap_cny':p['per_member_hard_cap_cny'],
+                'per_member_authorized_ceiling_cny':p['per_member_authorized_ceiling_cny'],
+                'maximum_authorized_cost_cny':str(float(p['per_member_authorized_ceiling_cny'])*sh['maximum_requests']),
                 'max_consecutive_provider_failures':2,'max_consecutive_infra_failures':2,
                 'automatic_retry':False,'no_orders':True,'no_signal_publish':True,
                 'simulation_writes':0,'raw_content_public':False
