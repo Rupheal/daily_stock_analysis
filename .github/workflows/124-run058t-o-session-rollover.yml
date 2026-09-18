@@ -1,0 +1,274 @@
+name: DSA Run058T 20260918 O session rollover
+
+on:
+  push:
+    branches: [research/run058t-o-session-rollover-20260918]
+    paths:
+      - .github/workflows/124-run058t-o-session-rollover.yml
+      - docs/runtime/RUN058T_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058t-o-session-rollover
+  cancel-in-progress: false
+
+jobs:
+  rollover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+      REPORT_INTEGRITY_RETRY: '0'
+      MAX_WORKERS: '1'
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: research/run058t-o-session-rollover-20260918
+          path: research
+          fetch-depth: 0
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: deepseek-ai/deepseek-recipe
+          ref: 8cadfede7063c896b944e7bae05daa3549ae97ea
+          path: deepseek-recipe
+          sparse-checkout: static/tokenizers/v41/tokenizer.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - name: Install deterministic dependencies
+        run: pip install -r research/requirements.txt pytest requests httpx openpyxl deepseek-recipe==0.1.1
+
+      - name: Verify current completed session and zero-model scope
+        working-directory: research
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from datetime import datetime,timezone
+          from zoneinfo import ZoneInfo
+          from o_target_session_contract import resolve_target_session
+          s=json.load(open('docs/runtime/RUN058T_SCOPE.json'))
+          now=datetime.now(timezone.utc)
+          assert resolve_target_session(now).target_session.isoformat()==s['target_session']=='2026-09-18'
+          assert now.astimezone(ZoneInfo('Asia/Hong_Kong')).date().isoformat()==s['decision_session']=='2026-09-18'
+          raw=open(s['prior_plan'],'rb').read()
+          assert hashlib.sha256(raw).hexdigest()==s['prior_plan_sha256']
+          assert s['model_http_requests']==0 and s['provider_credentials_allowed'] is False
+          assert s['drive_writes_allowed'] is False and s['paid_data_calls']==0
+          print('RUN058T_SCOPE_PASS')
+          PY
+
+      - name: Fetch current official SSE SZSE HKEX source bytes
+        working-directory: research
+        run: python scripts/probe_hk_research_sources.py
+
+      - name: Freeze current official 2026-09-18 Southbound universe
+        working-directory: research
+        run: |
+          python scripts/freeze_hk_connect_universe.py             --sources probe/universe             --session 2026-09-18             --u-universe docs/dsa-u-universe.json             --out /tmp/pool
+
+      - name: Compare exact O universe with frozen rollout universe
+        working-directory: research
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          old=json.load(open('docs/runtime/run032_public_cache/O_UNIVERSE.json'))
+          new=json.load(open('/tmp/pool/O_UNIVERSE.json'))
+          oc=[x['code'] for x in old['members']]; nc=[x['code'] for x in new['members']]
+          exact=(old['member_count']==new['member_count']==len(oc)==len(nc) and oc==nc)
+          diff={'added':sorted(set(nc)-set(oc)),'removed':sorted(set(oc)-set(nc))}
+          out={'old_denominator':old['member_count'],'new_denominator':new['member_count'],
+               'exact_member_order_match':exact,'diff':diff,
+               'new_universe_sha256':hashlib.sha256(Path('/tmp/pool/O_UNIVERSE.json').read_bytes()).hexdigest()}
+          Path('/tmp/universe-check.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - name: Persist 2026-09-18 original native O market history
+        run: |
+          python research/scripts/run_hk_native_data_probe.py             --checkout original             --universe /tmp/pool/O_UNIVERSE.json             --scope O_full_pool_data_only             --expected-date 2026-09-18             --decision-session 2026-09-18             --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7             --target-boundary-adapter             --timeout 1500             --output /tmp/native
+
+      - name: Build immutable 2026-09-18 preflight session overlay
+        working-directory: research
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          s=json.load(open('docs/runtime/RUN058T_SCOPE.json'))
+          old=json.load(open(s['prior_plan']))
+          uc=json.load(open('/tmp/universe-check.json'))
+          overlay=None
+          if uc['exact_member_order_match']:
+              overlay={
+                'schema_version':1,
+                'run_id':'TRI-DSA-O-SESSION-PLAN-20260918-058T',
+                'target_session':'2026-09-18',
+                'state':old['state'],
+                'parent_plan_sha256':s['prior_plan_sha256'],
+                'denominator':old['denominator'],
+                'isolation':old['isolation'],
+                'rollout':{
+                  'ready_codes':old['rollout']['ready_codes'],
+                  'native_model_configuration':old['rollout']['native_model_configuration'],
+                  'send_authorized_by_run057':False
+                },
+                'input_sha256':old['input_sha256'],
+                'session_rollover':{
+                  'old_target_session':old['target_session'],
+                  'new_target_session':'2026-09-18',
+                  'official_universe_exact_match':True,
+                  'strategy_or_scoring_change':False,
+                  'provider_send_authorized':False
+                }
+              }
+              Path('/tmp/RUN058T_SESSION_PLAN.json').write_text(json.dumps(overlay,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps({'overlay_created':overlay is not None}))
+          PY
+
+      - name: Free fresh preflight for MB003 on 2026-09-18
+        working-directory: research
+        run: |
+          set +e
+          mkdir -p /tmp/pre
+          if test ! -f /tmp/RUN058T_SESSION_PLAN.json; then
+            echo 'universe changed; skip member preflight' > /tmp/pre/skipped.txt
+            exit 0
+          fi
+          python scripts/prepare_hk_pool_rollout_preflight_v2.py             --code 00005 --target 2026-09-18             --universe /tmp/pool/O_UNIVERSE.json             --cache /tmp/native/market-history.json             --plan /tmp/RUN058T_SESSION_PLAN.json             --out /tmp/pre/00005
+          echo $? > /tmp/pre/rc5
+          python scripts/prepare_hk_pool_rollout_preflight_v2.py             --code 00006 --target 2026-09-18             --universe /tmp/pool/O_UNIVERSE.json             --cache /tmp/native/market-history.json             --plan /tmp/RUN058T_SESSION_PLAN.json             --out /tmp/pre/00006
+          echo $? > /tmp/pre/rc6
+          exit 0
+
+      - name: Zero-model coverage-limitation dry for 00005 if free preflight passes
+        working-directory: research
+        env:
+          DSA_DEEPSEEK_V41_TOKENIZER: ${{ github.workspace }}/deepseek-recipe/static/tokenizers/v41/tokenizer.json
+        run: |
+          set +e
+          if test ! -f /tmp/pre/00005/preflight.json; then
+            echo '00005 not ready for dry' > /tmp/dry-skipped.txt
+            exit 0
+          fi
+          mkdir -p /tmp/drycfg
+          python - <<'PY'
+          from o_native_model_configuration import configure
+          import json
+          print(json.dumps(configure(__import__('pathlib').Path('/tmp/drycfg'),'O_DEEPSEEK_FLASH_NONTHINKING_v1')))
+          PY
+          PYTHONPATH="$PWD:$PWD/scripts"           DSA_BUDGET_PROBE_ONLY=1           LLM_DEEPSEEK_API_KEY=dry-envelope-no-network           LLM_CHANNELS=deepseek           LLM_DEEPSEEK_PROTOCOL=openai           LLM_DEEPSEEK_BASE_URL=https://api.deepseek.com           LLM_DEEPSEEK_MODELS=deepseek-flash           LITELLM_MODEL=openai/deepseek-flash           LITELLM_FALLBACK_MODELS=''           DSA_DEEPSEEK_V41_TOKENIZER="${DSA_DEEPSEEK_V41_TOKENIZER}"           DSA_NATIVE_MODEL_CONFIGURATION=O_DEEPSEEK_FLASH_NONTHINKING_v1           python scripts/run_hk_original_model_probe_run030.py             --symbol HK00005             --checkout ../original             --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7             --preflight /tmp/pre/00005/preflight.json             --output /tmp/dry00005             --limit-cny 0.10             --carry-upper-cny 0             --target-boundary-adapter             --news-handoff-v1             --frozen-native-history-adapter             --news-coverage-limitation-v1
+          echo $? > /tmp/dry-rc
+          exit 0
+
+      - name: Build sanitized rollover result
+        working-directory: research
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          uc=json.load(open('/tmp/universe-check.json'))
+          history=Path('/tmp/native/market-history.json')
+          rows=[]
+          for code in ('00005','00006'):
+              p=Path('/tmp/pre')/code/'preflight.json'
+              f=Path('/tmp/pre')/code/'FREE_PREFLIGHT_STATUS.json'
+              if p.exists():
+                  d=json.loads(p.read_text())
+                  rows.append({'code':code,'status':'PASS_POOL_TARGET_PREFLIGHT_V2',
+                               'preflight_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                               'history_count':d['native_history_window']['count'],
+                               'target_volume_status':d['price_reconciliation']['fresh_target_session']['volume']['latest_status']})
+              else:
+                  reason='SKIPPED_UNIVERSE_CHANGED' if not uc['exact_member_order_match'] else 'UNKNOWN_FREE_PREFLIGHT_FAILURE'
+                  if f.exists(): reason=json.loads(f.read_text()).get('reason') or reason
+                  rows.append({'code':code,'status':'FAIL_FREE_PREFLIGHT','reason':reason})
+          dry={}
+          bp=Path('/tmp/dry00005/budget.json')
+          sp=Path('/tmp/dry00005/probe-summary.json')
+          if bp.exists():
+              b=json.loads(bp.read_text());q=b.get('requests') or []
+              dry={'request_count':len(q),'request_status':q[0].get('status') if len(q)==1 else None,
+                   'pre_send_peak_upper_cny':q[0].get('pre_send_peak_upper_cny') if len(q)==1 else None}
+          if sp.exists():
+              ps=json.loads(sp.read_text());dry.update({
+                'input_validated':ps.get('input_validated'),
+                'news_loader_consumed':ps.get('news_loader_consumed'),
+                'news_prompt_consumed':ps.get('news_prompt_consumed'),
+                'coverage_adapter':ps.get('news_coverage_limitation_adapter'),
+                'coverage_version':ps.get('news_coverage_limitation_version'),
+                'frozen_history_adapter':ps.get('frozen_native_history_adapter')
+              })
+          c5=next(x for x in rows if x['code']=='00005')
+          sentinel_ready=(uc['exact_member_order_match'] and c5['status']=='PASS_POOL_TARGET_PREFLIGHT_V2'
+                          and dry.get('request_count')==1 and dry.get('request_status')=='dry_envelope_validated_not_sent'
+                          and dry.get('input_validated') is True and dry.get('coverage_adapter') is True
+                          and dry.get('frozen_history_adapter') is True)
+          out={
+            'schema_version':1,'run_id':'TRI-DSA-O-SESSION-ROLLOVER-20260918-058T',
+            'state':'PASS_SESSION_ROLLOVER_READY_00005_SENTINEL' if sentinel_ready else
+                    ('STOP_UNIVERSE_CHANGED' if not uc['exact_member_order_match'] else 'STOP_MB003_FREE_GATE'),
+            'target_session':'2026-09-18','official_universe':uc,
+            'market_history_sha256':hashlib.sha256(history.read_bytes()).hexdigest(),
+            'members':rows,'dry_00005':dry,
+            'ready_for_paid_sentinel':['00005'] if sentinel_ready else [],
+            'session_isolated':[x['code'] for x in rows if x['status']!='PASS_POOL_TARGET_PREFLIGHT_V2'],
+            'model_http_requests':0,'provider_credentials_used':False,'drive_writes':0,
+            'DeepSeek_API_cost_cny':0,'paid_data_calls':0,'real_orders':0,'simulation_writes':0,
+            'automatic_retry':False,
+            'next':'Permit one new-session 00005 sentinel only.' if sentinel_ready else 'Keep paid rollout frozen; resolve zero-model gate first.'
+          }
+          Path('/tmp/RUN058T_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058T_20260918_SESSION_ROLLOVER
+          path: |
+            /tmp/pool/
+            /tmp/native/market-history.json
+            /tmp/native/coverage.json
+            /tmp/universe-check.json
+            /tmp/RUN058T_SESSION_PLAN.json
+            /tmp/pre/
+            /tmp/RUN058T_RESULT.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit sanitized result and session overlay
+        working-directory: research
+        run: |
+          set -euo pipefail
+          cp /tmp/RUN058T_RESULT.json docs/runtime/RUN058T_RESULT.json
+          git add docs/runtime/RUN058T_RESULT.json
+          if test -f /tmp/RUN058T_SESSION_PLAN.json; then
+            cp /tmp/RUN058T_SESSION_PLAN.json docs/runtime/RUN058T_SESSION_PLAN.json
+            git add docs/runtime/RUN058T_SESSION_PLAN.json
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if ! git diff --cached --quiet; then
+            git commit -m 'dsa: record Run058T 20260918 session rollover'
+            git push origin HEAD:research/run058t-o-session-rollover-20260918
+          fi
