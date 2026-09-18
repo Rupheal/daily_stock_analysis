@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-VOLUME-DIFF-20260918-058G",
+  "dry_returncode": 1,
+  "expected_count": 44,
+  "actual_count": 44,
+  "volume_diff_count": 1,
+  "volume_diffs": [
+    {
+      "date": "2026-09-17",
+      "expected_volume": 4048185.0,
+      "actual_volume": 4042685.0,
+      "absolute_delta": 5500.0,
+      "relative_delta": 0.0013586335604721667,
+      "target_session": true
+    }
+  ],
+  "target_session_diff": {
+    "date": "2026-09-17",
+    "expected_volume": 4048185.0,
+    "actual_volume": 4042685.0,
+    "absolute_delta": 5500.0,
+    "relative_delta": 0.0013586335604721667,
+    "target_session": true
+  },
+  "max_relative_delta": 0.0013586335604721667,
+  "model_http_requests": 0,
+  "provider_credentials_used": false,
+  "DeepSeek_API_cost_cny": 0,
+  "drive_claims": 0,
+  "real_orders": 0,
+  "diagnostic_only": true
+}
