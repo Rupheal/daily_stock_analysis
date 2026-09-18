@@ -1,0 +1,37 @@
+{
+  "run_id": "TRI-DSA-DEV-20260918-DASHBOARD-V019-P1-FEED-LAG",
+  "status": "ACCEPTED_ENGINEERING",
+  "branch": "research/dsa-dashboard-v019-20260918",
+  "tested_commit": "bd5891d3cc438738716c67edc2541aa43eef0289",
+  "workflow_run": 35352471029,
+  "conclusion": "success",
+  "validation": {
+    "v019_tests": "17/17 PASS",
+    "lag_detector_tests": "8/8 PASS",
+    "v018_regression": "23/23 PASS",
+    "generator_smoke": "PASS",
+    "live_authority_compare": "ALIGNED",
+    "aligned_run": "TRI-DSA-RESUME-20260918-060-RECOVERED"
+  },
+  "detector": {
+    "path": "scripts/dashboard_feed_lag_detector_v019.py",
+    "fail_closed_states": [
+      "SOURCE_AHEAD",
+      "SOURCE_MISMATCH",
+      "AUTHORITY_UNAVAILABLE",
+      "FEED_INVALID"
+    ],
+    "aligned_exit_code": 0,
+    "source_ahead_exit_code": 2,
+    "source_mismatch_exit_code": 3
+  },
+  "boundaries": {
+    "model_http_requests": 0,
+    "strategy_changes": 0,
+    "schedule_changes": 0,
+    "main_merge": false,
+    "real_orders": 0,
+    "simulated_fills": 0
+  },
+  "next": "Build event-driven sanitized feed sync bridge without modifying any existing trading schedule."
+}
