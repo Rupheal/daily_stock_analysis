@@ -67,6 +67,7 @@ def sync(
         and current_auth.get("source_receipt_sha256") == latest_sha
         and current_auth.get("source_run_id") == latest_receipt.get("run_id")
         and current_auth.get("evidence_session") == str(latest_receipt.get("target_session"))
+        and current_auth.get("sync_mode") == "EVENT_DRIVEN_SANITIZED_BRIDGE"
     )
 
     if same_authority:
