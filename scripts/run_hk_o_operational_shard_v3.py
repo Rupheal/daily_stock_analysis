@@ -151,7 +151,12 @@ def main():
               safe_env,root/"preflight.stdout"
             )
             if rc or not (pre/"preflight.json").exists():
-                detail=json.loads((pre/"FREE_PREFLIGHT_STATUS.json").read_text()).get("reason","") if (pre/"FREE_PREFLIGHT_STATUS.json").exists() else "FREE_PREFLIGHT_FAILED"
+                detail="FREE_PREFLIGHT_FAILED";pre_status=None
+                if (pre/"FREE_PREFLIGHT_STATUS.json").exists():
+                    ps=json.loads((pre/"FREE_PREFLIGHT_STATUS.json").read_text())
+                    detail=ps.get("reason","") or detail;pre_status=ps.get("status")
+                if pre_status=="SHARED_RUNTIME_FAILURE":
+                    raise ValueError("SHARED_PREFLIGHT_RUNTIME_FAILURE:"+detail)
                 row["status"]="EXCLUDED_PREFLIGHT_NO_RESCUE";row["failure_code"]=detail
                 continue
 
@@ -232,7 +237,7 @@ def main():
                 row["status"]="EXCLUDED_AFTER_CLAIM_NO_RETRY" if claimed else "EXCLUDED_INFRA_OR_PREFLIGHT"
             if isinstance(exc,(StoreError,httpx.HTTPError)):
                 infra_fail_streak+=1
-            elif "BALANCE" in codeerr:
+            elif "BALANCE" in codeerr or "SHARED_PREFLIGHT_RUNTIME_FAILURE" in codeerr:
                 infra_fail_streak=2
             else:
                 infra_fail_streak=0
