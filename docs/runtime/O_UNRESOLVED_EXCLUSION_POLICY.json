@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "policy_id": "DSA-O-UNRESOLVED-EXCLUSION-v1",
+  "status": "ACTIVE_USER_DIRECTIVE",
+  "effective_from_session": "2026-09-18",
+  "principle": "Do not repeatedly rescue unresolved O-universe members. Preserve them in the official audit universe, but exclude them from the operational/ranking denominator when status cannot be verified within the bounded check.",
+  "official_universe": {
+    "retained_for_audit": true,
+    "denominator_semantics": "Official HK Connect union snapshot. Never shrink this number merely to hide failures.",
+    "reconciliation_required": true
+  },
+  "operational_universe": {
+    "denominator_semantics": "Only members with sufficiently verified current-session status participate in O ranking/formal acceptance.",
+    "initial_normal_refresh": 1,
+    "maximum_additional_model_free_confirmation_cycles_per_symbol_per_session": 1,
+    "paid_model_calls_for_status_rescue": 0,
+    "repeated_special_rescue_prohibited": true,
+    "exclusion_state": "EXCLUDED_UNRESOLVED_FOR_SESSION",
+    "exclusion_blocks_formal_acceptance": false,
+    "reentry_rule": "A previously excluded symbol may re-enter on a later session only if the normal scheduled/current-session refresh independently yields a clear verified status. Do not launch a bespoke rescue job solely to restore it.",
+    "ranking_coverage_rule": "ranked_effective_pool + excluded_unresolved + other_explicit_nonrankable = official_universe",
+    "formal_acceptance_rule": "100% of the effective operational denominator must have valid comparable formal O results; excluded unresolved members are audited separately and do not remain in the ranking denominator."
+  },
+  "current_session": {
+    "session": "2026-09-18",
+    "source_receipt": "docs/runtime/RUN060_RECOVERED_RESULT.json",
+    "official_denominator": 660,
+    "excluded_unresolved": [
+      {
+        "code": "00853",
+        "reason": "invalid_or_stale",
+        "latest_date": "2026-09-17",
+        "bars": 44
+      },
+      {
+        "code": "02172",
+        "reason": "invalid_or_stale",
+        "latest_date": "2026-09-17",
+        "bars": 44
+      },
+      {
+        "code": "02252",
+        "reason": "invalid_or_stale",
+        "latest_date": "2026-09-17",
+        "bars": 44
+      }
+    ],
+    "excluded_count": 3,
+    "operational_denominator": 657,
+    "formal_O_denominator": 657,
+    "current_formal_O_accepted": 0,
+    "reconciliation": "657 operational + 3 excluded unresolved = 660 official",
+    "action": "No further rescue attempts for these three symbols for the 2026-09-18 O decision session."
+  },
+  "reporting_contract": {
+    "always_show": [
+      "official_denominator",
+      "operational_denominator",
+      "excluded_count",
+      "excluded_codes",
+      "formal_accepted_over_operational_denominator"
+    ],
+    "prohibited_claims": [
+      "Do not call 657 the official HK Connect universe.",
+      "Do not describe excluded unresolved names as model failures or negative signals.",
+      "Do not delay O formal acceptance solely because excluded unresolved symbols remain unresolved."
+    ]
+  },
+  "boundaries": {
+    "modifies_original_O_prompt_or_scoring": false,
+    "model_calls_added": 0,
+    "schedule_changes": 0,
+    "main_merge": false,
+    "real_orders": 0
+  }
+}
