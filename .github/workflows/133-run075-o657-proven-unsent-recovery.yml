@@ -4,6 +4,7 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - 'docs/runtime/RUN073_O657_FORMAL_RESULT.json'
+      - 'docs/runtime/RUN075_TRIGGER.json'
 permissions:
   contents: write
   actions: read
