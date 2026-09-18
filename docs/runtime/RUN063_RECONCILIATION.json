@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-063",
+  "state": "STOP_SENTINEL",
+  "reason": "SANITIZED_RESULT_MISSING",
+  "code": "00008",
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false
+}
