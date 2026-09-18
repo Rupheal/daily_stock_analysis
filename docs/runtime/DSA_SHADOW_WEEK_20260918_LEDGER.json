@@ -1,0 +1,53 @@
+{
+  "ledger_version": "dsa-shadow-week-ledger-v1",
+  "cycle_date_hkt": "2026-09-18",
+  "status": "WAIT",
+  "execution_mode": "MODEL_FREE_DIAGNOSTICS_ONLY",
+  "model_usage": {
+    "requests": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "incremental_cost_cny": 0.0
+  },
+  "data_gate": "FAIL_CLOSED_NOT_VERIFIED_CURRENT_CYCLE",
+  "provider": {
+    "send_authorized": false,
+    "failures": 0,
+    "state": "BLOCKED_BEFORE_SEND"
+  },
+  "observer": {
+    "state": "NOT_RUN_CURRENT_CYCLE",
+    "failures": 0
+  },
+  "drive": {
+    "save": "NOT_RUN_CURRENT_CYCLE",
+    "read": "NOT_RUN_CURRENT_CYCLE",
+    "hash": "NOT_RUN_CURRENT_CYCLE",
+    "restore": "NOT_RUN_CURRENT_CYCLE"
+  },
+  "o": {
+    "denominator_last_validated": 660,
+    "data_ready_last_validated": 608,
+    "isolated_last_validated": 52,
+    "qualified_signals": 0,
+    "status": "WAIT"
+  },
+  "u": {
+    "denominator_last_validated": 45,
+    "buy_eligible_last_validated": 44,
+    "bounded_reviews_last_validated": 44,
+    "raw_semantic_passes_last_validated": 40,
+    "qualified_signals": 0,
+    "status": "WAIT"
+  },
+  "buy_signals": 0,
+  "real_orders": 0,
+  "anomalies": [
+    "DSA_NEXT_ACTIONS.json is stale relative to Run058/controller evidence."
+  ],
+  "blockers": [
+    "No verified post-close GitHub Actions receipt after 2026-09-18 16:00 HKT.",
+    "provider_send_authorized_by_run058=false."
+  ]
+}
