@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-069",
+  "state": "STOP_BATCH",
+  "micro_batch_id": "O57-MB-004",
+  "code": "00010",
+  "member_status": {
+    "status": "ISOLATED",
+    "raw_gate": null,
+    "raw_blockers": null,
+    "model_http_requests_confirmed": 0,
+    "model_http_requests_possible": 0,
+    "usage_peak_estimate_cny": null,
+    "observed_balance_change_cny": null,
+    "preflight_sha256": "dbae9ee13983e24b16c05793ba1ae30d7f401f55f5cf2202ee0e513e8cba1b11",
+    "frozen_native_history_adapter": true,
+    "failure_code": "StoreError"
+  },
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip": false,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "automatic_retry": false,
+  "rollout_ledger_advanced": false,
+  "repeat_00010_permitted": null,
+  "next": "Diagnose before any provider retry; no automatic retry."
+}
