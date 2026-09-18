@@ -1,0 +1,56 @@
+{
+  "run_id": "TRI-DSA-O-NATIVE-20260918-064",
+  "workflow_run": "35337473172",
+  "O_denominator": 660,
+  "attempted_members": 2,
+  "members": [
+    {
+      "code": "00008",
+      "status": "ISOLATED",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "a98201b5805b6e2f05fa484d09f60f4b223721b62456d0136e585b2565f5b473",
+        "bytes": 1182833,
+        "original_bytes": 1176610,
+        "parts": 1,
+        "files": 10
+      },
+      "frozen_native_history_adapter": true,
+      "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+      "failure_class": "ValueError",
+      "failure_code": "FREE_NATIVE_ENVELOPE_FAILED"
+    },
+    {
+      "code": "00010",
+      "status": "ISOLATED",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "5baa1d1c448526c24a658466548840c7cc0807ea2c27fbd75c3e2b6819ff62ad",
+        "bytes": 1182590,
+        "original_bytes": 1176367,
+        "parts": 1,
+        "files": 10
+      },
+      "frozen_native_history_adapter": true,
+      "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+      "failure_class": "ValueError",
+      "failure_code": "FREE_NATIVE_ENVELOPE_FAILED"
+    }
+  ],
+  "model_http_requests_confirmed": 0,
+  "model_http_requests_possible": 0,
+  "maximum_cost_cny": "0.20",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true
+}
