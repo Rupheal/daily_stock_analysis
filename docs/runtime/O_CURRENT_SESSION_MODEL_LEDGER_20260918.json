@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "ledger_id": "DSA-O-CURRENT-SESSION-MODEL-LEDGER-20260918",
+  "session": "2026-09-18",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "policy": "Never repeat a confirmed provider send for the same code/session/frozen upstream. Unsent/dry/preflight attempts do not count as a model send.",
+  "confirmed_provider_sends": [
+    {
+      "code": "00008",
+      "model_call_key": "2026-09-18:00008:089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+      "source_branch": "research/run069-o-00010-native-20260918",
+      "source_receipt": "docs/runtime/RUN067_SANITIZED_RESULT.json",
+      "source_run_id": "TRI-DSA-O-NATIVE-20260918-067",
+      "source_workflow_run": 35338215374,
+      "provider_response_sha256": "a012adc9968fbe542b9e8f67ae1560c02df45bccd373f29823c60115913c831e",
+      "model_http_requests_confirmed": 1,
+      "usage_peak_estimate_cny": "0.035832",
+      "repeat_permitted": false
+    }
+  ],
+  "known_unsent_attempts": [
+    {
+      "code": "00010",
+      "source_run_id": "TRI-DSA-O-NATIVE-20260918-069",
+      "source_workflow_run": 35340780405,
+      "model_http_requests_confirmed": 0,
+      "repeat_as_new_distinct_claim_permitted": true,
+      "prior_failure": "APPEND_ONLY_CONFLICT"
+    }
+  ],
+  "current_confirmed_send_count": 1,
+  "real_orders": 0,
+  "simulation_writes": 0
+}
