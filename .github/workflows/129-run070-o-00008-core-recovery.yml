@@ -1,0 +1,103 @@
+name: DSA Run070 recover current-session 00008 strategy core
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/RUN070_O_00008_CORE_RECOVERY_SCOPE.json'
+      - '.github/workflows/129-run070-o-00008-core-recovery.yml'
+permissions:
+  contents: write
+concurrency:
+  group: dsa-run070-o-00008-core-recovery
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install httpx pytest
+      - name: Restore immutable 00008 private native bundle
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,httpx
+          from pathlib import Path
+          from scripts.dsa_drive_store import DriveStore,scoped_token,API,StoreError
+          from scripts.dsa_private_multipart import restore
+          s=json.load(open('docs/runtime/RUN070_O_00008_CORE_RECOVERY_SCOPE.json'))
+          code=s['code'];aid=s['artifact_prefix']+'-'+code+'-INDEX'
+          root=Path('/tmp/run070');root.mkdir()
+          with httpx.Client(timeout=30,follow_redirects=False) as c:
+              c.headers['Authorization']='Bearer '+scoped_token(c)
+              st=DriveStore(c,os.environ['DSA_DRIVE_FOLDER_ID'])
+              q="'"+os.environ['DSA_DRIVE_FOLDER_ID']+"' in parents and trashed=false and appProperties has { key='artifact_id' and value='"+aid+"' }"
+              rows=st.request('GET',API+'/files',params={'q':q,'fields':'files(id,appProperties),nextPageToken','pageSize':100}).json()
+              files=rows.get('files') or []
+              if rows.get('nextPageToken') or len(files)!=1: raise StoreError('PRIVATE_INDEX_LOOKUP_NOT_UNIQUE')
+              props=files[0].get('appProperties') or {}
+              if props.get('sha256')!=s['private_index_sha256'] or props.get('run_id')!=s['member_run_id']:
+                  raise StoreError('PRIVATE_INDEX_IDENTITY_MISMATCH')
+              idx=root/'index.json';st.recover(files[0]['id'],s['private_index_sha256'],idx)
+              manifest=json.loads(idx.read_bytes());parts=[]
+              for n,row in enumerate(manifest.get('private_storage') or []):
+                  p=root/('p%03d.bin'%n);st.recover(row['file_id'],row['sha256'],p);parts.append(p.read_bytes())
+              restored=restore(manifest,parts)
+              dst=root/'bundle';dst.mkdir()
+              for name,data in restored.items():
+                  p=dst/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+              provider=next(dst.rglob('native/provider-response.txt'))
+              assert hashlib.sha256(provider.read_bytes()).hexdigest()==s['provider_response_sha256']
+              print('RUN070_PRIVATE_RESTORE_PASS',len(restored))
+          PY
+      - name: Recompute strategy core without model access
+        run: |
+          root=/tmp/run070/bundle
+          python scripts/o_strategy_core_acceptance.py             --preflight "$(find "$root" -path '*/preflight/preflight.json' -print -quit)"             --original-input "$(find "$root" -path '*/native/original-input.json' -print -quit)"             --result "$(find "$root" -path '*/native/pipeline-final-result.json' -print -quit)"             --out /tmp/run070-core.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.load(open('docs/runtime/RUN070_O_00008_CORE_RECOVERY_SCOPE.json'))
+          d=json.load(open('/tmp/run070-core.json'))
+          out={
+            'schema_version':1,'run_id':s['run_id'],'target_session':s['target_session'],'code':s['code'],
+            'state':'PASS_CURRENT_CORE_RECOVERY' if d['ranking_eligible'] else 'CORE_REJECTED_NO_RETRY',
+            'ranking_eligible':d['ranking_eligible'],'strategy_core':d['strategy_core'],
+            'strategy_core_sha256':d['strategy_core_sha256'],'raw_result_sha256':d['raw_result_sha256'],
+            'provider_response_sha256':s['provider_response_sha256'],
+            'narrative_release_status':d['narrative_release_status'],'semantic_guards':d['semantic_guards'],
+            'hard_semantic_count':len(d['hard_semantic_findings']),
+            'core_semantic_count':len(d['core_semantic_findings']),
+            'narrative_semantic_count':len(d['narrative_semantic_findings']),
+            'blockers':d['blockers'],'model_http_requests_added':0,'repeat_model_request_permitted':False,
+            'real_orders':0,'raw_content_public':False
+          }
+          Path('/tmp/RUN070_O_00008_CORE_RECOVERY_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN070_O_00008_CORE_RECOVERY_SANITIZED
+          path: /tmp/RUN070_O_00008_CORE_RECOVERY_RESULT.json
+          retention-days: 90
+      - name: Commit sanitized recovery receipt
+        run: |
+          cp /tmp/RUN070_O_00008_CORE_RECOVERY_RESULT.json docs/runtime/RUN070_O_00008_CORE_RECOVERY_RESULT.json
+          git add docs/runtime/RUN070_O_00008_CORE_RECOVERY_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          git commit -m 'dsa: recover current-session 00008 strategy core'
+          git fetch origin fix/native-private-execution-20260914
+          git rebase origin/fix/native-private-execution-20260914
+          git push origin HEAD:fix/native-private-execution-20260914
