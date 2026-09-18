@@ -1,0 +1,60 @@
+{
+  "run_id": "TRI-DSA-DEV-20260918-DASHBOARD-V019-P3-TRI-DSA-UI-ROUTER",
+  "status": "ACCEPTED_ENGINEERING",
+  "command": "/tri dsa ui",
+  "dashboard_branch": "research/dsa-dashboard-v019-20260918",
+  "authority_branch": "fix/native-private-execution-20260914",
+  "resolver": "scripts/dashboard_ui_router_v019.py",
+  "route_manifest": "TRI_DSA_UI_ROUTE.json",
+  "command_contract": "docs/runtime/TRI_DSA_UI_SHORTCUT.md",
+  "research_validation": {
+    "workflow_run": 35353110121,
+    "tested_commit": "23c00bf9de8c79256e0df4fdb1159bbee1db046d",
+    "conclusion": "success",
+    "v019_tests": "17/17 PASS",
+    "lag_detector_tests": "8/8 PASS",
+    "sync_bridge_tests": "5/5 PASS",
+    "ui_router_tests": "6/6 PASS",
+    "v018_regression": "23/23 PASS",
+    "generator_smoke": "PASS",
+    "live_route": "v0.19 CURRENT / READ ONLY",
+    "authority_run": "TRI-DSA-RESUME-20260918-060-RECOVERED",
+    "authority_session": "2026-09-18"
+  },
+  "sync_validation": {
+    "workflow_run": 35353179428,
+    "conclusion": "success",
+    "sync_status": "NOOP_ALREADY_ALIGNED",
+    "detector_status": "ALIGNED",
+    "shortcut_route": "v0.19 CURRENT / READ ONLY",
+    "model_http_requests": 0,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": 0
+  },
+  "primary_route": {
+    "condition": "v0.19 engineering accepted AND feed detector ALIGNED",
+    "version": "v0.19",
+    "ui": "DSA_Dashboard_v0.19_Live_UI.html",
+    "badge": "CURRENT / READ ONLY"
+  },
+  "fallback_route": {
+    "condition": "v0.19 not aligned, invalid, unavailable, or not engineering accepted",
+    "version": "v0.18",
+    "ui": "DSA_Dashboard_v0.18_Live_UI.html",
+    "badge": "LAST VALIDATED / READ ONLY",
+    "must_disclose_reason": true,
+    "must_not_claim_current": true
+  },
+  "blocked_route": {
+    "condition": "no engineering-accepted usable v0.19 or v0.18 UI",
+    "badge": "BLOCKED"
+  },
+  "mutation_policy": {
+    "read_only": true,
+    "model_calls": 0,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  }
+}
