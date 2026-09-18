@@ -16,6 +16,48 @@
       "model_http_requests_confirmed": 1,
       "usage_peak_estimate_cny": "0.035832",
       "repeat_permitted": false
+    },
+    {
+      "code": "00010",
+      "model_call_key": "2026-09-18:00010:089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+      "source_branch": "fix/native-private-execution-20260914",
+      "source_receipt": "docs/runtime/RUN071_O_CANARY_RESULT.json",
+      "source_run_id": "TRI-DSA-O-CANARY-20260918-071",
+      "source_workflow_run": 35358244476,
+      "provider_response_sha256": "ca75b77c0f0f59bc5d5f369fe8881e0e2c9b9268fa2b0681994196eea78f5f8c",
+      "model_http_requests_confirmed": 1,
+      "usage_peak_estimate_cny": "0.03394",
+      "strategy_core_sha256": "f56f1990b6b242c0fe6ffa24f6bed509cf83e915f9ff3d69170d4fa657014287",
+      "raw_result_sha256": "75253940b0a99b99b4d947b1bb05f365f416ec6d4833a631d28feaba4c710106",
+      "repeat_permitted": false
+    },
+    {
+      "code": "00012",
+      "model_call_key": "2026-09-18:00012:089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+      "source_branch": "fix/native-private-execution-20260914",
+      "source_receipt": "docs/runtime/RUN071_O_CANARY_RESULT.json",
+      "source_run_id": "TRI-DSA-O-CANARY-20260918-071",
+      "source_workflow_run": 35358244476,
+      "provider_response_sha256": "a30bd9007da2c8dd716e2bab28f44737ba1f4c8479ef6ccd91405550c367fb38",
+      "model_http_requests_confirmed": 1,
+      "usage_peak_estimate_cny": "0.03355",
+      "strategy_core_sha256": "1b5fa97fd7eed73b3b3e017e53ff3555663f0f411e6e362f6f3885b0c1361f91",
+      "raw_result_sha256": "9d8a76d636fb29322113c10553234cf36326c3e04b4994dff3abf7d3e0231ead",
+      "repeat_permitted": false
+    },
+    {
+      "code": "00013",
+      "model_call_key": "2026-09-18:00013:089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+      "source_branch": "fix/native-private-execution-20260914",
+      "source_receipt": "docs/runtime/RUN071_O_CANARY_RESULT.json",
+      "source_run_id": "TRI-DSA-O-CANARY-20260918-071",
+      "source_workflow_run": 35358244476,
+      "provider_response_sha256": "be69c73ea06c4a0549a2cb1aa5c5d887db03443c0f470e42795cef1ff8041c01",
+      "model_http_requests_confirmed": 1,
+      "usage_peak_estimate_cny": "0.036914",
+      "strategy_core_sha256": "ed764012f73deff5c437d3bb645ef835d677dad3741d5527b8b6360d392eaedf",
+      "raw_result_sha256": "5956463608bc03b4613605ab7ff102c0f45c10c3be4e3e9a29801ed3b58908e5",
+      "repeat_permitted": false
     }
   ],
   "known_unsent_attempts": [
@@ -28,7 +70,7 @@
       "prior_failure": "APPEND_ONLY_CONFLICT"
     }
   ],
-  "current_confirmed_send_count": 1,
+  "current_confirmed_send_count": 4,
   "real_orders": 0,
   "simulation_writes": 0
 }

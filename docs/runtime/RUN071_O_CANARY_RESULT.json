@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-CANARY-20260918-071",
+  "state": "PASS_O_V3_CURRENT_SESSION_CANARY",
+  "target_session": "2026-09-18",
+  "codes": [
+    "00010",
+    "00012",
+    "00013"
+  ],
+  "attempted_members": 3,
+  "core_accepted": 3,
+  "narrative_quarantined": 3,
+  "member_statuses": [
+    {
+      "code": "00010",
+      "status": "CORE_ACCEPTED",
+      "ranking_eligible": true,
+      "strategy_core": {
+        "action": "reduce",
+        "sentiment_score": 32,
+        "decision_type": "sell",
+        "action_family": "sell",
+        "score_family": "sell",
+        "guardrail_reason_present": false
+      },
+      "strategy_core_sha256": "f56f1990b6b242c0fe6ffa24f6bed509cf83e915f9ff3d69170d4fa657014287",
+      "raw_result_sha256": "75253940b0a99b99b4d947b1bb05f365f416ec6d4833a631d28feaba4c710106",
+      "provider_response_sha256": "ca75b77c0f0f59bc5d5f369fe8881e0e2c9b9268fa2b0681994196eea78f5f8c",
+      "narrative_release_status": "QUARANTINED",
+      "semantic_guards": [
+        "SEM-001"
+      ],
+      "model_http_requests_confirmed": 1,
+      "usage_peak_estimate_cny": "0.03394",
+      "private_roundtrip": true,
+      "failure_code": null
+    },
+    {
+      "code": "00012",
+      "status": "CORE_ACCEPTED",
+      "ranking_eligible": true,
+      "strategy_core": {
+        "action": "watch",
+        "sentiment_score": 46,
+        "decision_type": "hold",
+        "action_family": "hold",
+        "score_family": "hold",
+        "guardrail_reason_present": false
+      },
+      "strategy_core_sha256": "1b5fa97fd7eed73b3b3e017e53ff3555663f0f411e6e362f6f3885b0c1361f91",
+      "raw_result_sha256": "9d8a76d636fb29322113c10553234cf36326c3e04b4994dff3abf7d3e0231ead",
+      "provider_response_sha256": "a30bd9007da2c8dd716e2bab28f44737ba1f4c8479ef6ccd91405550c367fb38",
+      "narrative_release_status": "QUARANTINED",
+      "semantic_guards": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "model_http_requests_confirmed": 1,
+      "usage_peak_estimate_cny": "0.03355",
+      "private_roundtrip": true,
+      "failure_code": null
+    },
+    {
+      "code": "00013",
+      "status": "CORE_ACCEPTED",
+      "ranking_eligible": true,
+      "strategy_core": {
+        "action": "watch",
+        "sentiment_score": 50,
+        "decision_type": "hold",
+        "action_family": "hold",
+        "score_family": "hold",
+        "guardrail_reason_present": false
+      },
+      "strategy_core_sha256": "ed764012f73deff5c437d3bb645ef835d677dad3741d5527b8b6360d392eaedf",
+      "raw_result_sha256": "5956463608bc03b4613605ab7ff102c0f45c10c3be4e3e9a29801ed3b58908e5",
+      "provider_response_sha256": "be69c73ea06c4a0549a2cb1aa5c5d887db03443c0f470e42795cef1ff8041c01",
+      "narrative_release_status": "QUARANTINED",
+      "semantic_guards": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "model_http_requests_confirmed": 1,
+      "usage_peak_estimate_cny": "0.036914",
+      "private_roundtrip": true,
+      "failure_code": null
+    }
+  ],
+  "model_http_requests_confirmed": 3,
+  "model_http_requests_possible": 3,
+  "usage_peak_estimate_cny": "0.104404",
+  "shared_stop_reason": null,
+  "private_roundtrip_all_sent": true,
+  "full_rollout_authorized": true,
+  "automatic_retry": false,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "raw_content_public": false
+}
