@@ -10,7 +10,7 @@
   "authority":{
     "canonical_feed_path":"DSA_DASHBOARD_LIVE_V019.json",
     "source_receipt":"docs/runtime/RUN060_RECOVERED_RESULT.json",
-    "source_receipt_sha256":"SHA256_DERIVED_AT_GENERATION",
+    "source_receipt_sha256":"1bafa0c0abdceb7ec2c367e2e60795553874a9396916433a4677938dd0acc285",
     "source_run_id":"TRI-DSA-RESUME-20260918-060-RECOVERED",
     "source_workflow_run":35335286449,
     "source_artifact_digest":"sha256:a1f576dec1d1ca6812ae4a72390bd21b92863f3151e9a6216446426d75dbc136",
