@@ -19,7 +19,8 @@ import httpx
 from dsa_drive_store import DriveStore,scoped_token,StoreError
 from o_strategy_core_acceptance import evaluate as evaluate_core
 
-PER_MEMBER_CAP=Decimal("0.10")
+DEFAULT_PER_MEMBER_CAP=Decimal("0.10")
+USER_AUTHORIZED_MAX_CAP=Decimal("2.00")
 
 
 def write(path:Path,value):
@@ -114,14 +115,22 @@ def main():
         raise ValueError("TARGET_POLICY_SESSION_MISMATCH")
     if s["frozen_upstream"]!="089d9d26d68f8b839ea5a74a3784e4402925f8b7":
         raise ValueError("FROZEN_UPSTREAM_CHANGED")
-    if Decimal(s["per_member_hard_cap_cny"])!=PER_MEMBER_CAP:
-        raise ValueError("PER_MEMBER_CAP_CHANGED")
+    default_cap=Decimal(str(s["per_member_hard_cap_cny"]))
+    authorized_ceiling=Decimal(str(s.get("per_member_authorized_ceiling_cny",s["per_member_hard_cap_cny"])))
+    if default_cap!=DEFAULT_PER_MEMBER_CAP:
+        raise ValueError("DEFAULT_PER_MEMBER_CAP_CHANGED")
+    if (not authorized_ceiling.is_finite() or authorized_ceiling<default_cap
+            or authorized_ceiling>USER_AUTHORIZED_MAX_CAP):
+        raise ValueError("AUTHORIZED_PER_MEMBER_CEILING_INVALID")
     if s.get("automatic_retry") is not False or s.get("no_orders") is not True:
         raise ValueError("SCOPE_BOUNDARY_INVALID")
     if int(s.get("maximum_requests",0))!=len(code_rows):
         raise ValueError("MAXIMUM_REQUESTS_MISMATCH")
-    if Decimal(str(s.get("maximum_cost_cny","0")))!=PER_MEMBER_CAP*len(code_rows):
+    if Decimal(str(s.get("maximum_cost_cny","0")))!=default_cap*len(code_rows):
         raise ValueError("MAXIMUM_COST_MISMATCH")
+    maximum_authorized_cost=Decimal(str(s.get("maximum_authorized_cost_cny",s.get("maximum_cost_cny","0"))))
+    if maximum_authorized_cost!=authorized_ceiling*len(code_rows):
+        raise ValueError("MAXIMUM_AUTHORIZED_COST_MISMATCH")
     all_operational={x["code"]:x for x in select_operational_members(universe,policy)}
     for row in code_rows:
         if row.get("code") not in all_operational or row.get("universe_index")!=all_operational[row["code"]]["universe_index"]:
@@ -164,9 +173,9 @@ def main():
                 row["status"]="EXCLUDED_PREFLIGHT_NO_RESCUE";row["failure_code"]=detail
                 continue
 
-            common=[
+            common_base=[
               "--symbol","HK"+code,"--checkout",str(a.checkout.resolve()),"--expected-commit",s["frozen_upstream"],
-              "--preflight",str(pre/"preflight.json"),"--limit-cny","0.10","--carry-upper-cny","0",
+              "--preflight",str(pre/"preflight.json"),"--carry-upper-cny","0",
               "--target-boundary-adapter","--news-handoff-v1","--frozen-native-history-adapter"
             ]
             env=dict(
@@ -174,26 +183,45 @@ def main():
               DSA_DEEPSEEK_V41_TOKENIZER=os.environ["DSA_DEEPSEEK_V41_TOKENIZER"],
               LLM_CHANNELS="deepseek",LLM_DEEPSEEK_PROTOCOL="openai",LLM_DEEPSEEK_BASE_URL="https://api.deepseek.com",
               LLM_DEEPSEEK_MODELS="deepseek-flash",LITELLM_MODEL="openai/deepseek-flash",LITELLM_FALLBACK_MODELS="",
-              REPORT_INTEGRITY_RETRY="0",MAX_WORKERS="1",DSA_INPUT_TOKEN_MARGIN="2048"
+              REPORT_INTEGRITY_RETRY="0",MAX_WORKERS="1",DSA_INPUT_TOKEN_MARGIN="2048",
+              DSA_ALLOW_CAP_ESCALATION="1" if authorized_ceiling>default_cap else "0",
+              DSA_AUTHORIZED_PER_MEMBER_CNY=str(authorized_ceiling)
             )
             from o_native_model_configuration import configure
             env.update(configure(root,s["native_model_configuration"]))
 
+            effective_cap=default_cap
             dry=root/"dry";dryenv=dict(env,DSA_BUDGET_PROBE_ONLY="1",LLM_DEEPSEEK_API_KEY="dry-envelope-no-network")
-            command(scripts/"run_hk_original_model_probe_run030.py",[*common,"--output",str(dry)],dryenv,root/"dry.stdout")
+            command(scripts/"run_hk_original_model_probe_run030.py",
+                    [*common_base,"--limit-cny",str(effective_cap),"--output",str(dry)],
+                    dryenv,root/"dry.stdout")
             budget=json.loads((dry/"budget.json").read_text());req=budget.get("requests") or []
+            if len(req)==1 and req[0].get("status")=="dry_envelope_requires_cap_raise":
+                required=Decimal(str(req[0].get("required_cap_cny") or req[0].get("pre_send_peak_upper_cny")))
+                if required<=default_cap or required>authorized_ceiling:
+                    raise ValueError("PRE_SEND_REQUIRED_CAP_OUTSIDE_AUTHORIZED_CEILING")
+                effective_cap=required
+                dry2=root/"dry-escalated"
+                command(scripts/"run_hk_original_model_probe_run030.py",
+                        [*common_base,"--limit-cny",str(effective_cap),"--output",str(dry2)],
+                        dryenv,root/"dry-escalated.stdout")
+                budget=json.loads((dry2/"budget.json").read_text());req=budget.get("requests") or []
+                row["cap_escalated"]=True
             if len(req)!=1 or req[0].get("status")!="dry_envelope_validated_not_sent":
                 raise ValueError("FREE_NATIVE_ENVELOPE_FAILED")
             upper=Decimal(req[0]["pre_send_peak_upper_cny"])
-            if upper>PER_MEMBER_CAP: raise ValueError("PRE_SEND_CAP_EXCEEDED")
+            if upper>effective_cap or effective_cap>authorized_ceiling:
+                raise ValueError("PRE_SEND_CAP_EXCEEDED")
             row["pre_send_upper_cny"]=str(upper)
+            row["effective_cap_cny"]=str(effective_cap)
+            row["authorized_ceiling_cny"]=str(authorized_ceiling)
             preflight_sha=hashlib.sha256((pre/"preflight.json").read_bytes()).hexdigest();row["preflight_sha256"]=preflight_sha
 
             row["pre_send_private_persistence"]=private_save(root,artifact+"-PRE-SEND",run_id)
             if not row["pre_send_private_persistence"].get("save_read_hash_restore"):
                 raise StoreError("PRE_SEND_PRIVATE_SAVE_UNVERIFIED")
             available=balance()
-            if available<PER_MEMBER_CAP:
+            if available<effective_cap:
                 raise ValueError("BUDGET_OR_BALANCE_INSUFFICIENT")
             claim=reserve(artifact,run_id,preflight_sha,code);claimed=True;row["claim_persisted"]=True
             write(root/"private-claim.json",claim)
@@ -277,6 +305,7 @@ def main():
               "core_accepted":sum(bool(x.get("ranking_eligible")) for x in rows),
               "model_http_requests_confirmed":sum(x.get("model_http_requests_confirmed",0) for x in rows),
               "usage_peak_estimate_cny":str(sum(Decimal(x.get("usage_peak_estimate_cny","0")) for x in rows)),
+              "effective_cap_authorized_cny":str(sum(Decimal(x.get("effective_cap_cny","0") or "0") for x in rows)),
               "shared_stop_reason":stop_reason,"automatic_retry":False,"real_orders":0,
               "simulation_writes":0,"raw_content_public":False
             })
