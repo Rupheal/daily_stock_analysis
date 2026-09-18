@@ -1,0 +1,73 @@
+name: DSA Run062 close MB003 and select MB004
+
+on:
+  push:
+    branches: [research/run062-o-mb003-close-20260918]
+    paths:
+      - .github/workflows/112-run062-o-mb003-close.yml
+      - docs/runtime/RUN062_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11'}
+      - name: Append MB003 terminal row and select next batch
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          scope=json.load(open('docs/runtime/RUN062_SCOPE.json'))
+          result=json.load(open('docs/runtime/RUN061_RESULT.json'))
+          plan=json.load(open('docs/runtime/RUN057_O_NATIVE_PLAN.json'))
+          assert result['state']=='STOP_MB003_NO_READY_MEMBER'
+          assert result['ready_for_paid_child']==[]
+          assert [x['code'] for x in result['members']]==['00005','00006']
+          assert all(x['reason']=='TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND' for x in result['members'])
+          ledger=Path('docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl')
+          rows=[json.loads(x) for x in ledger.read_text().splitlines() if x.strip()]
+          new={
+            'schema_version':1,'micro_batch_id':'O57-MB-003','codes':['00005','00006'],
+            'status':'RAW_GATE_BLOCK','target_session':'2026-09-18',
+            'member_statuses':scope['member_statuses'],
+            'evidence':{'run061_result':'docs/runtime/RUN061_RESULT.json'},
+            'model_http_requests_confirmed':0,'usage_peak_estimate_cny':'0',
+            'actual_attributable_charge_cny':None,'private_final_roundtrip':False,
+            'qualified_signals':0,'simulation_writes':0,'automatic_retry':False,'raw_content_public':False
+          }
+          old=[x for x in rows if x['micro_batch_id']=='O57-MB-003']
+          if old: assert old[-1]==new
+          else:
+              with ledger.open('a',encoding='utf-8') as f:f.write(json.dumps(new,ensure_ascii=False,separators=(',',':'))+'\n')
+              rows.append(new)
+          done={x['micro_batch_id'] for x in rows if x['status'] in ('RAW_GATE_BLOCK','ACCEPTED_NATIVE')}
+          batches=plan['rollout']['micro_batches']
+          nxt=next(x for x in batches if x['micro_batch_id'] not in done)
+          assert nxt['micro_batch_id']=='O57-MB-004' and nxt['codes']==['00008','00010']
+          out={
+            'schema_version':1,'run_id':scope['run_id'],'state':'PASS_MB003_TERMINAL_NEXT_CHILD_SELECTED',
+            'closed_micro_batch':'O57-MB-003','closed_codes':['00005','00006'],'closed_status':'RAW_GATE_BLOCK',
+            'model_http_requests_confirmed':0,'DeepSeek_API_cost_cny':0,'paid_data_calls':0,
+            'qualified_signals':0,'orders':0,'simulation_writes':0,'automatic_retry':False,
+            'next_child':{'micro_batch_id':nxt['micro_batch_id'],'codes':nxt['codes'],
+                          'member_count':len(nxt['codes']),'child_hard_cap_cny':nxt['hard_cap_cny'],
+                          'provider_send_authorized':False},
+            'rollout_ledger_sha256':hashlib.sha256(ledger.read_bytes()).hexdigest()
+          }
+          Path('docs/runtime/RUN062_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+      - name: Commit result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl docs/runtime/RUN062_RESULT.json
+          if git diff --cached --quiet; then echo no-change; else git commit -m 'dsa: close MB003 and select MB004'; git push; fi
