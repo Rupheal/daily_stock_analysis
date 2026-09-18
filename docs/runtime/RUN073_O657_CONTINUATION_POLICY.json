@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "policy_id": "DSA-O657-CONTINUATION-v1",
+  "trigger": "Commit of docs/runtime/RUN072_O657_FORMAL_RESULT.json on fix/native-private-execution-20260914",
+  "target_session": "2026-09-18",
+  "source_result": "docs/runtime/RUN072_O657_FORMAL_RESULT.json",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "current_universe_sha256": "6415847af25e86f201bb69759f6ecef053cfc69079809200650dd8b74550daf8",
+  "history_cache_sha256": "e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224",
+  "per_member_hard_cap_cny": "0.10",
+  "balance_safety_reserve_cny": "0.50",
+  "max_shards": 16,
+  "max_parallel": 8,
+  "continuation_rule": "Only prior missing operational members may be reconsidered. Prior member-local explicit exclusions are never rescued. Confirmed sends and durable uncertain claims are never repeated. Shared-infrastructure-unprocessed and budget-deferred names may continue.",
+  "automatic_retry": false,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "schedule_changes": 0,
+  "main_merge": false,
+  "raw_content_public": false
+}
