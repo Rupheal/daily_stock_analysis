@@ -12,6 +12,8 @@ on:
       - 'scripts/dashboard_feed_lag_detector_v019.py'
       - 'tests/test_dashboard_v019.py'
       - 'tests/test_dashboard_feed_lag_v019.py'
+      - 'scripts/dashboard_sync_bridge_v019.py'
+      - 'tests/test_dashboard_sync_bridge_v019.py'
       - 'tests/test_dashboard_v018.py'
       - 'docs/runtime/DSA_DASHBOARD_V019_RUNTIME.md'
       - '.github/workflows/dsa-dashboard-v019-tests.yml'
@@ -37,6 +39,8 @@ jobs:
         run: python -m pytest --noconftest -q tests/test_dashboard_v019.py
       - name: v0.19 fail-closed feed-lag detector tests
         run: python -m pytest --noconftest -q tests/test_dashboard_feed_lag_v019.py
+      - name: v0.19 sanitized sync bridge tests
+        run: python -m pytest --noconftest -q tests/test_dashboard_sync_bridge_v019.py
       - name: Compare dashboard feed with live authoritative branch snapshot
         run: |
           python scripts/dashboard_feed_lag_detector_v019.py \
