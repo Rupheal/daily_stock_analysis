@@ -1,0 +1,70 @@
+{
+  "run_id": "TRI-DSA-DEV-20260918-DASHBOARD-V019-P0-ACCEPTANCE",
+  "status": "ACCEPTED_ENGINEERING_P0_AUTHORITY_FRESHNESS",
+  "branch": "research/dsa-dashboard-v019-20260918",
+  "tested_commit": "891231e02bb88ee4ccab9560c394b293ef7eb0cb",
+  "base_commit": "b2985dde8c3f7111ae5ee32c05bc652d9eee9039",
+  "workflow": {
+    "path": ".github/workflows/dsa-dashboard-v019-tests.yml",
+    "run": 35351693146,
+    "conclusion": "success",
+    "v019_tests": "17/17 PASS",
+    "v018_regression": "23/23 PASS",
+    "generator_smoke": "PASS"
+  },
+  "authority_anchor": {
+    "receipt": "docs/runtime/RUN060_RECOVERED_RESULT.json",
+    "receipt_sha256": "1bafa0c0abdceb7ec2c367e2e60795553874a9396916433a4677938dd0acc285",
+    "run_id": "TRI-DSA-RESUME-20260918-060-RECOVERED",
+    "workflow_run": 35335286449,
+    "artifact_digest": "sha256:a1f576dec1d1ca6812ae4a72390bd21b92863f3151e9a6216446426d75dbc136",
+    "target_session": "2026-09-18"
+  },
+  "current_telemetry": {
+    "O_denominator": 660,
+    "O_data_ready": 657,
+    "O_isolated": 3,
+    "O_formal_accepted": 0,
+    "U_denominator": 45,
+    "U_data_ready": 45,
+    "U_buy_eligible": 44,
+    "U_formal_accepted": 0,
+    "signal": "WAIT",
+    "formal_signal_generated": false,
+    "simulation_eligible": false,
+    "model_http_requests": 0,
+    "incremental_model_cost_cny": 0,
+    "real_orders": 0
+  },
+  "accepted_components": [
+    "DSA_Dashboard_v0.19_Live_UI.html",
+    "DSA_DASHBOARD_LIVE_V019.schema.json",
+    "DSA_DASHBOARD_LIVE_V019.json",
+    "DSA_DASHBOARD_HISTORY_V019.json",
+    "scripts/dashboard_feed_generator_v019.py",
+    "tests/test_dashboard_v019.py",
+    "docs/runtime/DSA_DASHBOARD_V019_RUNTIME.md",
+    ".github/workflows/dsa-dashboard-v019-tests.yml"
+  ],
+  "semantic_acceptance": [
+    "Data readiness is displayed separately from formal strategy acceptance.",
+    "The current development feed exposes one explicit authority receipt and evidence session.",
+    "The generator discovers the newest compatible runtime receipt without network/model access.",
+    "The browser does not call GitHub Actions APIs or read Drive/private raw evidence.",
+    "v0.18 accepted files remain unchanged and regressions pass."
+  ],
+  "formal_boundaries": {
+    "strategy_acceptance": false,
+    "main_merge": false,
+    "scheduler_changed": false,
+    "runtime_activated": false,
+    "model_authority_expanded": false,
+    "simulated_fills": 0,
+    "real_orders": 0
+  },
+  "next": [
+    "Add deterministic feed-lag detection against newer compatible runtime receipts so a stale committed feed fails closed automatically.",
+    "Define the /tri dsa ui routing rule: engineering-accepted newest read-only UI with explicit fallback to v0.18 if v0.19 becomes invalid.",
+    "Continue Shadow Week daily authority history without backfilling missing dates."
+  ]
+}
