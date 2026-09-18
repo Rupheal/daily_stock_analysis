@@ -100,3 +100,19 @@ def test_prior_formal_ranking_can_feed_continuation_without_missing_rows():
     assert o['ranking_eligible_count']==4
     assert o['additional_excluded_count']==1
     assert [x['code'] for x in o['Top3']]==['00001','00002','00004']
+
+def test_proven_unsent_nameerror_is_missing_not_excluded():
+    u,p=base()
+    rows=[
+      row('00001',70),row('00002',60),row('00003',50),row('00004',40),
+      {'code':'00005','status':'EXCLUDED_AFTER_CLAIM_NO_RETRY','ranking_eligible':False,
+       'failure_code':'NameError','claim_persisted':True,
+       'model_http_requests_confirmed':0,'model_http_requests_possible':1,
+       'provider_response_sha256':None}
+    ]
+    o=aggregate(u,p,[('s',{'members':rows})])
+    assert o['state']=='PARTIAL_O_FORMAL_CORE_PROCESSING'
+    assert o['missing_operational_members']==['00005']
+    assert o['shared_unprocessed_count']==1
+    assert o['shared_unprocessed'][0]['status']=='PROVEN_UNSENT_RUNNER_BUG'
+    assert o['additional_excluded_count']==0
