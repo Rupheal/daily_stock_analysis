@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-MB004-FREE-GATE-20260918-058W",
+  "state": "RAW_GATE_BLOCK_NO_READY_MEMBER",
+  "target_session": "2026-09-18",
+  "micro_batch_id": "O57-MB-004",
+  "members": [
+    {
+      "code": "00008",
+      "status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "preflight_sha256": "3bf90df5edc1063cd312f36bc7b6da6884f4a13dbeb7f404d8feced0cc7e6c6f",
+      "history_count": 45,
+      "target_volume_status": "bounded_provider_reconciliation",
+      "dry": {
+        "status": "DRY_OUTPUT_MISSING"
+      }
+    },
+    {
+      "code": "00010",
+      "status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "preflight_sha256": "04edcb79ba60b3bf129ea76cf55f7f52c03f86b53bf64110aca269c33d14f2bf",
+      "history_count": 45,
+      "target_volume_status": "exact",
+      "dry": {
+        "status": "DRY_OUTPUT_MISSING"
+      }
+    }
+  ],
+  "ready_members": [],
+  "next_paid_sentinel": null,
+  "deferred_ready_members": [],
+  "model_http_requests": 0,
+  "provider_credentials_used": false,
+  "drive_writes": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "automatic_retry": false,
+  "next": "Close MB004 RAW_GATE_BLOCK and select the next fixed-order micro-batch."
+}
