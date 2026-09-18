@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-MB004-FREE-GATE-20260918-058W",
+  "parent_run_id": "TRI-DSA-O-MB003-CLOSE-20260918-058V",
+  "target_session": "2026-09-18",
+  "micro_batch_id": "O57-MB-004",
+  "codes": ["00008","00010"],
+  "run058u_workflow_run": 35336247845,
+  "run058u_artifact_id": 10543383594,
+  "run058u_artifact_digest": "sha256:2a49cd85dc8be44087a4067c63bc453a2a799782865fbef225497d84a026afaa",
+  "market_history_sha256": "e2971c53bd53ed946f37d11191f9c0045ceaa076f4c30f504169cbe385722224",
+  "model_http_requests": 0,
+  "provider_credentials_allowed": false,
+  "drive_writes_allowed": false,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "automatic_retry": false,
+  "sentinel_policy": "If one or both members pass fresh gate and dry envelope, only the first ready member may become the next paid sentinel. The second remains unsent until sentinel semantic review."
+}
