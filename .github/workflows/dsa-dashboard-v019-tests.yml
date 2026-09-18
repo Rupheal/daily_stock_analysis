@@ -14,6 +14,10 @@ on:
       - 'tests/test_dashboard_feed_lag_v019.py'
       - 'scripts/dashboard_sync_bridge_v019.py'
       - 'tests/test_dashboard_sync_bridge_v019.py'
+      - 'scripts/dashboard_ui_router_v019.py'
+      - 'tests/test_dashboard_ui_router_v019.py'
+      - 'TRI_DSA_UI_ROUTE.json'
+      - 'docs/runtime/TRI_DSA_UI_SHORTCUT.md'
       - 'tests/test_dashboard_v018.py'
       - 'docs/runtime/DSA_DASHBOARD_V019_RUNTIME.md'
       - '.github/workflows/dsa-dashboard-v019-tests.yml'
@@ -41,6 +45,22 @@ jobs:
         run: python -m pytest --noconftest -q tests/test_dashboard_feed_lag_v019.py
       - name: v0.19 sanitized sync bridge tests
         run: python -m pytest --noconftest -q tests/test_dashboard_sync_bridge_v019.py
+      - name: v0.19 /tri dsa ui routing tests
+        run: python -m pytest --noconftest -q tests/test_dashboard_ui_router_v019.py
+      - name: Resolve /tri dsa ui against live authority branch
+        run: |
+          python scripts/dashboard_ui_router_v019.py \
+            --dashboard-root . \
+            --authority-root _authority \
+            --out /tmp/tri-dsa-ui-route.json
+          python - /tmp/tri-dsa-ui-route.json <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['route_state']=='CURRENT_AUTHORITY_ALIGNED', r
+          assert r['selected_version']=='v0.19', r
+          assert r['read_only'] is True
+          print('/tri dsa ui ->',r['selected_version'],r['badge'],r['authority_run'],r['authority_session'])
+          PY
       - name: Compare dashboard feed with live authoritative branch snapshot
         run: |
           python scripts/dashboard_feed_lag_detector_v019.py \
