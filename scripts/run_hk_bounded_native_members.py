@@ -64,6 +64,9 @@ def main():
             if s.get('frozen_native_history_adapter'):
                 common.append('--frozen-native-history-adapter')
                 row['frozen_native_history_adapter']=True
+            if s.get('news_coverage_limitation_v1'):
+                common.append('--news-coverage-limitation-v1')
+                row['news_coverage_limitation_v1']=True
             env=dict(safe_env,DSA_DEEPSEEK_V41_TOKENIZER=os.environ['DSA_DEEPSEEK_V41_TOKENIZER'],LLM_CHANNELS='deepseek',LLM_DEEPSEEK_PROTOCOL='openai',LLM_DEEPSEEK_BASE_URL='https://api.deepseek.com',LLM_DEEPSEEK_MODELS='deepseek-flash',LITELLM_MODEL='openai/deepseek-flash',LITELLM_FALLBACK_MODELS='',REPORT_INTEGRITY_RETRY='0',MAX_WORKERS='1',DSA_INPUT_TOKEN_MARGIN='2048')
             if s.get('native_model_configuration'):
                 from o_native_model_configuration import configure
