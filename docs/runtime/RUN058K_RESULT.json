@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-DRY-20260918-058K",
+  "state": "PASS_BOTH_FROZEN_HISTORY_DRY",
+  "micro_batch_id": "O57-MB-002",
+  "members": [
+    {
+      "code": "00003",
+      "preflight_returncode": 0,
+      "dry_returncode": 1,
+      "preflight_sha256": "70cf43163ee312d26b9923e0a9d7c20faf95e969ae70deec1ee71e277730d161",
+      "fresh_preflight_status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "request_count": 1,
+      "dry_request_status": "dry_envelope_validated_not_sent",
+      "pre_send_peak_upper_cny": "0.07981",
+      "input_validated": true,
+      "news_loader_consumed": true,
+      "news_prompt_consumed": true,
+      "adapter_count": 1,
+      "history_rows": 44,
+      "history_sha256": "a8d7b27d278824b605d75167f4efcacab12ec1ef05df26f93473bff5a66e5a5e",
+      "probe_blockers": [
+        "SEM-001",
+        "NATIVE_ANALYSIS_SUCCESS_NOT_PROVEN",
+        "NATIVE_ANALYSIS_ERROR_PRESENT"
+      ],
+      "status": "PASS_FROZEN_HISTORY_DRY"
+    },
+    {
+      "code": "00004",
+      "preflight_returncode": 0,
+      "dry_returncode": 1,
+      "preflight_sha256": "a48853934af12b58b687190cad9dae0bf1c19dd9d1c71e4fa605bb3c89d98544",
+      "fresh_preflight_status": "PASS_POOL_TARGET_PREFLIGHT_V2",
+      "request_count": 1,
+      "dry_request_status": "dry_envelope_validated_not_sent",
+      "pre_send_peak_upper_cny": "0.079806",
+      "input_validated": true,
+      "news_loader_consumed": true,
+      "news_prompt_consumed": true,
+      "adapter_count": 1,
+      "history_rows": 44,
+      "history_sha256": "36904e7425dd9553c21b3475038ca8660aba397983b43c595cea4a0e8315d873",
+      "probe_blockers": [
+        "SEM-001",
+        "NATIVE_ANALYSIS_SUCCESS_NOT_PROVEN",
+        "NATIVE_ANALYSIS_ERROR_PRESENT"
+      ],
+      "status": "PASS_FROZEN_HISTORY_DRY"
+    }
+  ],
+  "ready_for_paid_child": [
+    "00003",
+    "00004"
+  ],
+  "model_http_requests": 0,
+  "provider_credentials_used": false,
+  "drive_writes": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "real_orders": 0,
+  "automatic_retry": false,
+  "next": "Create one immutable paid child for 00003/00004 with one request max per member and CNY0.20 total hard cap."
+}
