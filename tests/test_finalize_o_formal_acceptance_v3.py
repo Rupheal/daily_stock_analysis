@@ -57,3 +57,13 @@ def test_denominator_mismatch_blocks():
     r,p=good();r['base_operational_O_denominator']=656
     o=finalize(r,p)
     assert 'OPERATIONAL_DENOMINATOR_MISMATCH' in o['blockers']
+
+def test_final_count_must_close_to_operational_denominator():
+    r,p=good();r['additional_excluded_count']=652
+    o=finalize(r,p)
+    assert 'FINAL_COUNT_RECONCILIATION_FAILED' in o['blockers']
+
+def test_ranking_score_order_must_descend():
+    r,p=good();r['ranking'][2]['sentiment_score']=80;r['Top3']=r['ranking'][:3]
+    o=finalize(r,p)
+    assert 'RANKING_SCORE_ORDER_INVALID' in o['blockers']
