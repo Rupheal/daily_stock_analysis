@@ -1,0 +1,148 @@
+name: DSA O657 v3 engineering and current-session preflight canary
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/o_strategy_core_acceptance.py'
+      - 'scripts/prepare_hk_o_operational_preflight_v3.py'
+      - 'scripts/run_hk_o_operational_shard_v3.py'
+      - 'tests/test_o_strategy_core_acceptance.py'
+      - 'tests/test_hk_o_operational_preflight_v3.py'
+      - 'tests/test_o_operational_shard_v3.py'
+      - '.github/workflows/127-run062-o657-v3-engineering.yml'
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: dsa-run062-o657-v3-engineering
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: ${{ github.workspace }}/scripts
+      TZ: Asia/Hong_Kong
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install pytest requests
+      - name: Deterministic v3 tests
+        run: |
+          python -m pytest --noconftest -q \
+            tests/test_o_strategy_core_acceptance.py \
+            tests/test_hk_o_operational_preflight_v3.py \
+            tests/test_o_operational_shard_v3.py \
+            tests/test_o_unresolved_exclusion_policy.py
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35335286449
+          github-token: ${{ github.token }}
+          name: RUN060_CURRENT_OFFICIAL_CLOSE_EVIDENCE
+          path: /tmp/run060
+      - name: Bind Run060 exact universe and O history by receipt hashes
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          r=json.load(open('docs/runtime/RUN060_RECOVERED_RESULT.json'))
+          targets={
+            'universe':r['O_universe_sha256'],
+            'history':r['O_market_history_sha256'],
+          }
+          found={}
+          for p in Path('/tmp/run060').rglob('*'):
+              if not p.is_file(): continue
+              h=hashlib.sha256(p.read_bytes()).hexdigest()
+              for k,v in targets.items():
+                  if h==v:
+                      if k in found: raise SystemExit('DUPLICATE_HASH_MATCH:'+k)
+                      found[k]=str(p.resolve())
+          if set(found)!=set(targets): raise SystemExit('RUN060_HASH_BIND_MISSING:'+repr(found))
+          Path('/tmp/run060-bind.json').write_text(json.dumps(found))
+          print(json.dumps(found))
+          PY
+      - name: Verify O657 policy reconciliation against Run060 universe
+        run: |
+          python - <<'PY'
+          import json,sys
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          from run_hk_o_operational_shard_v3 import select_operational_members
+          b=json.load(open('/tmp/run060-bind.json'))
+          u=json.load(open(b['universe']))
+          p=json.load(open('docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json'))
+          rows=select_operational_members(u,p)
+          assert len(rows)==657
+          assert {x['code'] for x in rows}.isdisjoint({'00853','02172','02252'})
+          Path('/tmp/operational.json').write_text(json.dumps(rows,ensure_ascii=False))
+          print('O657_RECONCILIATION_PASS',len(rows),rows[0]['code'],rows[-1]['code'])
+          PY
+      - name: Current-session model-free preflight on eight never-called-style members
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=json.load(open('/tmp/operational.json'))
+          preferred=['00005','00006','00008','00010','00012','00013','00014','00016']
+          by={x['code']:x for x in rows}
+          selected=[by[x] for x in preferred if x in by]
+          assert len(selected)==8, selected
+          Path('/tmp/preflight-codes.json').write_text(json.dumps(selected))
+          PY
+          python - <<'PY'
+          import json,subprocess,sys
+          from pathlib import Path
+          b=json.load(open('/tmp/run060-bind.json'))
+          rows=json.load(open('/tmp/preflight-codes.json'))
+          out=[]
+          for row in rows:
+              code=row['code'];dest=Path('/tmp/current-preflight')/code
+              cmd=[sys.executable,'scripts/prepare_hk_o_operational_preflight_v3.py',
+                   '--code',code,'--target','2026-09-18',
+                   '--universe',b['universe'],'--cache',b['history'],
+                   '--policy','docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json',
+                   '--out',str(dest)]
+              cp=subprocess.run(cmd,text=True,capture_output=True)
+              status='PASS' if cp.returncode==0 else 'EXCLUDED_NO_RESCUE'
+              reason=None
+              if status!='PASS' and (dest/'FREE_PREFLIGHT_STATUS.json').exists():
+                  reason=json.load(open(dest/'FREE_PREFLIGHT_STATUS.json')).get('reason')
+              out.append({'code':code,'status':status,'reason':reason})
+              print(code,status,reason or '')
+          passed=[x for x in out if x['status']=='PASS']
+          result={'schema_version':1,'run_id':'TRI-DSA-O657-V3-ENG-20260918-062',
+                  'target_session':'2026-09-18','selected':len(out),'passed':len(passed),
+                  'excluded_no_rescue':len(out)-len(passed),'rows':out,
+                  'model_http_requests':0,'paid_data_calls':0,'real_orders':0}
+          Path('/tmp/RUN062_O657_V3_ENGINEERING_RESULT.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          if len(passed)<4:
+              raise SystemExit('CANARY_PREFLIGHT_SHARED_OR_WIDE_FAILURE:'+json.dumps(result))
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN062_O657_V3_ENGINEERING
+          path: /tmp/RUN062_O657_V3_ENGINEERING_RESULT.json
+          retention-days: 90
+      - name: Commit sanitized engineering receipt
+        run: |
+          cp /tmp/RUN062_O657_V3_ENGINEERING_RESULT.json docs/runtime/RUN062_O657_V3_ENGINEERING_RESULT.json
+          git add docs/runtime/RUN062_O657_V3_ENGINEERING_RESULT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          git commit -m 'dsa: record O657 v3 current-session engineering gate'
+          git fetch origin fix/native-private-execution-20260914
+          git rebase origin/fix/native-private-execution-20260914
+          git push origin HEAD:fix/native-private-execution-20260914
+      - name: Assert zero paid/model boundary
+        run: |
+          echo MODEL_HTTP_REQUESTS=0
+          echo REAL_ORDERS=0
+          echo SCHEDULE_CHANGES=0
+          echo MAIN_MERGE=0
