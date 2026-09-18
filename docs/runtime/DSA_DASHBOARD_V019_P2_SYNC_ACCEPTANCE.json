@@ -1,0 +1,45 @@
+{
+  "run_id": "TRI-DSA-DEV-20260918-DASHBOARD-V019-P2-SYNC-BRIDGE",
+  "status": "ACCEPTED_ENGINEERING",
+  "authority_branch": "fix/native-private-execution-20260914",
+  "dashboard_branch": "research/dsa-dashboard-v019-20260918",
+  "authority_workflow": ".github/workflows/dsa-dashboard-v019-sync.yml",
+  "workflow_run": 35352844309,
+  "workflow_head": "17bbc63fb96eb475c2bc4f6b43ef12529f51d709",
+  "conclusion": "success",
+  "sync_result": {
+    "status": "UPDATED_ALIGNED",
+    "authority_run": "TRI-DSA-RESUME-20260918-060-RECOVERED",
+    "authority_session": "2026-09-18",
+    "detector_status": "ALIGNED",
+    "dashboard_publish_commit": "d72bd775",
+    "regression_tests": "53 PASS"
+  },
+  "trigger_contract": {
+    "type": "event_driven_push_path",
+    "branch": "fix/native-private-execution-20260914",
+    "receipt_paths": [
+      "docs/runtime/RUN*_RESULT.json",
+      "docs/runtime/RUN*_RECOVERED_RESULT.json"
+    ],
+    "schedule_added": false,
+    "existing_schedule_modified": false
+  },
+  "publishing_contract": {
+    "files": [
+      "DSA_DASHBOARD_LIVE_V019.json",
+      "DSA_DASHBOARD_HISTORY_V019.json"
+    ],
+    "force_push": false,
+    "main_merge": false,
+    "raw_private_evidence": false,
+    "browser_actions_api": false
+  },
+  "frozen_boundaries": {
+    "model_http_requests": 0,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": 0
+  },
+  "next": "Define /tri dsa ui routing to newest engineering-accepted read-only UI, with fail-closed fallback to v0.18."
+}
