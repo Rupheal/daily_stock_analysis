@@ -53,6 +53,11 @@ def main():
                 plan=repo/(s.get('preflight_plan') or 'docs/runtime/RUN057_O_NATIVE_PLAN.json')
                 preflight_script=scripts/'prepare_hk_pool_rollout_preflight_v2.py'
                 preflight_args=['--code',code,'--target',s['target_session'],'--universe',str(universe),'--cache',str(a.cache.resolve()),'--plan',str(plan.resolve()),'--out',str(pre)]
+            elif s.get('preflight_contract')=='POOL_CURRENT_SESSION_V3':
+                plan=repo/(s.get('preflight_plan') or 'docs/runtime/RUN057_O_NATIVE_PLAN.json')
+                current_universe=Path(s.get('current_universe_path') or universe)
+                preflight_script=scripts/'prepare_run061_current_preflight.py'
+                preflight_args=['--code',code,'--target',s['target_session'],'--universe',str(current_universe.resolve()),'--cache',str(a.cache.resolve()),'--plan',str(plan.resolve()),'--out',str(pre)]
             else:
                 preflight_script=scripts/'prepare_hk_member_acceptance.py'
                 preflight_args=['--code',code,'--target',s['target_session'],'--universe',str(universe),'--cache',str(a.cache.resolve()),'--out',str(pre)]
