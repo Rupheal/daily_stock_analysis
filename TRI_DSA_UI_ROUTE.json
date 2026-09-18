@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "command": "/tri dsa ui",
+  "command_meaning": "Resolve and present the safest engineering-accepted DSA Dashboard UI in read-only mode.",
+  "resolver": "scripts/dashboard_ui_router_v019.py",
+  "authority_branch": "fix/native-private-execution-20260914",
+  "current_route": {
+    "selected_version": "v0.19",
+    "selected_branch": "research/dsa-dashboard-v019-20260918",
+    "selected_ui": "DSA_Dashboard_v0.19_Live_UI.html",
+    "required_detector_state": "ALIGNED",
+    "badge": "CURRENT / READ ONLY"
+  },
+  "fallback_route": {
+    "selected_version": "v0.18",
+    "selected_branch": "fix/native-private-execution-20260914",
+    "selected_ui": "DSA_Dashboard_v0.18_Live_UI.html",
+    "badge": "LAST VALIDATED / READ ONLY",
+    "conditions": [
+      "SOURCE_AHEAD",
+      "SOURCE_MISMATCH",
+      "AUTHORITY_UNAVAILABLE",
+      "FEED_INVALID",
+      "V019_NOT_ENGINEERING_ACCEPTED",
+      "V019_UI_MISSING",
+      "V019_FEED_MISSING"
+    ],
+    "must_disclose_reason": true,
+    "must_not_claim_current": true
+  },
+  "blocked_route": {
+    "condition": "Neither v0.19 nor v0.18 has an engineering-accepted usable UI.",
+    "badge": "BLOCKED"
+  },
+  "mutation_policy": {
+    "read_only": true,
+    "model_calls": 0,
+    "real_orders": 0,
+    "schedule_changes": 0,
+    "main_merge": false
+  }
+}
