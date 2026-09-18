@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-MB003-CLOSE-20260918-058V",
+  "state": "PASS_MB003_RAW_GATE_BLOCK_NEXT_CHILD_SELECTED",
+  "target_session": "2026-09-18",
+  "closed_batch": {
+    "schema_version": 1,
+    "micro_batch_id": "O57-MB-003",
+    "codes": [
+      "00005",
+      "00006"
+    ],
+    "status": "RAW_GATE_BLOCK",
+    "target_session": "2026-09-18",
+    "member_statuses": {
+      "00005": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND",
+      "00006": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    },
+    "evidence": {
+      "run058u_workflow": 35336247845,
+      "run058u_artifact_id": 10543383594,
+      "run058u_result": "RUN058U_RESULT.json",
+      "run060_receipt": "docs/runtime/RUN060_RECOVERED_RESULT.json"
+    },
+    "model_http_requests_confirmed": 0,
+    "usage_peak_estimate_cny": "0",
+    "actual_attributable_charge_cny": 0,
+    "private_final_roundtrip": null,
+    "qualified_signals": 0,
+    "simulation_writes": 0,
+    "automatic_retry": false,
+    "raw_content_public": false
+  },
+  "ledger_sha256": "e9c5f72e2b22ea12edaedefdc33a15632f222e34f1d0151c91c572efc88542f9",
+  "next_child": {
+    "micro_batch_id": "O57-MB-004",
+    "codes": [
+      "00008",
+      "00010"
+    ],
+    "member_count": 2,
+    "tranche_id": "O57-TR-01",
+    "provider_send_authorized": false,
+    "fresh_20260918_preflight_required": true,
+    "private_claim_reconciliation_required_before_send": true,
+    "automatic_retry": false
+  },
+  "model_http_requests": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "drive_writes": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "next": "Run free 2026-09-18 preflight/dry for MB004; do not send provider until that gate passes."
+}
