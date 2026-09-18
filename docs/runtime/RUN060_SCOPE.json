@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-RESUME-20260918-060",
+  "target_session": "2026-09-18",
+  "decision_session": "2026-09-18",
+  "purpose": [
+    "refresh official SSE/SZSE Southbound union",
+    "refresh U45 membership",
+    "refresh O/U frozen original native data-only to latest completed close"
+  ],
+  "model_http_requests": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "main_merge": false,
+  "schedule_changes": false,
+  "production_promotion": false,
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "prior_stale_sentinel": {
+    "run_id": "TRI-DSA-O-NATIVE-20260918-058S",
+    "workflow_run": 35334898187,
+    "status": "STALE_SESSION_PRE_SEND_STOP",
+    "model_http_requests": 0,
+    "repeat_permitted": false
+  },
+  "rule": "No model call. Current official universe and current completed-session native data must be frozen before selecting any new O sentinel."
+}
