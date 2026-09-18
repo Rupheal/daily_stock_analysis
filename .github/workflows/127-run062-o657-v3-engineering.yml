@@ -7,10 +7,12 @@ on:
       - 'scripts/prepare_hk_o_operational_preflight_v3.py'
       - 'scripts/run_hk_o_operational_shard_v3.py'
       - 'scripts/deepseek_flash_cap010_guard.py'
+      - 'scripts/finalize_o_formal_acceptance_v3.py'
       - 'tests/test_o_strategy_core_acceptance.py'
       - 'tests/test_hk_o_operational_preflight_v3.py'
       - 'tests/test_o_operational_shard_v3.py'
       - 'tests/test_deepseek_flash_cap010_guard.py'
+      - 'tests/test_finalize_o_formal_acceptance_v3.py'
       - '.github/workflows/127-run062-o657-v3-engineering.yml'
 permissions:
   contents: write
@@ -41,6 +43,7 @@ jobs:
             tests/test_hk_o_operational_preflight_v3.py \
             tests/test_o_operational_shard_v3.py \
             tests/test_deepseek_flash_cap010_guard.py \
+            tests/test_finalize_o_formal_acceptance_v3.py \
             tests/test_o_unresolved_exclusion_policy.py
       - uses: actions/download-artifact@v4
         with:
