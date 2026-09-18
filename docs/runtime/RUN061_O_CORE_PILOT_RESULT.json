@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-CORE-PILOT-20260918-061",
+  "state": "PASS_CORE_ARCHITECTURE_PILOT",
+  "samples": [
+    {
+      "code": "00001",
+      "status": "CORE_ACCEPTED",
+      "ranking_eligible": true,
+      "narrative_release_status": "QUARANTINED",
+      "strategy_core": {
+        "action": "watch",
+        "sentiment_score": 42,
+        "decision_type": "hold",
+        "action_family": "hold",
+        "score_family": "hold",
+        "guardrail_reason_present": false
+      },
+      "strategy_core_sha256": "410243938a6f21d37a6302d95b85927230be0f98f45962e5d62854b270cbfdc7",
+      "raw_result_sha256": "8e7721f46523066b2256938642a11e27986bc59152bc2bc2e4f3205f4dc59c2b",
+      "semantic_guards": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "hard_semantic_count": 0,
+      "core_semantic_count": 0,
+      "narrative_semantic_count": 3,
+      "blockers": []
+    },
+    {
+      "code": "00003",
+      "status": "CORE_ACCEPTED",
+      "ranking_eligible": true,
+      "narrative_release_status": "QUARANTINED",
+      "strategy_core": {
+        "action": "watch",
+        "sentiment_score": 42,
+        "decision_type": "hold",
+        "action_family": "hold",
+        "score_family": "hold",
+        "guardrail_reason_present": false
+      },
+      "strategy_core_sha256": "410243938a6f21d37a6302d95b85927230be0f98f45962e5d62854b270cbfdc7",
+      "raw_result_sha256": "aa7e9908abb4761bdb2692bd36a981a09590f7237c0444f2d2ef8c561cb1eb2d",
+      "semantic_guards": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "hard_semantic_count": 0,
+      "core_semantic_count": 0,
+      "narrative_semantic_count": 9,
+      "blockers": []
+    },
+    {
+      "code": "00004",
+      "status": "CORE_ACCEPTED",
+      "ranking_eligible": true,
+      "narrative_release_status": "QUARANTINED",
+      "strategy_core": {
+        "action": "watch",
+        "sentiment_score": 46,
+        "decision_type": "hold",
+        "action_family": "hold",
+        "score_family": "hold",
+        "guardrail_reason_present": false
+      },
+      "strategy_core_sha256": "1b5fa97fd7eed73b3b3e017e53ff3555663f0f411e6e362f6f3885b0c1361f91",
+      "raw_result_sha256": "28807aa59b4cb88d159f501c3298164022ab7a9a50377ee131c6eba84f307c19",
+      "semantic_guards": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "hard_semantic_count": 0,
+      "core_semantic_count": 0,
+      "narrative_semantic_count": 5,
+      "blockers": []
+    }
+  ],
+  "accepted": 3,
+  "denominator": 3,
+  "narrative_quarantined": 3,
+  "model_http_requests": 0,
+  "drive_writes": 0,
+  "real_orders": 0,
+  "raw_content_public": false,
+  "next": "If PASS, build current-session O operational rollout using member-level continuation and strategy-core ranking. If NO_GO, do not launch paid O657."
+}
