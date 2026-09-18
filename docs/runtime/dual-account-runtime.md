@@ -33,6 +33,21 @@
 
 形成资金段落前按 [免费资金采集契约](CAPITAL_DATA_COLLECTION.md) 执行只读采集。逐项读取 receipt 的来源、日期、截止资格和缺失原因；已有南向事实不得与身份不可识别项合并成全模块UNKNOWN。此步骤不改变交易门槛或O原生逻辑，下一次定时消费仍待真实验收。
 
+## 2026-09-18 O unresolved-symbol exclusion policy
+
+User directive: unresolved O-universe members must not trigger repeated rescue loops. The official HK Connect universe remains the audit universe, while O ranking/formal acceptance uses a separately reported operational denominator.
+
+Authoritative policy: `docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json`.
+
+Rules:
+- Keep the full official universe for audit/reconciliation; do not erase a failed or unresolved member from history.
+- A normal current-session refresh may be followed by at most one additional model-free confirmation cycle for a symbol. If status still cannot be verified, mark it `EXCLUDED_UNRESOLVED_FOR_SESSION`.
+- Do not use paid model calls to rescue data/status ambiguity, and do not launch repeated bespoke recovery jobs for the same symbol/session.
+- Excluded unresolved symbols do not block O formal acceptance and are removed from the operational ranking denominator for that session.
+- O acceptance coverage is measured against the operational denominator; audit reconciliation must still satisfy: ranked/accepted operational members + explicit exclusions = official universe.
+- Re-entry is passive: on a later session a symbol can return only if the normal refresh itself yields a clear verified status. Do not special-rescue it merely to restore the denominator.
+- For the 2026-09-18 session, 00853 / 02172 / 02252 are excluded from the operational O pool. Official denominator remains 660; operational/formal denominator becomes 657. No further rescue attempts are authorized for those three for this session.
+
 ## 一次运行
 
 1. 读取最新 `DSA_DUAL_ACCOUNT_JOURNAL.json`，保留其文件ID、version及下载时哈希。已有账户找不到时禁止重新初始化，应恢复原件。
@@ -46,7 +61,7 @@
 
 通用字段：id、account(U/O)、at(带时区)、kind。id按模型、信号、事件生成，重跑相同id同内容为no-op，改变内容拒绝。journal为哈希父链，原始信号不可追写。
 
-- SIGNAL：signal含id/cutoff/available_at/scope=forward_simulation/passed/reason。通过时还须来源及哈希、covered/denominator、data_news_plan_verified、top3、next_session、valid_until；O须engine=original_native_dsa及冻结upstream_commit。U45/O独立官方并集，不得自造分数；O全池排名必须全覆盖；U保留45分母且允许逐股验收通过的合格候选，其余隔离。
+- SIGNAL：signal含id/cutoff/available_at/scope=forward_simulation/passed/reason。通过时还须来源及哈希、covered/denominator、data_news_plan_verified、top3、next_session、valid_until；O须engine=original_native_dsa及冻结upstream_commit。U45/O独立官方并集，不得自造分数；O排名必须100%覆盖当期 operational denominator；official denominator 仍按“有效排名 + 明确排除项 = 官方全集”对账。U保留45分母且允许逐股验收通过的合格候选，其余隔离。
 - ENTRY：signal_id/code/quote/fee_cny/excluded。quote须raw价格、执行时间、HKD→CNY汇率及证据、整手及来源，验证first_eligible_price；日线模式须确认下一实际交易日open。较高名次被排除须给出证据。每信号最多一个新仓，已持仓跳过；不加仓。费用未知时不新开仓。
 - MARK：当前持仓逐一给可核验报价及汇率；缺标记不假算NAV。当前版采用同一估值时点，异步报价需上游先建立已验证的统一快照。
 - BAR：原始OHLC及开闭市时间、企业行动/停牌、汇率来源；每个价格区间仅处理一次。跳空止损按开盘更差价；日线止损与止盈同现先止损；达到首次止盈后无法判定保本线先后时保守退出并留痕。企业行动未实现的转换保留隔离，不虚构拆股或分红。
