@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-PRIVATE-SEMANTIC-20260918-067",
+  "parent_run_id": "TRI-DSA-O-NATIVE-20260918-066",
+  "parent_workflow_run": 35337928827,
+  "code": "00008",
+  "target_session": "2026-09-18",
+  "parent_artifact_prefix": "ART-DSA-RUN066-O-NATIVE",
+  "parent_member_run_id": "TRI-DSA-O-NATIVE-20260918-066-00008",
+  "parent_private_index_sha256": "b8bc1f289dc57ab6e1b449684737a1862cf4086b83b0a6cbc83483925f82f843",
+  "expected_provider_sha256": "0c93afcbab7ba25a92f2c057e30662e95b5d6e27236977d6f1f80d05bd7b24df",
+  "saved_raw_blockers": [
+    "SEM-001",
+    "NEWS_HANDOFF_UNPROVEN:NEWS_HANDOFF_MANIFEST_CHANGED"
+  ],
+  "expected_model_http_requests_parent": 1,
+  "model_requests": 0,
+  "drive_writes": 0,
+  "paid_data_calls": 0,
+  "repeat_model_request_permitted": false,
+  "automatic_retry": false,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "purpose": "Restore exact immutable Run066 private evidence and attribute SEM-001 / news-handoff blocker to provider text versus post-model integration without exposing raw content."
+}
