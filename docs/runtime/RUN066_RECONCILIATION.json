@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-066",
+  "state": "PENDING_PRIVATE_SEMANTIC_REVIEW",
+  "code": "00008",
+  "member_status": {
+    "status": "NATIVE_OUTPUT_ISOLATED",
+    "raw_gate": "BLOCK",
+    "raw_blockers": [
+      "SEM-001",
+      "NEWS_HANDOFF_UNPROVEN:NEWS_HANDOFF_MANIFEST_CHANGED"
+    ],
+    "model_http_requests_confirmed": 1,
+    "model_http_requests_possible": 1,
+    "usage_peak_estimate_cny": "0.035234",
+    "observed_balance_change_cny": "0.00",
+    "preflight_sha256": "a0e3934d3be73c7cc2dbe43da41cf018ce1e9acb72265db0485505287415bbd9",
+    "frozen_native_history_adapter": true,
+    "news_coverage_limitation_v1": true,
+    "provider_completion": {
+      "version": "O_PROVIDER_COMPLETION_v1",
+      "status": "PASS",
+      "blockers": [],
+      "raw_sha256": "0c93afcbab7ba25a92f2c057e30662e95b5d6e27236977d6f1f80d05bd7b24df",
+      "content_chars": 6291,
+      "reasoning_chars": 0,
+      "finish_reasons": [
+        "stop"
+      ],
+      "raw_mutated": false,
+      "model_requests": 0
+    },
+    "claim_persisted": true
+  },
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip": true,
+  "claim_persisted": true,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_writes": 0,
+  "formal_pool_top3_generated": false,
+  "automatic_retry": false,
+  "deferred_ready_codes": [
+    "00010"
+  ],
+  "repeat_00008_permitted": false,
+  "next": "Private semantic review from immutable Drive evidence; never retry 00008 after durable claim."
+}
