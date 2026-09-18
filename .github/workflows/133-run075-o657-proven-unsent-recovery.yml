@@ -206,7 +206,10 @@ jobs:
       MAX_WORKERS: '1'
     steps:
       - uses: actions/checkout@v5
-        with: {ref: fix/native-private-execution-20260914, path: research, fetch-depth: 0}
+        with:
+          ref: fix/native-private-execution-20260914
+          path: research
+          fetch-depth: 0
       - uses: actions/checkout@v5
         with:
           repository: ZhuLinsen/daily_stock_analysis
@@ -222,10 +225,13 @@ jobs:
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - uses: actions/setup-python@v6
-        with: {python-version: '3.11'}
+        with:
+          python-version: '3.11'
       - run: pip install -r research/requirements.txt httpx requests deepseek-recipe==0.1.1
       - uses: actions/download-artifact@v4
-        with: {name: RUN075_O657_RECOVERY_PLAN, path: /tmp/plan}
+        with:
+          name: RUN075_O657_RECOVERY_PLAN
+          path: /tmp/plan
       - name: Execute recovery shard ${{ matrix.shard }}
         id: run
         continue-on-error: true
@@ -246,7 +252,9 @@ jobs:
             --out "/tmp/run075-${{ matrix.shard }}"
       - name: Sanitize recovery shard
         if: always()
-        env: {RUNNER_OUTCOME: ${{ steps.run.outcome }}, SHARD_ID: ${{ matrix.shard }}}
+        env:
+          RUNNER_OUTCOME: ${{ steps.run.outcome }}
+          SHARD_ID: ${{ matrix.shard }}
         run: |
           mkdir -p /tmp/public
           python - <<'PY'
