@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-SEM002-MITIGATION-20260918-058R",
+  "parent_run_id": "TRI-DSA-O-FREE-DRY-20260918-058Q",
+  "target_session": "2026-09-17",
+  "decision_session": "2026-09-18",
+  "code": "00005",
+  "peer_free_gate_isolated_code": "00006",
+  "micro_batch_id": "O57-MB-003",
+  "systemic_observation": {
+    "sent_rollout_members_reviewed": ["00001","00003","00004"],
+    "permanent_sem002_isolations": 3,
+    "ratio": "3/3",
+    "root_cause_hypothesis": "ZERO_OR_BOUNDED_NEWS_HANDOFF_DOES_NOT_ALWAYS PLACE AN EXPLICIT ABSENCE-CLAIM PROHIBITION IN THE NATIVE PROMPT"
+  },
+  "mitigation": {
+    "version": "O_NEWS_COVERAGE_LIMITATION_v1",
+    "type": "VERSIONED_EVIDENCE_HANDOFF_ADAPTER",
+    "guard_relaxation": false,
+    "frozen_upstream_prompt_template_changed": false,
+    "native_scoring_changed": false,
+    "strategy_fields_changed": false,
+    "fake_news_added": false,
+    "search_performed_claim_added": false
+  },
+  "parent_artifact_run": 35224980615,
+  "parent_artifact_name": "RUN049_PUBLIC_CLOSE_AND_GATE_EVIDENCE",
+  "history_cache_sha256": "5c638ac7f699318a981e13dc5edaeada5f99a67715f67b8d64e2b3d2a5fbb36e",
+  "preflight_plan": "docs/runtime/RUN057_O_NATIVE_PLAN.json",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "frozen_native_history_adapter": true,
+  "model_http_requests_authorized": 0,
+  "provider_send_authorized": false,
+  "drive_writes_authorized": 0,
+  "paid_data_calls_authorized": 0,
+  "automatic_retry": false,
+  "no_orders": true,
+  "no_signal_publish": true,
+  "definition_of_done": "00005 fresh v2 preflight passes; frozen history dry envelope reaches dry_envelope_validated_not_sent; coverage limitation adapter applied exactly once; exact adapted evidence block is consumed by the frozen native formatter; no provider or Drive credentials used."
+}
