@@ -24,13 +24,14 @@ def build_plan(universe:dict,policy:dict,ledger:dict,affordable_calls:int,max_sh
     if len(operational)!=int(cur["operational_denominator"]):
         raise ValueError("OPERATIONAL_DENOMINATOR_MISMATCH")
     spent={}
-    for x in ledger.get("confirmed_provider_sends") or []:
-        key=x.get("model_call_key")
-        code=str(x.get("code") or "")
-        expected=f"{session}:{code}:{frozen}"
-        if key!=expected: raise ValueError("MODEL_LEDGER_KEY_MISMATCH:"+code)
-        if code in spent: raise ValueError("DUPLICATE_SPENT_CODE:"+code)
-        spent[code]=x
+    for bucket in ("confirmed_provider_sends","no_repeat_uncertain_claims"):
+        for x in ledger.get(bucket) or []:
+            key=x.get("model_call_key")
+            code=str(x.get("code") or "")
+            expected=f"{session}:{code}:{frozen}"
+            if key!=expected: raise ValueError("MODEL_LEDGER_KEY_MISMATCH:"+code)
+            if code in spent: raise ValueError("DUPLICATE_SPENT_CODE:"+code)
+            spent[code]=dict(x,_ledger_bucket=bucket)
     op_codes={x["code"] for x in operational}
     if not set(spent)<=op_codes:
         raise ValueError("SPENT_CODE_OUTSIDE_OPERATIONAL")
@@ -58,8 +59,10 @@ def build_plan(universe:dict,policy:dict,ledger:dict,affordable_calls:int,max_sh
       "official_denominator":int(cur["official_denominator"]),
       "operational_denominator":int(cur["operational_denominator"]),
       "base_excluded_count":len(excluded),
-      "confirmed_spent_before_wave":len(spent),
-      "confirmed_spent_codes":sorted(spent,key=lambda c:next(x["universe_index"] for x in operational if x["code"]==c)),
+      "no_repeat_before_wave":len(spent),
+      "confirmed_spent_before_wave":len(ledger.get("confirmed_provider_sends") or []),
+      "uncertain_claims_before_wave":len(ledger.get("no_repeat_uncertain_claims") or []),
+      "no_repeat_codes":sorted(spent,key=lambda c:next(x["universe_index"] for x in operational if x["code"]==c)),
       "remaining_before_wave":len(remaining),
       "affordable_calls":int(affordable_calls),
       "planned_calls":n,
