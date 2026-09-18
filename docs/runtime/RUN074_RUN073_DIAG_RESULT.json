@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-RUN073-DIAG-20260918-074",
+  "code": "00100",
+  "model_http_requests_added": 0,
+  "drive_writes": 0,
+  "raw_content_public": false,
+  "member": {
+    "status": "EXCLUDED_AFTER_CLAIM_NO_RETRY",
+    "failure_code": "NameError",
+    "claim_persisted": true,
+    "model_http_requests_confirmed": 0,
+    "model_http_requests_possible": 1,
+    "pre_send_upper_cny": "0.079764",
+    "effective_cap_cny": "0.10",
+    "authorized_ceiling_cny": "2.00",
+    "cap_escalated": null,
+    "provider_completion_status": null
+  },
+  "probe": {
+    "input_validated": true,
+    "input_validation_error_code": null,
+    "process_status": 1,
+    "error": null,
+    "native_main_failure_reason": "no_report",
+    "pipeline_final_capture_proven": true,
+    "semantic_contract_pass": false,
+    "post_output_promotion_gate": {
+      "status": "BLOCK",
+      "blockers": [
+        "SEM-001",
+        "NATIVE_ANALYSIS_SUCCESS_NOT_PROVEN",
+        "NATIVE_ANALYSIS_ERROR_PRESENT"
+      ],
+      "o_single_stock_formal_acceptance": false,
+      "o_full_pool_permitted": false,
+      "top3_permitted": false,
+      "repeat_model_request_permitted": false
+    }
+  },
+  "budget": {
+    "limit_cny": "0.10",
+    "carry_upper_cny": "0",
+    "request_count": 1,
+    "request_statuses": [
+      "dry_envelope_validated_not_sent"
+    ],
+    "pre_send_upper": [
+      "0.079764"
+    ],
+    "hard_caps": [
+      "0.10"
+    ]
+  }
+}
