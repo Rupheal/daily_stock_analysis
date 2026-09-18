@@ -1,0 +1,29 @@
+name: DSA O unresolved-symbol exclusion policy tests
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json'
+      - 'docs/runtime/dual-account-runtime.md'
+      - 'docs/DSA_NEXT_ACTIONS.json'
+      - 'tests/test_o_unresolved_exclusion_policy.py'
+      - '.github/workflows/o-unresolved-exclusion-policy-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest
+      - name: Verify O official/audit vs operational denominator policy
+        run: python -m pytest --noconftest -q tests/test_o_unresolved_exclusion_policy.py
+      - name: Assert no execution side effects
+        run: |
+          echo "MODEL_HTTP_REQUESTS=0"
+          echo "REAL_ORDERS=0"
+          echo "SCHEDULE_CHANGES=0"
+          echo "MAIN_MERGE=0"
