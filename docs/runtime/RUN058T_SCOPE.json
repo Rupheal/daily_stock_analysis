@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-SESSION-ROLLOVER-20260918-058T",
+  "parent_run_id": "TRI-DSA-O-NATIVE-20260918-058S",
+  "target_session": "2026-09-18",
+  "decision_session": "2026-09-18",
+  "prior_target_session": "2026-09-17",
+  "prior_plan": "docs/runtime/RUN057_O_NATIVE_PLAN.json",
+  "prior_plan_sha256": "dc1ff79240da457963c511b4af9201e37e7b41ac0a46c2bb90b8b2a2a22306c5",
+  "prior_rollout_ledger": "docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl",
+  "prior_rollout_ledger_sha256": "3e67a65cdac4c67f76cb23b5975eaa8a68ce5d598a1d0b3f81197a27c8a373bd",
+  "expected_current_child": {
+    "micro_batch_id": "O57-MB-003",
+    "codes": ["00005","00006"]
+  },
+  "old_official_universe": "docs/runtime/run032_public_cache/O_UNIVERSE.json",
+  "base_u_universe": "docs/dsa-u-universe.json",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "model_http_requests": 0,
+  "provider_credentials_allowed": false,
+  "drive_writes_allowed": false,
+  "paid_data_calls": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "no_signal_publish": true,
+  "purpose": "Refresh current official Southbound universe and full O native market history for completed 2026-09-18 HK session. Reuse prior rollout geometry only if official denominator and exact member-code set are unchanged. Never send provider requests in this run."
+}
