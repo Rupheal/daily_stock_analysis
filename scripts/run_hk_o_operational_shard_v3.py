@@ -118,6 +118,10 @@ def main():
         raise ValueError("PER_MEMBER_CAP_CHANGED")
     if s.get("automatic_retry") is not False or s.get("no_orders") is not True:
         raise ValueError("SCOPE_BOUNDARY_INVALID")
+    if int(s.get("maximum_requests",0))!=len(code_rows):
+        raise ValueError("MAXIMUM_REQUESTS_MISMATCH")
+    if Decimal(str(s.get("maximum_cost_cny","0")))!=PER_MEMBER_CAP*len(code_rows):
+        raise ValueError("MAXIMUM_COST_MISMATCH")
     all_operational={x["code"]:x for x in select_operational_members(universe,policy)}
     for row in code_rows:
         if row.get("code") not in all_operational or row.get("universe_index")!=all_operational[row["code"]]["universe_index"]:
