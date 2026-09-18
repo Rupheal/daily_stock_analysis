@@ -34,3 +34,8 @@ def test_operational_denominator_mismatch_rejected():
     u,p=data();p['current_session']['operational_denominator']=658
     with pytest.raises(ValueError,match='OPERATIONAL_DENOMINATOR'):
         select_operational_members(u,p)
+
+def test_actual_provider_command_uses_common_base():
+    source=(ROOT/'scripts/run_hk_o_operational_shard_v3.py').read_text(encoding='utf-8')
+    assert '[*common,"--output"' not in source
+    assert '[*common_base,"--limit-cny",str(effective_cap),"--output",str(actual)]' in source
