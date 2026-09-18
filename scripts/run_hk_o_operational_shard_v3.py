@@ -238,8 +238,14 @@ def main():
         except Exception as exc:
             codeerr=_sanitize_failure(exc)
             row["failure_code"]=codeerr
+            shared_infra=isinstance(exc,(StoreError,httpx.HTTPError)) or "BALANCE" in codeerr or "SHARED_PREFLIGHT_RUNTIME_FAILURE" in codeerr
             if not row.get("status") or row["status"]=="PENDING":
-                row["status"]="EXCLUDED_AFTER_CLAIM_NO_RETRY" if claimed else "EXCLUDED_INFRA_OR_PREFLIGHT"
+                if claimed:
+                    row["status"]="EXCLUDED_AFTER_CLAIM_NO_RETRY"
+                elif shared_infra:
+                    row["status"]="SHARED_FAILURE_UNPROCESSED"
+                else:
+                    row["status"]="EXCLUDED_INFRA_OR_PREFLIGHT"
             if isinstance(exc,(StoreError,httpx.HTTPError)):
                 infra_fail_streak+=1
             elif "BALANCE" in codeerr or "SHARED_PREFLIGHT_RUNTIME_FAILURE" in codeerr:
