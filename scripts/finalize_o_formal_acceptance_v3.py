@@ -21,6 +21,11 @@ def finalize(result:dict, policy:dict) -> dict:
         blockers.append("OPERATIONAL_DENOMINATOR_MISMATCH")
     if int(result.get("missing_count",-1))!=0:
         blockers.append("MISSING_OPERATIONAL_MEMBERS")
+    operational=int(result.get("base_operational_O_denominator",-1))
+    eligible=int(result.get("ranking_eligible_count",-1))
+    additional_excluded=int(result.get("additional_excluded_count",-1))
+    if eligible < 0 or additional_excluded < 0 or eligible + additional_excluded != operational:
+        blockers.append("FINAL_COUNT_RECONCILIATION_FAILED")
     if result.get("formal_O_ranking_generated") is not True:
         blockers.append("FORMAL_RANKING_NOT_GENERATED")
     if result.get("formal_signal_generated") is not False:
@@ -36,6 +41,9 @@ def finalize(result:dict, policy:dict) -> dict:
         blockers.append("RANK_SEQUENCE_INVALID")
     if ranking[:3]!=top3:
         blockers.append("TOP3_NOT_RANKING_PREFIX")
+    scores=[float(x.get("sentiment_score")) for x in ranking if isinstance(x.get("sentiment_score"),(int,float)) and not isinstance(x.get("sentiment_score"),bool)]
+    if len(scores)!=len(ranking) or any(scores[i] < scores[i+1] for i in range(len(scores)-1)):
+        blockers.append("RANKING_SCORE_ORDER_INVALID")
     if int(result.get("real_orders",0) or 0)!=0 or int(result.get("simulation_writes",0) or 0)!=0:
         blockers.append("ORDER_OR_SIMULATION_SIDE_EFFECT")
     rec=result.get("reconciliation") or {}
