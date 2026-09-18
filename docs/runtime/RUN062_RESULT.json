@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-BATCH-CLOSE-20260918-062",
+  "state": "PASS_MB003_TERMINAL_NEXT_CHILD_SELECTED",
+  "closed_micro_batch": "O57-MB-003",
+  "closed_codes": [
+    "00005",
+    "00006"
+  ],
+  "closed_status": "RAW_GATE_BLOCK",
+  "model_http_requests_confirmed": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "next_child": {
+    "micro_batch_id": "O57-MB-004",
+    "codes": [
+      "00008",
+      "00010"
+    ],
+    "member_count": 2,
+    "child_hard_cap_cny": "0.20",
+    "provider_send_authorized": false
+  },
+  "rollout_ledger_sha256": "ce236e633b940afb3d96e1c2456bddd9f580dfa744f6db9e7668f16cc989c83a"
+}
