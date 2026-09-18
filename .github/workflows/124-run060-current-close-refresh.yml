@@ -1,0 +1,203 @@
+name: DSA Run060 current official universe and close refresh
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths: [docs/runtime/RUN060_SCOPE.json]
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run060-current-close-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      ENV_FILE: /dev/null
+      TZ: Asia/Hong_Kong
+      PYTHONUNBUFFERED: '1'
+      ENABLE_REALTIME_QUOTE: 'false'
+      ENABLE_REALTIME_TECHNICAL_INDICATORS: 'false'
+      PREFETCH_REALTIME_QUOTES: 'false'
+      BACKTEST_ENABLED: 'false'
+      AGENT_MODE: 'false'
+      NEWS_INTEL_AUTO_FETCH_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          path: research
+          fetch-depth: 0
+
+      - uses: actions/checkout@v5
+        with:
+          repository: ZhuLinsen/daily_stock_analysis
+          ref: 089d9d26d68f8b839ea5a74a3784e4402925f8b7
+          path: original
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install deterministic runtime only
+        run: pip install -r research/requirements.txt pytest openpyxl requests
+
+      - name: Verify current-session scope and zero-model boundary
+        working-directory: research
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime,timezone
+          from zoneinfo import ZoneInfo
+          from scripts.o_target_session_contract import resolve_target_session
+          s=json.load(open('docs/runtime/RUN060_SCOPE.json'))
+          now=datetime.now(timezone.utc)
+          assert now.astimezone(ZoneInfo('Asia/Hong_Kong')).date().isoformat()==s['decision_session']
+          assert resolve_target_session(now).target_session.isoformat()==s['target_session']
+          assert s['target_session']=='2026-09-18'
+          assert s['model_http_requests']==0 and s['real_orders']==0 and s['main_merge'] is False
+          print('RUN060_SCOPE_PASS')
+          PY
+
+      - name: Download current official Southbound source bytes
+        run: |
+          mkdir -p /tmp/run060-sources
+          python - <<'PY'
+          import hashlib,json,time
+          from datetime import datetime,timezone
+          from pathlib import Path
+          import requests
+
+          root=Path('/tmp/run060-sources')
+          urls={
+            'sse-list.json':'https://query.sse.com.cn/commonQuery.do?sqlId=COMMON_SSE_JYFW_HGT_XXPL_BDZQQD_L&isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&keyword=',
+            'szse-list.json':'https://www.szse.cn/api/report/ShowReport/data?SHOWTYPE=JSON&CATALOGID=SGT_GGTBDQD&TABKEY=tab1&PAGENO=1',
+            'szse-list.xlsx':'https://www.szse.cn/api/report/ShowReport?SHOWTYPE=xlsx&CATALOGID=SGT_GGTBDQD&TABKEY=tab1',
+            'hkex-securities.xlsx':'https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx',
+          }
+          headers={
+            'User-Agent':'Mozilla/5.0',
+            'Referer':'https://www.sse.com.cn/',
+            'Accept':'*/*'
+          }
+          rows=[]
+          for name,url in urls.items():
+            started=datetime.now(timezone.utc).isoformat()
+            last=None
+            for attempt in range(3):
+              try:
+                h=dict(headers)
+                if 'szse.cn' in url: h['Referer']='https://www.szse.cn/'
+                if 'hkex.com.hk' in url: h['Referer']='https://www.hkex.com.hk/'
+                r=requests.get(url,headers=h,timeout=(10,30))
+                r.raise_for_status()
+                data=r.content
+                if not data: raise RuntimeError('EMPTY_SOURCE')
+                (root/name).write_bytes(data)
+                completed=datetime.now(timezone.utc).isoformat()
+                rows.append({'file':name,'url':url,'sha256':hashlib.sha256(data).hexdigest(),
+                             'started_at':started,'completed_at':completed,'status':'received','bytes':len(data)})
+                break
+              except Exception as exc:
+                last=type(exc).__name__
+                if attempt==2: raise
+                time.sleep(1+attempt)
+          (root/'source-probe.json').write_text(json.dumps({'schema_version':1,'sources':rows},indent=2)+'\n')
+          print(json.dumps({'sources_received':len(rows),'files':[x['file'] for x in rows]}))
+          PY
+
+      - name: Freeze official O/U universes for 2026-09-18
+        working-directory: research
+        run: |
+          python scripts/freeze_hk_connect_universe.py             --sources /tmp/run060-sources             --session 2026-09-18             --u-universe docs/dsa-u-universe.json             --out /tmp/run060-universe
+
+      - name: Refresh U45 original native data-only to 2026-09-18 close
+        run: |
+          python research/scripts/run_hk_native_data_probe.py             --checkout original             --universe /tmp/run060-universe/U_UNIVERSE.json             --scope U45_data_only             --expected-date 2026-09-18             --decision-session 2026-09-18             --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7             --target-boundary-adapter             --timeout 1200             --output /tmp/run060-u45
+
+      - name: Refresh O official pool original native data-only to 2026-09-18 close
+        run: |
+          python research/scripts/run_hk_native_data_probe.py             --checkout original             --universe /tmp/run060-universe/O_UNIVERSE.json             --scope O_full_pool_data_only             --expected-date 2026-09-18             --decision-session 2026-09-18             --expected-commit 089d9d26d68f8b839ea5a74a3784e4402925f8b7             --target-boundary-adapter             --timeout 1800             --output /tmp/run060-o
+
+      - name: Build sanitized current-close receipt
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          u=json.load(open('/tmp/run060-universe/U_UNIVERSE.json'))
+          o=json.load(open('/tmp/run060-universe/O_UNIVERSE.json'))
+          uc=json.load(open('/tmp/run060-u45/coverage.json'))
+          oc=json.load(open('/tmp/run060-o/coverage.json'))
+          old=json.load(open('research/docs/runtime/run032_public_cache/O_UNIVERSE.json'))
+          old_codes={x['code'] for x in old['members']}; new_codes={x['code'] for x in o['members']}
+          def cov(d):
+            members=d.get('members') or d.get('results') or []
+            if members:
+              ready=sum(1 for x in members if x.get('status') in ('PASS','passed','ready','feature_ready') or x.get('feature_ready') is True or x.get('passed') is True)
+              return ready,len(members)-ready
+            den=d.get('coverage_denominator') or d.get('denominator')
+            ready=d.get('feature_ready') or d.get('passed') or d.get('success') or d.get('covered')
+            return ready, (den-ready if isinstance(den,int) and isinstance(ready,int) else None)
+          ur,ui=cov(uc); orun,oi=cov(oc)
+          out={
+            'schema_version':1,'run_id':'TRI-DSA-RESUME-20260918-060',
+            'target_session':'2026-09-18','decision_session':'2026-09-18',
+            'official_O_denominator':o['member_count'],'official_U_denominator':45,
+            'U_buy_eligible':sum(bool(x.get('channels')) for x in u['members']),
+            'official_universe_diff_vs_2026_09_17':{
+              'old_denominator':old['member_count'],'new_denominator':o['member_count'],
+              'added':sorted(new_codes-old_codes),'removed':sorted(old_codes-new_codes)
+            },
+            'O_coverage_denominator':oc.get('coverage_denominator'),
+            'U_coverage_denominator':uc.get('coverage_denominator'),
+            'O_ready_inferred':orun,'O_not_ready_inferred':oi,
+            'U_ready_inferred':ur,'U_not_ready_inferred':ui,
+            'O_universe_sha256':hashlib.sha256(Path('/tmp/run060-universe/O_UNIVERSE.json').read_bytes()).hexdigest(),
+            'U_universe_sha256':hashlib.sha256(Path('/tmp/run060-universe/U_UNIVERSE.json').read_bytes()).hexdigest(),
+            'O_market_history_sha256':hashlib.sha256(Path('/tmp/run060-o/market-history.json').read_bytes()).hexdigest(),
+            'U_market_history_sha256':hashlib.sha256(Path('/tmp/run060-u45/market-history.json').read_bytes()).hexdigest(),
+            'model_http_requests':0,'DeepSeek_API_cost_cny':0,'paid_data_calls':0,
+            'real_orders':0,'simulation_writes':0,'main_merge':False,'schedule_changes':0,
+            'formal_signal_generated':False
+          }
+          Path('/tmp/RUN060_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RUN060_CURRENT_OFFICIAL_CLOSE_EVIDENCE
+          path: |
+            /tmp/run060-sources/
+            /tmp/run060-universe/
+            /tmp/run060-u45/coverage.json
+            /tmp/run060-u45/market-history.json
+            /tmp/run060-o/coverage.json
+            /tmp/run060-o/market-history.json
+            /tmp/RUN060_RESULT.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit sanitized Run060 receipt and public official universe snapshots
+        if: always()
+        working-directory: research
+        run: |
+          set -euo pipefail
+          if test ! -f /tmp/RUN060_RESULT.json; then exit 0; fi
+          cp /tmp/RUN060_RESULT.json docs/runtime/RUN060_RESULT.json
+          cp /tmp/run060-universe/O_UNIVERSE.json docs/runtime/RUN060_O_UNIVERSE.json
+          cp /tmp/run060-universe/U_UNIVERSE.json docs/runtime/RUN060_U_UNIVERSE.json
+          git add docs/runtime/RUN060_RESULT.json docs/runtime/RUN060_O_UNIVERSE.json docs/runtime/RUN060_U_UNIVERSE.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m 'dsa: record Run060 current official close refresh'
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
