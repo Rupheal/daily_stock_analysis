@@ -1,0 +1,51 @@
+name: DSA Dashboard v0.19 authority/freshness tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/dsa-dashboard-v019-20260918]
+    paths:
+      - 'DSA_Dashboard_v0.19_Live_UI.html'
+      - 'DSA_DASHBOARD_LIVE_V019.json'
+      - 'DSA_DASHBOARD_HISTORY_V019.json'
+      - 'DSA_DASHBOARD_LIVE_V019.schema.json'
+      - 'scripts/dashboard_feed_generator_v019.py'
+      - 'tests/test_dashboard_v019.py'
+      - 'tests/test_dashboard_v018.py'
+      - 'docs/runtime/DSA_DASHBOARD_V019_RUNTIME.md'
+      - '.github/workflows/dsa-dashboard-v019-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic test dependency
+        run: python -m pip install pytest
+      - name: v0.19 authority and freshness tests
+        run: python -m pytest --noconftest -q tests/test_dashboard_v019.py
+      - name: v0.18 regression tests
+        run: python -m pytest --noconftest -q tests/test_dashboard_v018.py
+      - name: v0.19 generator smoke test without model/provider calls
+        run: |
+          tmp="$(mktemp -d)"
+          cp DSA_DASHBOARD_HISTORY_V019.json "$tmp/history.json"
+          python scripts/dashboard_feed_generator_v019.py --root . --out "$tmp/live.json" --history "$tmp/history.json" --source-commit "$GITHUB_SHA"
+          python - "$tmp/live.json" "$tmp/history.json" <<'PY'
+          import json,sys
+          live=json.load(open(sys.argv[1]));hist=json.load(open(sys.argv[2]))
+          assert live['meta']['schema_version']=='0.19'
+          assert live['authority']['source_receipt'].endswith('RUN060_RECOVERED_RESULT.json')
+          assert live['O']['denominator']==660
+          assert live['O']['data_ready']==657
+          assert live['U']['denominator']==45
+          assert live['U']['data_ready']==45
+          assert live['U']['buy_eligible']==44
+          assert live['O']['accepted']==0 and live['U']['accepted']==0
+          assert live['budget']['actual_request_count']==0
+          assert hist['append_only'] is True
+          print('v0.19 generator smoke PASS')
+          PY
