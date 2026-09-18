@@ -1,0 +1,159 @@
+name: DSA Run058P close O57 MB002 and select next child
+
+on:
+  push:
+    branches: [research/run058p-o-batch-close-20260918]
+    paths:
+      - .github/workflows/120-run058p-o-batch-close.yml
+      - docs/runtime/RUN058P_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058p-o-batch-close
+  cancel-in-progress: false
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install pytest
+
+      - name: Run controller tests
+        run: python -m pytest --noconftest -q tests/test_run058_o_rollout_controller.py
+
+      - name: Verify final private dispositions and append exactly one terminal ledger row
+        run: |
+          python - <<'PY'
+          import json
+          from decimal import Decimal
+          from pathlib import Path
+
+          scope=json.load(open('docs/runtime/RUN058P_SCOPE.json'))
+          m=json.load(open('docs/runtime/RUN058M_RESULT.json'))
+          o=json.load(open('docs/runtime/RUN058O_RESULT.json'))
+          l=json.load(open('docs/runtime/RUN058L_RECONCILIATION.json'))
+          n=json.load(open('docs/runtime/RUN058N_RECONCILIATION.json'))
+
+          assert scope['model_http_requests_authorized']==0
+          assert scope['paid_data_calls_authorized']==0
+          assert scope['drive_writes_authorized']==0
+          assert scope['automatic_retry'] is False
+          assert m['code']=='00003' and m['disposition']=='PERMANENT_ISOLATE_NO_RETRY'
+          assert o['code']=='00004' and o['disposition']=='PERMANENT_ISOLATE_NO_RETRY'
+          assert m['repeat_model_request_permitted'] is False
+          assert o['repeat_model_request_permitted'] is False
+          assert m['private_restore_hash_verified'] is True
+          assert o['private_restore_hash_verified'] is True
+          assert l['model_http_requests_confirmed']==1 and l['sent_codes']==['00003'] and l['unsent_codes']==['00004']
+          assert n['model_http_requests_confirmed']==1 and n['code']=='00004'
+          total=Decimal(l['member_statuses'][0]['usage_peak_estimate_cny'])+Decimal(n['member_status']['usage_peak_estimate_cny'])
+          assert total==Decimal(scope['usage_peak_estimate_cny'])
+
+          ledger=Path('docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl')
+          rows=[json.loads(x) for x in ledger.read_text().splitlines() if x.strip()]
+          assert any(x.get('micro_batch_id')=='O57-MB-001' and x.get('status')=='RAW_GATE_BLOCK' for x in rows)
+          assert not any(x.get('micro_batch_id')=='O57-MB-002' for x in rows), 'MB002_ALREADY_PRESENT'
+
+          row={
+            'schema_version':1,
+            'micro_batch_id':'O57-MB-002',
+            'codes':['00003','00004'],
+            'status':'RAW_GATE_BLOCK',
+            'target_session':'2026-09-17',
+            'member_statuses':{
+              '00003':'PERMANENT_ISOLATE_NO_RETRY_SEM002',
+              '00004':'PERMANENT_ISOLATE_NO_RETRY_SEM002'
+            },
+            'evidence':{
+              'run058l_workflow':35299663030,
+              'run058m_result':'docs/runtime/RUN058M_RESULT.json',
+              'run058n_workflow':35300054393,
+              'run058o_result':'docs/runtime/RUN058O_RESULT.json'
+            },
+            'model_http_requests_confirmed':2,
+            'usage_peak_estimate_cny':str(total),
+            'actual_attributable_charge_cny':None,
+            'private_final_roundtrip':True,
+            'qualified_signals':0,
+            'simulation_writes':0,
+            'automatic_retry':False,
+            'raw_content_public':False
+          }
+          with ledger.open('a',encoding='utf-8') as f:
+              f.write(json.dumps(row,ensure_ascii=False,separators=(',',':'))+'\n')
+          print(json.dumps(row,ensure_ascii=False))
+          PY
+
+      - name: Build next zero-model child
+        run: |
+          python scripts/build_run058_o_rollout_controller.py             --scope docs/runtime/RUN058_SCOPE.json             --plan docs/runtime/RUN057_O_NATIVE_PLAN.json             --ledger docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl             --output /tmp/RUN058P_NEXT_CONTROLLER.json
+
+      - name: Verify MB003 selected without send authorization
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          c=json.load(open('/tmp/RUN058P_NEXT_CONTROLLER.json'))
+          s=json.load(open('docs/runtime/RUN058P_SCOPE.json'))
+          assert c['state']=='READY_CHILD_ENVELOPE'
+          assert c['ledger_summary']['terminal_batches']==2
+          child=c['selected_child']
+          assert child['micro_batch_id']==s['expected_next_micro_batch']=='O57-MB-003'
+          assert child['codes']==s['expected_next_codes']==['00005','00006']
+          assert child['provider_send_authorized_by_run058'] is False
+          assert child['automatic_retry_after_claim'] is False
+          assert c['resource_accounting']['model_http_requests']==0
+          out={
+            'schema_version':1,
+            'run_id':s['run_id'],
+            'state':'PASS_MB002_TERMINAL_NEXT_CHILD_SELECTED',
+            'closed_micro_batch':'O57-MB-002',
+            'closed_codes':['00003','00004'],
+            'closed_status':'RAW_GATE_BLOCK',
+            'model_http_requests_confirmed':2,
+            'usage_peak_estimate_cny':s['usage_peak_estimate_cny'],
+            'actual_attributable_charge_cny':None,
+            'private_final_roundtrip_all':True,
+            'qualified_signals':0,
+            'orders':0,
+            'simulation_writes':0,
+            'automatic_retry':False,
+            'next_child':child,
+            'rollout_ledger_sha256':hashlib.sha256(Path('docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl').read_bytes()).hexdigest(),
+            'model_http_requests_added_by_run058p':0,
+            'paid_data_calls_added_by_run058p':0,
+            'drive_writes_added_by_run058p':0
+          }
+          Path('/tmp/RUN058P_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058P_BATCH_CLOSE_AND_NEXT_CHILD
+          path: |
+            /tmp/RUN058P_RESULT.json
+            /tmp/RUN058P_NEXT_CONTROLLER.json
+            docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl
+          retention-days: 90
+
+      - name: Commit terminal ledger and sanitized receipts
+        run: |
+          set -euo pipefail
+          cp /tmp/RUN058P_RESULT.json docs/runtime/RUN058P_RESULT.json
+          cp /tmp/RUN058P_NEXT_CONTROLLER.json docs/runtime/RUN058P_NEXT_CONTROLLER.json
+          git add docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl docs/runtime/RUN058P_RESULT.json docs/runtime/RUN058P_NEXT_CONTROLLER.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'dsa: close Run058 MB002 and select MB003'
+          git push
