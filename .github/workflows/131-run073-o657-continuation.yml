@@ -317,13 +317,24 @@ jobs:
                         'repeat_permitted':False
                       });confirmed.add(key);wave_confirmed+=1
                   elif claimed and poss>0:
-                      if key in confirmed or key in uncertain: raise SystemExit('DUPLICATE_UNCERTAIN_CALL_KEY:'+key)
-                      ledger.setdefault('no_repeat_uncertain_claims',[]).append({
-                        'code':code,'model_call_key':key,'source_run_id':d.get('run_id'),
-                        'source_workflow_run':int(os.environ['GITHUB_RUN_ID']),
-                        'status':x.get('status'),'failure_code':x.get('failure_code'),
-                        'model_http_requests_confirmed':0,'model_http_requests_possible':poss,'repeat_permitted':False
-                      });uncertain.add(key);wave_uncertain+=1
+                      proven_unsent_runner_bug=(
+                          x.get('status')=='EXCLUDED_AFTER_CLAIM_NO_RETRY'
+                          and x.get('failure_code')=='NameError'
+                          and req==0 and not x.get('provider_response_sha256')
+                      )
+                      if proven_unsent_runner_bug:
+                          # Claim exists, but the runner crashed on an undefined local variable
+                          # before the provider subprocess was invoked. Keep retryable in the
+                          # formal missing pool; do not poison the no-repeat ledger.
+                          pass
+                      else:
+                          if key in confirmed or key in uncertain: raise SystemExit('DUPLICATE_UNCERTAIN_CALL_KEY:'+key)
+                          ledger.setdefault('no_repeat_uncertain_claims',[]).append({
+                            'code':code,'model_call_key':key,'source_run_id':d.get('run_id'),
+                            'source_workflow_run':int(os.environ['GITHUB_RUN_ID']),
+                            'status':x.get('status'),'failure_code':x.get('failure_code'),
+                            'model_http_requests_confirmed':0,'model_http_requests_possible':poss,'repeat_permitted':False
+                          });uncertain.add(key);wave_uncertain+=1
           ledger['current_confirmed_send_count']=len(ledger.get('confirmed_provider_sends') or [])
           ledger['current_uncertain_no_repeat_count']=len(ledger.get('no_repeat_uncertain_claims') or [])
           Path('/tmp/O_CURRENT_SESSION_MODEL_LEDGER_20260918.json').write_text(json.dumps(ledger,ensure_ascii=False,indent=2)+'\n')
