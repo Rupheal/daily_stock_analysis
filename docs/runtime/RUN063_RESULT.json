@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-CURRENT-PREFLIGHT-20260918-063",
+  "state": "PASS_ALL_READY",
+  "target_session": "2026-09-18",
+  "micro_batch_id": "O57-MB-004",
+  "members": [
+    {
+      "code": "00008",
+      "status": "PASS_CURRENT_TARGET_PREFLIGHT",
+      "preflight_sha256": "4ac7e894dd69c96171e181bb369a53d71685b63b0f15d9e5fe820473754f77ea",
+      "history_count": 45,
+      "target_volume_status": "bounded_provider_reconciliation"
+    },
+    {
+      "code": "00010",
+      "status": "PASS_CURRENT_TARGET_PREFLIGHT",
+      "preflight_sha256": "ecc06bf7068a1755f8ab0df2093ae17d3fa205716501ffd6da2c60b3366e1415",
+      "history_count": 45,
+      "target_volume_status": "exact"
+    }
+  ],
+  "ready_for_paid_child": [
+    "00008",
+    "00010"
+  ],
+  "model_http_requests": 0,
+  "DeepSeek_API_cost_cny": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "next": "Create one immutable paid child containing only ready members; re-run current-session preflight before send."
+}
