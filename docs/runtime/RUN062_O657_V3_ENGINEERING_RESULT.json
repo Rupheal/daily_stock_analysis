@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O657-V3-ENG-20260918-062",
+  "target_session": "2026-09-18",
+  "selected": 8,
+  "passed": 4,
+  "excluded_no_rescue": 4,
+  "rows": [
+    {
+      "code": "00005",
+      "status": "EXCLUDED_NO_RESCUE",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    },
+    {
+      "code": "00006",
+      "status": "EXCLUDED_NO_RESCUE",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    },
+    {
+      "code": "00008",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "code": "00010",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "code": "00012",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "code": "00013",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "code": "00014",
+      "status": "EXCLUDED_NO_RESCUE",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    },
+    {
+      "code": "00016",
+      "status": "EXCLUDED_NO_RESCUE",
+      "reason": "TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND"
+    }
+  ],
+  "model_http_requests": 0,
+  "paid_data_calls": 0,
+  "real_orders": 0
+}
