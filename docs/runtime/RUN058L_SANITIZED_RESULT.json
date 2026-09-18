@@ -1,0 +1,88 @@
+{
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058L",
+  "workflow_run": "35299663030",
+  "O_denominator": 660,
+  "attempted_members": 2,
+  "members": [
+    {
+      "code": "00003",
+      "status": "NATIVE_OUTPUT_ISOLATED",
+      "model_http_requests_confirmed": 1,
+      "model_http_requests_possible": 1,
+      "qualified_signal": false,
+      "private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "671f5b246afcb7778e929c8f47f7537ec74255b7a13b815624ab72e0dd895742",
+        "bytes": 3390221,
+        "original_bytes": 3366587,
+        "parts": 3,
+        "files": 40
+      },
+      "frozen_native_history_adapter": true,
+      "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+      "pre_send_upper_cny": "0.07981",
+      "preflight_sha256": "59bcfb5a8c3c2af909488dfd1a76277569a0cbb3679367ab838d34bd1039859b",
+      "pre_send_private_persistence": {
+        "format": "DSA_PRIVATE_MULTIPART_v1",
+        "save_read_hash_restore": true,
+        "sha256": "e5408d0ee41f54b671684ec0039637b310382981ab697643e620a16c633b1ab2",
+        "bytes": 1228236,
+        "original_bytes": 1217690,
+        "parts": 1,
+        "files": 18
+      },
+      "claim_persisted": true,
+      "native_exit_code": 1,
+      "usage_peak_estimate_cny": "0.035222",
+      "usage": [
+        {
+          "prompt_tokens": 5063,
+          "completion_tokens": 3137,
+          "total_tokens": 8200,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 2375
+        }
+      ],
+      "observed_balance_change_cny": "0.00",
+      "actual_attributable_charge_cny": null,
+      "provider_completion": {
+        "version": "O_PROVIDER_COMPLETION_v1",
+        "status": "PASS",
+        "blockers": [],
+        "raw_sha256": "775b22964c432ba724741fa30180d32afd25e577afd069b023189a056c9bdd45",
+        "content_chars": 6273,
+        "reasoning_chars": 0,
+        "finish_reasons": [
+          "stop"
+        ],
+        "raw_mutated": false,
+        "model_requests": 0
+      },
+      "raw_blockers": [
+        "SEM-001",
+        "SEM-002"
+      ],
+      "raw_gate": "BLOCK"
+    },
+    {
+      "code": "00004",
+      "status": "ISOLATED_AFTER_PRIVATE_OR_SHARED_FAILURE",
+      "model_http_requests_confirmed": 0,
+      "model_http_requests_possible": 0,
+      "qualified_signal": false,
+      "private_persistence": null
+    }
+  ],
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.20",
+  "actual_attributable_charge_cny": null,
+  "qualified_signals": 0,
+  "formal_pool_top3_generated": false,
+  "simulation_ledger_writes": 0,
+  "manual_review_required": true
+}
