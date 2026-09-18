@@ -1,0 +1,144 @@
+name: DSA Run058V close MB003 and select MB004
+
+on:
+  push:
+    branches: [research/run058v-o-mb003-close-20260918]
+    paths:
+      - .github/workflows/126-run058v-o-mb003-close.yml
+      - docs/runtime/RUN058V_SCOPE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-run058v-o-mb003-close
+  cancel-in-progress: false
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: research/run058v-o-mb003-close-20260918
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35336247845
+          github-token: ${{ github.token }}
+          name: RUN058U_20260918_SESSION_ROLLOVER
+          path: /tmp/u
+
+      - name: Verify immutable Run058U and Run060 cross-check
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          s=json.load(open('docs/runtime/RUN058V_SCOPE.json'))
+          u=list(Path('/tmp/u').rglob('RUN058U_RESULT.json')); assert len(u)==1
+          d=json.loads(u[0].read_text())
+          assert d['state']=='STOP_MB003_FREE_GATE'
+          assert d['target_session']=='2026-09-18'
+          assert d['official_universe']['old_denominator']==d['official_universe']['new_denominator']==660
+          assert d['official_universe']['exact_member_order_match'] is True
+          assert d['official_universe']['added']==[] and d['official_universe']['removed']==[]
+          assert d['market_history_sha256']==s['evidence']['run058u_market_history_sha256']
+          assert d['model_http_requests']==0 and d['provider_credentials_used'] is False
+          assert d['drive_writes']==0 and d['DeepSeek_API_cost_cny']==0
+          assert d['ready_for_paid_sentinel']==[]
+          got={x['code']:x.get('reason') for x in d['members']}
+          assert got==s['expected_member_outcomes']
+          r=json.load(open(s['evidence']['run060_receipt']))
+          assert r['target_session']=='2026-09-18'
+          assert r['official_O_denominator']==660
+          assert r['official_universe_diff_vs_2026_09_17']=={'old_denominator':660,'new_denominator':660,'added':[],'removed':[]}
+          assert r['O_market_history_sha256']==d['market_history_sha256']==s['evidence']['run060_market_history_sha256']
+          assert r['model_http_requests']==0 and r['DeepSeek_API_cost_cny']==0
+          print('RUN058V_EVIDENCE_PASS')
+          PY
+
+      - name: Append MB003 terminal raw-gate row and select next fixed-order child
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          s=json.load(open('docs/runtime/RUN058V_SCOPE.json'))
+          ledger=Path(s['parent_ledger'])
+          rows=[json.loads(x) for x in ledger.read_text().splitlines() if x.strip()]
+          assert [x['micro_batch_id'] for x in rows]==['O57-MB-001','O57-MB-002']
+          row={
+            'schema_version':1,
+            'micro_batch_id':'O57-MB-003',
+            'codes':['00005','00006'],
+            'status':'RAW_GATE_BLOCK',
+            'target_session':'2026-09-18',
+            'member_statuses':{
+              '00005':'TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND',
+              '00006':'TARGET_SESSION_VOLUME_OUTSIDE_CALIBRATED_BOUND'
+            },
+            'evidence':{
+              'run058u_workflow':35336247845,
+              'run058u_artifact_id':10543383594,
+              'run058u_result':'RUN058U_RESULT.json',
+              'run060_receipt':'docs/runtime/RUN060_RECOVERED_RESULT.json'
+            },
+            'model_http_requests_confirmed':0,
+            'usage_peak_estimate_cny':'0',
+            'actual_attributable_charge_cny':0,
+            'private_final_roundtrip':None,
+            'qualified_signals':0,
+            'simulation_writes':0,
+            'automatic_retry':False,
+            'raw_content_public':False
+          }
+          with ledger.open('a',encoding='utf-8') as f:
+              f.write(json.dumps(row,ensure_ascii=False,separators=(',',':'))+'\n')
+          plan=json.load(open(s['parent_plan']))
+          batches=plan['rollout']['micro_batches']
+          completed={x['micro_batch_id'] for x in rows+[row]}
+          nxt=next(x for x in batches if x['micro_batch_id'] not in completed)
+          assert nxt['micro_batch_id']==s['expected_next_micro_batch_id']
+          assert nxt['codes']==s['expected_next_codes']
+          out={
+            'schema_version':1,
+            'run_id':s['run_id'],
+            'state':'PASS_MB003_RAW_GATE_BLOCK_NEXT_CHILD_SELECTED',
+            'target_session':'2026-09-18',
+            'closed_batch':row,
+            'ledger_sha256':hashlib.sha256(ledger.read_bytes()).hexdigest(),
+            'next_child':{
+              'micro_batch_id':nxt['micro_batch_id'],
+              'codes':nxt['codes'],
+              'member_count':len(nxt['codes']),
+              'tranche_id':'O57-TR-01',
+              'provider_send_authorized':False,
+              'fresh_20260918_preflight_required':True,
+              'private_claim_reconciliation_required_before_send':True,
+              'automatic_retry':False
+            },
+            'model_http_requests':0,'DeepSeek_API_cost_cny':0,'paid_data_calls':0,
+            'drive_writes':0,'real_orders':0,'simulation_writes':0,
+            'next':'Run free 2026-09-18 preflight/dry for MB004; do not send provider until that gate passes.'
+          }
+          Path('/tmp/RUN058V_RESULT.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RUN058V_MB003_CLOSE
+          path: /tmp/RUN058V_RESULT.json
+          retention-days: 90
+
+      - name: Commit append-only ledger and sanitized result
+        run: |
+          set -euo pipefail
+          cp /tmp/RUN058V_RESULT.json docs/runtime/RUN058V_RESULT.json
+          git add docs/runtime/RUN058V_RESULT.json docs/runtime/RUN058_O_ROLLOUT_LEDGER.jsonl
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'dsa: close Run058 MB003 and select MB004'
+          git push origin HEAD:research/run058v-o-mb003-close-20260918
