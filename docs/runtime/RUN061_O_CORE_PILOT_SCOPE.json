@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-CORE-PILOT-20260918-061",
+  "purpose": "Zero-model restore of three previously paid native O outputs to validate strategy-core acceptance versus narrative quarantine before O657 rollout.",
+  "frozen_upstream": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "samples": [
+    {
+      "code": "00001",
+      "artifact_prefix": "ART-DSA-RUN058H-O-NATIVE",
+      "member_run_id": "TRI-DSA-O-NATIVE-20260918-058H-00001",
+      "private_index_sha256": "2a56279a5302a54f8180b665d5a25762a4d6745afd2f9cb4a29ebc21b0610507",
+      "provider_response_sha256": "a6a306d40ddfedb68daf4373c3e0feb2b7933cc91947cd2740d878ffadb6fd46"
+    },
+    {
+      "code": "00003",
+      "artifact_prefix": "ART-DSA-RUN058L-O-NATIVE",
+      "member_run_id": "TRI-DSA-O-NATIVE-20260918-058L-00003",
+      "private_index_sha256": "671f5b246afcb7778e929c8f47f7537ec74255b7a13b815624ab72e0dd895742",
+      "provider_response_sha256": "775b22964c432ba724741fa30180d32afd25e577afd069b023189a056c9bdd45"
+    },
+    {
+      "code": "00004",
+      "artifact_prefix": "ART-DSA-RUN058N-O-NATIVE",
+      "member_run_id": "TRI-DSA-O-NATIVE-20260918-058N-00004",
+      "private_index_sha256": "e713fc072f313c19e2216f7f1c7640c37c397ea298bdc68a0f5599805e14e67e",
+      "provider_response_sha256": "c9089f4e95cafe87d3cc52bc210404791efc6a149a60e7384bbc5ea7b5de4346"
+    }
+  ],
+  "model_http_requests": 0,
+  "paid_data_calls": 0,
+  "drive_writes": 0,
+  "automatic_retry": false,
+  "raw_content_public": false,
+  "real_orders": 0,
+  "schedule_changes": 0,
+  "main_merge": false
+}
