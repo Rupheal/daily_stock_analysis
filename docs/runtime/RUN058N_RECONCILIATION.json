@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-NATIVE-20260918-058N",
+  "state": "PENDING_PRIVATE_SEMANTIC_REVIEW",
+  "code": "00004",
+  "member_status": {
+    "status": "NATIVE_OUTPUT_ISOLATED",
+    "raw_gate": "BLOCK",
+    "raw_blockers": [
+      "SEM-001",
+      "SEM-002"
+    ],
+    "model_http_requests_confirmed": 1,
+    "model_http_requests_possible": 1,
+    "usage_peak_estimate_cny": "0.039356",
+    "observed_balance_change_cny": "0.00",
+    "preflight_sha256": "d4f250cb7c9636edcc00a61bbdf4527a41a1303449dd33c5ab1119793e215100",
+    "frozen_native_history_adapter": true
+  },
+  "model_http_requests_confirmed": 1,
+  "model_http_requests_possible": 1,
+  "maximum_cost_cny": "0.10",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip": true,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_ledger_writes": 0,
+  "automatic_retry": false,
+  "rollout_ledger_advanced": false,
+  "next": "Private semantic review; never retry this sent member."
+}
