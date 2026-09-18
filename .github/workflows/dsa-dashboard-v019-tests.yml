@@ -9,7 +9,9 @@ on:
       - 'DSA_DASHBOARD_HISTORY_V019.json'
       - 'DSA_DASHBOARD_LIVE_V019.schema.json'
       - 'scripts/dashboard_feed_generator_v019.py'
+      - 'scripts/dashboard_feed_lag_detector_v019.py'
       - 'tests/test_dashboard_v019.py'
+      - 'tests/test_dashboard_feed_lag_v019.py'
       - 'tests/test_dashboard_v018.py'
       - 'docs/runtime/DSA_DASHBOARD_V019_RUNTIME.md'
       - '.github/workflows/dsa-dashboard-v019-tests.yml'
@@ -20,6 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout authoritative DSA execution branch read-only
+        uses: actions/checkout@v4
+        with:
+          ref: fix/native-private-execution-20260914
+          path: _authority
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -27,6 +35,21 @@ jobs:
         run: python -m pip install pytest
       - name: v0.19 authority and freshness tests
         run: python -m pytest --noconftest -q tests/test_dashboard_v019.py
+      - name: v0.19 fail-closed feed-lag detector tests
+        run: python -m pytest --noconftest -q tests/test_dashboard_feed_lag_v019.py
+      - name: Compare dashboard feed with live authoritative branch snapshot
+        run: |
+          python scripts/dashboard_feed_lag_detector_v019.py \
+            --dashboard-root . \
+            --authority-root _authority \
+            --feed DSA_DASHBOARD_LIVE_V019.json \
+            --out /tmp/dashboard-feed-lag.json
+          python - /tmp/dashboard-feed-lag.json <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['status']=='ALIGNED', r
+          print('feed-lag detector ALIGNED:', r['latest_authority']['run_id'])
+          PY
       - name: v0.18 regression tests
         run: python -m pytest --noconftest -q tests/test_dashboard_v018.py
       - name: v0.19 generator smoke test without model/provider calls
