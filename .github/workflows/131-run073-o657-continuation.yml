@@ -4,6 +4,7 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths:
       - 'docs/runtime/RUN072_O657_FORMAL_RESULT.json'
+      - '.github/workflows/131-run073-o657-continuation.yml'
 
 permissions:
   contents: write
