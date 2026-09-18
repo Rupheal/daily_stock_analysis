@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-BATCH-CLOSE-20260918-058P",
+  "state": "PASS_MB002_TERMINAL_NEXT_CHILD_SELECTED",
+  "closed_micro_batch": "O57-MB-002",
+  "closed_codes": [
+    "00003",
+    "00004"
+  ],
+  "closed_status": "RAW_GATE_BLOCK",
+  "model_http_requests_confirmed": 2,
+  "usage_peak_estimate_cny": "0.074578",
+  "actual_attributable_charge_cny": null,
+  "private_final_roundtrip_all": true,
+  "qualified_signals": 0,
+  "orders": 0,
+  "simulation_writes": 0,
+  "automatic_retry": false,
+  "next_child": {
+    "proposed_child_run_id": "TRI-DSA-O-NATIVE-20260917-058A",
+    "micro_batch_id": "O57-MB-003",
+    "tranche_id": "O57-TR-01",
+    "codes": [
+      "00005",
+      "00006"
+    ],
+    "member_count": 2,
+    "per_member_hard_cap_cny": "0.10",
+    "child_hard_cap_cny": "0.20",
+    "native_model_configuration": "O_DEEPSEEK_FLASH_NONTHINKING_v1",
+    "required_pre_send_gates": [
+      "fresh_free_member_preflight",
+      "single_request_dry_envelope_per_member",
+      "pre_send_private_save_read_hash_restore",
+      "verified_available_CNY_balance",
+      "durable_Drive_reserve_native_call",
+      "GITHUB_RUN_ATTEMPT_equals_1",
+      "GITHUB_EVENT_NAME_equals_push"
+    ],
+    "required_post_send_gates": [
+      "provider_completion_audit",
+      "post_output_contract",
+      "release_gate_if_SEM_001_only",
+      "final_private_save_read_hash_restore",
+      "sanitized_receipt",
+      "no_signal_publish"
+    ],
+    "drive_claim_reconciliation_required_before_send": true,
+    "automatic_retry_after_claim": false,
+    "provider_send_authorized_by_run058": false
+  },
+  "rollout_ledger_sha256": "3e67a65cdac4c67f76cb23b5975eaa8a68ce5d598a1d0b3f81197a27c8a373bd",
+  "model_http_requests_added_by_run058p": 0,
+  "paid_data_calls_added_by_run058p": 0,
+  "drive_writes_added_by_run058p": 0
+}
