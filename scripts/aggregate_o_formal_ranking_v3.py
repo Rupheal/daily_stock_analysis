@@ -88,10 +88,19 @@ def aggregate(universe:dict,policy:dict,sources:list[tuple[str,dict]]):
         if row is None:
             missing.append(code)
             continue
-        if row.get("status") in unprocessed_statuses:
+        proven_unsent_runner_bug=(
+            row.get("status")=="EXCLUDED_AFTER_CLAIM_NO_RETRY"
+            and row.get("failure_code")=="NameError"
+            and int(row.get("model_http_requests_confirmed",0) or 0)==0
+            and int(row.get("model_http_requests_possible",0) or 0)>=1
+            and not row.get("provider_response_sha256")
+        )
+        if row.get("status") in unprocessed_statuses or proven_unsent_runner_bug:
             missing.append(code)
             shared_unprocessed.append({
-              "code":code,"status":row.get("status"),"failure_code":row.get("failure_code"),
+              "code":code,
+              "status":"PROVEN_UNSENT_RUNNER_BUG" if proven_unsent_runner_bug else row.get("status"),
+              "failure_code":row.get("failure_code"),
               "source":provenance[code],
             })
             continue
