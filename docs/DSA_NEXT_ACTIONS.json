@@ -476,7 +476,8 @@
       "Continue U full decision/ranking, source-bound company/sector risk and macro cap; bind accepted buy zone to approved conditional policy plan. Bounded observation reviews do not replace this.",
       "For O, correct source/session semantics through supported native configuration and input evidence, retain raw report failures; do not alter original prompt/scoring or fake raw PASS.",
       "Keep all660 denominators;52 remaining cases are32 three-publisher conflicts,16 invalid Sina geometry,3 target gaps and1 short history.",
-      "Only complete timely future AM signals may enter existing approved Entry-v1; no same-day backfill, no main merge, no production promotion, no real orders."
+      "Only complete timely future AM signals may enter existing approved Entry-v1; no same-day backfill, no main merge, no production promotion, no real orders.",
+      "Next week after Owner confirms quota recovery, run exactly one final bounded clearance pass on the 52 historical-data isolates. Any unresolved names become OWNER_EXCLUDED_AFTER_FINAL_RETRY and are excluded from the O production/ranking pool, while the official 660 master universe and audit history remain preserved."
     ],
     "scheduled_handoff": "Existing AM09:00/PM16:30 tasks read this latest state. No task instructions/times changed in this batch; next scheduled readback remains to be observed. New research workflows are run-specific push triggers, not daily model production."
   },
@@ -643,5 +644,14 @@
     ],
     "does_not_modify_current_execution": true
   },
-  "current_status_authority": "Only current_execution is the current status entry; other top-level historical records are retained and do not override it."
+  "current_status_authority": "Only current_execution is the current status entry; other top-level historical records are retained and do not override it.",
+  "owner_decision_o52_final_retry_20260918": {
+    "receipt": "docs/runtime/OWNER_DECISION_O52_FINAL_RETRY_THEN_EXCLUDE_20260918.json",
+    "status": "DEFERRED_UNTIL_NEXT_WEEK_AFTER_OWNER_CONFIRMS_QUOTA_RECOVERED",
+    "rule": "One final bounded clearance pass for the historical 52; unresolved members become OWNER_EXCLUDED_AFTER_FINAL_RETRY and leave the O production/ranking pool. Preserve official 660 master-universe/audit denominator separately.",
+    "retry_rounds_max": 1,
+    "members_removed_now": 0,
+    "automatic_recharge": false,
+    "schedule_changes": false
+  }
 }
