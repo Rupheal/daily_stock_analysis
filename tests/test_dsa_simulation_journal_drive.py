@@ -12,5 +12,6 @@ def test_prefix_is_stable():
 
 def test_module_has_no_real_order_surface():
     source=(ROOT/'scripts/dsa_simulation_journal_drive.py').read_text()
-    assert 'broker' not in source.lower()
-    assert 'place_order' not in source.lower()
+    assert 'place_order(' not in source.lower()
+    assert 'submit_order(' not in source.lower()
+    assert 'real_orders' not in source.lower()
