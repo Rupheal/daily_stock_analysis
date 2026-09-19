@@ -1,7 +1,7 @@
 import copy,json,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'scripts'))
-from dsa_production_orchestrator_v1 import classify_o,classify_u,orchestrate
+from dsa_production_orchestrator_v1 import classify_o,classify_u,orchestrate,filter_commands_against_journal
 
 NOW='2026-09-18T16:31:00+08:00'
 TARGET='2026-09-18'
@@ -87,7 +87,7 @@ def test_entry_command_only_with_verified_evidence_and_journal(tmp_path):
 
 def test_postclose_defers_entry_and_journal_dedupe(tmp_path):
     o=o_wait();u=u_wait()
-    r=orchestrate(o,u,'2026-09-18',AT,'2026-09-21',
+    r=orchestrate(o,u,'2026-09-18',NOW,'2026-09-21',
                   tmp_path/'o.json',tmp_path/'u.json',None,True,'postclose')
     assert r['cycle']=='postclose'
     # WAIT produces signals only.
@@ -101,3 +101,36 @@ def test_same_id_content_drift_fails_closed():
     old={'id':'x','kind':'SIGNAL','account':'O','at':'b','signal':{'id':'s'}}
     with pytest.raises(ValueError,match='COMMAND_ID_CONTENT_DRIFT'):
         filter_commands_against_journal([cmd],{'commands':[old]})
+
+
+def test_u_buy_missing_industry_uses_conservative_bucket():
+    u=u_wait();u.update(state='PASS_FORMAL_U_DECISION_BUY',qualified_BUY=1)
+    u['Top3']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY'}]
+    u['rows']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY','validation':'PASS',
+                'buyable_verified':True,'industry':None,'zone_status':'APPROVED',
+                'zone_lower_hkd':600,'zone_upper_hkd':630,'macro_position_ceiling_pct':30}]
+    x=classify_u(u,TARGET)
+    assert x['state']=='QUALIFIED_BUY'
+    assert x['candidates'][0]['industry']=='UNCLASSIFIED'
+
+def test_collector_v1_packet_can_create_entry(tmp_path):
+    u=u_wait();u.update(state='PASS_FORMAL_U_DECISION_BUY',qualified_BUY=1)
+    u['Top3']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY'}]
+    u['rows']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY','validation':'PASS',
+                'buyable_verified':True,'industry':'Internet','zone_status':'APPROVED',
+                'zone_lower_hkd':600,'zone_upper_hkd':630,'macro_position_ceiling_pct':30}]
+    op=write(tmp_path,'o.json',o_wait());up=write(tmp_path,'u.json',u)
+    packet={'status':'PASS_ENTRY_V1_EVIDENCE','evidence':{
+      'code':'00700','industry':'Internet','fee_cny':'120','excluded':{},
+      'quote':{'verified':True,'source':'auto-yfinance','sha256':'a'*64,
+               'at':'2026-09-21T09:30:00+08:00','price':'610','cny_per_hkd':'0.92',
+               'fx_evidence':{'verified':True,'source':'auto-fx','sha256':'b'*64,
+                              'at':'2026-09-21T09:29:00+08:00'},
+               'tradable':True,'adjustment':'raw','first_eligible_price_verified':True,
+               'mode':'daily_open','session':NEXT,'next_session_verified':True,
+               'lot_size':100,'lot_verified':True}}}
+    r=orchestrate(o_wait(),u,TARGET,NOW,NEXT,op,up,{'U':packet},True)
+    assert r['state']=='READY_FOR_SIMULATION_WRITE'
+    entry=[x for x in r['commands'] if x['kind']=='ENTRY'][0]
+    assert entry['code']=='00700'
+    assert entry['fee_cny']=='120'
