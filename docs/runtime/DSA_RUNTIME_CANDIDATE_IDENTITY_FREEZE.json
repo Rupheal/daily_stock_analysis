@@ -1,0 +1,58 @@
+{
+  "schema_version": "DSA_RUNTIME_CANDIDATE_IDENTITY_FREEZE_v1",
+  "run_id": "TRI-DSA-GOV-20260919-CANDIDATE-FREEZE-001",
+  "state": "CANDIDATE_IDENTITY_FROZEN_NO_AUTHORITY",
+  "frozen_at": "2026-09-19T22:17:00+08:00",
+  "canonical_candidate": {
+    "repository": "Rupheal/daily_stock_analysis",
+    "ref": "governance/dsa-authority-consolidation-20260919",
+    "source_parent_ref": "fix/native-private-execution-20260914",
+    "source_parent_latest_known_commit_before_governance_adapter": "b1aa0ea51fbbce0eed962de0ecbec448748e44d8",
+    "acceptance": "ENGINEERING_CANDIDATE_ONLY",
+    "runtime_authority": false,
+    "simulation_authority": false
+  },
+  "prior_named_candidate": {
+    "ref": "research/dsa-production-orchestrator-v1-20260919",
+    "relation_to_source_parent": "DIVERGED_5_AHEAD_77_BEHIND",
+    "unique_files": [
+      {
+        "path": "docs/runtime/HKEX_SESSION_CALENDAR_BOOTSTRAP.json",
+        "classification": "TEST_BOOTSTRAP_NON_AUTHORITATIVE"
+      },
+      {
+        "path": "scripts/dsa_build_simulation_commands_v1.py",
+        "classification": "LEGACY_MODULAR_CANDIDATE_COMPONENT"
+      },
+      {
+        "path": "scripts/dsa_formal_signal_envelope_v1.py",
+        "classification": "LEGACY_MODULAR_CANDIDATE_COMPONENT"
+      },
+      {
+        "path": "scripts/dsa_qualified_buy_gate_v1.py",
+        "classification": "LEGACY_MODULAR_CANDIDATE_COMPONENT"
+      },
+      {
+        "path": "tests/test_dsa_production_orchestrator_v1.py",
+        "classification": "LEGACY_MODULAR_CANDIDATE_TESTS"
+      }
+    ],
+    "disposition": "PRESERVE_HISTORY_DO_NOT_MERGE_BY_RECENCY",
+    "reason": "The integrated orchestrator on the source parent has separate engineering acceptance. Unique older modular files are preserved as candidate history; they do not gain authority by branch recency."
+  },
+  "read_only_adapter": {
+    "path": "scripts/dsa_runtime_candidate_readonly_adapter_v1.py",
+    "blob_sha": "c6dc11b3dacbff88fd047b580ed681379985b2c9",
+    "test_path": "tests/test_dsa_runtime_candidate_readonly_adapter_v1.py",
+    "purpose": "Consume ACTIVE Foundation authority read-only and emit comparison receipts only."
+  },
+  "forbidden": [
+    "main merge",
+    "runtime pointer switch",
+    "candidate Drive journal authority",
+    "dual-write",
+    "real orders",
+    "history rewrite"
+  ],
+  "next_gate": "parallel shadow replay + natural forward parallel observation"
+}
