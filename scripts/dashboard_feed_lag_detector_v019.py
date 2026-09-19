@@ -27,6 +27,19 @@ REQUIRED_RECEIPT_FIELDS = {
     "formal_signal_generated",
 }
 
+OVERLAY_PATHS = {
+    "O_formal": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+    "U_formal": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+    "production_runtime": "docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json",
+}
+
+def overlay_hashes(root: Path):
+    out={}
+    for key,rel in OVERLAY_PATHS.items():
+        p=root/rel
+        out[key]=sha256_file(p) if p.exists() else None
+    return out
+
 
 def load_json(path: Path):
     try:
@@ -174,6 +187,8 @@ def detect(dashboard_root: Path, authority_root: Path, feed_name: str):
     mismatches = []
     if claimed_sha != latest_sha:
         mismatches.append("source_receipt_sha256")
+    if (authority.get("overlay_sha256") or {}) != overlay_hashes(authority_root):
+        mismatches.append("authority.overlay_sha256")
 
     checks = {
         "O.denominator": (feed.get("O", {}).get("denominator"), latest_metrics["O_denominator"]),
