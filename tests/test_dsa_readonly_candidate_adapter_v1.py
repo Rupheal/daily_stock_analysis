@@ -13,6 +13,8 @@ from dsa_readonly_candidate_adapter_v1 import compare_read_only, _fingerprint
 TARGET = "2026-09-18"
 NOW = "2026-09-19T20:19:00+08:00"
 NEXT = "2026-09-21"
+SEALED = "2026-09-19T20:18:00+08:00"
+AVAILABLE = "2026-09-19T20:17:00+08:00"
 
 
 def write(tmp_path, name, obj):
@@ -92,6 +94,26 @@ def make_inputs(tmp_path):
     return op, up, jp, ap
 
 
+def natural_attestation(op, up, jp):
+    return {
+        "status": "PASS_SAME_CUTOFF_INPUTS",
+        "target_session": TARGET,
+        "next_session": NEXT,
+        "cutoff_at": NOW,
+        "sealed_at": SEALED,
+        "input_available_at": {
+            "o_receipt": AVAILABLE,
+            "u_receipt": AVAILABLE,
+            "foundation_journal": AVAILABLE,
+        },
+        "input_sha256": {
+            "o_receipt": _fingerprint(op)["sha256"],
+            "u_receipt": _fingerprint(up)["sha256"],
+            "foundation_journal": _fingerprint(jp)["sha256"],
+        },
+    }
+
+
 def test_read_only_adapter_never_mutates_foundation_journal(tmp_path):
     op, up, jp, ap = make_inputs(tmp_path)
     before = jp.read_bytes()
@@ -139,17 +161,8 @@ def test_natural_parallel_requires_hash_bound_attestation(tmp_path):
 
 def test_natural_parallel_rejects_wrong_input_hash(tmp_path):
     op, up, jp, ap = make_inputs(tmp_path)
-    attestation = {
-        "status": "PASS_SAME_CUTOFF_INPUTS",
-        "target_session": TARGET,
-        "next_session": NEXT,
-        "cutoff_at": NOW,
-        "input_sha256": {
-            "o_receipt": "0" * 64,
-            "u_receipt": _fingerprint(up)["sha256"],
-            "foundation_journal": _fingerprint(jp)["sha256"],
-        },
-    }
+    attestation = natural_attestation(op, up, jp)
+    attestation["input_sha256"]["o_receipt"] = "0" * 64
     att = write(tmp_path, "attestation.json", attestation)
 
     with pytest.raises(ValueError, match="NATURAL_PARALLEL_INPUT_HASH_MISMATCH:o_receipt"):
@@ -165,17 +178,7 @@ def test_hash_bound_natural_parallel_can_reach_central_audit_eligibility(tmp_pat
     active = active_no_trade()
     active["session"] = NEXT
     ap.write_text(json.dumps(active), encoding="utf-8")
-    attestation = {
-        "status": "PASS_SAME_CUTOFF_INPUTS",
-        "target_session": TARGET,
-        "next_session": NEXT,
-        "cutoff_at": NOW,
-        "input_sha256": {
-            "o_receipt": _fingerprint(op)["sha256"],
-            "u_receipt": _fingerprint(up)["sha256"],
-            "foundation_journal": _fingerprint(jp)["sha256"],
-        },
-    }
+    attestation = natural_attestation(op, up, jp)
     att = write(tmp_path, "attestation.json", attestation)
     result = compare_read_only(
         op, up, jp, ap, TARGET, NOW, NEXT,
@@ -188,7 +191,9 @@ def test_hash_bound_natural_parallel_can_reach_central_audit_eligibility(tmp_pat
     assert "active_runtime_receipt" in result["outcome_evidence"]
     assert "active_runtime_receipt" not in result["prewindow_inputs"]
     assert result["comparison"]["trade_action_equivalent"] is True
-    assert result["comparison"]["migration_acceptance"] == "ELIGIBLE_FOR_CENTRAL_AUDIT"
+    assert result["comparison"]["control_state_equivalent"] is False
+    assert result["comparison"]["all_equivalent"] is False
+    assert result["comparison"]["migration_acceptance"] == "CENTRAL_AUDIT_REQUIRED_CONTROL_STATE_DIVERGENCE"
 
 
 def test_broken_foundation_parent_chain_fails_closed(tmp_path):
@@ -219,19 +224,60 @@ def test_active_outcome_uses_window_actions_not_cumulative_positions(tmp_path):
 
 def test_natural_parallel_rejects_wrong_outcome_session(tmp_path):
     op, up, jp, ap = make_inputs(tmp_path)
-    attestation = {
-        "status": "PASS_SAME_CUTOFF_INPUTS",
-        "target_session": TARGET,
-        "next_session": NEXT,
-        "cutoff_at": NOW,
-        "input_sha256": {
-            "o_receipt": _fingerprint(op)["sha256"],
-            "u_receipt": _fingerprint(up)["sha256"],
-            "foundation_journal": _fingerprint(jp)["sha256"],
-        },
-    }
+    attestation = natural_attestation(op, up, jp)
     att = write(tmp_path, "attestation.json", attestation)
     with pytest.raises(ValueError, match="NATURAL_PARALLEL_OUTCOME_SESSION_MISMATCH"):
+        compare_read_only(
+            op, up, jp, ap, TARGET, NOW, NEXT,
+            comparison_kind="natural_parallel",
+            availability_attestation_path=att,
+        )
+
+
+def test_natural_parallel_rejects_attestation_sealed_after_cutoff(tmp_path):
+    op, up, jp, ap = make_inputs(tmp_path)
+    active = active_no_trade()
+    active["session"] = NEXT
+    ap.write_text(json.dumps(active), encoding="utf-8")
+    attestation = natural_attestation(op, up, jp)
+    attestation["sealed_at"] = "2026-09-19T20:20:00+08:00"
+    att = write(tmp_path, "attestation.json", attestation)
+
+    with pytest.raises(ValueError, match="NATURAL_PARALLEL_ATTESTATION_SEALED_AFTER_CUTOFF"):
+        compare_read_only(
+            op, up, jp, ap, TARGET, NOW, NEXT,
+            comparison_kind="natural_parallel",
+            availability_attestation_path=att,
+        )
+
+
+def test_natural_parallel_rejects_input_available_after_seal(tmp_path):
+    op, up, jp, ap = make_inputs(tmp_path)
+    active = active_no_trade()
+    active["session"] = NEXT
+    ap.write_text(json.dumps(active), encoding="utf-8")
+    attestation = natural_attestation(op, up, jp)
+    attestation["input_available_at"]["u_receipt"] = "2026-09-19T20:18:30+08:00"
+    att = write(tmp_path, "attestation.json", attestation)
+
+    with pytest.raises(ValueError, match="NATURAL_PARALLEL_INPUT_AVAILABLE_AFTER_SEAL:u_receipt"):
+        compare_read_only(
+            op, up, jp, ap, TARGET, NOW, NEXT,
+            comparison_kind="natural_parallel",
+            availability_attestation_path=att,
+        )
+
+
+def test_natural_parallel_rejects_naive_cutoff_timestamp(tmp_path):
+    op, up, jp, ap = make_inputs(tmp_path)
+    active = active_no_trade()
+    active["session"] = NEXT
+    ap.write_text(json.dumps(active), encoding="utf-8")
+    attestation = natural_attestation(op, up, jp)
+    attestation["cutoff_at"] = "2026-09-19T20:19:00"
+    att = write(tmp_path, "attestation.json", attestation)
+
+    with pytest.raises(ValueError, match="NATURAL_PARALLEL_CUTOFF_TIMEZONE_REQUIRED"):
         compare_read_only(
             op, up, jp, ap, TARGET, NOW, NEXT,
             comparison_kind="natural_parallel",
