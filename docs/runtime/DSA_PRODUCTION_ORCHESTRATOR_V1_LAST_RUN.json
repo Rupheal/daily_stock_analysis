@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "resolver": {
+    "schema_version": 1,
+    "target_session": "",
+    "state": "MISSING_FORMAL_RECEIPT",
+    "O": {
+      "path": null,
+      "receipt": null,
+      "checked": [
+        {
+          "path": "docs/runtime/O_PRODUCTION_FORMAL_LATEST.json",
+          "status": "MISSING"
+        },
+        {
+          "path": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+          "status": "STALE",
+          "session": "2026-09-18"
+        }
+      ]
+    },
+    "U": {
+      "path": null,
+      "receipt": null,
+      "checked": [
+        {
+          "path": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+          "status": "STALE",
+          "session": "2026-09-18"
+        },
+        {
+          "path": "docs/runtime/RUN056_U_FORMAL_RESULT.json",
+          "status": "STALE",
+          "session": "2026-09-17"
+        }
+      ]
+    },
+    "orchestrator_permitted": false,
+    "real_orders": 0
+  },
+  "simulation_write_performed": false,
+  "real_orders": 0,
+  "state": "WAIT_FORMAL_RECEIPT_MISSING",
+  "reason": "NO_EXACT_SESSION_O_U_RECEIPT"
+}
