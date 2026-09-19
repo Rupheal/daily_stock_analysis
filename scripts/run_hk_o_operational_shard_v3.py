@@ -61,7 +61,7 @@ def reserve(artifact,run_id,preflight_sha,code):
 def select_operational_members(universe:dict,policy:dict):
     cur=policy.get("current_session") or {}
     official=universe.get("members") or []
-    if len(official)!=cur.get("official_denominator") or len(official)!=660:
+    if len(official)!=cur.get("official_denominator"):
         raise ValueError("OFFICIAL_UNIVERSE_COUNT_MISMATCH")
     excluded={x.get("code") for x in cur.get("excluded_unresolved") or []}
     rows=[]
