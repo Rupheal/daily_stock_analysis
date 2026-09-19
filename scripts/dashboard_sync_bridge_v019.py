@@ -61,6 +61,8 @@ def sync(
     history_path = dashboard_root / history_name
     current = load_json(feed_path, {}) or {}
     current_auth = current.get("authority") or {}
+    current_overlay = current_auth.get("overlay_sha256") or {}
+    latest_overlay = generator.overlay_hashes(authority_root)
 
     same_authority = (
         current_auth.get("source_receipt") == latest_rel
@@ -68,6 +70,7 @@ def sync(
         and current_auth.get("source_run_id") == latest_receipt.get("run_id")
         and current_auth.get("evidence_session") == str(latest_receipt.get("target_session"))
         and current_auth.get("sync_mode") == "EVENT_DRIVEN_SANITIZED_BRIDGE"
+        and current_overlay == latest_overlay
     )
 
     if same_authority:
