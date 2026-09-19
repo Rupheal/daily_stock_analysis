@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "version": "U_PRODUCTION_PREREQ_GATE_v1",
+  "target_session": "2026-09-18",
+  "state": "WAIT_PREREQUISITES_BLOCKED",
+  "formal_provider_permitted": false,
+  "blockers": [
+    "U_MACRO_CAP_NOT_CURRENT",
+    "U_RISK_EVIDENCE_NOT_CURRENT",
+    "U_ZONE_CONTRACT_NOT_CURRENT"
+  ],
+  "fallback_formal_receipt": {
+    "schema_version": 1,
+    "run_id": "DSA-U-PROD-20260918-PREREQ-WAIT",
+    "target_session": "2026-09-18",
+    "track": "U",
+    "state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED",
+    "denominator": 45,
+    "eligible": null,
+    "formal_valid_rows": 0,
+    "qualified_BUY": 0,
+    "Top3": [],
+    "Top10": [],
+    "rows": [],
+    "prerequisite_blockers": [
+      "U_MACRO_CAP_NOT_CURRENT",
+      "U_RISK_EVIDENCE_NOT_CURRENT",
+      "U_ZONE_CONTRACT_NOT_CURRENT"
+    ],
+    "provider_skipped": true,
+    "buyable_verified_count": 0,
+    "entry_v1_handoff": false,
+    "resource_accounting": {
+      "model_http_requests_confirmed": 0,
+      "real_orders": 0,
+      "simulation_writes": 0,
+      "auto_recharge": false
+    }
+  },
+  "model_http_requests": 0,
+  "real_orders": 0
+}
