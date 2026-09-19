@@ -81,3 +81,45 @@ def test_old_v018_feed_not_fetched():
 
 def test_debug_has_authority():
     req('AUTHORITY:f.authority' in HTML, 'authority debug')
+
+
+def test_generator_overlays_formal_and_production_runtime(tmp_path):
+    import shutil
+    root=tmp_path/'auth'
+    (root/'docs/runtime').mkdir(parents=True)
+    base={
+      'run_id':'TRI-RUN060','target_session':'2026-09-18','official_O_denominator':660,
+      'official_U_denominator':45,'U_buy_eligible':44,'O_current_valid':657,
+      'O_current_invalid':[{'code':'00853'},{'code':'02172'},{'code':'02252'}],
+      'U_current_valid':45,'model_http_requests':0,'DeepSeek_API_cost_cny':0,
+      'formal_signal_generated':False,'state':'CORE_DATA_REFRESH_PASS'
+    }
+    (root/'docs/runtime/RUN060_RESULT.json').write_text(json.dumps(base))
+    o={'status':'ACCEPTED_O_FORMAL_TOP3','target_session':'2026-09-18','source_run_id':'O76',
+       'ranking_eligible_count':356,'qualified_buy_in_Top3':0,
+       'Top3':[{'rank':1,'code':'00148','name':'建滔集团','sentiment_score':59,'action':'hold'}]}
+    (root/'docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json').write_text(json.dumps(o,ensure_ascii=False))
+    u={'state':'PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED','target_session':'2026-09-18',
+       'formal_valid_rows':0,'qualified_BUY':0,'Top3':[],'run_id':'U-PROD'}
+    (root/'docs/runtime/U_PRODUCTION_FORMAL_LATEST.json').write_text(json.dumps(u))
+    runtime={'state':'SIMULATION_LEDGER_UPDATED','real_orders':0,'simulation_write_performed':True,
+      'route':{'target_session':'2026-09-18','next_session':'2026-09-21'},
+      'orchestrator':{'qualified_buy_total':0,'state':'BLOCKED',
+        'tracks':{'O':{'state':'WAIT'},'U':{'state':'BLOCKED'}}},
+      'simulation_summary':{'journal_hash':'abc','accounts':{
+        'O':{'cash_cny':'300000','positions':{},'buy_count':0,'sell_count':0,'wait_count':1,'realized_pnl_cny':'0'},
+        'U':{'cash_cny':'300000','positions':{},'buy_count':0,'sell_count':0,'wait_count':1,'realized_pnl_cny':'0'}}}}
+    (root/'docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json').write_text(json.dumps(runtime))
+    f=mod.build_feed(root,'SHA','2026-09-19T08:00:00Z')
+    assert f['O']['accepted']==356
+    assert f['O']['top3'][0]['code']=='00148'
+    assert f['U']['signal']=='WAIT'
+    assert f['simulation']['eligibility']=='SIMULATION_LEDGER_UPDATED'
+    assert '300000' in f['simulation']['cash']
+    assert f['production']['entry_state']=='NO_ENTRY_WAIT'
+    assert f['production']['real_orders']==0
+    assert len(f['authority']['overlay_sha256']['production_runtime'])==64
+
+def test_ui_renders_object_top3_and_production_entry():
+    req('top3Label' in HTML, 'top3 object formatter')
+    req('f.production.entry_state' in HTML, 'production Entry-v1 UI')
