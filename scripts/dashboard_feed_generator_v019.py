@@ -262,6 +262,10 @@ def build_feed(root: Path, source_commit: str, generated_at: str | None = None) 
             "O_state":((orch.get("tracks") or {}).get("O") or {}).get("state"),
             "U_state":((orch.get("tracks") or {}).get("U") or {}).get("state"),
             "qualified_buy_total":orch.get("qualified_buy_total",0),
+            "entry_state": (
+                "NO_ENTRY_WAIT" if int(orch.get("qualified_buy_total",0) or 0)==0
+                else ("ENTRY_BLOCKED" if orch.get("state")=="BLOCKED" else "ENTRY_READY")
+            ),
             "journal_hash":sim.get("journal_hash"),
             "real_orders":runtime.get("real_orders",0),
         }
