@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "trigger_id": "DSA-DASHBOARD-PRODUCTION-OVERLAY-20260919-001",
+  "reason": "Republish v0.19 feed after formal/runtime overlay regression updates.",
+  "expected_data_authority": "RUN060_RECOVERED_RESULT",
+  "expected_O_formal": "RUN076_O657_FORMAL_ACCEPTANCE",
+  "expected_U_formal": "U_PRODUCTION_FORMAL_LATEST",
+  "expected_runtime": "DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN",
+  "real_orders": 0
+}
