@@ -18,6 +18,7 @@ import argparse
 import hashlib
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 
 from dsa_production_orchestrator_v1 import (
@@ -43,6 +44,18 @@ def _read_json(path: Path) -> dict:
 def _fingerprint(path: Path) -> dict:
     data = path.read_bytes()
     return {"path": str(path), "sha256": _sha256(data), "bytes": len(data)}
+
+
+def _parse_offset_time(value: object, label: str) -> datetime:
+    if not isinstance(value, str) or not value:
+        raise ValueError(label + "_MISSING")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError(label + "_INVALID") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ValueError(label + "_TIMEZONE_REQUIRED")
+    return parsed
 
 
 def validate_journal(journal: dict) -> dict:
@@ -125,16 +138,41 @@ def _validate_natural_attestation(attestation: dict, target_session: str, next_s
         raise ValueError("NATURAL_PARALLEL_SESSION_MISMATCH")
     if attestation.get("next_session") != next_session:
         raise ValueError("NATURAL_PARALLEL_NEXT_SESSION_MISMATCH")
+
     expected = attestation.get("input_sha256")
     if not isinstance(expected, dict):
         raise ValueError("NATURAL_PARALLEL_INPUT_HASHES_MISSING")
     for key, fp in fps.items():
         if expected.get(key) != fp["sha256"]:
             raise ValueError("NATURAL_PARALLEL_INPUT_HASH_MISMATCH:" + key)
-    cutoff = attestation.get("cutoff_at")
-    if not isinstance(cutoff, str) or not cutoff:
-        raise ValueError("NATURAL_PARALLEL_CUTOFF_MISSING")
-    return {"status": "PASS", "cutoff_at": cutoff}
+
+    cutoff_raw = attestation.get("cutoff_at")
+    sealed_raw = attestation.get("sealed_at")
+    cutoff = _parse_offset_time(cutoff_raw, "NATURAL_PARALLEL_CUTOFF")
+    sealed = _parse_offset_time(sealed_raw, "NATURAL_PARALLEL_SEALED_AT")
+    if sealed > cutoff:
+        raise ValueError("NATURAL_PARALLEL_ATTESTATION_SEALED_AFTER_CUTOFF")
+
+    available = attestation.get("input_available_at")
+    if not isinstance(available, dict):
+        raise ValueError("NATURAL_PARALLEL_INPUT_AVAILABILITY_MISSING")
+    for key in fps:
+        observed = _parse_offset_time(
+            available.get(key),
+            "NATURAL_PARALLEL_INPUT_AVAILABLE_AT:" + key,
+        )
+        if observed > sealed:
+            raise ValueError("NATURAL_PARALLEL_INPUT_AVAILABLE_AFTER_SEAL:" + key)
+        if observed > cutoff:
+            raise ValueError("NATURAL_PARALLEL_INPUT_AVAILABLE_AFTER_CUTOFF:" + key)
+
+    return {
+        "status": "PASS",
+        "cutoff_at": str(cutoff_raw),
+        "sealed_at": str(sealed_raw),
+        "input_available_at": {key: str(available[key]) for key in fps},
+        "provenance_rule": "PREWINDOW_SEAL_MUST_BE_INDEPENDENTLY_VERIFIABLE_BY_CENTRAL_AUDIT",
+    }
 
 
 def compare_read_only(
@@ -255,10 +293,19 @@ def compare_read_only(
         "comparison": {
             "trade_action_equivalent": action_equivalent,
             "control_state_equivalent": control_state_equivalent,
+            "all_equivalent": action_equivalent and control_state_equivalent,
             "migration_acceptance": (
                 "ELIGIBLE_FOR_CENTRAL_AUDIT"
-                if comparison_kind == "natural_parallel" and action_equivalent
-                else "NOT_ELIGIBLE_ENGINEERING_ONLY"
+                if comparison_kind == "natural_parallel" and action_equivalent and control_state_equivalent
+                else (
+                    "CENTRAL_AUDIT_REQUIRED_CONTROL_STATE_DIVERGENCE"
+                    if comparison_kind == "natural_parallel" and action_equivalent
+                    else (
+                        "BLOCKED_ACTION_DIVERGENCE"
+                        if comparison_kind == "natural_parallel"
+                        else "NOT_ELIGIBLE_ENGINEERING_ONLY"
+                    )
+                )
             ),
         },
         "natural_parallel_attestation": attestation_result,
