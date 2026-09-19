@@ -87,8 +87,9 @@ def test_entry_command_only_with_verified_evidence_and_journal(tmp_path):
 
 def test_postclose_defers_entry_and_journal_dedupe(tmp_path):
     o=o_wait();u=u_wait()
+    op=write(tmp_path,'o.json',o);up=write(tmp_path,'u.json',u)
     r=orchestrate(o,u,'2026-09-18',NOW,'2026-09-21',
-                  tmp_path/'o.json',tmp_path/'u.json',None,True,'postclose')
+                  op,up,None,True,'postclose')
     assert r['cycle']=='postclose'
     # WAIT produces signals only.
     assert all(x['kind']=='SIGNAL' for x in r['commands'])
