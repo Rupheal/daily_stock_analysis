@@ -29,6 +29,31 @@ def sha256_file(path: Path) -> str:
     h.update(path.read_bytes())
     return h.hexdigest()
 
+OVERLAY_PATHS = {
+    "O_formal": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+    "U_formal": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+    "production_runtime": "docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json",
+}
+
+def overlay_hashes(root: Path) -> dict:
+    out={}
+    for key,rel in OVERLAY_PATHS.items():
+        p=root/rel
+        out[key]=sha256_file(p) if p.exists() else None
+    return out
+
+def _top3_public(rows):
+    return [
+        {"rank":x.get("rank"),"code":x.get("code"),"name":x.get("name"),
+         "score":x.get("sentiment_score",x.get("score")),
+         "action":str(x.get("action",x.get("formal_action",""))).upper()}
+        for x in (rows or [])
+    ]
+
+def _account_summary(x):
+    if not isinstance(x,dict): return "NOT VERIFIED"
+    return f"cash {x.get('cash_cny','?')} | positions {len(x.get('positions') or {})} | buy {x.get('buy_count',0)} | sell {x.get('sell_count',0)} | wait {x.get('wait_count',0)}"
+
 def run_number(path: Path) -> int:
     m = re.search(r"RUN(\d+)", path.name)
     return int(m.group(1)) if m else -1
@@ -82,6 +107,7 @@ def build_feed(root: Path, source_commit: str, generated_at: str | None = None) 
             "evidence_session": session,
             "evidence_class": "CURRENT_SESSION_CORE_DATA_REFRESH",
             "strategy_acceptance": "FORMAL_SIGNAL_GENERATED" if formal else "NONE_FORMAL_SIGNAL_GENERATED_FALSE",
+            "overlay_sha256": overlay_hashes(root),
         },
         "system": {
             "overall_state": "LIVE" if formal else "WAIT",
@@ -183,6 +209,75 @@ def build_feed(root: Path, source_commit: str, generated_at: str | None = None) 
             "O_invalid": o_invalid,
         },
     }
+    # Independent strategy/runtime overlays. Run060 remains the data authority.
+    o_formal = load(root / OVERLAY_PATHS["O_formal"], {}) or {}
+    if str(o_formal.get("target_session")) == session and o_formal.get("status") == "ACCEPTED_O_FORMAL_TOP3":
+        feed["O"]["accepted"] = int(o_formal.get("ranking_eligible_count", 0) or 0)
+        feed["O"]["top3"] = _top3_public(o_formal.get("Top3"))
+        feed["O"]["signal"] = "BUY" if int(o_formal.get("qualified_buy_in_Top3",0) or 0) > 0 else "WAIT"
+        feed["O"]["qualified_buy"] = int(o_formal.get("qualified_buy_in_Top3",0) or 0) > 0
+        feed["O"]["evidence_status"] = "FORMAL_ACCEPTED:" + str(o_formal.get("status"))
+        feed["authority"]["O_formal"] = {
+            "source":"docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+            "source_run_id":o_formal.get("source_run_id"),
+            "status":o_formal.get("status"),
+        }
+
+    u_formal = load(root / OVERLAY_PATHS["U_formal"], {}) or {}
+    if str(u_formal.get("target_session")) == session and str(u_formal.get("state","")).startswith("PASS_FORMAL_U_DECISION"):
+        feed["U"]["accepted"] = int(u_formal.get("formal_valid_rows",0) or 0)
+        feed["U"]["top3"] = _top3_public(u_formal.get("Top3"))
+        feed["U"]["signal"] = "BUY" if int(u_formal.get("qualified_BUY",0) or 0) > 0 else "WAIT"
+        feed["U"]["qualified_buy"] = int(u_formal.get("qualified_BUY",0) or 0) > 0
+        blockers=u_formal.get("prerequisite_blockers") or []
+        feed["U"]["evidence_status"] = str(u_formal.get("state")) + (("; "+",".join(blockers)) if blockers else "")
+        feed["authority"]["U_formal"] = {
+            "source":"docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+            "source_run_id":u_formal.get("run_id"),
+            "state":u_formal.get("state"),
+        }
+
+    runtime = load(root / OVERLAY_PATHS["production_runtime"], {}) or {}
+    runtime_session=str((runtime.get("route") or {}).get("target_session") or "")
+    if runtime and runtime_session == session:
+        orch=runtime.get("orchestrator") or {}
+        sim=runtime.get("simulation_summary") or {}
+        accounts=sim.get("accounts") or {}
+        oacct=accounts.get("O") or {}
+        uacct=accounts.get("U") or {}
+        feed["simulation"].update({
+            "eligibility": runtime.get("state") or "UNKNOWN",
+            "account_A": _account_summary(oacct),
+            "account_B": _account_summary(uacct),
+            "cash": f"O {oacct.get('cash_cny','?')} CNY | U {uacct.get('cash_cny','?')} CNY",
+            "positions": f"O {len(oacct.get('positions') or {})} | U {len(uacct.get('positions') or {})}",
+            "pnl": f"O {oacct.get('realized_pnl_cny','?')} | U {uacct.get('realized_pnl_cny','?')}",
+            "pending_signal": f"O {((orch.get('tracks') or {}).get('O') or {}).get('state','?')} | U {((orch.get('tracks') or {}).get('U') or {}).get('state','?')}",
+        })
+        feed["production"]={
+            "status":runtime.get("state"),
+            "simulation_write_performed":bool(runtime.get("simulation_write_performed")),
+            "target_session":runtime_session,
+            "next_session":(runtime.get("route") or {}).get("next_session"),
+            "O_state":((orch.get("tracks") or {}).get("O") or {}).get("state"),
+            "U_state":((orch.get("tracks") or {}).get("U") or {}).get("state"),
+            "qualified_buy_total":orch.get("qualified_buy_total",0),
+            "journal_hash":sim.get("journal_hash"),
+            "real_orders":runtime.get("real_orders",0),
+        }
+        feed["system"]["current_stage"]="PRODUCTION_SIMULATION_RUNTIME"
+        feed["system"]["last_successful_gate"]="SIMULATION_LEDGER_UPDATED" if runtime.get("simulation_write_performed") else "PRODUCTION_RUNTIME_EVALUATED"
+        if runtime.get("state")=="SIMULATION_LEDGER_UPDATED":
+            feed["system"]["overall_state"]="WAIT" if not feed["O"]["qualified_buy"] and not feed["U"]["qualified_buy"] else "LIVE"
+            feed["system"]["blocking_gate"]=None if ((orch.get("tracks") or {}).get("U") or {}).get("state")!="BLOCKED" else "U_PRODUCTION_PREREQUISITES_BLOCKED"
+            feed["system"]["next_action"]="Wait for next production cycle; alert only on BUY, exception, or governance change."
+        feed["shadow_week"]["O_coverage"]=f"data {o_ready}/{o_den}; formal {feed['O']['accepted']}/{o_den}"
+        feed["shadow_week"]["U_coverage"]=f"data {u_ready}/{u_den}; buy-eligible {buy_eligible}/{u_den}; formal {feed['U']['accepted']}/{u_den}"
+        feed["shadow_week"]["BUY_WAIT"]="BUY" if feed["O"]["qualified_buy"] or feed["U"]["qualified_buy"] else "WAIT"
+        feed["shadow_week"]["simulation_eligibility"]=feed["simulation"]["eligibility"]
+    else:
+        feed["production"]={"status":"NOT_RUN_FOR_EVIDENCE_SESSION","real_orders":0}
+
     encoded = json.dumps(feed, ensure_ascii=False)
     if SECRET_RE.search(encoded):
         raise SystemExit("sanitized feed failed secret scan")
