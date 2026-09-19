@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-NATURAL-PARALLEL-PREFLIGHT-20260919-001",
+  "effective_at": "2026-09-19T22:18:00+08:00",
+  "status": "ENGINEERING_READY_PENDING_NATURAL_WINDOW",
+  "project": "DSA",
+  "candidate_branch": "research/dsa-readonly-parallel-shadow-20260919",
+  "tested_head_commit": "966fb501b7687f7a6ac46a40d81ebe6cac6967ce",
+  "active_runtime_authority": {
+    "repository": "Rupheal/TRIDENT-Foundation",
+    "ref": "runtime/dsa-shadow-journal-v1",
+    "mode": "SHADOW_SIMULATION_ONLY",
+    "real_orders_authorized": false,
+    "unchanged": true
+  },
+  "natural_window": {
+    "next_expected_hk_trading_session": "2026-09-21",
+    "gate_d_freeze_cutoff_hkt": "09:25",
+    "prewindow_rule": "O receipt, U receipt, and active Foundation journal must all be present and hash-sealed no later than cutoff.",
+    "postwindow_rule": "Active runtime outcome receipt must be from the same natural session and is intentionally excluded from the prewindow hash set."
+  },
+  "required_sequence": [
+    "Recover same-cutoff formal O receipt from its accepted authority.",
+    "Recover same-cutoff formal U receipt from its accepted authority.",
+    "Re-read active Foundation journal and validate append-only parent/hash chain.",
+    "Run dsa_natural_parallel_prewindow_v1.py before cutoff and preserve immutable external timestamp provenance.",
+    "Do not run candidate journal writer and do not alter Gate-D authority.",
+    "After the active Gate-D natural window completes, read the active runtime receipt for the same session.",
+    "Run dsa_readonly_candidate_adapter_v1.py with comparison_kind=natural_parallel using the sealed attestation.",
+    "Persist comparison receipt only.",
+    "If action diverges, block migration. If action matches but control state diverges, submit discrepancy to Central Audit. If both match, submit normal Central Audit package."
+  ],
+  "forbidden": [
+    "Retroactive attestation",
+    "Using post-cutoff O/U inputs as if they were pre-cutoff",
+    "Resetting or truncating the active Foundation journal",
+    "Writing the candidate Drive journal for migration proof",
+    "Runtime authority pointer switch",
+    "Merging PR #2 as a substitute for migration acceptance",
+    "Real broker orders"
+  ],
+  "preflight_acceptance": {
+    "ci_run_id": 35448231627,
+    "ci_job_id": 105910784488,
+    "tests": "28/28 PASS"
+  },
+  "owner_action_required_now": false
+}

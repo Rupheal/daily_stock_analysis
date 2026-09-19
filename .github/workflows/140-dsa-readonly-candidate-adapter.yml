@@ -1,0 +1,39 @@
+name: DSA read-only candidate adapter acceptance
+
+on:
+  pull_request:
+    paths:
+      - "scripts/dsa_readonly_candidate_adapter_v1.py"
+      - "scripts/dsa_natural_parallel_prewindow_v1.py"
+      - "scripts/dsa_production_orchestrator_v1.py"
+      - "tests/test_dsa_readonly_candidate_adapter_v1.py"
+      - "tests/test_dsa_natural_parallel_prewindow_v1.py"
+      - "tests/test_dsa_production_orchestrator_v1.py"
+      - ".github/workflows/140-dsa-readonly-candidate-adapter.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-readonly-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+      - name: Compile adapter and orchestrator
+        run: |
+          python -m py_compile scripts/dsa_readonly_candidate_adapter_v1.py
+          python -m py_compile scripts/dsa_natural_parallel_prewindow_v1.py
+          python -m py_compile scripts/dsa_production_orchestrator_v1.py
+      - name: Run read-only adapter and orchestrator regression tests
+        run: |
+          python -m pytest -q \
+            tests/test_dsa_readonly_candidate_adapter_v1.py \
+            tests/test_dsa_natural_parallel_prewindow_v1.py \
+            tests/test_dsa_production_orchestrator_v1.py
