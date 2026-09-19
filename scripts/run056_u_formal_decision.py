@@ -29,6 +29,7 @@ MODEL = "deepseek-flash"
 TARGET_SESSION = "2026-09-17"
 EXPECTED_RUN_ID = "TRI-DSA-RESUME-20260917-056"
 ARTIFACT_PREFIX = "DSA-RUN056-U-FORMAL"
+MACRO_POSITION_CEILING_PCT = 30
 DECISIONS = {"BUY_CANDIDATE", "WATCH", "AVOID", "BLOCKED_DATA"}
 CONFIDENCE = {"LOW", "MEDIUM", "HIGH"}
 
@@ -87,7 +88,8 @@ def load_inputs(paths):
         raise ValueError("U45_DENOMINATOR_MISMATCH")
     if close.get("target_session") != TARGET_SESSION or zone.get("target_session") != TARGET_SESSION:
         raise ValueError("TARGET_SESSION_MISMATCH")
-    if macro.get("regime", {}).get("position_ceiling_pct") != 30 or zone.get("macro_position_ceiling_pct") != 30:
+    if (macro.get("regime", {}).get("position_ceiling_pct") != MACRO_POSITION_CEILING_PCT
+            or zone.get("macro_position_ceiling_pct") != MACRO_POSITION_CEILING_PCT):
         raise ValueError("RUN053_MACRO_CAP_MISMATCH")
     if zone.get("state") != "PASS_CONTRACT_ONLY_FORMAL_MEMBER_ZONES_PENDING_RUN056":
         raise ValueError("RUN055_NOT_ACCEPTED")
@@ -295,7 +297,7 @@ def public_row(model_row, source, batch_index, raw_hash):
         "capital_state": source["capital"].get("state"),
         "capital_date": source["capital"].get("date"),
         "capital_persistence": source["capital"].get("persistence"),
-        "macro_position_ceiling_pct": 30,
+        "macro_position_ceiling_pct": MACRO_POSITION_CEILING_PCT,
         "macro_changed_score_or_rank": False,
         "formal_decision_id": decision_id,
         "provider_batch": batch_index,
@@ -333,7 +335,7 @@ def finalize(all_rows, ineligible, input_hashes, batch_summaries):
         "Top10": top10,
         "rows": valid,
         "input_sha256": input_hashes,
-        "macro_overlay": {"position_ceiling_pct": 30, "changes_native_score_or_rank": False, "final_position_decision": "USER"},
+        "macro_overlay": {"position_ceiling_pct": MACRO_POSITION_CEILING_PCT, "changes_native_score_or_rank": False, "final_position_decision": "USER"},
         "resource_accounting": {
             "model_http_requests_confirmed": confirmed,
             "model_http_requests_possible": possible,
