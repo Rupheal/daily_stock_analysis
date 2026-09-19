@@ -1,6 +1,10 @@
 name: DSA Production Orchestrator v1 simulation runtime
 
 on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/DSA_PRODUCTION_RUNTIME_TRIGGER.json'
   workflow_dispatch:
     inputs:
       at_hkt:
@@ -58,7 +62,14 @@ jobs:
           from datetime import datetime
           from zoneinfo import ZoneInfo
           at=os.environ.get('INPUT_AT','').strip()
-          mode=os.environ['MODE']
+          mode=os.environ.get('MODE','').strip()
+          from pathlib import Path
+          trigger=Path('docs/runtime/DSA_PRODUCTION_RUNTIME_TRIGGER.json')
+          if not at and trigger.exists():
+              import json
+              t=json.loads(trigger.read_text())
+              at=str(t.get('at_hkt') or '').strip()
+              mode=str(t.get('target_mode') or mode).strip()
           if not at:
               now=datetime.now(ZoneInfo('Asia/Hong_Kong'))
               if mode=='preopen': now=now.replace(hour=9,minute=0,second=0,microsecond=0)
