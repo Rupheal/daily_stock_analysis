@@ -110,14 +110,22 @@ jobs:
         run: |
           python scripts/dsa_production_session_driver_v1.py             --at "${{ steps.clock.outputs.at }}"             --o "${{ steps.receipts.outputs.o_path }}"             --u "${{ steps.receipts.outputs.u_path }}"             --out /tmp/session-route.json
           python - <<'PY'
-          import json
+          import json,os
+          from pathlib import Path
           r=json.load(open('/tmp/session-route.json'))
-          assert r['window']=='ENTRY',r
-          assert r['next_session']=='${{ steps.clock.outputs.execution }}',r
+          if r['window']!='ENTRY':
+              Path('/tmp/off-window.json').write_text(json.dumps({
+                'state':'OFF_WINDOW_NO_ACTION','window':r['window'],
+                'target_session':r['target_session'],'real_orders':0
+              },ensure_ascii=False,indent=2)+'\n')
+              print('ENTRY_OFF_WINDOW_NO_ACTION',r['window'])
+          else:
+              assert r['next_session']=='${{ steps.clock.outputs.execution }}',r
+              print('ENTRY_WINDOW_READY',r['target_session'],r['next_session'])
           PY
 
       - name: Build initial BUY gate without execution evidence
-        if: steps.receipts.outputs.state == 'READY'
+        if: steps.receipts.outputs.state == 'READY' && !cancelled()
         run: |
           python scripts/dsa_production_orchestrator_v1.py             --o "${{ steps.receipts.outputs.o_path }}"             --u "${{ steps.receipts.outputs.u_path }}"             --target-session "${{ steps.clock.outputs.target }}"             --now "${{ steps.clock.outputs.at }}"             --next-session "${{ steps.clock.outputs.execution }}"             --cycle preopen --journal-configured             --out /tmp/orch-initial.json
 
