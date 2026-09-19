@@ -44,6 +44,10 @@ def fixture(tmp_path: Path, state="ELIGIBLE_FOR_CENTRAL_AUDIT"):
         "session": "2026-09-21",
         "shadow_simulation_only": True,
         "real_orders": 0,
+        "timeline": [{
+            "stage": "FREEZE_PRECHECK",
+            "journal_raw_sha256": "c"*64,
+        }],
     })
     prov = write(tmp_path, "prov.json", {
         "github_run_id": 123,
@@ -92,4 +96,22 @@ def test_rejects_outcome_session_mismatch(tmp_path):
     payload["session"] = "2026-09-22"
     active.write_text(json.dumps(payload))
     with pytest.raises(ValueError, match="OUTCOME_SESSION_MISMATCH"):
+        build_audit_package(att, cmp, active, prov)
+
+
+def test_rejects_active_freeze_journal_mismatch(tmp_path):
+    att, cmp, active, prov = fixture(tmp_path)
+    payload = json.loads(active.read_text())
+    payload["timeline"][0]["journal_raw_sha256"] = "f" * 64
+    active.write_text(json.dumps(payload))
+    with pytest.raises(ValueError, match="SEALED_JOURNAL_NOT_EQUAL_ACTIVE_FREEZE"):
+        build_audit_package(att, cmp, active, prov)
+
+
+def test_rejects_missing_freeze_precheck(tmp_path):
+    att, cmp, active, prov = fixture(tmp_path)
+    payload = json.loads(active.read_text())
+    payload["timeline"] = []
+    active.write_text(json.dumps(payload))
+    with pytest.raises(ValueError, match="ACTIVE_FREEZE_PRECHECK_NOT_UNIQUE"):
         build_audit_package(att, cmp, active, prov)
