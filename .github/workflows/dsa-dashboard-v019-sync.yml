@@ -8,6 +8,7 @@ on:
       - 'docs/runtime/RUN*_RECOVERED_RESULT.json'
       - 'docs/runtime/U_PRODUCTION_FORMAL_LATEST.json'
       - 'docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json'
+      - 'docs/runtime/DASHBOARD_PRODUCTION_OVERLAY_SYNC_TRIGGER.json'
       - '.github/workflows/dsa-dashboard-v019-sync.yml'
 
 permissions:
