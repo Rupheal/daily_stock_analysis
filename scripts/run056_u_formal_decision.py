@@ -26,6 +26,9 @@ from o_provider_completion import inspect_completion
 
 VERSION = "U_FORMAL_DECISION_RANKING_v1"
 MODEL = "deepseek-flash"
+TARGET_SESSION = "2026-09-17"
+EXPECTED_RUN_ID = "TRI-DSA-RESUME-20260917-056"
+ARTIFACT_PREFIX = "DSA-RUN056-U-FORMAL"
 DECISIONS = {"BUY_CANDIDATE", "WATCH", "AVOID", "BLOCKED_DATA"}
 CONFIDENCE = {"LOW", "MEDIUM", "HIGH"}
 
@@ -82,7 +85,7 @@ def load_inputs(paths):
     zone = json.loads(paths["zone"].read_text())
     if member.get("U_denominator") != 45 or close.get("denominator") != 45 or risk.get("counts", {}).get("denominator") != 45 or zone.get("denominator") != 45:
         raise ValueError("U45_DENOMINATOR_MISMATCH")
-    if close.get("target_session") != "2026-09-17" or zone.get("target_session") != "2026-09-17":
+    if close.get("target_session") != TARGET_SESSION or zone.get("target_session") != TARGET_SESSION:
         raise ValueError("TARGET_SESSION_MISMATCH")
     if macro.get("regime", {}).get("position_ceiling_pct") != 30 or zone.get("macro_position_ceiling_pct") != 30:
         raise ValueError("RUN053_MACRO_CAP_MISMATCH")
@@ -269,7 +272,7 @@ def public_row(model_row, source, batch_index, raw_hash):
         else:
             formal_action = "BUY"; zone_status = "APPROVED_NUMERIC"
     decision_id = hashlib.sha256(json.dumps({
-        "version": VERSION, "code": source["code"], "target": "2026-09-17",
+        "version": VERSION, "code": source["code"], "target": TARGET_SESSION,
         "model": model_row, "anchors": source["allowed_zone_anchors"], "raw_hash": raw_hash,
     }, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
     return {
@@ -317,8 +320,8 @@ def finalize(all_rows, ineligible, input_hashes, batch_summaries):
     possible = sum(x.get("http_possible", 0) for x in batch_summaries)
     return {
         "schema_version": 1,
-        "run_id": "TRI-DSA-RESUME-20260917-056",
-        "target_session": "2026-09-17",
+        "run_id": EXPECTED_RUN_ID,
+        "target_session": TARGET_SESSION,
         "track": "U",
         "state": "PASS_FORMAL_U_DECISION_WITH_BUYS" if buys else "PASS_FORMAL_U_DECISION_WAIT_NO_BUY",
         "denominator": 45,
@@ -362,7 +365,7 @@ def main():
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     scope = json.loads(a.scope.read_text())
-    if scope.get("run_id") != "TRI-DSA-RESUME-20260917-056" or scope.get("maximum_requests", scope.get("provider_plan", {}).get("maximum_requests")) not in (None, 2):
+    if scope.get("run_id") != EXPECTED_RUN_ID or scope.get("maximum_requests", scope.get("provider_plan", {}).get("maximum_requests")) not in (None, 2):
         raise ValueError("RUN056_SCOPE_MISMATCH")
     paths = {"member":a.member,"close":a.close,"macro":a.macro,"risk":a.risk,"zone":a.zone}
     member, close, macro, risk, zone = load_inputs(paths)
@@ -383,7 +386,7 @@ def main():
     for batch_index in range(2):
         members = eligible[batch_index*22:(batch_index+1)*22]
         root = a.out / f"batch{batch_index}"; root.mkdir()
-        artifact = f"DSA-RUN056-U-FORMAL-B{batch_index}"
+        artifact = f"{ARTIFACT_PREFIX}-B{batch_index}"
         run_id = scope["run_id"] + f"-B{batch_index}"
         summary = {"batch":batch_index,"members":len(members),"status":"PENDING","http_possible":0,"http_confirmed":0,"accepted_rows":0,"isolated_rows":[],"actual_charge_cny":None}
         if stop:
@@ -399,7 +402,7 @@ def main():
                 {"role":"system","content":SYSTEM},
                 {"role":"user","content":json.dumps({
                     "version":VERSION,
-                    "target_session":"2026-09-17",
+                    "target_session":TARGET_SESSION,
                     "requested_codes":[m["code"] for m in members],
                     "global_u_context":context,
                     "allowed_reason_codes":reason_codes,
@@ -418,7 +421,7 @@ def main():
             summary["pre_send_upper_cny"] = str(upper)
             write(root/"provider-request.json",body)
             write(root/"input-contract.json",{
-                "version":VERSION,"target_session":"2026-09-17","requested_codes":[m["code"] for m in members],
+                "version":VERSION,"target_session":TARGET_SESSION,"requested_codes":[m["code"] for m in members],
                 "input_sha256":input_hashes,"macro_not_in_model_score":True,"no_execution":True,
             })
             summary["pre_send_private"] = private_save(root, artifact+"-PRE-SEND", run_id)
@@ -477,7 +480,7 @@ def main():
     if len(public) + sum(len(x.get("isolated_rows",[])) for x in summaries) != 44:
         # A shared failure may intentionally stop the second paid batch. Never call that a full formal run.
         state={
-            "schema_version":1,"run_id":scope["run_id"],"target_session":"2026-09-17","track":"U",
+            "schema_version":1,"run_id":scope["run_id"],"target_session":TARGET_SESSION,"track":"U",
             "state":"NO_GO_INCOMPLETE_FORMAL_PROVIDER_COVERAGE","denominator":45,"eligible":44,"retained_ineligible":["09618"],
             "formal_valid_rows":len(public),"qualified_BUY":0,"Top3":[],"Top10":[],"rows":public,
             "input_sha256":input_hashes,"batch_summaries":summaries,
