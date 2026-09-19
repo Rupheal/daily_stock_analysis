@@ -15,12 +15,20 @@ VERSION="U_PRODUCTION_PREREQ_GATE_v1"
 def _target(obj): return obj.get("target_session")
 
 
-def evaluate(target:str, close:dict, macro:dict, risk:dict|None, zone:dict|None)->dict:
+def evaluate(target:str, close:dict, macro:dict|None, risk:dict|None, zone:dict|None, member:dict|None=None)->dict:
     blockers=[]
     if _target(close)!=target or close.get("denominator")!=45 or int(close.get("current_valid_count",-1))!=45:
         blockers.append("U_CLOSE_REFRESH_NOT_CURRENT_45_OF_45")
+    member_ok=(
+      isinstance(member,dict)
+      and _target(member)==target
+      and int(member.get("U_denominator",member.get("denominator",-1)))==45
+      and len(member.get("members") or member.get("rows") or [])==45
+    )
+    if not member_ok: blockers.append("U_MEMBER_REPORTS_NOT_CURRENT")
     macro_ok=(
-      _target(macro)==target
+      isinstance(macro,dict)
+      and _target(macro)==target
       and (macro.get("result") or {}).get("formal_macro_cap_available") is True
       and (macro.get("regime") or {}).get("position_ceiling_pct") is not None
     )
@@ -73,14 +81,15 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--target-session",required=True)
     ap.add_argument("--close",type=Path,required=True)
-    ap.add_argument("--macro",type=Path,required=True)
+    ap.add_argument("--macro",type=Path)
+    ap.add_argument("--member",type=Path)
     ap.add_argument("--risk",type=Path)
     ap.add_argument("--zone",type=Path)
     ap.add_argument("--out",type=Path,required=True)
     ap.add_argument("--fallback-out",type=Path)
     a=ap.parse_args()
     load=lambda p: json.loads(p.read_text()) if p and p.exists() else None
-    r=evaluate(a.target_session,load(a.close),load(a.macro),load(a.risk),load(a.zone))
+    r=evaluate(a.target_session,load(a.close),load(a.macro),load(a.risk),load(a.zone),load(a.member))
     a.out.parent.mkdir(parents=True,exist_ok=True)
     a.out.write_text(json.dumps(r,ensure_ascii=False,indent=2)+"\n")
     if r["fallback_formal_receipt"] and a.fallback_out:
