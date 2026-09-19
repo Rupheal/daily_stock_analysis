@@ -12,7 +12,7 @@ def fixture():
     run075={
       'run_id':'TRI-DSA-O-RECOVER-20260918-075','target_session':'2026-09-18',
       'state':'PARTIAL_O_FORMAL_CORE_PROCESSING',
-      'official_O_denominator':12,'base_operational_O_denominator':9,'base_excluded_count':3,
+      'official_O_denominator':15,'base_operational_O_denominator':12,'base_excluded_count':3,
       'ranking_eligible_count':3,'additional_excluded_count':-3,
       'additional_exclusions':[],
       'missing_operational_members':[f'X{i}' for i in range(1,10)],'missing_count':9,
@@ -35,7 +35,7 @@ def test_repairs_nine_without_changing_ranking():
     r,p=fixture();o=repair(r,p)
     assert o['state']=='PASS_O_FORMAL_CORE_RANKING_TOP3'
     assert o['missing_count']==0
-    assert o['processed_operational_members']==9
+    assert o['processed_operational_members']==12
     assert o['ranking_eligible_count']==3
     assert o['additional_excluded_count']==9
     assert o['Top3']==r['Top3']
