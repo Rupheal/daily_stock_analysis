@@ -40,6 +40,9 @@ def validate_zone_row(row: dict) -> None:
 
 
 def build(facts: dict, handoff: dict, macro: dict, risk: dict) -> dict:
+    target = risk.get("target_session")
+    if not target or macro.get("target_session") != target:
+        raise ValueError("U_ZONE_TARGET_SESSION_MISMATCH")
     risk_rows = risk.get("rows", [])
     if len(risk_rows) != 45:
         raise ValueError("U45_DENOMINATOR_NOT_45")
@@ -96,9 +99,9 @@ def build(facts: dict, handoff: dict, macro: dict, risk: dict) -> dict:
 
     return {
         "schema_version": 1,
-        "run_id": "TRI-DSA-RESUME-20260917-055",
+        "run_id": "TRI-DSA-U-ZONE-" + target.replace("-", "") + "-055",
         "contract_id": CONTRACT_ID,
-        "target_session": "2026-09-17",
+        "target_session": target,
         "state": "PASS_CONTRACT_ONLY_FORMAL_MEMBER_ZONES_PENDING_RUN056",
         "denominator": 45,
         "eligible": 44,
