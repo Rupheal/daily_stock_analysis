@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "target_session": "2026-09-18",
+  "source_run060": 35335286449,
+  "purpose": "Bootstrap U production close facts and a fail-closed current-session WAIT receipt without provider calls when macro/risk/zone prerequisites are stale.",
+  "model_http_requests": 0,
+  "real_orders": 0,
+  "simulation_writes": 0
+}
