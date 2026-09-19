@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "acceptance_version": "DSA_PRODUCTION_ORCHESTRATOR_V1",
+  "status": "ACCEPTED_ENGINEERING",
+  "components": {
+    "session_driver": "PASS",
+    "formal_receipt_router": "PASS",
+    "qualified_buy_gate": "PASS_FAIL_CLOSED",
+    "entry_v1_gate": "PASS_FAIL_CLOSED",
+    "simulation_ledger": "PASS",
+    "drive_journal_read": "PASS",
+    "drive_journal_configured": false,
+    "dashboard_sync_existing": "EVENT_DRIVEN_EXISTING"
+  },
+  "current_route": {
+    "evaluation": "2026-09-21T09:00:00+08:00",
+    "target_session": "2026-09-18",
+    "O": {
+      "receipt_session": "2026-09-18",
+      "fresh": true,
+      "required_action": "NONE"
+    },
+    "U": {
+      "receipt_session": "2026-09-17",
+      "fresh": false,
+      "required_action": "REFRESH_U_FORMAL"
+    },
+    "state": "NEEDS_FORMAL_REFRESH"
+  },
+  "current_orchestrator_state": "DEGRADED_STALE",
+  "activation_blockers": [
+    "AUTHORITATIVE_SIMULATION_JOURNAL_UNCONFIGURED",
+    "U_FORMAL_REFRESH_FOR_2026-09-18_REQUIRED"
+  ],
+  "production_schedule_active": false,
+  "reason_schedule_inactive": "Scheduled GitHub Actions run from the default branch only; no main merge performed.",
+  "real_orders": 0,
+  "broker_api_calls": 0,
+  "model_http_requests_added": 0
+}
