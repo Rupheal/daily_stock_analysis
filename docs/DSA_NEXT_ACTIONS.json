@@ -155,14 +155,15 @@
       "definition_of_done": "Independently finish O frozen-native formal results across the current operational O pool and U45 per-member formal decisions, while preserving the full official O universe as an audit denominator. Unresolved O symbols are excluded after the bounded no-rescue policy and do not block O acceptance; reconcile operational + explicit exclusions = official. Then verify genuine timely future Entry-v1 fill. U preparation does not wait for O.",
       "id": "G4",
       "priority": 1,
-      "status": "O_FORMAL_PARTIAL_MISSING130_CORE278; U_FORMAL_DECISION44_OF45_WAIT_NO_BUY",
+      "status": "O_FORMAL_TOP3_PASS_CORE356_EXCLUDED301_MISSING0_WAIT_NO_BUY; U_FORMAL_DECISION44_OF45_WAIT_NO_BUY",
       "title": "U45与O全港股通独立覆盖及原生实例验收",
       "previous_status_asof_20260914": "Drive_primary_runner_authorization_and_roundtrip_pending; U_independent_preparation_unblocked; Run012_GitHub_bridge_retained_as_fallback",
       "current_receipt": "docs/runtime/RUN033_040_RESUME_RESULT.json",
       "previous_status_preserved_run032": "SEMANTIC_HANDOFF_003_OFFLINE_PASS; ORIGINAL_OUTPUT_NO_GO; COUNT_FALSE_POSITIVE_CORRECTED; NO_NEW_PROVIDER_CALL; U_PREPARATION_UNBLOCKED",
       "previous_status_preserved_run040": "GATEA_VERSIONED_RELEASE_PASS; CURRENT_O_UNIVERSE_660; NATIVE_DATA_COMPOSITE_660_OF_660; FULL_NATIVE_MODEL_PENDING; U_FORMAL_0_OF_45",
       "current_unresolved_exclusion_policy": "docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json",
-      "current_O_formal_receipt": "docs/runtime/RUN072_O657_FORMAL_RESULT.json"
+      "current_O_formal_receipt": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+      "current_O_final_summary": "docs/runtime/RUN076_O657_FINAL_SUMMARY.json"
     },
     {
       "definition_of_done": "冻结规则、PIT证据与交易时点，可复算成本后指标，接受/拒绝/不足均有证据",
@@ -206,7 +207,7 @@
   "parent_code_commit": "d9edcb59938f97e68e6a8a2d3289c5f0806717dd",
   "schema_version": 1,
   "scope": "升级版DSA 港股中短交易",
-  "updated_at_utc": "2026-09-18T15:00:00Z",
+  "updated_at_utc": "2026-09-18T18:20:00Z",
   "user_directive_override": {
     "priority": "urgent",
     "path": "docs/dsa-urgent-user-directive.md",
