@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-O-FINAL-20260918-076",
+  "purpose": "Zero-model final reconciliation of nine rows reintroduced by cancelled Run073 run2 parent overwrite, followed by formal O Top3 acceptance.",
+  "authoritative_parent_commit": "37260f104c8522814d830df882f259c1eed88075",
+  "source_run075": "docs/runtime/RUN075_O657_FORMAL_RESULT.json",
+  "expected_missing_before_repair": 9,
+  "expected_missing_after_repair": 0,
+  "expected_operational_denominator": 657,
+  "model_http_requests_added": 0,
+  "provider_calls_added": 0,
+  "real_orders": 0,
+  "simulation_writes": 0,
+  "main_merge": false
+}
