@@ -5,15 +5,16 @@ def close(t=TARGET): return {'target_session':t,'denominator':45,'current_valid_
 def macro(t=TARGET): return {'target_session':t,'regime':{'position_ceiling_pct':30},'result':{'formal_macro_cap_available':True}}
 def risk(t=TARGET): return {'target_session':t,'counts':{'denominator':45},'result':{'risk_evidence_bound':True}}
 def zone(t=TARGET): return {'target_session':t,'denominator':45,'state':'PASS_CONTRACT_ONLY_FORMAL_MEMBER_ZONES_PENDING_RUN056'}
+def member(t=TARGET): return {'target_session':t,'U_denominator':45,'members':[{'code':f'{i:05d}'} for i in range(45)]}
 
 def test_all_current_allows_formal_provider():
-    r=evaluate(TARGET,close(),macro(),risk(),zone())
+    r=evaluate(TARGET,close(),macro(),risk(),zone(),member())
     assert r['state']=='READY_FOR_U_FORMAL_PROVIDER'
     assert r['formal_provider_permitted'] is True
     assert r['fallback_formal_receipt'] is None
 
 def test_stale_macro_fails_closed_without_provider():
-    r=evaluate(TARGET,close(),macro('2026-09-17'),risk(),zone())
+    r=evaluate(TARGET,close(),macro('2026-09-17'),risk(),zone(),member())
     assert r['formal_provider_permitted'] is False
     assert 'U_MACRO_CAP_NOT_CURRENT' in r['blockers']
     f=r['fallback_formal_receipt']
@@ -21,6 +22,12 @@ def test_stale_macro_fails_closed_without_provider():
     assert f['qualified_BUY']==0 and f['provider_skipped'] is True
 
 def test_missing_risk_zone_produces_wait():
-    r=evaluate(TARGET,close(),macro(),None,None)
+    r=evaluate(TARGET,close(),macro(),None,None,member())
     assert set(r['blockers'])=={'U_RISK_EVIDENCE_NOT_CURRENT','U_ZONE_CONTRACT_NOT_CURRENT'}
     assert r['fallback_formal_receipt']['resource_accounting']['model_http_requests_confirmed']==0
+
+def test_stale_member_reports_block_provider():
+    r=evaluate(TARGET,close(),macro(),risk(),zone(),member('2026-09-17'))
+    assert r['formal_provider_permitted'] is False
+    assert 'U_MEMBER_REPORTS_NOT_CURRENT' in r['blockers']
+    assert r['fallback_formal_receipt']['provider_skipped'] is True
