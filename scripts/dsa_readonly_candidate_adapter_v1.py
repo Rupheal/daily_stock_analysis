@@ -89,10 +89,19 @@ def _active_trade_outcome(receipt: dict) -> dict:
         buys += int(block.get("buy_count", 0) or 0)
         positions += int(block.get("positions", 0) or 0)
 
+    timeline_actions = []
+    for row in receipt.get("timeline") or []:
+        if not isinstance(row, dict):
+            continue
+        status = str(row.get("status") or "").upper()
+        if status in {"BUY", "SELL"}:
+            timeline_actions.append(status)
+
     return {
-        "trade_action": "SIMULATED_ENTRY_OR_POSITION" if buys or positions else "NO_TRADE",
-        "buy_count": buys,
-        "positions": positions,
+        "trade_action": "SIMULATED_ENTRY_OR_EXIT" if timeline_actions else "NO_TRADE",
+        "window_actions": timeline_actions,
+        "cumulative_buy_count": buys,
+        "ending_positions": positions,
         "fail_closed": bool(receipt.get("fail_closed")),
     }
 
@@ -233,8 +242,9 @@ def compare_read_only(
         },
         "active": {
             "trade_action": active_outcome["trade_action"],
-            "buy_count": active_outcome["buy_count"],
-            "positions": active_outcome["positions"],
+            "window_actions": active_outcome["window_actions"],
+            "cumulative_buy_count": active_outcome["cumulative_buy_count"],
+            "ending_positions": active_outcome["ending_positions"],
             "fail_closed": active_outcome["fail_closed"],
             "derived_control_state": active_state,
         },
