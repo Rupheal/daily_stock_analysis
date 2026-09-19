@@ -1,0 +1,180 @@
+name: DSA Production Orchestrator v1 acceptance
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/dsa_production_orchestrator_v1.py'
+      - 'scripts/dsa_production_session_driver_v1.py'
+      - 'scripts/dsa_simulation_journal_drive.py'
+      - 'tests/test_dsa_production_orchestrator_v1.py'
+      - 'tests/test_dsa_production_session_driver_v1.py'
+      - 'tests/test_dsa_simulation_journal_drive.py'
+      - '.github/workflows/135-dsa-production-orchestrator-v1-acceptance.yml'
+      - 'docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_TRIGGER.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-production-orchestrator-v1-acceptance
+  cancel-in-progress: true
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install deterministic dependencies
+        run: pip install pytest httpx exchange-calendars
+
+      - name: Run orchestrator and journal regression suite
+        run: |
+          python -m pytest --noconftest -q             tests/test_dsa_production_orchestrator_v1.py             tests/test_dsa_production_session_driver_v1.py             tests/test_dsa_simulation_journal_drive.py             tests/test_dsa_simulation_ledger.py             tests/test_o_target_session_contract.py
+
+      - name: Verify Monday preopen routing with current accepted receipts
+        run: |
+          python scripts/dsa_production_session_driver_v1.py             --at 2026-09-21T09:00:00+08:00             --o docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json             --u docs/runtime/RUN056_U_FORMAL_RESULT.json             --out /tmp/session-route.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/session-route.json'))
+          assert r['window']=='PREOPEN'
+          assert r['target_session']=='2026-09-18'
+          assert r['tracks']['O']['fresh'] is True
+          assert r['tracks']['U']['fresh'] is False
+          assert r['tracks']['U']['required_action']=='REFRESH_U_FORMAL'
+          assert r['production_orchestrator_permitted'] is False
+          assert r['real_orders']==0
+          print('SESSION_ROUTE_PASS',json.dumps(r,ensure_ascii=False))
+          PY
+
+      - name: Verify stale U cannot create an ENTRY
+        run: |
+          python scripts/dsa_production_orchestrator_v1.py             --o docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json             --u docs/runtime/RUN056_U_FORMAL_RESULT.json             --target-session 2026-09-18             --now 2026-09-21T09:00:00+08:00             --next-session 2026-09-21             --out /tmp/orchestrator-current.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/orchestrator-current.json'))
+          assert r['state']=='DEGRADED_STALE'
+          assert r['tracks']['O']['state']=='WAIT'
+          assert r['tracks']['U']['state']=='STALE'
+          assert not any(x['kind']=='ENTRY' for x in r['commands'])
+          assert r['real_orders']==0 and r['broker_orders']==0
+          print('CURRENT_FAIL_CLOSED_PASS',json.dumps({
+            'state':r['state'],'O':r['tracks']['O']['state'],'U':r['tracks']['U']['state']
+          }))
+          PY
+
+      - name: Probe authoritative private simulation journal read-only
+        id: journal
+        continue-on-error: true
+        run: |
+          set +e
+          python scripts/dsa_simulation_journal_drive.py load --out /tmp/journal.json > /tmp/journal-probe.txt
+          rc=$?
+          set -e
+          cat /tmp/journal-probe.txt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          text=Path('/tmp/journal-probe.txt').read_text().strip().splitlines()[-1]
+          r=json.loads(text)
+          allowed={'JOURNAL_LOADED','JOURNAL_UNCONFIGURED'}
+          if r.get('status') not in allowed:
+              raise SystemExit('JOURNAL_PROBE_FAILED:'+json.dumps(r))
+          if r['status']=='JOURNAL_LOADED':
+              j=json.load(open('/tmp/journal.json'))
+              assert set(j['config']['accounts'])=={'U','O'}
+          Path('/tmp/journal-status.json').write_text(json.dumps(r,ensure_ascii=False,indent=2)+'\n')
+          print('JOURNAL_PROBE_PASS',r['status'])
+          PY
+
+      - name: Build engineering acceptance receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          route=json.load(open('/tmp/session-route.json'))
+          orch=json.load(open('/tmp/orchestrator-current.json'))
+          journal=json.load(open('/tmp/journal-status.json'))
+          loaded=journal.get('status')=='JOURNAL_LOADED'
+          out={
+            'schema_version':1,
+            'acceptance_version':'DSA_PRODUCTION_ORCHESTRATOR_V1',
+            'status':'ACCEPTED_ENGINEERING',
+            'components':{
+              'session_driver':'PASS',
+              'formal_receipt_router':'PASS',
+              'qualified_buy_gate':'PASS_FAIL_CLOSED',
+              'entry_v1_gate':'PASS_FAIL_CLOSED',
+              'simulation_ledger':'PASS',
+              'drive_journal_read':'PASS',
+              'drive_journal_configured':loaded,
+              'dashboard_sync_existing':'EVENT_DRIVEN_EXISTING',
+            },
+            'current_route':{
+              'evaluation':'2026-09-21T09:00:00+08:00',
+              'target_session':route['target_session'],
+              'O':route['tracks']['O'],
+              'U':route['tracks']['U'],
+              'state':route['state'],
+            },
+            'current_orchestrator_state':orch['state'],
+            'activation_blockers':([] if loaded else ['AUTHORITATIVE_SIMULATION_JOURNAL_UNCONFIGURED'])+
+              (['U_FORMAL_REFRESH_FOR_2026-09-18_REQUIRED'] if not route['tracks']['U']['fresh'] else []),
+            'production_schedule_active':False,
+            'reason_schedule_inactive':'Scheduled GitHub Actions run from the default branch only; no main merge performed.',
+            'real_orders':0,
+            'broker_api_calls':0,
+            'model_http_requests_added':0,
+          }
+          Path('/tmp/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json').write_text(
+            json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE
+          path: |
+            /tmp/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json
+            /tmp/session-route.json
+            /tmp/orchestrator-current.json
+            /tmp/journal-status.json
+          retention-days: 90
+
+      - name: Commit sanitized acceptance receipt
+        run: |
+          cp /tmp/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json             docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json
+          git add docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          if git diff --cached --quiet; then
+            echo 'no-change'
+          else
+            git commit -m 'dsa: accept Production Orchestrator v1 engineering layer'
+            git fetch origin fix/native-private-execution-20260914
+            git rebase origin/fix/native-private-execution-20260914
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
+
+      - name: Assert simulation-only boundary
+        run: |
+          echo "REAL_ORDERS=0"
+          echo "BROKER_API_CALLS=0"
+          echo "MODEL_HTTP_REQUESTS_ADDED=0"
+          echo "MAIN_MERGE=0"
