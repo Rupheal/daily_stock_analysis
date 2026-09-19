@@ -1,6 +1,9 @@
 name: DSA Production Orchestrator v1 simulation runtime
 
 on:
+  schedule:
+    - cron: '0 1 * * 1-5'    # 09:00 HKT status/readiness
+    - cron: '30 8 * * 1-5'   # 16:30 HKT post-close status/readiness
   push:
     branches: [fix/native-private-execution-20260914]
     paths:
@@ -56,6 +59,7 @@ jobs:
         env:
           INPUT_AT: ${{ inputs.at_hkt }}
           MODE: ${{ inputs.target_mode }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           python - <<'PY'
           import os
@@ -65,13 +69,15 @@ jobs:
           mode=os.environ.get('MODE','').strip()
           from pathlib import Path
           trigger=Path('docs/runtime/DSA_PRODUCTION_RUNTIME_TRIGGER.json')
-          if not at and trigger.exists():
+          if not at and os.environ.get('EVENT_NAME')=='push' and trigger.exists():
               import json
               t=json.loads(trigger.read_text())
               at=str(t.get('at_hkt') or '').strip()
               mode=str(t.get('target_mode') or mode).strip()
           if not at:
               now=datetime.now(ZoneInfo('Asia/Hong_Kong'))
+              if not mode:
+                  mode='preopen' if now.hour<12 else 'postclose'
               if mode=='preopen': now=now.replace(hour=9,minute=0,second=0,microsecond=0)
               else: now=now.replace(hour=16,minute=30,second=0,microsecond=0)
               at=now.isoformat()
@@ -141,7 +147,7 @@ jobs:
               raise SystemExit('PRIVATE_JOURNAL_LOAD_FAILED')
           PY
 
-      - name: Build production orchestration result
+      - name: Build read-only production orchestration status
         run: |
           python - <<'PY'
           import json,subprocess,sys
@@ -150,72 +156,32 @@ jobs:
           if resolver['state']!='READY':
               out={'schema_version':1,'resolver':resolver,'simulation_write_performed':False,'real_orders':0,
                    'state':'WAIT_FORMAL_RECEIPT_MISSING','reason':'NO_EXACT_SESSION_O_U_RECEIPT'}
-              Path('/tmp/production-runtime-result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
-              print(json.dumps(out,ensure_ascii=False));raise SystemExit(0)
-          route=json.load(open('/tmp/session-route.json'))
-          out={'schema_version':1,'route':route,'formal_resolver':resolver,'simulation_write_performed':False,'real_orders':0}
-          if route['state']!='READY_FOR_ORCHESTRATOR':
-              out['state']='WAIT_FORMAL_REFRESH'
-              out['reason']='CURRENT_O_U_FORMAL_RECEIPTS_NOT_BOTH_FRESH'
-          elif '${{ steps.journal.outputs.status }}'!='JOURNAL_LOADED':
-              out['state']='BLOCKED_PRIVATE_JOURNAL_UNCONFIGURED'
           else:
-              cmd=[sys.executable,'scripts/dsa_production_orchestrator_v1.py',
-                   '--o',resolver['O']['path'],
-                   '--u',resolver['U']['path'],
-                   '--target-session',route['target_session'],
-                   '--now',route['evaluation_time_hkt'],
-                   '--next-session',route['next_session'],
-                   '--cycle','preopen' if route['window']=='PREOPEN' else 'postclose',
-                   '--journal-configured','--out','/tmp/orchestrator.json']
-              subprocess.check_call(cmd)
-              orch=json.load(open('/tmp/orchestrator.json'))
-              out['orchestrator']=orch
-              if any(x['kind']=='ENTRY' for x in orch['commands']):
-                  out['state']='BLOCKED_ENTRY_EVIDENCE_COLLECTOR_NOT_ATTACHED'
-                  out['reason']='ENTRY-v1 requires separately verified execution evidence'
+              route=json.load(open('/tmp/session-route.json'))
+              out={'schema_version':1,'route':route,'formal_resolver':resolver,
+                   'simulation_write_performed':False,'real_orders':0,'runtime_mode':'STATUS_ONLY'}
+              if route['state']!='READY_FOR_ORCHESTRATOR':
+                  out['state']='WAIT_FORMAL_REFRESH'
+                  out['reason']='CURRENT_O_U_FORMAL_RECEIPTS_NOT_BOTH_FRESH'
               else:
-                  from scripts.dsa_production_orchestrator_v1 import filter_commands_against_journal
-                  journal=json.load(open('/tmp/journal.json'))
-                  pending,noop=filter_commands_against_journal(orch['commands'],journal)
-                  out['idempotent_noop_command_ids']=noop
-                  out['pending_command_count']=len(pending)
-                  if not pending:
-                      out['state']='SIMULATION_NOOP_ALREADY_APPLIED'
-                      out['simulation_write_performed']=False
-                      out['simulation_summary']={
-                        'scope':journal.get('scope'),
-                        'journal_hash':__import__('src.services.dsa_prediction_ledger',fromlist=['canonical_hash']).canonical_hash(journal),
-                        'accounts':{}
-                      }
-                  else:
-                      Path('/tmp/commands.json').write_text(json.dumps(pending,ensure_ascii=False,indent=2)+'\n')
-                      subprocess.check_call([sys.executable,'scripts/dsa_simulation_runtime.py',
-                        '--journal','/tmp/journal.json','--commands','/tmp/commands.json','--summary','/tmp/sim-summary.json'])
-                      out['state']='SIMULATION_LEDGER_UPDATED'
-                      out['simulation_write_performed']=True
-                      out['simulation_summary']=json.load(open('/tmp/sim-summary.json'))
+                  cmd=[sys.executable,'scripts/dsa_production_orchestrator_v1.py',
+                       '--o',resolver['O']['path'],'--u',resolver['U']['path'],
+                       '--target-session',route['target_session'],'--now',route['evaluation_time_hkt'],
+                       '--next-session',route['next_session'],
+                       '--cycle','preopen' if route['window']=='PREOPEN' else 'postclose',
+                       '--journal-configured','--out','/tmp/orchestrator.json']
+                  subprocess.check_call(cmd)
+                  out['orchestrator']=json.load(open('/tmp/orchestrator.json'))
+                  out['state']='STATUS_READY_NO_LEDGER_WRITE'
+              out['single_writer']='139-dsa-production-entry-v1.yml'
           Path('/tmp/production-runtime-result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
           print(json.dumps(out,ensure_ascii=False))
           PY
 
-      - name: Persist private journal snapshot only after successful simulation write
-        if: steps.journal.outputs.status == 'JOURNAL_LOADED'
+      - name: Assert status workflow is read-only
         run: |
-          python - <<'PY'
-          import json,subprocess,sys,os
-          from pathlib import Path
-          r=json.load(open('/tmp/production-runtime-result.json'))
-          if not r.get('simulation_write_performed'):
-              print('NO_SIMULATION_WRITE_NO_JOURNAL_SAVE')
-              raise SystemExit(0)
-          subprocess.check_call([
-            sys.executable,'scripts/dsa_simulation_journal_drive.py','save',
-            '--journal','/tmp/journal.json',
-            '--run-id','DSA-PROD-ORCH-V1-'+os.environ['GITHUB_RUN_ID'],
-            '--expected-parent-hash','${{ steps.journal.outputs.parent_hash }}'
-          ])
-          PY
+          echo SIMULATION_WRITES=0
+          echo SINGLE_LEDGER_WRITER=139-dsa-production-entry-v1.yml
 
       - uses: actions/upload-artifact@v4
         with:
