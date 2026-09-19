@@ -17,7 +17,7 @@ import run056_u_formal_decision_v2 as compat
 base=compat.base
 
 
-def configure(target_session:str,run_id:str):
+def configure(target_session:str,run_id:str,macro_cap_pct:int|float=30):
     if not target_session or len(target_session)!=10:
         raise ValueError("PROD_U_TARGET_SESSION_INVALID")
     if not run_id or len(run_id)>120:
@@ -25,12 +25,16 @@ def configure(target_session:str,run_id:str):
     base.TARGET_SESSION=target_session
     base.EXPECTED_RUN_ID=run_id
     base.ARTIFACT_PREFIX="DSA-U-PROD-"+target_session.replace("-","")
+    if not (0 <= float(macro_cap_pct) <= 100):
+        raise ValueError("PROD_U_MACRO_CAP_INVALID")
+    base.MACRO_POSITION_CEILING_PCT=macro_cap_pct
     return {
       "target_session":target_session,
       "run_id":run_id,
       "artifact_prefix":base.ARTIFACT_PREFIX,
       "strategy_version":base.VERSION,
       "model":base.MODEL,
+      "macro_position_ceiling_pct":macro_cap_pct,
     }
 
 
@@ -46,7 +50,11 @@ def main():
     ap.add_argument("--zone",type=Path,required=True)
     ap.add_argument("--out",type=Path,required=True)
     a=ap.parse_args()
-    cfg=configure(a.target_session,a.run_id)
+    macro_obj=json.loads(a.macro.read_text())
+    macro_cap=macro_obj.get("regime",{}).get("position_ceiling_pct")
+    if macro_obj.get("target_session")!=a.target_session or macro_cap is None:
+        raise ValueError("PROD_U_MACRO_TARGET_OR_CAP_INVALID")
+    cfg=configure(a.target_session,a.run_id,macro_cap)
     scope=json.loads(a.scope.read_text())
     scope=dict(scope)
     scope["run_id"]=a.run_id
