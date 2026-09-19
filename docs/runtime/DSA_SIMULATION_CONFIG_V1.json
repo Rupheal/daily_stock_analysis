@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "config_id": "DSA_DUAL_ACCOUNT_SIMULATION_CONFIG_v1",
+  "scope": "forward_simulation",
+  "currency": "CNY",
+  "accounts": {
+    "U": "300000",
+    "O": "300000"
+  },
+  "u_denominator": 45,
+  "o_upstream_commit": "089d9d26d68f8b839ea5a74a3784e4402925f8b7",
+  "rules": {
+    "max_positions": 3,
+    "ticket_cny": "60000",
+    "ticket_cap": ".20",
+    "total_cap": ".60",
+    "industry_cap": ".40",
+    "stop": ".02",
+    "tp1": ".05",
+    "tp2": ".10",
+    "moderate_score_drop": ".10",
+    "severe_score_drop": ".20"
+  },
+  "execution_policy": {
+    "max_new_positions_per_brief": 1,
+    "no_averaging": true,
+    "first_eligible_price_required": true,
+    "daily_mode_uses_next_trading_session_open": true,
+    "minimum_entry_lots": 3,
+    "real_orders_authorized": false,
+    "backfill_historical_fills": false
+  }
+}
