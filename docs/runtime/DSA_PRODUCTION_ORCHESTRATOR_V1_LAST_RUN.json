@@ -316,6 +316,7 @@
     "target_session": "2026-09-18",
     "generated_at": "2026-09-21T09:00:00+08:00",
     "next_session": "2026-09-21",
+    "cycle": "preopen",
     "state": "BLOCKED",
     "tracks": {
       "O": {
@@ -497,6 +498,8 @@
     "broker_orders": 0,
     "real_orders": 0
   },
+  "idempotent_noop_command_ids": [],
+  "pending_command_count": 2,
   "state": "SIMULATION_LEDGER_UPDATED",
   "simulation_summary": {
     "scope": "forward_simulation",
