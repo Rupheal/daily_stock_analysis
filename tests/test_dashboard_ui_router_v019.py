@@ -53,6 +53,7 @@ def seed(dash,auth,with_v019=True,with_v018=True):
             'source_run_id':'TRI-RUN060',
             'evidence_session':'2026-09-18',
             'strategy_acceptance':'NONE_FORMAL_SIGNAL_GENERATED_FALSE',
+            'overlay_sha256':{'O_formal':None,'U_formal':None,'production_runtime':None},
         },
         'O':{'denominator':660,'data_ready':657,'data_isolated':3},
         'U':{'denominator':45,'data_ready':45,'data_isolated':0,'buy_eligible':44},
