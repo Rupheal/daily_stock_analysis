@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "policy_id": "DSA_SIMULATION_FEE_POLICY_v1",
+  "scope": "simulation_only",
+  "currency": "CNY",
+  "basis": "Conservative synthetic execution-cost policy for comparing O vs U forward simulation. Not a broker fee schedule and not suitable for real trading.",
+  "fee_rate_on_notional": "0.0020",
+  "minimum_fee_cny": "20",
+  "sizing_reference_ticket_cny": "60000",
+  "default_entry_fee_cny": "120",
+  "default_exit_fee_cny": "120",
+  "real_broker_fee_claim": false,
+  "real_orders": 0
+}
