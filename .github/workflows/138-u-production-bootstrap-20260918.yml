@@ -1,0 +1,128 @@
+name: DSA bootstrap U production formal receipt for 2026-09-18
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'scripts/u_production_close_refresh_v1.py'
+      - 'scripts/u_production_prereq_gate_v1.py'
+      - 'tests/test_u_production_close_refresh_v1.py'
+      - 'tests/test_u_production_prereq_gate_v1.py'
+      - '.github/workflows/138-u-production-bootstrap-20260918.yml'
+      - 'docs/runtime/U_PRODUCTION_BOOTSTRAP_TRIGGER.json'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: dsa-u-production-bootstrap-20260918
+  cancel-in-progress: true
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install pytest
+      - name: Deterministic U production tests
+        run: |
+          python -m pytest --noconftest -q             tests/test_u_production_close_refresh_v1.py             tests/test_u_production_prereq_gate_v1.py             tests/test_run056_u_formal_decision.py             tests/test_run056_u_formal_decision_v2.py             tests/test_run056_u_formal_decision_prod_v1.py
+
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 35335286449
+          github-token: ${{ github.token }}
+          name: RUN060_CURRENT_OFFICIAL_CLOSE_EVIDENCE
+          path: /tmp/run060
+
+      - name: Bind exact Run060 U universe/history by receipt hashes
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          r=json.load(open('docs/runtime/RUN060_RECOVERED_RESULT.json'))
+          targets={'universe':r['U_universe_sha256'],'history':r['U_market_history_sha256']}
+          found={}
+          for p in Path('/tmp/run060').rglob('*'):
+              if not p.is_file(): continue
+              h=hashlib.sha256(p.read_bytes()).hexdigest()
+              for k,v in targets.items():
+                  if h==v:
+                      if k in found: raise SystemExit('DUPLICATE_HASH_MATCH:'+k)
+                      found[k]=str(p)
+          assert set(found)==set(targets),found
+          Path('/tmp/u-bind.json').write_text(json.dumps(found))
+          print('U_RUN060_HASH_BIND_PASS',json.dumps(found))
+          PY
+
+      - name: Build 2026-09-18 U45 close receipt
+        run: |
+          b="$(cat /tmp/u-bind.json)"
+          universe="$(python -c "import json;print(json.loads('''$b''')['universe'])")"
+          history="$(python -c "import json;print(json.loads('''$b''')['history'])")"
+          python scripts/u_production_close_refresh_v1.py             --universe "$universe"             --cache "$history"             --target-session 2026-09-18             --out /tmp/U_PRODUCTION_CLOSE_20260918.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/U_PRODUCTION_CLOSE_20260918.json'))
+          assert r['current_valid_count']==45
+          assert r['status']=='PASS_CURRENT_SESSION_FACT_REFRESH'
+          PY
+
+      - name: Fail closed on stale macro/risk/zone and emit current-session U WAIT
+        run: |
+          python scripts/u_production_prereq_gate_v1.py             --target-session 2026-09-18             --close /tmp/U_PRODUCTION_CLOSE_20260918.json             --macro docs/runtime/RUN053_U_MACRO_POSITION_CAP.json             --risk docs/runtime/RUN054_U_RISK_EVIDENCE.json             --zone docs/runtime/RUN055_U_STRATEGY_ZONE_CONTRACT.json             --out /tmp/U_PRODUCTION_GATE_20260918.json             --fallback-out /tmp/U_PRODUCTION_FORMAL_LATEST.json
+          python - <<'PY'
+          import json
+          g=json.load(open('/tmp/U_PRODUCTION_GATE_20260918.json'))
+          u=json.load(open('/tmp/U_PRODUCTION_FORMAL_LATEST.json'))
+          assert g['state']=='WAIT_PREREQUISITES_BLOCKED'
+          assert set(g['blockers'])=={
+            'U_MACRO_CAP_NOT_CURRENT','U_RISK_EVIDENCE_NOT_CURRENT','U_ZONE_CONTRACT_NOT_CURRENT'
+          }
+          assert u['target_session']=='2026-09-18'
+          assert u['state']=='PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED'
+          assert u['qualified_BUY']==0 and u['provider_skipped'] is True
+          assert u['resource_accounting']['model_http_requests_confirmed']==0
+          assert u['resource_accounting']['real_orders']==0
+          print('U_PRODUCTION_WAIT_BOOTSTRAP_PASS',json.dumps(g['blockers']))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U_PRODUCTION_BOOTSTRAP_20260918
+          path: |
+            /tmp/U_PRODUCTION_CLOSE_20260918.json
+            /tmp/U_PRODUCTION_GATE_20260918.json
+            /tmp/U_PRODUCTION_FORMAL_LATEST.json
+          retention-days: 90
+
+      - name: Publish sanitized current U production receipts
+        run: |
+          cp /tmp/U_PRODUCTION_CLOSE_20260918.json docs/runtime/U_PRODUCTION_CLOSE_LATEST.json
+          cp /tmp/U_PRODUCTION_GATE_20260918.json docs/runtime/U_PRODUCTION_GATE_LATEST.json
+          cp /tmp/U_PRODUCTION_FORMAL_LATEST.json docs/runtime/U_PRODUCTION_FORMAL_LATEST.json
+          git add docs/runtime/U_PRODUCTION_CLOSE_LATEST.json                   docs/runtime/U_PRODUCTION_GATE_LATEST.json                   docs/runtime/U_PRODUCTION_FORMAL_LATEST.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m 'dsa: bootstrap current U production WAIT receipt for 2026-09-18'
+            git fetch origin fix/native-private-execution-20260914
+            git rebase origin/fix/native-private-execution-20260914
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
+
+      - name: Assert no execution side effects
+        run: |
+          echo MODEL_HTTP_REQUESTS=0
+          echo REAL_ORDERS=0
+          echo SIMULATION_WRITES=0
