@@ -135,3 +135,19 @@ def test_collector_v1_packet_can_create_entry(tmp_path):
     entry=[x for x in r['commands'] if x['kind']=='ENTRY'][0]
     assert entry['code']=='00700'
     assert entry['fee_cny']=='120'
+
+
+def test_real_hash_linked_journal_dedupes_exact_command():
+    cmd={'id':'signal-O-x','kind':'SIGNAL','account':'O','at':'2026-09-21T09:35:00+08:00',
+         'signal':{'id':'O-x'}}
+    wrapped={'parent':'p','command':cmd,'hash':'h'}
+    pending,noop=filter_commands_against_journal([cmd],{'commands':[wrapped]})
+    assert pending==[] and noop==['signal-O-x']
+
+def test_real_hash_linked_journal_content_drift_blocks():
+    import pytest
+    old={'id':'signal-O-x','kind':'SIGNAL','account':'O','at':'2026-09-21T09:35:00+08:00',
+         'signal':{'id':'O-x'}}
+    new=dict(old);new['at']='2026-09-21T09:36:00+08:00'
+    with pytest.raises(ValueError,match='COMMAND_ID_CONTENT_DRIFT'):
+        filter_commands_against_journal([new],{'commands':[{'parent':'p','command':old,'hash':'h'}]})
