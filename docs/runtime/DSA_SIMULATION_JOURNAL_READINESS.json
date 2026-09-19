@@ -1,0 +1,8 @@
+{
+  "state": "JOURNAL_INITIALIZED",
+  "command_count": 0,
+  "journal_hash": "cabab867f93bfa40647a9dbd005b485dc7545ddd11c3dd35bbbe019e8979a28e",
+  "config_hash": "785d238accde9e5815f340e37024e28d779309bf64e9c57c5284aa252ba1f69b",
+  "save_read_hash_restore": true,
+  "real_orders": 0
+}
