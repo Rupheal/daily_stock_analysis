@@ -1,22 +1,216 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "$id":"https://example.invalid/dsa/DSA_DASHBOARD_LIVE_V019.schema.json",
-  "title":"DSA Dashboard Live Feed v0.19",
-  "type":"object",
-  "additionalProperties":false,
-  "required":["meta","authority","system","O","U","data_health","observer","storage","budget","simulation","shadow_week","debug"],
-  "properties":{
-    "meta":{"type":"object","required":["schema_version","generated_at","source_commit","branch","latest_validated_run","evidence_timestamp"],"properties":{"schema_version":{"const":"0.19"},"generated_at":{"type":"string"},"source_commit":{"type":"string"},"branch":{"type":"string"},"latest_validated_run":{"type":["string","integer","null"]},"evidence_timestamp":{"type":"string"}},"additionalProperties":true},
-    "authority":{"type":"object","required":["canonical_feed_path","source_receipt","source_receipt_sha256","source_run_id","source_workflow_run","source_artifact_digest","evidence_session","evidence_class","strategy_acceptance"],"additionalProperties":true},
-    "system":{"type":"object","required":["overall_state","current_stage","next_action","last_successful_gate","blocking_gate","error_code"],"additionalProperties":true},
-    "O":{"type":"object","required":["denominator","data_ready","data_isolated","attempted","accepted","top3","signal","qualified_buy","latest_session","model_http_requests"],"additionalProperties":true},
-    "U":{"type":"object","required":["denominator","data_ready","data_isolated","buy_eligible","attempted","accepted","top3","signal","qualified_buy"],"properties":{"denominator":{"const":45}},"additionalProperties":true},
-    "data_health":{"type":"object","required":["fresh_preflight","provider","session","OHLC","volume","news","issuer","manifest"],"additionalProperties":true},
-    "observer":{"type":"object","required":["pass_fail","block_count","latest_error_code"],"additionalProperties":true},
-    "storage":{"type":"object","required":["save","independent_read","sha_match","revision_check","restore_verified","source_artifact_digest_verified"],"additionalProperties":true},
-    "budget":{"type":"object","required":["affordability","request_limit","actual_request_count","tokens","cost"],"additionalProperties":true},
-    "simulation":{"type":"object","required":["eligibility","account_A","account_B","cash","positions","pnl","pending_signal"],"additionalProperties":true},
-    "shadow_week":{"type":"object","required":["date","data_pass_rate","observer_block_rate","model_success_rate","cost_per_accepted_analysis","O_coverage","U_coverage","top3_turnover","signal_persistence","BUY_WAIT","simulation_eligibility"],"additionalProperties":true},
-    "debug":{"type":"object","required":["provider_error","preflight_error","observer_error","drive_error","model_error","recovery_state","recovery_condition","O_invalid"],"additionalProperties":true}
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/dsa/DSA_DASHBOARD_LIVE_V019.schema.json",
+  "title": "DSA Dashboard Live Feed v0.19",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "authority",
+    "system",
+    "O",
+    "U",
+    "data_health",
+    "observer",
+    "storage",
+    "budget",
+    "simulation",
+    "shadow_week",
+    "debug"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "generated_at",
+        "source_commit",
+        "branch",
+        "latest_validated_run",
+        "evidence_timestamp"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "0.19"
+        },
+        "generated_at": {
+          "type": "string"
+        },
+        "source_commit": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "latest_validated_run": {
+          "type": [
+            "string",
+            "integer",
+            "null"
+          ]
+        },
+        "evidence_timestamp": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "canonical_feed_path",
+        "source_receipt",
+        "source_receipt_sha256",
+        "source_run_id",
+        "source_workflow_run",
+        "source_artifact_digest",
+        "evidence_session",
+        "evidence_class",
+        "strategy_acceptance"
+      ],
+      "additionalProperties": true
+    },
+    "system": {
+      "type": "object",
+      "required": [
+        "overall_state",
+        "current_stage",
+        "next_action",
+        "last_successful_gate",
+        "blocking_gate",
+        "error_code"
+      ],
+      "additionalProperties": true
+    },
+    "O": {
+      "type": "object",
+      "required": [
+        "denominator",
+        "data_ready",
+        "data_isolated",
+        "attempted",
+        "accepted",
+        "top3",
+        "signal",
+        "qualified_buy",
+        "latest_session",
+        "model_http_requests"
+      ],
+      "additionalProperties": true
+    },
+    "U": {
+      "type": "object",
+      "required": [
+        "denominator",
+        "data_ready",
+        "data_isolated",
+        "buy_eligible",
+        "attempted",
+        "accepted",
+        "top3",
+        "signal",
+        "qualified_buy"
+      ],
+      "properties": {
+        "denominator": {
+          "const": 45
+        }
+      },
+      "additionalProperties": true
+    },
+    "data_health": {
+      "type": "object",
+      "required": [
+        "fresh_preflight",
+        "provider",
+        "session",
+        "OHLC",
+        "volume",
+        "news",
+        "issuer",
+        "manifest"
+      ],
+      "additionalProperties": true
+    },
+    "observer": {
+      "type": "object",
+      "required": [
+        "pass_fail",
+        "block_count",
+        "latest_error_code"
+      ],
+      "additionalProperties": true
+    },
+    "storage": {
+      "type": "object",
+      "required": [
+        "save",
+        "independent_read",
+        "sha_match",
+        "revision_check",
+        "restore_verified",
+        "source_artifact_digest_verified"
+      ],
+      "additionalProperties": true
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "affordability",
+        "request_limit",
+        "actual_request_count",
+        "tokens",
+        "cost"
+      ],
+      "additionalProperties": true
+    },
+    "simulation": {
+      "type": "object",
+      "required": [
+        "eligibility",
+        "account_A",
+        "account_B",
+        "cash",
+        "positions",
+        "pnl",
+        "pending_signal"
+      ],
+      "additionalProperties": true
+    },
+    "shadow_week": {
+      "type": "object",
+      "required": [
+        "date",
+        "data_pass_rate",
+        "observer_block_rate",
+        "model_success_rate",
+        "cost_per_accepted_analysis",
+        "O_coverage",
+        "U_coverage",
+        "top3_turnover",
+        "signal_persistence",
+        "BUY_WAIT",
+        "simulation_eligibility"
+      ],
+      "additionalProperties": true
+    },
+    "debug": {
+      "type": "object",
+      "required": [
+        "provider_error",
+        "preflight_error",
+        "observer_error",
+        "drive_error",
+        "model_error",
+        "recovery_state",
+        "recovery_condition",
+        "O_invalid"
+      ],
+      "additionalProperties": true
+    },
+    "production": {
+      "type": "object",
+      "additionalProperties": true
+    }
   }
 }
