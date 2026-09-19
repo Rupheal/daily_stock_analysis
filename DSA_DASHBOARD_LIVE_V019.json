@@ -1,11 +1,11 @@
 {
   "meta": {
     "schema_version": "0.19",
-    "generated_at": "2026-09-18T13:53:16.435328Z",
-    "source_commit": "17bbc63fb96eb475c2bc4f6b43ef12529f51d709",
+    "generated_at": "2026-09-19T08:11:19.431549Z",
+    "source_commit": "1e51b8fe93abb29070c532c15a51b8374941355d",
     "branch": "research/dsa-dashboard-v019-20260918",
     "latest_validated_run": "TRI-DSA-RESUME-20260918-060-RECOVERED",
-    "evidence_timestamp": "2026-09-18T13:53:16.435328Z"
+    "evidence_timestamp": "2026-09-19T08:11:19.431549Z"
   },
   "authority": {
     "canonical_feed_path": "DSA_DASHBOARD_LIVE_V019.json",
@@ -17,16 +17,31 @@
     "evidence_session": "2026-09-18",
     "evidence_class": "CURRENT_SESSION_CORE_DATA_REFRESH",
     "strategy_acceptance": "NONE_FORMAL_SIGNAL_GENERATED_FALSE",
+    "overlay_sha256": {
+      "O_formal": "b6fcdaf1a48f3e4858693b67bdb2a19af885381631ad629d94965923260fcdf3",
+      "U_formal": "d4840a27c60d37d67102763d04b8248699d4d976048b9679b0c39dd5c69df922",
+      "production_runtime": "7f91795ba33e9b4a3baf2bbd4a209136950a5fa9b7fb235b745ee85ef1beb2f1"
+    },
+    "O_formal": {
+      "source": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+      "source_run_id": "TRI-DSA-O-FINAL-20260918-076",
+      "status": "ACCEPTED_O_FORMAL_TOP3"
+    },
+    "U_formal": {
+      "source": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+      "source_run_id": "DSA-U-PROD-20260918-PREREQ-WAIT",
+      "state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED"
+    },
     "authority_branch": "fix/native-private-execution-20260914",
-    "authority_commit": "17bbc63fb96eb475c2bc4f6b43ef12529f51d709",
+    "authority_commit": "1e51b8fe93abb29070c532c15a51b8374941355d",
     "sync_mode": "EVENT_DRIVEN_SANITIZED_BRIDGE"
   },
   "system": {
     "overall_state": "WAIT",
-    "current_stage": "CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
-    "next_action": "Use Run060 artifact as immutable 2026-09-18 input for zero-model current-session sentinel preflight.",
-    "last_successful_gate": "CORE_DATA_REFRESH_PASS",
-    "blocking_gate": "CURRENT_SESSION_SENTINEL_PREFLIGHT_PENDING",
+    "current_stage": "PRODUCTION_SIMULATION_RUNTIME",
+    "next_action": "Wait for next production cycle; alert only on BUY, exception, or governance change.",
+    "last_successful_gate": "SIMULATION_LEDGER_UPDATED",
+    "blocking_gate": "U_PRODUCTION_PREREQUISITES_BLOCKED",
     "error_code": null
   },
   "O": {
@@ -34,8 +49,30 @@
     "data_ready": 657,
     "data_isolated": 3,
     "attempted": 0,
-    "accepted": 0,
-    "top3": [],
+    "accepted": 356,
+    "top3": [
+      {
+        "rank": 1,
+        "code": "00148",
+        "name": "建滔集团",
+        "score": 59,
+        "action": "HOLD"
+      },
+      {
+        "rank": 2,
+        "code": "00177",
+        "name": "江苏宁沪高速公路",
+        "score": 59,
+        "action": "HOLD"
+      },
+      {
+        "rank": 3,
+        "code": "00552",
+        "name": "中国通信服务",
+        "score": 59,
+        "action": "HOLD"
+      }
+    ],
     "signal": "WAIT",
     "qualified_buy": false,
     "latest_session": "2026-09-18",
@@ -44,7 +81,7 @@
     "output_tokens": 0,
     "total_tokens": 0,
     "estimated_or_actual_cost": 0.0,
-    "evidence_status": "CORE_DATA_REFRESH_PASS; FORMAL_SIGNAL_NOT_GENERATED"
+    "evidence_status": "FORMAL_ACCEPTED:ACCEPTED_O_FORMAL_TOP3"
   },
   "U": {
     "denominator": 45,
@@ -56,7 +93,7 @@
     "top3": [],
     "signal": "WAIT",
     "qualified_buy": false,
-    "evidence_status": "CORE_DATA_REFRESH_PASS; FORMAL_SIGNAL_NOT_GENERATED"
+    "evidence_status": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED; U_MACRO_CAP_NOT_CURRENT,U_RISK_EVIDENCE_NOT_CURRENT,U_ZONE_CONTRACT_NOT_CURRENT"
   },
   "data_health": {
     "fresh_preflight": "PENDING_ZERO_MODEL_SENTINEL_PREFLIGHT",
@@ -77,7 +114,7 @@
     "save": "SOURCE_ARTIFACT_RECOVERED",
     "independent_read": "SOURCE_ARTIFACT_DIGEST_RECORDED",
     "sha_match": "SOURCE_ARTIFACT_DIGEST_RECORDED",
-    "revision_check": "17bbc63fb96e",
+    "revision_check": "1e51b8fe93ab",
     "restore_verified": "NOT_EVALUATED_CURRENT_CYCLE",
     "source_artifact_digest_verified": "RECORDED_FROM_WORKFLOW_ARTIFACT"
   },
@@ -93,13 +130,13 @@
     "cost": 0.0
   },
   "simulation": {
-    "eligibility": "WAIT_NOT_ELIGIBLE_NO_FORMAL_SIGNAL",
-    "account_A": "NOT_VERIFIED",
-    "account_B": "NOT_VERIFIED",
-    "cash": "NOT_VERIFIED",
-    "positions": "NOT_VERIFIED",
-    "pnl": "NOT_VERIFIED",
-    "pending_signal": "WAIT"
+    "eligibility": "SIMULATION_LEDGER_UPDATED",
+    "account_A": "cash 300000 | positions 0 | buy 0 | sell 0 | wait 1",
+    "account_B": "cash 300000 | positions 0 | buy 0 | sell 0 | wait 1",
+    "cash": "O 300000 CNY | U 300000 CNY",
+    "positions": "O 0 | U 0",
+    "pnl": "O 0 | U 0",
+    "pending_signal": "O WAIT | U BLOCKED"
   },
   "shadow_week": {
     "date": "2026-09-18",
@@ -107,12 +144,12 @@
     "observer_block_rate": "NOT_RUN_AFTER_CURRENT_CORE_REFRESH",
     "model_success_rate": "NOT_APPLICABLE_NO_MODEL_CALL",
     "cost_per_accepted_analysis": "NOT_APPLICABLE",
-    "O_coverage": "data 657/660; formal 0/660",
+    "O_coverage": "data 657/660; formal 356/660",
     "U_coverage": "data 45/45; buy-eligible 44/45; formal 0/45",
     "top3_turnover": "NOT_VERIFIED",
     "signal_persistence": "WAIT",
     "BUY_WAIT": "WAIT",
-    "simulation_eligibility": "WAIT_NOT_ELIGIBLE_NO_FORMAL_SIGNAL"
+    "simulation_eligibility": "SIMULATION_LEDGER_UPDATED"
   },
   "debug": {
     "provider_error": null,
@@ -142,5 +179,17 @@
         "bars": 44
       }
     ]
+  },
+  "production": {
+    "status": "SIMULATION_LEDGER_UPDATED",
+    "simulation_write_performed": true,
+    "target_session": "2026-09-18",
+    "next_session": "2026-09-21",
+    "O_state": "WAIT",
+    "U_state": "BLOCKED",
+    "qualified_buy_total": 0,
+    "entry_state": "NO_ENTRY_WAIT",
+    "journal_hash": "8b144e0496fa9aa831583b9050da1efdcb0eb3318e9b114f22119e72da0537d1",
+    "real_orders": 0
   }
 }
