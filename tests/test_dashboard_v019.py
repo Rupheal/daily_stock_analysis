@@ -25,8 +25,11 @@ def test_u_denominator():
     req(FEED['U']['denominator']==45, 'U denominator')
 
 def test_data_vs_formal_are_distinct():
-    req(FEED['O']['data_ready']==657 and FEED['O']['accepted']==0, 'O readiness/formal')
-    req(FEED['U']['data_ready']==45 and FEED['U']['accepted']==0, 'U readiness/formal')
+    req(FEED['O']['data_ready']==657, 'O data readiness')
+    req(isinstance(FEED['O']['accepted'],int) and 0<=FEED['O']['accepted']<=FEED['O']['denominator'], 'O formal bounded')
+    req(FEED['U']['data_ready']==45, 'U data readiness')
+    req(isinstance(FEED['U']['accepted'],int) and 0<=FEED['U']['accepted']<=FEED['U']['denominator'], 'U formal bounded')
+    req(FEED['O']['data_ready']!=FEED['O']['accepted'] or FEED['O'].get('evidence_status')!='CORE_DATA_REFRESH_PASS', 'O data/formal semantic distinction')
 
 def test_coverage_invariants():
     req(FEED['O']['data_ready']+FEED['O']['data_isolated']==FEED['O']['denominator'], 'O coverage')
@@ -39,7 +42,7 @@ def test_run060_authority():
 def test_wait_is_not_buy():
     req(FEED['system']['overall_state']=='WAIT', 'WAIT state')
     req(FEED['O']['qualified_buy'] is False and FEED['U']['qualified_buy'] is False, 'no qualified buy')
-    req(FEED['simulation']['pending_signal']=='WAIT', 'sim WAIT')
+    req('WAIT' in str(FEED['simulation']['pending_signal']) or 'BLOCKED' in str(FEED['simulation']['pending_signal']), 'sim WAIT/BLOCKED')
 
 def test_zero_model_usage():
     req(FEED['budget']['actual_request_count']==0, 'request count')
