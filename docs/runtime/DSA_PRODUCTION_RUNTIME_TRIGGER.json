@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "trigger_id": "DSA-PROD-RUNTIME-MONDAY-PREOPEN-ACCEPT-001",
+  "at_hkt": "2026-09-21T09:00:00+08:00",
+  "target_mode": "preopen",
+  "purpose": "End-to-end simulation-only runtime acceptance using exact-session O/U receipts and authoritative Drive journal.",
+  "expected_target_session": "2026-09-18",
+  "real_orders": 0,
+  "broker_api_calls": 0
+}
