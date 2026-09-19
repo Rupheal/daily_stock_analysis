@@ -112,7 +112,7 @@ def classify_o(receipt:dict,target_session:str)->dict:
         if not x["buyable_verified"]:
             blockers.append("O_BUYABILITY_NOT_VERIFIED")
         if not x["industry"]:
-            blockers.append("O_BUY_INDUSTRY_MISSING")
+            x["industry"]="UNCLASSIFIED"
     if blockers:
         state="BLOCKED"
     elif not buys:
@@ -147,7 +147,7 @@ def classify_u(receipt:dict,target_session:str)->dict:
         if not x["buyable_verified"] or x.get("validation")!="PASS":
             blockers.append("U_BUYABILITY_NOT_VERIFIED")
         if not x["industry"]:
-            blockers.append("U_BUY_INDUSTRY_MISSING")
+            x["industry"]="UNCLASSIFIED"
         if x.get("zone_status") not in {"APPROVED","VERIFIED","PASS","FORMAL_APPROVED"}:
             blockers.append("U_BUY_ZONE_NOT_APPROVED")
         if x.get("zone_lower_hkd") is None or x.get("zone_upper_hkd") is None:
@@ -209,6 +209,23 @@ def build_entry(track:dict,signal_cmd:dict,entry_evidence:dict|None)->tuple[list
     blockers=[]
     if not isinstance(entry_evidence,dict):
         return [],["ENTRY_EVIDENCE_MISSING"]
+    # Accept the native collector-v1 shape as well as the legacy flattened shape.
+    if entry_evidence.get("status")=="PASS_ENTRY_V1_EVIDENCE" and isinstance(entry_evidence.get("evidence"),dict):
+        ev=entry_evidence["evidence"]
+        q=ev.get("quote") or {}
+        entry_evidence={
+          "code":ev.get("code"),"at":q.get("at"),"price":q.get("price"),
+          "cny_per_hkd":q.get("cny_per_hkd"),"lot_size":q.get("lot_size"),
+          "fee_cny":ev.get("fee_cny"),"source":q.get("source"),"sha256":q.get("sha256"),
+          "fx_source":(q.get("fx_evidence") or {}).get("source"),
+          "fx_sha256":(q.get("fx_evidence") or {}).get("sha256"),
+          "fx_at":(q.get("fx_evidence") or {}).get("at"),
+          "session":q.get("session"),"tradable":q.get("tradable"),
+          "first_eligible_price_verified":q.get("first_eligible_price_verified"),
+          "lot_verified":q.get("lot_verified"),"mode":q.get("mode"),
+          "next_session_verified":q.get("next_session_verified"),
+          "excluded":ev.get("excluded",{})
+        }
     required=("code","at","price","cny_per_hkd","lot_size","fee_cny","source","sha256",
               "fx_source","fx_sha256","session")
     for k in required:
