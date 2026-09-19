@@ -258,9 +258,29 @@ def build_entry(track:dict,signal_cmd:dict,entry_evidence:dict|None)->tuple[list
     return [entry],[]
 
 
+def filter_commands_against_journal(commands:list[dict], journal:dict|None)->tuple[list[dict],list[str]]:
+    """Drop exact idempotent commands; reject same-id content drift."""
+    if not isinstance(journal,dict):
+        return commands,[]
+    existing={str(x.get("id")):x for x in (journal.get("commands") or [])}
+    pending=[];noop=[]
+    for cmd in commands:
+        cid=str(cmd.get("id") or "")
+        old=existing.get(cid)
+        if old is None:
+            pending.append(cmd);continue
+        if old!=cmd:
+            raise ValueError("COMMAND_ID_CONTENT_DRIFT:"+cid)
+        noop.append(cid)
+    return pending,noop
+
+
 def orchestrate(o:dict,u:dict,target_session:str,now_iso:str,next_session:str,
-                o_path:Path,u_path:Path,entry:dict|None=None,journal_configured:bool=False)->dict:
+                o_path:Path,u_path:Path,entry:dict|None=None,journal_configured:bool=False,
+                cycle:str="preopen")->dict:
     iso_at(now_iso); iso_at(now_iso)
+    if cycle not in {"preopen","postclose"}:
+        raise ValueError("PRODUCTION_CYCLE_INVALID")
     valid_until=(datetime.fromisoformat(now_iso)+timedelta(days=4)).isoformat()
     tracks={"O":classify_o(o,target_session),"U":classify_u(u,target_session)}
     commands=[]
@@ -269,7 +289,10 @@ def orchestrate(o:dict,u:dict,target_session:str,now_iso:str,next_session:str,
         signal=build_signal(tracks[key],path,now_iso,next_session,valid_until)
         commands.append(signal)
         ev=(entry or {}).get(key) if isinstance(entry,dict) else None
-        entries,blocks=build_entry(tracks[key],signal,ev)
+        if cycle=="postclose" and tracks[key]["state"]=="QUALIFIED_BUY":
+            entries,blocks=[],["ENTRY_DEFERRED_TO_PREOPEN"]
+        else:
+            entries,blocks=build_entry(tracks[key],signal,ev)
         if entries and not journal_configured:
             blocks.append("AUTHORITATIVE_SIMULATION_JOURNAL_UNCONFIGURED")
             entries=[]
@@ -288,7 +311,7 @@ def orchestrate(o:dict,u:dict,target_session:str,now_iso:str,next_session:str,
         state="WAIT_NO_BUY"
     return {
       "schema_version":1,"version":VERSION,"target_session":target_session,
-      "generated_at":now_iso,"next_session":next_session,"state":state,
+      "generated_at":now_iso,"next_session":next_session,"cycle":cycle,"state":state,
       "tracks":tracks,"qualified_buy_total":q,"entry_blockers":entry_blockers,
       "journal_configured":journal_configured,
       "commands":commands,
@@ -305,12 +328,13 @@ def main():
     ap.add_argument("--next-session",required=True)
     ap.add_argument("--entry-evidence",type=Path)
     ap.add_argument("--journal-configured",action="store_true")
+    ap.add_argument("--cycle",choices=["preopen","postclose"],default="preopen")
     ap.add_argument("--out",type=Path,required=True)
     a=ap.parse_args()
     entry=json.loads(a.entry_evidence.read_text()) if a.entry_evidence else None
     result=orchestrate(
       json.loads(a.o.read_text()),json.loads(a.u.read_text()),
-      a.target_session,a.now,a.next_session,a.o,a.u,entry,a.journal_configured
+      a.target_session,a.now,a.next_session,a.o,a.u,entry,a.journal_configured,a.cycle
     )
     a.out.parent.mkdir(parents=True,exist_ok=True)
     a.out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
