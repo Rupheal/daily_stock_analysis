@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-PROD-ORCH-V1-ACCEPT-20260919-001",
+  "purpose": "Engineering acceptance of session routing, qualified BUY gate, Entry-v1 fail-closed bridge, deterministic simulation ledger, and read-only private Drive journal probe.",
+  "simulation_only": true,
+  "real_orders": 0,
+  "broker_api_calls": 0,
+  "model_http_requests_added": 0,
+  "main_merge": false
+}
