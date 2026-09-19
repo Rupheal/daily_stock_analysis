@@ -6,6 +6,8 @@ on:
     paths:
       - 'docs/runtime/RUN*_RESULT.json'
       - 'docs/runtime/RUN*_RECOVERED_RESULT.json'
+      - 'docs/runtime/U_PRODUCTION_FORMAL_LATEST.json'
+      - 'docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json'
       - '.github/workflows/dsa-dashboard-v019-sync.yml'
 
 permissions:
