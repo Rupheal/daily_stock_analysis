@@ -79,8 +79,8 @@ jobs:
           print('EVALUATION_AT',at)
           PY
 
-      - name: Resolve target session and exact-session formal receipts
-        id: receipts
+      - name: Resolve target session
+        id: target
         run: |
           python - <<'PY'
           import os
@@ -95,8 +95,12 @@ jobs:
               f.write('next='+nxt+'\n')
           print('TARGET_SESSION',target,'NEXT_SESSION',nxt)
           PY
+
+      - name: Resolve exact-session formal receipts
+        id: receipts
+        run: |
           python scripts/dsa_formal_receipt_resolver_v1.py \
-            --root . --target-session "${{ steps.receipts.outputs.target }}" \
+            --root . --target-session "${{ steps.target.outputs.target }}" \
             --out /tmp/formal-resolver.json
           python - <<'PY'
           import json,os
@@ -105,7 +109,7 @@ jobs:
               f.write('resolver_state='+r['state']+'\n')
               f.write('o_path='+(r['O']['path'] or '')+'\n')
               f.write('u_path='+(r['U']['path'] or '')+'\n')
-          print('FORMAL_RESOLVER',r['state'])
+          print('FORMAL_RESOLVER',r['state'],r['O']['path'],r['U']['path'])
           PY
 
       - name: Resolve production session freshness
