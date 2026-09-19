@@ -1,0 +1,175 @@
+name: DSA Production Orchestrator v1 simulation runtime
+
+on:
+  workflow_dispatch:
+    inputs:
+      at_hkt:
+        description: 'Evaluation time in HKT ISO8601; leave blank to use runner current time'
+        required: false
+        type: string
+      target_mode:
+        description: 'Production cycle'
+        required: true
+        default: preopen
+        type: choice
+        options:
+          - preopen
+          - postclose
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-production-orchestrator-v1-runtime
+  cancel-in-progress: false
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+      TZ: Asia/Hong_Kong
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install production runtime dependencies
+        run: pip install httpx exchange-calendars
+
+      - name: Resolve evaluation time
+        id: clock
+        env:
+          INPUT_AT: ${{ inputs.at_hkt }}
+          MODE: ${{ inputs.target_mode }}
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          at=os.environ.get('INPUT_AT','').strip()
+          mode=os.environ['MODE']
+          if not at:
+              now=datetime.now(ZoneInfo('Asia/Hong_Kong'))
+              if mode=='preopen': now=now.replace(hour=9,minute=0,second=0,microsecond=0)
+              else: now=now.replace(hour=16,minute=30,second=0,microsecond=0)
+              at=now.isoformat()
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('at='+at+'\n')
+          print('EVALUATION_AT',at)
+          PY
+
+      - name: Resolve production session freshness
+        run: |
+          python scripts/dsa_production_session_driver_v1.py             --at "${{ steps.clock.outputs.at }}"             --o docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json             --u docs/runtime/RUN056_U_FORMAL_RESULT.json             --out /tmp/session-route.json
+
+      - name: Load authoritative private simulation journal
+        id: journal
+        continue-on-error: true
+        run: |
+          set +e
+          python scripts/dsa_simulation_journal_drive.py load --out /tmp/journal.json > /tmp/journal-load.txt
+          rc=$?
+          set -e
+          cat /tmp/journal-load.txt
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('/tmp/journal-load.txt').read_text().strip().splitlines()[-1])
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('status='+str(r.get('status'))+'\n')
+              f.write('parent_hash='+str(r.get('canonical_hash') or '')+'\n')
+          if r.get('status') not in {'JOURNAL_LOADED','JOURNAL_UNCONFIGURED'}:
+              raise SystemExit('PRIVATE_JOURNAL_LOAD_FAILED')
+          PY
+
+      - name: Build production orchestration result
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys
+          from pathlib import Path
+          route=json.load(open('/tmp/session-route.json'))
+          out={'schema_version':1,'route':route,'simulation_write_performed':False,'real_orders':0}
+          if route['state']!='READY_FOR_ORCHESTRATOR':
+              out['state']='WAIT_FORMAL_REFRESH'
+              out['reason']='CURRENT_O_U_FORMAL_RECEIPTS_NOT_BOTH_FRESH'
+          elif '${{ steps.journal.outputs.status }}'!='JOURNAL_LOADED':
+              out['state']='BLOCKED_PRIVATE_JOURNAL_UNCONFIGURED'
+          else:
+              cmd=[sys.executable,'scripts/dsa_production_orchestrator_v1.py',
+                   '--o','docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json',
+                   '--u','docs/runtime/RUN056_U_FORMAL_RESULT.json',
+                   '--target-session',route['target_session'],
+                   '--now',route['evaluation_time_hkt'],
+                   '--next-session',route['next_session'],
+                   '--journal-configured','--out','/tmp/orchestrator.json']
+              subprocess.check_call(cmd)
+              orch=json.load(open('/tmp/orchestrator.json'))
+              out['orchestrator']=orch
+              if any(x['kind']=='ENTRY' for x in orch['commands']):
+                  out['state']='BLOCKED_ENTRY_EVIDENCE_COLLECTOR_NOT_ATTACHED'
+                  out['reason']='ENTRY-v1 requires separately verified execution evidence'
+              else:
+                  Path('/tmp/commands.json').write_text(json.dumps(orch['commands'],ensure_ascii=False,indent=2)+'\n')
+                  subprocess.check_call([sys.executable,'scripts/dsa_simulation_runtime.py',
+                    '--journal','/tmp/journal.json','--commands','/tmp/commands.json','--summary','/tmp/sim-summary.json'])
+                  out['state']='SIMULATION_LEDGER_UPDATED'
+                  out['simulation_write_performed']=True
+                  out['simulation_summary']=json.load(open('/tmp/sim-summary.json'))
+          Path('/tmp/production-runtime-result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - name: Persist private journal snapshot only after successful simulation write
+        if: steps.journal.outputs.status == 'JOURNAL_LOADED'
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys,os
+          from pathlib import Path
+          r=json.load(open('/tmp/production-runtime-result.json'))
+          if not r.get('simulation_write_performed'):
+              print('NO_SIMULATION_WRITE_NO_JOURNAL_SAVE')
+              raise SystemExit(0)
+          subprocess.check_call([
+            sys.executable,'scripts/dsa_simulation_journal_drive.py','save',
+            '--journal','/tmp/journal.json',
+            '--run-id','DSA-PROD-ORCH-V1-'+os.environ['GITHUB_RUN_ID'],
+            '--expected-parent-hash','${{ steps.journal.outputs.parent_hash }}'
+          ])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DSA_PRODUCTION_ORCHESTRATOR_V1_RUNTIME_SANITIZED
+          path: |
+            /tmp/session-route.json
+            /tmp/production-runtime-result.json
+          retention-days: 90
+
+      - name: Publish sanitized runtime receipt
+        run: |
+          cp /tmp/production-runtime-result.json docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json
+          git add docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m 'dsa: record Production Orchestrator v1 runtime receipt'
+            git fetch origin fix/native-private-execution-20260914
+            git rebase origin/fix/native-private-execution-20260914
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
+
+      - name: Assert simulation-only boundary
+        run: |
+          echo "REAL_ORDERS=0"
+          echo "BROKER_API_CALLS=0"
+          echo "AUTO_RECHARGE=0"
