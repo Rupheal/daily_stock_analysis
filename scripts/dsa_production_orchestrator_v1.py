@@ -276,10 +276,30 @@ def build_entry(track:dict,signal_cmd:dict,entry_evidence:dict|None)->tuple[list
 
 
 def filter_commands_against_journal(commands:list[dict], journal:dict|None)->tuple[list[dict],list[str]]:
-    """Drop exact idempotent commands; reject same-id content drift."""
+    """Drop exact idempotent commands; reject same-id content drift.
+
+    Production journals persist commands inside hash-linked wrappers
+    {parent, command, hash}. Synthetic tests may still supply raw command rows;
+    accept both forms but never silently ignore malformed wrapped entries.
+    """
     if not isinstance(journal,dict):
         return commands,[]
-    existing={str(x.get("id")):x for x in (journal.get("commands") or [])}
+    existing={}
+    for item in (journal.get("commands") or []):
+        if not isinstance(item,dict):
+            raise ValueError("JOURNAL_COMMAND_ITEM_INVALID")
+        if "command" in item:
+            raw=item.get("command")
+            if not isinstance(raw,dict):
+                raise ValueError("JOURNAL_WRAPPED_COMMAND_INVALID")
+        else:
+            raw=item
+        cid=str(raw.get("id") or "")
+        if not cid:
+            raise ValueError("JOURNAL_COMMAND_ID_MISSING")
+        if cid in existing and existing[cid]!=raw:
+            raise ValueError("JOURNAL_DUPLICATE_COMMAND_ID_DRIFT:"+cid)
+        existing[cid]=raw
     pending=[];noop=[]
     for cmd in commands:
         cid=str(cmd.get("id") or "")
