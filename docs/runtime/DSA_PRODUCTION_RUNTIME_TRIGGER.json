@@ -6,5 +6,7 @@
   "purpose": "End-to-end simulation-only runtime acceptance using exact-session O/U receipts and authoritative Drive journal.",
   "expected_target_session": "2026-09-18",
   "real_orders": 0,
-  "broker_api_calls": 0
+  "broker_api_calls": 0,
+  "trigger_revision": 2,
+  "reason": "retrigger_after_actions_output_step_split"
 }
