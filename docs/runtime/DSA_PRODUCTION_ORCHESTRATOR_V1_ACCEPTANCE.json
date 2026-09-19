@@ -9,7 +9,7 @@
     "entry_v1_gate": "PASS_FAIL_CLOSED",
     "simulation_ledger": "PASS",
     "drive_journal_read": "PASS",
-    "drive_journal_configured": false,
+    "drive_journal_configured": true,
     "dashboard_sync_existing": "EVENT_DRIVEN_EXISTING"
   },
   "current_route": {
@@ -29,7 +29,6 @@
   },
   "current_orchestrator_state": "DEGRADED_STALE",
   "activation_blockers": [
-    "AUTHORITATIVE_SIMULATION_JOURNAL_UNCONFIGURED",
     "U_FORMAL_REFRESH_FOR_2026-09-18_REQUIRED"
   ],
   "production_schedule_active": false,
