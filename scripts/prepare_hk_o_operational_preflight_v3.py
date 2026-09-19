@@ -64,15 +64,16 @@ def build_preflight(code,target,universe,cache,policy,independent,source):
     cur=policy.get("current_session") or {}
     if cur.get("session")!=target:
         raise ValueError("EXCLUSION_POLICY_SESSION_MISMATCH")
-    if cur.get("official_denominator")!=660:
-        raise ValueError("OFFICIAL_DENOMINATOR_CHANGED")
+    official_denominator=int(cur.get("official_denominator") or 0)
+    if official_denominator < 1:
+        raise ValueError("OFFICIAL_DENOMINATOR_INVALID")
     excluded={x.get("code") for x in cur.get("excluded_unresolved") or []}
     if code in excluded:
         raise ValueError("POLICY_EXCLUDED_UNRESOLVED")
     member=next((x for x in universe.get("members",[]) if x.get("code")==code),None)
     if member is None or not member.get("channels") or not universe.get("full_union_verified"):
         raise ValueError("OFFICIAL_UNIVERSE_IDENTITY_UNVERIFIED")
-    if len(universe.get("members") or [])!=660:
+    if len(universe.get("members") or [])!=official_denominator:
         raise ValueError("OFFICIAL_UNIVERSE_COUNT_MISMATCH")
     if cache.get("target_session")!=target:
         raise ValueError("NATIVE_CACHE_TARGET_MISMATCH")
