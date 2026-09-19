@@ -68,9 +68,43 @@ jobs:
           print('EVALUATION_AT',at)
           PY
 
-      - name: Resolve production session freshness
+      - name: Resolve target session and exact-session formal receipts
+        id: receipts
         run: |
-          python scripts/dsa_production_session_driver_v1.py             --at "${{ steps.clock.outputs.at }}"             --o docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json             --u docs/runtime/RUN056_U_FORMAL_RESULT.json             --out /tmp/session-route.json
+          python - <<'PY'
+          import os
+          from datetime import datetime
+          from scripts.o_target_session_contract import resolve_target_session
+          from scripts.dsa_production_session_driver_v1 import next_session_after
+          at=datetime.fromisoformat("${{ steps.clock.outputs.at }}".replace("Z","+00:00"))
+          target=resolve_target_session(at).target_session.isoformat()
+          nxt=next_session_after(target)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('target='+target+'\n')
+              f.write('next='+nxt+'\n')
+          print('TARGET_SESSION',target,'NEXT_SESSION',nxt)
+          PY
+          python scripts/dsa_formal_receipt_resolver_v1.py \
+            --root . --target-session "${{ steps.receipts.outputs.target }}" \
+            --out /tmp/formal-resolver.json
+          python - <<'PY'
+          import json,os
+          r=json.load(open('/tmp/formal-resolver.json'))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('resolver_state='+r['state']+'\n')
+              f.write('o_path='+(r['O']['path'] or '')+'\n')
+              f.write('u_path='+(r['U']['path'] or '')+'\n')
+          print('FORMAL_RESOLVER',r['state'])
+          PY
+
+      - name: Resolve production session freshness
+        if: steps.receipts.outputs.resolver_state == 'READY'
+        run: |
+          python scripts/dsa_production_session_driver_v1.py \
+            --at "${{ steps.clock.outputs.at }}" \
+            --o "${{ steps.receipts.outputs.o_path }}" \
+            --u "${{ steps.receipts.outputs.u_path }}" \
+            --out /tmp/session-route.json
 
       - name: Load authoritative private simulation journal
         id: journal
@@ -97,8 +131,14 @@ jobs:
           python - <<'PY'
           import json,subprocess,sys
           from pathlib import Path
+          resolver=json.load(open('/tmp/formal-resolver.json'))
+          if resolver['state']!='READY':
+              out={'schema_version':1,'resolver':resolver,'simulation_write_performed':False,'real_orders':0,
+                   'state':'WAIT_FORMAL_RECEIPT_MISSING','reason':'NO_EXACT_SESSION_O_U_RECEIPT'}
+              Path('/tmp/production-runtime-result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+              print(json.dumps(out,ensure_ascii=False));raise SystemExit(0)
           route=json.load(open('/tmp/session-route.json'))
-          out={'schema_version':1,'route':route,'simulation_write_performed':False,'real_orders':0}
+          out={'schema_version':1,'route':route,'formal_resolver':resolver,'simulation_write_performed':False,'real_orders':0}
           if route['state']!='READY_FOR_ORCHESTRATOR':
               out['state']='WAIT_FORMAL_REFRESH'
               out['reason']='CURRENT_O_U_FORMAL_RECEIPTS_NOT_BOTH_FRESH'
@@ -106,8 +146,8 @@ jobs:
               out['state']='BLOCKED_PRIVATE_JOURNAL_UNCONFIGURED'
           else:
               cmd=[sys.executable,'scripts/dsa_production_orchestrator_v1.py',
-                   '--o','docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json',
-                   '--u','docs/runtime/RUN056_U_FORMAL_RESULT.json',
+                   '--o',resolver['O']['path'],
+                   '--u',resolver['U']['path'],
                    '--target-session',route['target_session'],
                    '--now',route['evaluation_time_hkt'],
                    '--next-session',route['next_session'],
