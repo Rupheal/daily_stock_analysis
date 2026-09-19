@@ -45,6 +45,7 @@ def feed_for(receipt_path, authority_root, r):
             'evidence_session': r['target_session'],
             'source_run_id': r['run_id'],
             'strategy_acceptance': 'NONE_FORMAL_SIGNAL_GENERATED_FALSE',
+            'overlay_sha256': {'O_formal':None,'U_formal':None,'production_runtime':None},
         },
         'O': {'denominator':660,'data_ready':r['O_current_valid'],'data_isolated':660-r['O_current_valid']},
         'U': {'denominator':45,'data_ready':r['U_current_valid'],'data_isolated':45-r['U_current_valid'],'buy_eligible':44},
