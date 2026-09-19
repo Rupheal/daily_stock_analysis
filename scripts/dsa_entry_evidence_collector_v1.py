@@ -83,7 +83,10 @@ def build(code:str, quote:dict|None, lot:dict|None, fx:dict|None, fee:dict|None,
           "mode":quote.get("mode","tick"),"lot_size":int(lot["lot_size"]),"lot_verified":True,
         }
         if q["mode"]=="daily_open":
+            q["session"]=quote.get("session")
             q["next_session_verified"]=quote.get("next_session_verified") is True
+            if not q["session"]:
+                blockers.append("NEXT_SESSION_MISSING");passed=False
             if not q["next_session_verified"]:
                 blockers.append("NEXT_SESSION_UNVERIFIED");passed=False
         if passed:
