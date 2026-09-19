@@ -147,7 +147,6 @@ def test_natural_parallel_rejects_wrong_input_hash(tmp_path):
             "o_receipt": "0" * 64,
             "u_receipt": _fingerprint(up)["sha256"],
             "foundation_journal": _fingerprint(jp)["sha256"],
-            "active_runtime_receipt": _fingerprint(ap)["sha256"],
         },
     }
     att = write(tmp_path, "attestation.json", attestation)
@@ -170,7 +169,6 @@ def test_hash_bound_natural_parallel_can_reach_central_audit_eligibility(tmp_pat
             "o_receipt": _fingerprint(op)["sha256"],
             "u_receipt": _fingerprint(up)["sha256"],
             "foundation_journal": _fingerprint(jp)["sha256"],
-            "active_runtime_receipt": _fingerprint(ap)["sha256"],
         },
     }
     att = write(tmp_path, "attestation.json", attestation)
@@ -182,6 +180,8 @@ def test_hash_bound_natural_parallel_can_reach_central_audit_eligibility(tmp_pat
 
     assert result["classification"] == "NATURAL_PARALLEL_COMPARISON"
     assert result["natural_parallel_attestation"]["status"] == "PASS"
+    assert "active_runtime_receipt" in result["outcome_evidence"]
+    assert "active_runtime_receipt" not in result["prewindow_inputs"]
     assert result["comparison"]["trade_action_equivalent"] is True
     assert result["comparison"]["migration_acceptance"] == "ELIGIBLE_FOR_CENTRAL_AUDIT"
 
