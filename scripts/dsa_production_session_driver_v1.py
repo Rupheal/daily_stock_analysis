@@ -31,8 +31,10 @@ def next_session_after(session:str)->str:
 def classify_window(at:datetime)->str:
     h=at.astimezone(HK)
     hm=h.hour*60+h.minute
-    if 8*60+45 <= hm <= 9*60+30:
+    if 8*60+45 <= hm <= 9*60+20:
         return "PREOPEN"
+    if 9*60+30 <= hm <= 10*60+15:
+        return "ENTRY"
     if 16*60+15 <= hm <= 17*60:
         return "POSTCLOSE"
     return "OFF_WINDOW"
@@ -43,8 +45,18 @@ def drive(at_iso:str,o:dict,u:dict)->dict:
     if at.tzinfo is None: raise ValueError("NAIVE_TIMESTAMP")
     hkt=at.astimezone(HK)
     window=classify_window(at)
-    target=resolve_target_session(at).target_session.isoformat()
-    nxt=next_session_after(target)
+    if window=="ENTRY":
+        # The executable BUY comes from the most recent completed formal session,
+        # never from the still-open current trading session.
+        try:
+            current=CAL.date_to_session(hkt.date().isoformat(),direction="none")
+            target=CAL.previous_session(current).date().isoformat()
+        except Exception:
+            target=CAL.date_to_session(hkt.date().isoformat(),direction="previous").date().isoformat()
+        nxt=CAL.date_to_session(hkt.date().isoformat(),direction="next").date().isoformat()
+    else:
+        target=resolve_target_session(at).target_session.isoformat()
+        nxt=next_session_after(target)
     o_session=o.get("target_session")
     u_session=u.get("target_session")
     o_fresh=(o_session==target and o.get("status")=="ACCEPTED_O_FORMAL_TOP3" and int(o.get("missing_count",-1))==0)
