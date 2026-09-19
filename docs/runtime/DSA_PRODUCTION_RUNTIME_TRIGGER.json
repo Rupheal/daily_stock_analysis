@@ -7,6 +7,6 @@
   "expected_target_session": "2026-09-18",
   "real_orders": 0,
   "broker_api_calls": 0,
-  "trigger_revision": 2,
-  "reason": "retrigger_after_actions_output_step_split"
+  "trigger_revision": 3,
+  "reason": "idempotency_replay_after_cycle_contract"
 }
