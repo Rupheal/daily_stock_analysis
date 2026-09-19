@@ -140,3 +140,16 @@ def test_checked_in_feed_declares_authority_pointer():
     assert feed['authority']['source_receipt'].startswith('docs/runtime/RUN')
     assert len(feed['authority']['source_receipt_sha256'])==64
     assert feed['authority']['evidence_session']
+
+
+def test_overlay_hash_mismatch(tmp_path):
+    dash=tmp_path/'dash';auth=tmp_path/'auth'
+    p=auth/'docs/runtime/RUN060_RESULT.json';r=receipt('TRI-RUN060','2026-09-18')
+    write_json(p,r)
+    f=feed_for(p,auth,r)
+    f['authority']['overlay_sha256']={'O_formal':'0'*64,'U_formal':None,'production_runtime':None}
+    write_json(auth/'docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json',{'target_session':'2026-09-18'})
+    write_json(dash/'DSA_DASHBOARD_LIVE_V019.json',f)
+    report,code=mod.detect(dash,auth,'DSA_DASHBOARD_LIVE_V019.json')
+    assert code==3
+    assert 'authority.overlay_sha256' in report['mismatches']
