@@ -65,6 +65,21 @@ def build_audit_package(
     if outcome_session != expected_session:
         raise ValueError("OUTCOME_SESSION_MISMATCH")
 
+    sealed_inputs = att.get("input_sha256") or {}
+    sealed_journal_sha = sealed_inputs.get("foundation_journal")
+    freeze_rows = [
+        row for row in (active.get("timeline") or [])
+        if isinstance(row, dict) and row.get("stage") == "FREEZE_PRECHECK"
+    ]
+    if len(freeze_rows) != 1:
+        raise ValueError("ACTIVE_FREEZE_PRECHECK_NOT_UNIQUE")
+    active_freeze_sha = freeze_rows[0].get("journal_raw_sha256")
+    if not sealed_journal_sha or active_freeze_sha != sealed_journal_sha:
+        raise ValueError("SEALED_JOURNAL_NOT_EQUAL_ACTIVE_FREEZE")
+
+    if not provenance.get("github_run_id") or not provenance.get("trigger_commit"):
+        raise ValueError("TRIGGER_PROVENANCE_INCOMPLETE")
+
     return {
         "schema_version": 1,
         "package_type": "DSA_NATURAL_PARALLEL_CENTRAL_AUDIT_PACKAGE",
@@ -92,6 +107,12 @@ def build_audit_package(
             "prewindow_input_sha256": att.get("input_sha256"),
         },
         "trigger_provenance": provenance,
+        "pit_crosscheck": {
+            "sealed_foundation_journal_sha256": sealed_journal_sha,
+            "active_gate_d_freeze_journal_sha256": active_freeze_sha,
+            "match": True,
+            "external_artifact_timestamp_verification_required": True,
+        },
         "central_audit_next": (
             "BLOCK_MIGRATION"
             if state == "BLOCKED_ACTION_DIVERGENCE"
