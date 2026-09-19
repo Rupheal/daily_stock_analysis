@@ -116,13 +116,15 @@ def _candidate_trade_outcome(candidate: dict) -> dict:
     }
 
 
-def _validate_natural_attestation(attestation: dict, target_session: str, fps: dict) -> dict:
+def _validate_natural_attestation(attestation: dict, target_session: str, next_session: str, fps: dict) -> dict:
     if not isinstance(attestation, dict):
         raise ValueError("NATURAL_PARALLEL_ATTESTATION_REQUIRED")
     if attestation.get("status") != "PASS_SAME_CUTOFF_INPUTS":
         raise ValueError("NATURAL_PARALLEL_ATTESTATION_NOT_PASS")
     if attestation.get("target_session") != target_session:
         raise ValueError("NATURAL_PARALLEL_SESSION_MISMATCH")
+    if attestation.get("next_session") != next_session:
+        raise ValueError("NATURAL_PARALLEL_NEXT_SESSION_MISMATCH")
     expected = attestation.get("input_sha256")
     if not isinstance(expected, dict):
         raise ValueError("NATURAL_PARALLEL_INPUT_HASHES_MISSING")
@@ -170,8 +172,10 @@ def compare_read_only(
         if availability_attestation_path is None:
             raise ValueError("NATURAL_PARALLEL_ATTESTATION_REQUIRED")
         attestation_result = _validate_natural_attestation(
-            _read_json(availability_attestation_path), target_session, prewindow_fps
+            _read_json(availability_attestation_path), target_session, next_session, prewindow_fps
         )
+        if active_receipt.get("session") != next_session:
+            raise ValueError("NATURAL_PARALLEL_OUTCOME_SESSION_MISMATCH")
 
     candidate = orchestrate(
         o_receipt,
