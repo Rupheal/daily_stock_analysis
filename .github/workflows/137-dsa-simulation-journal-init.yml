@@ -1,0 +1,124 @@
+name: DSA initialize or verify authoritative simulation journal
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/DSA_SIMULATION_CONFIG_V1.json'
+      - '.github/workflows/137-dsa-simulation-journal-init.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-production-orchestrator-v1-runtime
+  cancel-in-progress: false
+
+jobs:
+  init-or-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: pip install httpx
+
+      - name: Load existing authoritative journal if any
+        run: |
+          set +e
+          python scripts/dsa_simulation_journal_drive.py load --out /tmp/existing-journal.json > /tmp/load.txt
+          rc=$?
+          set -e
+          cat /tmp/load.txt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/load.txt').read_text().strip().splitlines()[-1])
+          if r.get('status') not in {'JOURNAL_LOADED','JOURNAL_UNCONFIGURED'}:
+              raise SystemExit('JOURNAL_LOAD_FAILED:'+json.dumps(r))
+          Path('/tmp/load-status.json').write_text(json.dumps(r,ensure_ascii=False,indent=2)+'\n')
+          PY
+
+      - name: Initialize only if truly unconfigured; otherwise verify config hash
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys
+          from pathlib import Path
+          from src.services.dsa_simulation_ledger import new_journal
+          from src.services.dsa_prediction_ledger import canonical_hash
+          status=json.load(open('/tmp/load-status.json'))
+          cfg=json.load(open('docs/runtime/DSA_SIMULATION_CONFIG_V1.json'))
+          if status['status']=='JOURNAL_LOADED':
+              j=json.load(open('/tmp/existing-journal.json'))
+              if j.get('config')!=cfg:
+                  raise SystemExit('EXISTING_JOURNAL_CONFIG_MISMATCH_NO_REINIT')
+              out={'state':'EXISTING_JOURNAL_VERIFIED','command_count':len(j.get('commands') or []),
+                   'journal_hash':canonical_hash(j),'config_hash':canonical_hash(cfg),'real_orders':0}
+          else:
+              j=new_journal(cfg)
+              Path('/tmp/new-journal.json').write_text(json.dumps(j,ensure_ascii=False,indent=2)+'\n')
+              cp=subprocess.run([sys.executable,'scripts/dsa_simulation_journal_drive.py','save',
+                 '--journal','/tmp/new-journal.json','--run-id','DSA-PROD-ORCH-V1-INIT-'+__import__('os').environ['GITHUB_RUN_ID'],
+                 '--allow-init'],check=True,capture_output=True,text=True)
+              print(cp.stdout)
+              saved=json.loads(cp.stdout.strip().splitlines()[-1])
+              assert saved['status']=='JOURNAL_SNAPSHOT_SAVED'
+              out={'state':'JOURNAL_INITIALIZED','command_count':0,
+                   'journal_hash':canonical_hash(j),'config_hash':canonical_hash(cfg),
+                   'save_read_hash_restore':saved['save_read_hash_restore'],'real_orders':0}
+          Path('/tmp/init-result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+
+      - name: Verify readback after initialization or verification
+        run: |
+          python scripts/dsa_simulation_journal_drive.py load --out /tmp/final-journal.json > /tmp/final-load.txt
+          cat /tmp/final-load.txt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from src.services.dsa_prediction_ledger import canonical_hash
+          r=json.loads(Path('/tmp/final-load.txt').read_text().strip().splitlines()[-1])
+          assert r['status']=='JOURNAL_LOADED'
+          j=json.load(open('/tmp/final-journal.json'))
+          cfg=json.load(open('docs/runtime/DSA_SIMULATION_CONFIG_V1.json'))
+          assert j['config']==cfg
+          assert canonical_hash(j)==r['canonical_hash']
+          print('JOURNAL_AUTHORITY_READY',r['command_count'],r['canonical_hash'])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DSA_SIMULATION_JOURNAL_INIT_SANITIZED
+          path: /tmp/init-result.json
+          retention-days: 90
+
+      - name: Publish sanitized journal readiness receipt
+        run: |
+          cp /tmp/init-result.json docs/runtime/DSA_SIMULATION_JOURNAL_READINESS.json
+          git add docs/runtime/DSA_SIMULATION_JOURNAL_READINESS.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m 'dsa: initialize authoritative U/O simulation journal'
+            git fetch origin fix/native-private-execution-20260914
+            git rebase origin/fix/native-private-execution-20260914
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
+
+      - name: Assert simulation-only boundary
+        run: |
+          echo "REAL_ORDERS=0"
+          echo "BROKER_API_CALLS=0"
+          echo "MODEL_HTTP_REQUESTS=0"
