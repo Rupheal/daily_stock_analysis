@@ -83,3 +83,21 @@ def test_entry_command_only_with_verified_evidence_and_journal(tmp_path):
     entries=[x for x in r['commands'] if x['kind']=='ENTRY']
     assert len(entries)==1 and entries[0]['account']=='U'
     assert r['real_orders']==0
+
+
+def test_postclose_defers_entry_and_journal_dedupe(tmp_path):
+    o=o_wait();u=u_wait()
+    r=orchestrate(o,u,'2026-09-18',AT,'2026-09-21',
+                  tmp_path/'o.json',tmp_path/'u.json',None,True,'postclose')
+    assert r['cycle']=='postclose'
+    # WAIT produces signals only.
+    assert all(x['kind']=='SIGNAL' for x in r['commands'])
+    pending,noop=filter_commands_against_journal(r['commands'],{'commands':r['commands']})
+    assert pending==[] and len(noop)==2
+
+def test_same_id_content_drift_fails_closed():
+    import pytest
+    cmd={'id':'x','kind':'SIGNAL','account':'O','at':'a','signal':{'id':'s'}}
+    old={'id':'x','kind':'SIGNAL','account':'O','at':'b','signal':{'id':'s'}}
+    with pytest.raises(ValueError,match='COMMAND_ID_CONTENT_DRIFT'):
+        filter_commands_against_journal([cmd],{'commands':[old]})
