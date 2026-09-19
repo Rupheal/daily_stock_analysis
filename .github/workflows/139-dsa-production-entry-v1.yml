@@ -106,6 +106,7 @@ jobs:
           PY
 
       - name: Resolve entry-window freshness
+        id: route
         if: steps.receipts.outputs.state == 'READY'
         run: |
           python scripts/dsa_production_session_driver_v1.py             --at "${{ steps.clock.outputs.at }}"             --o "${{ steps.receipts.outputs.o_path }}"             --u "${{ steps.receipts.outputs.u_path }}"             --out /tmp/session-route.json
@@ -113,6 +114,9 @@ jobs:
           import json,os
           from pathlib import Path
           r=json.load(open('/tmp/session-route.json'))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('window='+str(r['window'])+'\n')
+              f.write('state='+str(r['state'])+'\n')
           if r['window']!='ENTRY':
               Path('/tmp/off-window.json').write_text(json.dumps({
                 'state':'OFF_WINDOW_NO_ACTION','window':r['window'],
@@ -125,12 +129,12 @@ jobs:
           PY
 
       - name: Build initial BUY gate without execution evidence
-        if: steps.receipts.outputs.state == 'READY' && !cancelled()
+        if: steps.route.outputs.window == 'ENTRY' && (steps.receipts.outputs.state == 'READY' && !cancelled())
         run: |
           python scripts/dsa_production_orchestrator_v1.py             --o "${{ steps.receipts.outputs.o_path }}"             --u "${{ steps.receipts.outputs.u_path }}"             --target-session "${{ steps.clock.outputs.target }}"             --now "${{ steps.clock.outputs.at }}"             --next-session "${{ steps.clock.outputs.execution }}"             --cycle preopen --journal-configured             --out /tmp/orch-initial.json
 
       - name: Select first unheld qualified BUY for each track
-        if: steps.receipts.outputs.state == 'READY'
+        if: steps.route.outputs.window == 'ENTRY' && (steps.receipts.outputs.state == 'READY')
         id: select
         run: |
           python - <<'PY'
@@ -151,11 +155,11 @@ jobs:
           PY
 
       - name: Fetch HKEX board-lot source only when BUY exists
-        if: steps.select.outputs.count != '0'
+        if: steps.route.outputs.window == 'ENTRY' && (steps.select.outputs.count != '0')
         run: python scripts/dsa_production_hk_sources_v1.py --out /tmp/hk-sources
 
       - name: Collect automatic Entry-v1 evidence
-        if: steps.select.outputs.count != '0'
+        if: steps.route.outputs.window == 'ENTRY' && (steps.select.outputs.count != '0')
         run: |
           python - <<'PY'
           import json,subprocess,sys
@@ -176,6 +180,7 @@ jobs:
           PY
 
       - name: Build final orchestration commands
+        if: steps.route.outputs.window == 'ENTRY' || steps.receipts.outputs.state != 'READY'
         run: |
           python - <<'PY'
           import json,subprocess,sys
@@ -214,6 +219,7 @@ jobs:
           PY
 
       - name: Persist journal snapshot after write
+        if: steps.route.outputs.window == 'ENTRY'
         run: |
           python - <<'PY'
           import json,subprocess,sys,os
