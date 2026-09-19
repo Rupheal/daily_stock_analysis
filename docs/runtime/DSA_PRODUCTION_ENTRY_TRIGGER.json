@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "run_id": "DSA-PRODUCTION-ENTRY-V1-ENGINEERING",
+  "purpose": "Activation trigger for simulation-only Entry-v1 executor. Scheduled production use requires default-branch activation.",
+  "simulation_only": true,
+  "real_orders": 0,
+  "broker_api_calls": 0
+}
