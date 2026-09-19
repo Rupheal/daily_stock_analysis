@@ -33,3 +33,11 @@ def test_weekend_off_window_never_advances_session():
     assert r['target_session']=='2026-09-18'
     assert r['state']=='OFF_WINDOW_NO_ACTION'
     assert r['production_orchestrator_permitted'] is False
+
+
+def test_monday_entry_window_consumes_friday_formal_and_executes_monday_session():
+    r=drive('2026-09-21T09:35:00+08:00',o('2026-09-18'),u('2026-09-18'))
+    assert r['window']=='ENTRY'
+    assert r['target_session']=='2026-09-18'
+    assert r['next_session']=='2026-09-21'
+    assert r['state']=='READY_FOR_ORCHESTRATOR'
