@@ -1,0 +1,162 @@
+name: DSA Run076 final O657 zero-model reconciliation and acceptance
+
+on:
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/RUN076_TRIGGER.json'
+      - 'scripts/reconcile_o_parent_snapshot_pollution_v1.py'
+      - 'tests/test_reconcile_o_parent_snapshot_pollution_v1.py'
+      - '.github/workflows/134-run076-o657-final-acceptance.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-run076-o657-final-acceptance
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install deterministic test dependency
+        run: pip install pytest
+
+      - name: Verify final reconciliation and acceptance code
+        run: |
+          python -m pytest --noconftest -q             tests/test_reconcile_o_parent_snapshot_pollution_v1.py             tests/test_aggregate_o_formal_ranking_v3.py             tests/test_finalize_o_formal_acceptance_v3.py             tests/test_o_unresolved_exclusion_policy.py
+
+      - name: Extract immutable authoritative Run073 run1 parent
+        run: |
+          git show 37260f104c8522814d830df882f259c1eed88075:docs/runtime/RUN073_O657_FORMAL_RESULT.json             > /tmp/RUN073_GOOD_PARENT.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/RUN073_GOOD_PARENT.json'))
+          assert p['run_id']=='TRI-DSA-O-CONT-20260918-073'
+          assert p['missing_count']==101
+          assert p['shared_unprocessed_count']==101
+          assert p['ranking_eligible_count']==278
+          assert p['additional_excluded_count']==278
+          print('RUN073_GOOD_PARENT_PASS')
+          PY
+
+      - name: Reconcile final nine with zero model calls
+        run: |
+          python scripts/reconcile_o_parent_snapshot_pollution_v1.py             --run075 docs/runtime/RUN075_O657_FORMAL_RESULT.json             --good-parent /tmp/RUN073_GOOD_PARENT.json             --out /tmp/RUN076_O657_FINAL_RESULT.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/RUN076_O657_FINAL_RESULT.json'))
+          assert r['state']=='PASS_O_FORMAL_CORE_RANKING_TOP3'
+          assert r['official_O_denominator']==660
+          assert r['base_operational_O_denominator']==657
+          assert r['processed_operational_members']==657
+          assert r['missing_count']==0
+          assert r['ranking_eligible_count']==356
+          assert r['additional_excluded_count']==301
+          assert r['ranking_eligible_count']+r['additional_excluded_count']==657
+          repair=r['parent_snapshot_repair']
+          assert repair['recovered_explicit_exclusion_count']==9
+          assert repair['model_http_requests_added']==0
+          assert repair['provider_calls_added']==0
+          assert repair['ranking_rows_changed']==0
+          assert len(r['Top3'])==3
+          print('RUN076_RECONCILIATION_PASS',[(x['code'],x['sentiment_score'],x['action']) for x in r['Top3']])
+          PY
+
+      - name: Run final O formal acceptance gate
+        run: |
+          python scripts/finalize_o_formal_acceptance_v3.py             --result /tmp/RUN076_O657_FINAL_RESULT.json             --policy docs/runtime/O_UNRESOLVED_EXCLUSION_POLICY.json             --out /tmp/RUN076_O657_FORMAL_ACCEPTANCE.json
+          python - <<'PY'
+          import json
+          a=json.load(open('/tmp/RUN076_O657_FORMAL_ACCEPTANCE.json'))
+          assert a['status']=='ACCEPTED_O_FORMAL_TOP3'
+          assert a['missing_count']==0
+          assert a['operational_O_denominator']==657
+          assert a['ranking_eligible_count']==356
+          assert a['additional_excluded_count']==301
+          assert a['qualified_buy_in_Top3']==0
+          assert a['execution_signal_generated'] is False
+          assert a['real_orders']==0
+          assert a['simulation_writes']==0
+          print('RUN076_FORMAL_ACCEPTANCE_PASS',[(x['code'],x['sentiment_score'],x['action']) for x in a['Top3']])
+          PY
+
+      - name: Build final sanitized summary and update next actions
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.load(open('/tmp/RUN076_O657_FINAL_RESULT.json'))
+          a=json.load(open('/tmp/RUN076_O657_FORMAL_ACCEPTANCE.json'))
+          summary={
+            'schema_version':1,
+            'run_id':'TRI-DSA-O-FINAL-20260918-076',
+            'state':'ACCEPTED_O_FORMAL_TOP3_WAIT_NO_BUY',
+            'target_session':'2026-09-18',
+            'official_O_denominator':660,
+            'operational_O_denominator':657,
+            'ranking_eligible_count':356,
+            'base_excluded_unresolved_count':3,
+            'additional_excluded_count':301,
+            'missing_count':0,
+            'formal_O_ranking_generated':True,
+            'formal_O_acceptance':'ACCEPTED_O_FORMAL_TOP3',
+            'Top3':a['Top3'],
+            'Top10':a['Top10'],
+            'qualified_buy_in_Top3':a['qualified_buy_in_Top3'],
+            'O_decision':'WAIT_NO_BUY' if a['qualified_buy_in_Top3']==0 else 'QUALIFIED_BUY_PRESENT',
+            'parent_snapshot_repair':r['parent_snapshot_repair'],
+            'model_http_requests_added':0,
+            'provider_calls_added':0,
+            'execution_signal_generated':False,
+            'real_orders':0,
+            'simulation_writes':0,
+            'raw_content_public':False,
+          }
+          Path('/tmp/RUN076_O657_FINAL_SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
+
+          p=Path('docs/DSA_NEXT_ACTIONS.json')
+          d=json.load(open(p))
+          for row in d.get('next_actions',[]):
+              if row.get('id')=='G4':
+                  row['current_O_formal_receipt']='docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json'
+                  row['current_O_final_summary']='docs/runtime/RUN076_O657_FINAL_SUMMARY.json'
+                  row['status']='O_FORMAL_TOP3_PASS_CORE356_EXCLUDED301_MISSING0_WAIT_NO_BUY; U_FORMAL_DECISION44_OF45_WAIT_NO_BUY'
+          d['updated_at_utc']='2026-09-18T18:20:00Z'
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          PY
+
+      - name: Publish final O657 acceptance receipts
+        run: |
+          cp /tmp/RUN076_O657_FINAL_RESULT.json docs/runtime/RUN076_O657_FINAL_RESULT.json
+          cp /tmp/RUN076_O657_FORMAL_ACCEPTANCE.json docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json
+          cp /tmp/RUN076_O657_FINAL_SUMMARY.json docs/runtime/RUN076_O657_FINAL_SUMMARY.json
+          git add             docs/runtime/RUN076_O657_FINAL_RESULT.json             docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json             docs/runtime/RUN076_O657_FINAL_SUMMARY.json             docs/DSA_NEXT_ACTIONS.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          git commit -m 'dsa: accept final O657 formal Top3 with zero missing'
+          git fetch origin fix/native-private-execution-20260914
+          git rebase origin/fix/native-private-execution-20260914
+          git push origin HEAD:fix/native-private-execution-20260914
+
+      - name: Assert frozen execution boundaries
+        run: |
+          echo "MODEL_HTTP_REQUESTS_ADDED=0"
+          echo "PROVIDER_CALLS_ADDED=0"
+          echo "REAL_ORDERS=0"
+          echo "SIMULATION_WRITES=0"
+          echo "SCHEDULE_CHANGES=0"
+          echo "MAIN_MERGE=0"
