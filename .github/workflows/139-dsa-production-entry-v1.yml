@@ -1,0 +1,247 @@
+name: DSA Production Orchestrator v1 simulation entry executor
+
+on:
+  schedule:
+    - cron: '35 1 * * 1-5'   # 09:35 HKT, default branch activation required
+  workflow_dispatch:
+    inputs:
+      at_hkt:
+        description: 'Entry evaluation time HKT ISO8601; blank uses runner current time'
+        required: false
+        type: string
+  push:
+    branches: [fix/native-private-execution-20260914]
+    paths:
+      - 'docs/runtime/DSA_PRODUCTION_ENTRY_TRIGGER.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-production-orchestrator-v1-runtime
+  cancel-in-progress: false
+
+jobs:
+  entry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+      TZ: Asia/Hong_Kong
+      DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
+      DSA_DRIVE_CLIENT_ID: ${{ secrets.DSA_DRIVE_CLIENT_ID }}
+      DSA_DRIVE_CLIENT_SECRET: ${{ secrets.DSA_DRIVE_CLIENT_SECRET }}
+      DSA_DRIVE_REFRESH_TOKEN: ${{ secrets.DSA_DRIVE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install simulation-entry dependencies
+        run: pip install httpx exchange-calendars yfinance openpyxl requests
+
+      - name: Resolve entry clock and formal target session
+        id: clock
+        env:
+          INPUT_AT: ${{ inputs.at_hkt }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import os,json
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          from scripts.dsa_production_session_driver_v1 import CAL,HK
+          at=os.environ.get('INPUT_AT','').strip()
+          if not at and os.environ.get('EVENT_NAME')=='push':
+              p=Path('docs/runtime/DSA_PRODUCTION_ENTRY_TRIGGER.json')
+              if p.exists(): at=str(json.loads(p.read_text()).get('at_hkt') or '').strip()
+          if not at: at=datetime.now(HK).isoformat()
+          dt=datetime.fromisoformat(at.replace('Z','+00:00')).astimezone(HK)
+          try:
+              cur=CAL.date_to_session(dt.date().isoformat(),direction='none')
+              target=CAL.previous_session(cur).date().isoformat()
+              execution=cur.date().isoformat()
+          except Exception:
+              target=CAL.date_to_session(dt.date().isoformat(),direction='previous').date().isoformat()
+              execution=CAL.next_session(CAL.date_to_session(target,direction='none')).date().isoformat()
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('at='+dt.isoformat()+'\n')
+              f.write('target='+target+'\n')
+              f.write('execution='+execution+'\n')
+          print('ENTRY_CLOCK',dt.isoformat(),'FORMAL_TARGET',target,'EXECUTION_SESSION',execution)
+          PY
+
+      - name: Resolve exact formal O/U receipts
+        id: receipts
+        run: |
+          python scripts/dsa_formal_receipt_resolver_v1.py             --root . --target-session "${{ steps.clock.outputs.target }}"             --out /tmp/formal-resolver.json
+          python - <<'PY'
+          import json,os
+          r=json.load(open('/tmp/formal-resolver.json'))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('state='+r['state']+'\n')
+              f.write('o_path='+(r['O']['path'] or '')+'\n')
+              f.write('u_path='+(r['U']['path'] or '')+'\n')
+          print('FORMAL_RESOLVER',r['state'])
+          PY
+
+      - name: Load authoritative private simulation journal
+        id: journal
+        run: |
+          python scripts/dsa_simulation_journal_drive.py load --out /tmp/journal.json > /tmp/journal-load.txt
+          cat /tmp/journal-load.txt
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('/tmp/journal-load.txt').read_text().strip().splitlines()[-1])
+          assert r['status']=='JOURNAL_LOADED',r
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('parent_hash='+r['canonical_hash']+'\n')
+          PY
+
+      - name: Resolve entry-window freshness
+        if: steps.receipts.outputs.state == 'READY'
+        run: |
+          python scripts/dsa_production_session_driver_v1.py             --at "${{ steps.clock.outputs.at }}"             --o "${{ steps.receipts.outputs.o_path }}"             --u "${{ steps.receipts.outputs.u_path }}"             --out /tmp/session-route.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/session-route.json'))
+          assert r['window']=='ENTRY',r
+          assert r['next_session']=='${{ steps.clock.outputs.execution }}',r
+          PY
+
+      - name: Build initial BUY gate without execution evidence
+        if: steps.receipts.outputs.state == 'READY'
+        run: |
+          python scripts/dsa_production_orchestrator_v1.py             --o "${{ steps.receipts.outputs.o_path }}"             --u "${{ steps.receipts.outputs.u_path }}"             --target-session "${{ steps.clock.outputs.target }}"             --now "${{ steps.clock.outputs.at }}"             --next-session "${{ steps.clock.outputs.execution }}"             --cycle preopen --journal-configured             --out /tmp/orch-initial.json
+
+      - name: Select first unheld qualified BUY for each track
+        if: steps.receipts.outputs.state == 'READY'
+        id: select
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from src.services.dsa_simulation_ledger import replay
+          orch=json.load(open('/tmp/orch-initial.json'));journal=json.load(open('/tmp/journal.json'))
+          state=replay(journal);selected={}
+          for track in ('O','U'):
+              held=set(state[track]['positions'])
+              buys=sorted([x for x in orch['tracks'][track]['candidates'] if x.get('action')=='BUY'],
+                          key=lambda x:(x.get('rank',999),x.get('code','')))
+              row=next((x for x in buys if x['code'] not in held),None)
+              if row:selected[track]={'code':row['code'],'industry':row.get('industry') or 'UNCLASSIFIED'}
+          Path('/tmp/selected.json').write_text(json.dumps(selected,ensure_ascii=False,indent=2)+'\n')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('count='+str(len(selected))+'\n')
+          print('ENTRY_SELECTED',json.dumps(selected,ensure_ascii=False))
+          PY
+
+      - name: Fetch HKEX board-lot source only when BUY exists
+        if: steps.select.outputs.count != '0'
+        run: python scripts/dsa_production_hk_sources_v1.py --out /tmp/hk-sources
+
+      - name: Collect automatic Entry-v1 evidence
+        if: steps.select.outputs.count != '0'
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys
+          from pathlib import Path
+          selected=json.load(open('/tmp/selected.json'));packets={}
+          for track,row in selected.items():
+              out=Path('/tmp')/('entry-'+track+'.json')
+              cp=subprocess.run([
+                sys.executable,'scripts/dsa_entry_auto_evidence_v1.py',
+                '--code',row['code'],'--session','${{ steps.clock.outputs.execution }}',
+                '--hkex-xlsx','/tmp/hk-sources/hkex-securities.xlsx',
+                '--fee-policy','docs/runtime/DSA_SIMULATION_FEE_POLICY_V1.json',
+                '--industry',row['industry'],'--out',str(out)
+              ],text=True)
+              if out.exists(): packets[track]=json.load(open(out))
+          Path('/tmp/entry-evidence.json').write_text(json.dumps(packets,ensure_ascii=False,indent=2)+'\n')
+          print('ENTRY_PACKETS',json.dumps({k:v.get('status') for k,v in packets.items()}))
+          PY
+
+      - name: Build final orchestration commands
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys
+          from pathlib import Path
+          resolver=json.load(open('/tmp/formal-resolver.json'))
+          if resolver['state']!='READY':
+              out={'schema_version':1,'state':'WAIT_FORMAL_RECEIPT_MISSING',
+                   'simulation_write_performed':False,'real_orders':0,'formal_resolver':resolver}
+              Path('/tmp/production-entry-result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+              raise SystemExit(0)
+          cmd=[sys.executable,'scripts/dsa_production_orchestrator_v1.py',
+               '--o',resolver['O']['path'],'--u',resolver['U']['path'],
+               '--target-session','${{ steps.clock.outputs.target }}',
+               '--now','${{ steps.clock.outputs.at }}',
+               '--next-session','${{ steps.clock.outputs.execution }}',
+               '--cycle','preopen','--journal-configured','--out','/tmp/orchestrator-final.json']
+          if Path('/tmp/entry-evidence.json').exists():
+              cmd += ['--entry-evidence','/tmp/entry-evidence.json']
+          subprocess.check_call(cmd)
+          orch=json.load(open('/tmp/orchestrator-final.json'))
+          from scripts.dsa_production_orchestrator_v1 import filter_commands_against_journal
+          journal=json.load(open('/tmp/journal.json'))
+          pending,noop=filter_commands_against_journal(orch['commands'],journal)
+          out={'schema_version':1,'state':orch['state'],'orchestrator':orch,
+               'idempotent_noop_command_ids':noop,'pending_command_count':len(pending),
+               'simulation_write_performed':False,'real_orders':0}
+          if pending:
+              Path('/tmp/commands.json').write_text(json.dumps(pending,ensure_ascii=False,indent=2)+'\n')
+              subprocess.check_call([sys.executable,'scripts/dsa_simulation_runtime.py',
+                '--journal','/tmp/journal.json','--commands','/tmp/commands.json','--summary','/tmp/sim-summary.json'])
+              out['simulation_write_performed']=True
+              out['state']='SIMULATION_LEDGER_UPDATED'
+              out['simulation_summary']=json.load(open('/tmp/sim-summary.json'))
+          Path('/tmp/production-entry-result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps({'state':out['state'],'pending':len(pending),'real_orders':0}))
+          PY
+
+      - name: Persist journal snapshot after write
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys,os
+          r=json.load(open('/tmp/production-entry-result.json'))
+          if not r.get('simulation_write_performed'):
+              print('NO_WRITE');raise SystemExit(0)
+          subprocess.check_call([sys.executable,'scripts/dsa_simulation_journal_drive.py','save',
+            '--journal','/tmp/journal.json','--run-id','DSA-PROD-ENTRY-'+os.environ['GITHUB_RUN_ID'],
+            '--expected-parent-hash','${{ steps.journal.outputs.parent_hash }}'])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DSA_PRODUCTION_ENTRY_V1_SANITIZED
+          path: |
+            /tmp/production-entry-result.json
+            /tmp/orchestrator-final.json
+            /tmp/entry-evidence.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Publish sanitized entry runtime status
+        run: |
+          cp /tmp/production-entry-result.json docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json
+          git add docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_LAST_RUN.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m 'dsa: record automatic simulation Entry-v1 runtime'
+            git fetch origin fix/native-private-execution-20260914
+            git rebase origin/fix/native-private-execution-20260914
+            git push origin HEAD:fix/native-private-execution-20260914
+          fi
+
+      - name: Assert simulation-only boundary
+        run: |
+          echo REAL_ORDERS=0
+          echo BROKER_API_CALLS=0
+          echo AUTO_RECHARGE=0
