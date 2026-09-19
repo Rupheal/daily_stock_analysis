@@ -194,3 +194,19 @@ def test_broken_foundation_parent_chain_fails_closed(tmp_path):
 
     with pytest.raises(ValueError, match="FOUNDATION_JOURNAL_PARENT_CHAIN_INVALID"):
         compare_read_only(op, up, jp, ap, TARGET, NOW, NEXT)
+
+
+def test_active_outcome_uses_window_actions_not_cumulative_positions(tmp_path):
+    op, up, jp, ap = make_inputs(tmp_path)
+    active = active_no_trade()
+    active["O"]["positions"] = 1
+    active["O"]["buy_count"] = 3
+    active["timeline"] = [
+        {"stage": "WINDOW_POINT", "account": "O", "status": "NO_TRADE"},
+        {"stage": "EXPIRY", "account": "O", "status": "WINDOW_CLOSED"},
+    ]
+    ap.write_text(json.dumps(active), encoding="utf-8")
+    result = compare_read_only(op, up, jp, ap, TARGET, NOW, NEXT)
+    assert result["active"]["trade_action"] == "NO_TRADE"
+    assert result["active"]["ending_positions"] == 1
+    assert result["active"]["cumulative_buy_count"] == 3
