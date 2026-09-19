@@ -142,6 +142,7 @@ def test_natural_parallel_rejects_wrong_input_hash(tmp_path):
     attestation = {
         "status": "PASS_SAME_CUTOFF_INPUTS",
         "target_session": TARGET,
+        "next_session": NEXT,
         "cutoff_at": NOW,
         "input_sha256": {
             "o_receipt": "0" * 64,
@@ -161,9 +162,13 @@ def test_natural_parallel_rejects_wrong_input_hash(tmp_path):
 
 def test_hash_bound_natural_parallel_can_reach_central_audit_eligibility(tmp_path):
     op, up, jp, ap = make_inputs(tmp_path)
+    active = active_no_trade()
+    active["session"] = NEXT
+    ap.write_text(json.dumps(active), encoding="utf-8")
     attestation = {
         "status": "PASS_SAME_CUTOFF_INPUTS",
         "target_session": TARGET,
+        "next_session": NEXT,
         "cutoff_at": NOW,
         "input_sha256": {
             "o_receipt": _fingerprint(op)["sha256"],
@@ -210,3 +215,25 @@ def test_active_outcome_uses_window_actions_not_cumulative_positions(tmp_path):
     assert result["active"]["trade_action"] == "NO_TRADE"
     assert result["active"]["ending_positions"] == 1
     assert result["active"]["cumulative_buy_count"] == 3
+
+
+def test_natural_parallel_rejects_wrong_outcome_session(tmp_path):
+    op, up, jp, ap = make_inputs(tmp_path)
+    attestation = {
+        "status": "PASS_SAME_CUTOFF_INPUTS",
+        "target_session": TARGET,
+        "next_session": NEXT,
+        "cutoff_at": NOW,
+        "input_sha256": {
+            "o_receipt": _fingerprint(op)["sha256"],
+            "u_receipt": _fingerprint(up)["sha256"],
+            "foundation_journal": _fingerprint(jp)["sha256"],
+        },
+    }
+    att = write(tmp_path, "attestation.json", attestation)
+    with pytest.raises(ValueError, match="NATURAL_PARALLEL_OUTCOME_SESSION_MISMATCH"):
+        compare_read_only(
+            op, up, jp, ap, TARGET, NOW, NEXT,
+            comparison_kind="natural_parallel",
+            availability_attestation_path=att,
+        )
