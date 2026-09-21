@@ -1,11 +1,13 @@
 {
   "schema_version": 1,
   "target_session": "2026-09-21",
-  "state": "DRY_RUN_PREFLIGHT",
-  "official_denominator": 662,
-  "operational_denominator": 659,
-  "excluded_count": 3,
-  "daily_budget_ceiling_cny": "65.70",
-  "per_member_cap_cny": "0.10",
-  "real_orders": 0
+  "state": "R0_ONLY_REFRESH_COMPLETE",
+  "official_membership_denominator": 662,
+  "r0_scan_denominator": 662,
+  "current_valid_count": 659,
+  "identity_pending_count": 2,
+  "future_identity_master": null,
+  "paid_model_calls": 0,
+  "real_orders": 0,
+  "formal_full_universe_claim_permitted": false
 }
