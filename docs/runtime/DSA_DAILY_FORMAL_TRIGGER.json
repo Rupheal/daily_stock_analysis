@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "arm_token": "DSA_DAILY_FORMAL_v1",
+  "armed": true,
+  "target_session": "2026-09-21",
+  "nonce": "TRI-DSA-DAILY-20260921-DRY-001",
+  "O_enabled": true,
+  "U_enabled": true,
+  "dry_run": true,
+  "note": "Owner-authorized Daily Formal Production activation dry run. Public/data preflight only; no paid model calls, no real orders, no runtime pointer switch."
+}
