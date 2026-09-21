@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "acceptance_id": "DSA_DAILY_FORMAL_GENERATION_REPAIR_20260921",
+  "status": "ACCEPTED_ENGINEERING_PRODUCTION_ACTIVATION_PENDING",
+  "repository": "Rupheal/daily_stock_analysis",
+  "branch": "research/dsa-daily-formal-generation-repair-20260921",
+  "accepted_head": "ac6f009b9fb577cdc0f9bbc9d7ed2cb03bd27909",
+  "findings_fixed": [
+    "Fallback WAIT is no longer semantically equivalent to a generated current-session ranking/decision.",
+    "O and U generation/entry permissions are independent; one missing track cannot suppress the other.",
+    "U Production Orchestrator now accepts APPROVED_NUMERIC, matching the formal U engine's legal BUY zone_status.",
+    "Session-dynamic O policy/ledger/scope packet generation replaces 2026-09-18 hardcoding.",
+    "Session-dynamic U prerequisite packet names stale macro/risk/zone blockers instead of converting them to zero BUY."
+  ],
+  "regression_evidence": {
+    "ci_run_id": 35601992510,
+    "conclusion": "success",
+    "assertions": [
+      "fallback O/U => WAIT_DAILY_FORMAL_GENERATION",
+      "generated no-buy is distinct from missing generation",
+      "O valid BUY fixture => QUALIFIED_BUY => Entry-v1 packet",
+      "U valid BUY fixture with APPROVED_NUMERIC => QUALIFIED_BUY => Entry-v1 packet",
+      "O-only generation => PARTIAL_GENERATION with O independently permitted",
+      "dynamic O packet accepts non-2026-09-18 target session",
+      "stale U macro/risk/zone are explicit prerequisite blockers"
+    ]
+  },
+  "live_side_effects": {
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "simulation_writes": 0,
+    "runtime_pointer_switch": false,
+    "main_merge": false,
+    "auto_recharge": false
+  },
+  "production_activation_remaining": [
+    "Default-branch scheduler is not activated; GitHub cron on non-default candidate branches remains non-production.",
+    "O daily live rollout requires an explicit recurring provider budget/allowance route because the accepted O engine can make one model request per operational member.",
+    "U daily macro position-cap classification has no accepted deterministic quantitative rule; docs/dsa-macro-research-contract.json explicitly keeps quantitative_regime_thresholds=null and deployment=manual only.",
+    "U current-session news/capital refresh can be automated model-free, but a current macro/risk authority must exist before the formal provider is permitted.",
+    "Main/default-branch activation remains Owner Gate."
+  ],
+  "next_gate": "DAILY_FORMAL_PRODUCTION_ACTIVATION_DESIGN_AND_OWNER_GATE",
+  "note": "Do not loosen BUY semantics merely to increase trade frequency. First activate current-session generation, then calibrate signal frequency from generated observations."
+}
