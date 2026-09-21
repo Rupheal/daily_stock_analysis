@@ -7,5 +7,6 @@
   "O_enabled": true,
   "U_enabled": true,
   "dry_run": true,
-  "note": "Owner-authorized Daily Formal Production activation dry run. Public/data preflight only; no paid model calls, no real orders, no runtime pointer switch."
+  "note": "Owner clarification 2026-09-21: daily O production defaults to full-universe deterministic R0 refresh with zero paid model calls. Paid full-pool inference is calibration-only; no real orders or auto recharge.",
+  "O_mode": "R0_ONLY"
 }
