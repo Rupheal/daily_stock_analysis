@@ -25,7 +25,7 @@ def freeze(root,session,u_path,allowed_identity_sessions=None):
  if tuple(sz[0][:3])!=('证券代码','中文简称','英文简称'):raise ValueError('SZSE_HEADER_CHANGED')
  identity_session=parse_hkex_identity_session(hk[1][0])
  allowed=set(allowed_identity_sessions or [session])
- if identity_session not in allowed:raise ValueError('HKEX_IDENTITY_DATE_UNVERIFIED')
+ if identity_session not in allowed:raise ValueError('HKEX_IDENTITY_DATE_UNVERIFIED:'+identity_session+':ALLOWED='+','.join(sorted(allowed)))
  if tuple(hk[2][:5])!=('Stock Code','Name of Securities','Category','Sub-Category','Board Lot'):raise ValueError('HKEX_HEADER_CHANGED')
  securities={str(r[0]).zfill(5):r for r in hk[3:] if r[0] is not None}
  sbuy={r['SECURITY_CODE']:r for r in sse if r['TRADE_FLAG']=='1'}
