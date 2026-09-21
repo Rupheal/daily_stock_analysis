@@ -18,6 +18,10 @@ on:
       - '.github/workflows/136-dsa-production-orchestrator-v1-runtime.yml'
       - '.github/workflows/139-dsa-production-entry-v1.yml'
       - 'docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_TRIGGER.json'
+      - 'scripts/dsa_migration_prewindow_readiness_v1.py'
+      - 'tests/test_dsa_migration_prewindow_readiness_v1.py'
+      - 'docs/runtime/DSA_MIGRATION_PREWINDOW_SEAL_20260921.json'
+      - 'docs/runtime/DSA_NATURAL_PARALLEL_20260922_CONTRACT.json'
 
 permissions:
   contents: write
@@ -51,7 +55,22 @@ jobs:
 
       - name: Run orchestrator and journal regression suite
         run: |
-          python -m pytest --noconftest -q             tests/test_dsa_production_orchestrator_v1.py             tests/test_dsa_production_session_driver_v1.py             tests/test_dsa_simulation_journal_drive.py             tests/test_dsa_entry_evidence_collector_v1.py             tests/test_dsa_entry_auto_evidence_v1.py             tests/test_dsa_simulation_ledger.py             tests/test_o_target_session_contract.py
+          python -m pytest --noconftest -q             tests/test_dsa_production_orchestrator_v1.py             tests/test_dsa_production_session_driver_v1.py             tests/test_dsa_simulation_journal_drive.py             tests/test_dsa_entry_evidence_collector_v1.py             tests/test_dsa_entry_auto_evidence_v1.py             tests/test_dsa_simulation_ledger.py             tests/test_o_target_session_contract.py \
+            tests/test_dsa_migration_prewindow_readiness_v1.py
+
+      - name: Verify migration prewindow seal is ready but future evidence is blank
+        run: |
+          python scripts/dsa_migration_prewindow_readiness_v1.py --root . --out /tmp/migration-prewindow.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/migration-prewindow.json'))
+          assert r['state']=='PREWINDOW_READY_WAIT_NATURAL_PARALLEL',r
+          assert r['runtime_pointer_switch_performed'] is False
+          assert r['main_merge_performed'] is False
+          assert r['paid_full_pool_scan_performed'] is False
+          assert r['real_orders']==0
+          print('MIGRATION_PREWINDOW_PASS',r['future_observation_blockers'])
+          PY
 
       - name: Verify Monday preopen routing with current accepted receipts
         run: |
@@ -161,6 +180,7 @@ jobs:
             /tmp/session-route.json
             /tmp/orchestrator-current.json
             /tmp/journal-status.json
+            /tmp/migration-prewindow.json
           retention-days: 90
 
       - name: Commit sanitized acceptance receipt
