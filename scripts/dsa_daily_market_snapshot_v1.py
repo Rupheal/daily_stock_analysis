@@ -5,7 +5,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 import requests
 import exchange_calendars as xcals
-from freeze_hk_connect_universe import freeze
+from freeze_hk_connect_universe import freeze,freeze_r0_membership
 
 URLS={
  'sse-list.json':'https://query.sse.com.cn/commonQuery.do?sqlId=COMMON_SSE_JYFW_HGT_XXPL_BDZQQD_L&isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&keyword=',
@@ -19,7 +19,7 @@ def identity_sessions_for_daily_snapshot(session:str):
     prev=cal.previous_session(cur)
     return [cur.date().isoformat(),prev.date().isoformat()]
 
-def build(session:str,u_universe:Path,out:Path):
+def build(session:str,u_universe:Path,out:Path,prior_o_identity:Path|None=None):
     src=out/'sources';src.mkdir(parents=True,exist_ok=False);rows=[]
     for name,url in URLS.items():
         started=datetime.now(timezone.utc).isoformat()
@@ -38,15 +38,33 @@ def build(session:str,u_universe:Path,out:Path):
                 time.sleep(1+attempt)
     (src/'source-probe.json').write_text(json.dumps({'schema_version':1,'sources':rows},indent=2)+'\n')
     allowed_identity_sessions=identity_sessions_for_daily_snapshot(session)
-    o,u=freeze(src,session,u_universe,allowed_identity_sessions=allowed_identity_sessions)
-    (out/'O_UNIVERSE.json').write_text(json.dumps(o,ensure_ascii=False,indent=2)+'\n')
-    (out/'U_UNIVERSE.json').write_text(json.dumps(u,ensure_ascii=False,indent=2)+'\n')
-    return {'target_session':session,'O_denominator':o['member_count'],'U_denominator':45,'U_buy_eligible':sum(bool(x.get('channels')) for x in u['members']),
-            'identity_master_asof_session':o['identity_master']['asof_session'],
-            'identity_master_same_session':o['identity_master']['same_session'],
-            'identity_master_allowed_sessions':allowed_identity_sessions,
+    mode='FORMAL_IDENTITY_CURRENT_OR_PREVIOUS'
+    try:
+        o,u=freeze(src,session,u_universe,allowed_identity_sessions=allowed_identity_sessions)
+        (out/'O_UNIVERSE.json').write_text(json.dumps(o,ensure_ascii=False,indent=2)+'\n')
+        (out/'U_UNIVERSE.json').write_text(json.dumps(u,ensure_ascii=False,indent=2)+'\n')
+        o_r0=dict(o);o_r0['r0_membership_verified']=True
+        u_r0=dict(u);u_r0['r0_membership_verified']=True
+    except ValueError as exc:
+        if not str(exc).startswith('HKEX_IDENTITY_DATE_UNVERIFIED:') or prior_o_identity is None:
+            raise
+        actual=str(exc).split(':')[1]
+        if actual<=session:
+            raise
+        mode='R0_FUTURE_HKEX_IDENTITY_NOT_USED'
+        o_r0,u_r0=freeze_r0_membership(src,session,u_universe,prior_o_identity)
+        o,u=None,None
+    (out/'O_R0_UNIVERSE.json').write_text(json.dumps(o_r0,ensure_ascii=False,indent=2)+'\n')
+    (out/'U_R0_UNIVERSE.json').write_text(json.dumps(u_r0,ensure_ascii=False,indent=2)+'\n')
+    status={'schema_version':1,'target_session':session,'mode':mode,
+            'formal_universe_available':o is not None and u is not None,
+            'O_r0_denominator':o_r0['member_count'],'U_denominator':45,
+            'identity_pending_count':o_r0.get('identity_pending_count',0),
+            'future_identity_master':o_r0.get('future_identity_master'),
             'model_calls':0,'paid_data_calls':0,'real_orders':0}
+    (out/'SNAPSHOT_STATUS.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n')
+    return status
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--session',required=True);ap.add_argument('--u-universe',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
-    a.out.mkdir(parents=True,exist_ok=False);r=build(a.session,a.u_universe,a.out);print(json.dumps(r))
+    ap=argparse.ArgumentParser();ap.add_argument('--session',required=True);ap.add_argument('--u-universe',type=Path,required=True);ap.add_argument('--prior-o-identity',type=Path,default=Path('docs/runtime/run032_public_cache/O_UNIVERSE.json'));ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
+    a.out.mkdir(parents=True,exist_ok=False);r=build(a.session,a.u_universe,a.out,a.prior_o_identity);print(json.dumps(r))
 if __name__=='__main__':main()
