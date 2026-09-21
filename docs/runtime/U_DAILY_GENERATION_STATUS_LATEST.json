@@ -2,6 +2,8 @@
   "schema_version": 1,
   "target_session": "2026-09-21",
   "macro_ready": false,
+  "r0_refresh_complete": true,
+  "paid_model_calls": 0,
   "real_orders": 0,
-  "state": "WAIT_U_MACRO_AUTHORITY"
+  "state": "R0_REFRESH_COMPLETE_WAIT_U_MACRO_AUTHORITY"
 }
