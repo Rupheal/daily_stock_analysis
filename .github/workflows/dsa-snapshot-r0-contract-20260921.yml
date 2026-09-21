@@ -1,0 +1,54 @@
+name: DSA Snapshot R0 Integrity Repair
+on:
+  push:
+    branches: [fix/dsa-snapshot-r0-contract-20260921]
+    paths:
+      - scripts/u_daily_data_integrity_v1.py
+      - scripts/dsa_snapshot_r0_contract_v1.py
+      - scripts/u_production_daily_member_v1.py
+      - scripts/dsa_daily_u_production_v1.py
+      - scripts/dsa_daily_market_snapshot_v1.py
+      - scripts/verify_dsa_r0_recovery_v1.py
+      - tests/test_snapshot_r0_contract_repair_v1.py
+      - .github/workflows/dsa-snapshot-r0-contract-20260921.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: dsa-snapshot-r0-contract-20260921
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: ${{ github.workspace }}/scripts:${{ github.workspace }}
+      REAL_ORDERS_AUTHORIZED: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: python -m pip install pytest requests pandas openpyxl exchange-calendars yfinance
+      - name: Negative cases and existing strategy plumbing regression
+        run: >
+          python -m pytest --noconftest -q
+          tests/test_snapshot_r0_contract_repair_v1.py
+          tests/test_dsa_daily_formal_generation_repair_v1.py
+          tests/test_dsa_daily_formal_packet_v1.py
+          tests/test_u_production_daily_member_v1.py
+      - name: Verify sealed artifacts and rerun U public-data R0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/verify_dsa_r0_recovery_v1.py --out /tmp/snapshot-r0-proof
+      - name: Upload bounded R0 evidence, even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsa-snapshot-r0-proof-${{ github.run_id }}
+          path: /tmp/snapshot-r0-proof/
+          if-no-files-found: warn
+          retention-days: 30
