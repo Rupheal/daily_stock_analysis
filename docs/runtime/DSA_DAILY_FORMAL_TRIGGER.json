@@ -3,10 +3,10 @@
   "arm_token": "DSA_DAILY_FORMAL_v1",
   "armed": true,
   "target_session": "2026-09-21",
-  "nonce": "TRI-DSA-DAILY-20260921-R0-PITSAFE-004",
+  "nonce": "TRI-DSA-DAILY-20260921-R0-SEAL-005",
   "O_enabled": true,
   "U_enabled": true,
   "dry_run": true,
-  "note": "PIT-safe R0 dry-run. Exact 2026-09-21 SSE/SZSE membership is authoritative; current 2026-09-22 HKEX identity master is observed but never used for 2026-09-21. Prior frozen identity enriches R0 only. Zero paid O model calls; no Formal promotion; no real orders; no runtime switch.",
+  "note": "R0 dry-run using accepted same-session membership seal 2026-09-21. No live reconstruction of rolled external identity/master sources. Zero paid O model calls; Formal disabled; no real orders; no runtime switch.",
   "O_mode": "R0_ONLY"
 }
