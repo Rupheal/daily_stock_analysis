@@ -32,6 +32,7 @@ jobs:
     env:
       TZ: Asia/Hong_Kong
       PYTHONUNBUFFERED: '1'
+      REAL_ORDERS_AUTHORIZED: 'false'
       PYTHONPATH: ${{ github.workspace }}/research:${{ github.workspace }}/research/scripts
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DSA_DRIVE_FOLDER_ID: ${{ secrets.DSA_DRIVE_FOLDER_ID }}
