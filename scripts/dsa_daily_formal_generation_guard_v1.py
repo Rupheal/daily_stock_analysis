@@ -49,12 +49,15 @@ def assess_u(receipt:dict,target:str)->dict:
 
 def assess_pair(o:dict,u:dict,target:str)->dict:
     O=assess_o(o,target); U=assess_u(u,target)
-    complete=O["generation_complete"] and U["generation_complete"]
+    tracks=[t for t,x in (("O",O),("U",U)) if x["entry_evaluation_permitted"]]
+    complete=len(tracks)==2
+    state="READY_BOTH_TRACKS" if complete else "PARTIAL_GENERATION" if tracks else "WAIT_DAILY_FORMAL_GENERATION"
     return {
       "schema_version":1,"target_session":target,"O":O,"U":U,
-      "state":"READY_FOR_ENTRY_EVALUATION" if complete else "WAIT_DAILY_FORMAL_GENERATION",
+      "state":state,
       "generation_complete":complete,
-      "entry_evaluation_permitted":complete,
+      "entry_permitted_tracks":tracks,
+      "entry_evaluation_permitted_by_track":{"O":O["entry_evaluation_permitted"],"U":U["entry_evaluation_permitted"]},
       "real_orders":0,
     }
 

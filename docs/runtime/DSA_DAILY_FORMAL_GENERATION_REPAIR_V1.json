@@ -30,7 +30,13 @@
   },
   "entry_gate": {
     "require_both_tracks_generated": false,
-    "note": "O/U remain independent. Each track may be evaluated independently once its own generation_complete=true; pair-level dashboard may still show partial."
+    "note": "O/U remain independent. Each track may be evaluated independently once its own generation_complete=true; pair-level dashboard may still show partial.",
+    "independent_tracks": true,
+    "states": [
+      "READY_BOTH_TRACKS",
+      "PARTIAL_GENERATION",
+      "WAIT_DAILY_FORMAL_GENERATION"
+    ]
   },
   "safety": {
     "real_orders": 0,

@@ -48,14 +48,14 @@ def test_fallback_wait_is_not_generation_complete():
     assert r["state"]=="WAIT_DAILY_FORMAL_GENERATION"
     assert r["O"]["state"]=="MISSING_GENERATION"
     assert r["U"]["state"]=="MISSING_GENERATION"
-    assert r["entry_evaluation_permitted"] is False
+    assert r["entry_permitted_tracks"]==[]
 
 def test_generated_no_buy_is_distinct_from_missing_generation():
     o=o_buy(); o["qualified_buy_in_Top3"]=0; o["Top3"][0]["action"]="hold"; o["Top3"][0]["action_family"]="hold"
     u=u_buy(); u["qualified_BUY"]=0; u["Top3"]=[]; u["rows"][0]["formal_action"]="WATCH"; u["rows"][0]["buyable_verified"]=False
     r=g.assess_pair(o,u,TARGET)
     assert r["generation_complete"] is True
-    assert r["state"]=="READY_FOR_ENTRY_EVALUATION"
+    assert r["state"]=="READY_BOTH_TRACKS"
 
 def test_o_valid_buy_fixture_reaches_entry_gate(tmp_path):
     o=o_buy()
@@ -83,3 +83,9 @@ def test_u_approved_numeric_is_accepted_by_orchestrator():
     assert t["blockers"]==[]
     assert t["state"]=="QUALIFIED_BUY"
     assert t["candidates"][0]["zone_status"]=="APPROVED_NUMERIC"
+
+def test_one_track_generation_does_not_block_the_other():
+    r=g.assess_pair(o_buy(),u_fallback(),TARGET)
+    assert r["state"]=="PARTIAL_GENERATION"
+    assert r["entry_permitted_tracks"]==["O"]
+    assert r["entry_evaluation_permitted_by_track"]=={"O":True,"U":False}
