@@ -5,16 +5,20 @@ from pathlib import Path
 def run(cmd,cwd=None,env=None,timeout=None):subprocess.check_call(cmd,cwd=cwd,env=env,timeout=timeout)
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--research-root',type=Path,required=True);ap.add_argument('--target-session',required=True);ap.add_argument('--snapshot-dir',type=Path,required=True);ap.add_argument('--macro',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--dry-run',action='store_true');a=ap.parse_args()
-    root=a.research_root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False);u=a.snapshot_dir/'U_UNIVERSE.json'
+    root=a.research_root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False);u=a.snapshot_dir/'U_R0_UNIVERSE.json'
     macro=json.loads(a.macro.read_text()) if a.macro.exists() else {}
     macro_ready=macro.get('target_session')==a.target_session and (macro.get('result') or {}).get('formal_macro_cap_available') is True and (macro.get('regime') or {}).get('position_ceiling_pct') is not None
     member=out/'U_MEMBER.json';close=out/'U_CLOSE.json'
     run([sys.executable,str(root/'scripts/u_production_daily_member_v1.py'),'--universe',str(u),'--target-session',a.target_session,'--member-out',str(member),'--close-out',str(close)],cwd=root,timeout=3600)
     capital=out/'capital'
     run([sys.executable,str(root/'scripts/collect_hk_capital_evidence.py'),'--target-date',a.target_session,'--cutoff',a.target_session+'T17:20:00+08:00','--output',str(capital)],cwd=root,timeout=180)
-    status={'schema_version':1,'target_session':a.target_session,'macro_ready':macro_ready,'real_orders':0}
+    status={'schema_version':1,'target_session':a.target_session,'macro_ready':macro_ready,'r0_refresh_complete':True,'paid_model_calls':0,'real_orders':0}
     if not macro_ready:
-        status['state']='WAIT_U_MACRO_AUTHORITY';(out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
+        status['state']='R0_REFRESH_COMPLETE_WAIT_U_MACRO_AUTHORITY';(out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
+    formal_u=a.snapshot_dir/'U_UNIVERSE.json'
+    if not formal_u.exists():
+        status['state']='R0_REFRESH_COMPLETE_WAIT_EXACT_IDENTITY_MASTER_FOR_FORMAL';(out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
+    u=formal_u
     risk=out/'U_RISK.json';zone=out/'U_ZONE.json';packet=out/'U_PACKET.json'
     run([sys.executable,str(root/'scripts/u_daily_risk_evidence_v1.py'),'--universe',str(u),'--member',str(member),'--capital',str(capital/'receipt.json'),'--macro',str(a.macro.resolve()),'--target-session',a.target_session,'--out',str(risk)],cwd=root)
     run([sys.executable,str(root/'scripts/build_run055_u_strategy_zone_contract.py'),'--facts',str(member),'--handoff',str(u),'--macro',str(a.macro.resolve()),'--risk',str(risk),'--output',str(zone)],cwd=root)

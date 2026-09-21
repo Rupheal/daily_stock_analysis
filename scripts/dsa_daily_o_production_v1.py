@@ -33,7 +33,22 @@ def main():
     ap.add_argument('--mode',choices=['R0_ONLY','CALIBRATION_FULL','SELECTIVE'],default='R0_ONLY')
     ap.add_argument('--calibration',type=Path)
     a=ap.parse_args();root=a.research_root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
+    if a.mode=='R0_ONLY':
+        od=a.snapshot_dir/'O_R0_UNIVERSE.json'
+        data=out/'market'
+        run([sys.executable,str(root/'scripts/run_hk_native_data_probe.py'),'--checkout',str(a.original_root.resolve()),'--universe',str(od),'--scope','O_r0_membership_data_only','--expected-date',a.target_session,'--decision-session',a.target_session,'--expected-commit',UPSTREAM,'--target-boundary-adapter','--timeout','1800','--output',str(data)])
+        universe=json.loads(od.read_text());coverage=json.loads((data/'coverage.json').read_text())
+        status={'schema_version':1,'target_session':a.target_session,'state':'R0_ONLY_REFRESH_COMPLETE',
+                'official_membership_denominator':universe.get('raw_membership_denominator',universe.get('member_count')),
+                'r0_scan_denominator':universe.get('member_count'),'current_valid_count':coverage.get('current_valid_count'),
+                'identity_pending_count':universe.get('identity_pending_count',0),
+                'future_identity_master':universe.get('future_identity_master'),
+                'paid_model_calls':0,'real_orders':0,'formal_full_universe_claim_permitted':False}
+        (out/'STATUS.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n');print(json.dumps(status));return
     od=a.snapshot_dir/'O_UNIVERSE.json'
+    if not od.exists():
+        status={'schema_version':1,'target_session':a.target_session,'state':'WAIT_EXACT_IDENTITY_MASTER_FOR_FORMAL','paid_model_calls':0,'real_orders':0}
+        (out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
     data=out/'market'
     run([sys.executable,str(root/'scripts/run_hk_native_data_probe.py'),'--checkout',str(a.original_root.resolve()),'--universe',str(od),'--scope','O_full_pool_data_only','--expected-date',a.target_session,'--decision-session',a.target_session,'--expected-commit',UPSTREAM,'--target-boundary-adapter','--timeout','1800','--output',str(data)])
     universe=json.loads(od.read_text());coverage=json.loads((data/'coverage.json').read_text())
