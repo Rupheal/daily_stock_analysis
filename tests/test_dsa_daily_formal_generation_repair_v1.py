@@ -76,3 +76,10 @@ def test_u_valid_buy_fixture_reaches_entry_gate(tmp_path):
     entries,blocks=orch.build_entry(t,sig,entry("00992"))
     assert blocks==[]
     assert len(entries)==1 and entries[0]["code"]=="00992"
+
+def test_u_approved_numeric_is_accepted_by_orchestrator():
+    u=u_buy()
+    t=orch.classify_u(u,TARGET)
+    assert t["blockers"]==[]
+    assert t["state"]=="QUALIFIED_BUY"
+    assert t["candidates"][0]["zone_status"]=="APPROVED_NUMERIC"
