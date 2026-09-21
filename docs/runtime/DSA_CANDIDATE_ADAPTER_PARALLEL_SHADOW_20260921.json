@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "adapter_version": "DSA_CANDIDATE_ADAPTER_v1",
+  "state": "PASS_READ_ONLY_ADAPTER",
+  "parallel_shadow_status": "PASS_WITH_MISMATCH_INVENTORY",
+  "target_session": "2026-09-18",
+  "governance_pointer": {
+    "path": "docs/runtime/DSA_CANDIDATE_ADAPTER_GOVERNANCE_20260921.json",
+    "sha256": "1e55323c7c3034e15d2c3c94941b17a197d683a98cc142836fe76f7f93df16d0",
+    "foundation_source": {
+      "repository": "Rupheal/TRIDENT-Foundation",
+      "commit": "8bc5165d949702811ab0b4b867772ac606a25a39",
+      "task_id": "TRI-TASK-DSA-RUNTIME-P0",
+      "run_id": "TRI-DSA-CODEX-CANDIDATE-ADAPTER-20260921-001",
+      "checkpoint": "control_room/task_bus/receipts/P0_C_CANDIDATE_ADAPTER_IMPLEMENTATION_PACKET_20260920.md",
+      "worker_start_receipt": "control_room/task_bus/receipts/P0_C_CHAT_R3_START_20260921.md"
+    }
+  },
+  "sources": {
+    "O": {
+      "path": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+      "git_blob_sha1": "e5e2080c478be94a784b115dbba01f981e8ec1c2",
+      "sha256": "b6fcdaf1a48f3e4858693b67bdb2a19af885381631ad629d94965923260fcdf3",
+      "bytes": 8678
+    },
+    "U": {
+      "path": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+      "git_blob_sha1": "14edae8b62bd1ee3ba22eacf3feaa1db165e1a5f",
+      "sha256": "d4840a27c60d37d67102763d04b8248699d4d976048b9679b0c39dd5c69df922",
+      "bytes": 683
+    },
+    "orchestrator_module": {
+      "path": "scripts/dsa_production_orchestrator_v1.py",
+      "git_blob_sha1": "f32980b1cd1ee9021e6ad3d5f5c4c8541f3a15c6",
+      "sha256": "2f86a8b1ffef846a62b2f596c1912a0a5de8d33f7aa1c67b1f5a96f271c6cbe1",
+      "bytes": 16257
+    },
+    "orchestrator_acceptance": {
+      "path": "docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json",
+      "git_blob_sha1": "388ddac095c829dca2e198e45267804c6569994c",
+      "sha256": "66cf76eaa3f1fa8e40e461e7e97442b190db2a1a348421caaccde946e579b7de",
+      "bytes": 1199
+    },
+    "simulation_journal_readiness": {
+      "path": "docs/runtime/DSA_SIMULATION_JOURNAL_READINESS.json",
+      "git_blob_sha1": "c11603e4af4ed069091fdd8936aae4e1a25d4913",
+      "sha256": "04689604ccffc2c565a93718824c231ba409af3355126a24cdeb66a8e2b1b24a",
+      "bytes": 284
+    }
+  },
+  "denominators": {
+    "O": {
+      "official_denominator": 660,
+      "operational_denominator": 657,
+      "formal_acceptance_denominator": 356,
+      "base_exclusions": 3,
+      "operational_exclusions": 301,
+      "explicit_exclusions_total": 304,
+      "equation_official": true
+    },
+    "U": {
+      "denominator": 45,
+      "formal_valid_rows": 0
+    }
+  },
+  "tracks": {
+    "O": {
+      "track": "O",
+      "state": "WAIT",
+      "session": "2026-09-18",
+      "target_session": "2026-09-18",
+      "qualified_buy": 0,
+      "blockers": [],
+      "candidates": [
+        {
+          "code": "00148",
+          "rank": 1,
+          "score": 59,
+          "industry": null,
+          "action": "HOLD",
+          "buyable_verified": false
+        },
+        {
+          "code": "00177",
+          "rank": 2,
+          "score": 59,
+          "industry": null,
+          "action": "HOLD",
+          "buyable_verified": false
+        },
+        {
+          "code": "00552",
+          "rank": 3,
+          "score": 59,
+          "industry": null,
+          "action": "HOLD",
+          "buyable_verified": false
+        }
+      ]
+    },
+    "U": {
+      "track": "U",
+      "state": "BLOCKED",
+      "session": "2026-09-18",
+      "target_session": "2026-09-18",
+      "qualified_buy": 0,
+      "blockers": [
+        "U_NO_FORMAL_ROWS"
+      ],
+      "candidates": []
+    }
+  },
+  "comparison": {
+    "O": {
+      "match": true,
+      "adapter": {
+        "track": "O",
+        "state": "WAIT",
+        "session": "2026-09-18",
+        "target_session": "2026-09-18",
+        "qualified_buy": 0,
+        "blockers": [],
+        "candidates": [
+          {
+            "code": "00148",
+            "rank": 1,
+            "score": 59,
+            "industry": null,
+            "action": "HOLD",
+            "buyable_verified": false
+          },
+          {
+            "code": "00177",
+            "rank": 2,
+            "score": 59,
+            "industry": null,
+            "action": "HOLD",
+            "buyable_verified": false
+          },
+          {
+            "code": "00552",
+            "rank": 3,
+            "score": 59,
+            "industry": null,
+            "action": "HOLD",
+            "buyable_verified": false
+          }
+        ]
+      },
+      "orchestrator": {
+        "track": "O",
+        "state": "WAIT",
+        "session": "2026-09-18",
+        "target_session": "2026-09-18",
+        "qualified_buy": 0,
+        "blockers": [],
+        "candidates": [
+          {
+            "code": "00148",
+            "rank": 1,
+            "score": 59,
+            "industry": null,
+            "action": "HOLD",
+            "buyable_verified": false
+          },
+          {
+            "code": "00177",
+            "rank": 2,
+            "score": 59,
+            "industry": null,
+            "action": "HOLD",
+            "buyable_verified": false
+          },
+          {
+            "code": "00552",
+            "rank": 3,
+            "score": 59,
+            "industry": null,
+            "action": "HOLD",
+            "buyable_verified": false
+          }
+        ]
+      }
+    },
+    "U": {
+      "match": true,
+      "adapter": {
+        "track": "U",
+        "state": "BLOCKED",
+        "session": "2026-09-18",
+        "target_session": "2026-09-18",
+        "qualified_buy": 0,
+        "blockers": [
+          "U_NO_FORMAL_ROWS"
+        ],
+        "candidates": []
+      },
+      "orchestrator": {
+        "track": "U",
+        "state": "BLOCKED",
+        "session": "2026-09-18",
+        "target_session": "2026-09-18",
+        "qualified_buy": 0,
+        "blockers": [
+          "U_NO_FORMAL_ROWS"
+        ],
+        "candidates": []
+      }
+    }
+  },
+  "simulation_journal": {
+    "state": "JOURNAL_INITIALIZED",
+    "command_count": 0,
+    "journal_hash": "cabab867f93bfa40647a9dbd005b485dc7545ddd11c3dd35bbbe019e8979a28e",
+    "config_hash": "785d238accde9e5815f340e37024e28d779309bf64e9c57c5284aa252ba1f69b",
+    "real_orders": 0
+  },
+  "mismatch_inventory": [
+    {
+      "code": "PRODUCTION_SNAPSHOT_U_RECEIPT_SESSION_STALE",
+      "snapshot": "2026-09-17",
+      "authority": "2026-09-18"
+    }
+  ],
+  "side_effects": {
+    "authority_writes": 0,
+    "model_logic_changes": 0,
+    "strategy_parameter_changes": 0,
+    "new_buy_created": 0,
+    "simulation_writes": 0,
+    "real_orders": 0
+  },
+  "central_audit_ready": true,
+  "deterministic_receipt_sha256": "865664b91bb72a44453b13af11901be4e7d1f47812e597cb09adc0110540e16c"
+}
