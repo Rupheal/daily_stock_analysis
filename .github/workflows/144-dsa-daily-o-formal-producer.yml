@@ -16,6 +16,12 @@ on:
         required: false
         default: true
         type: boolean
+      mode:
+        description: Cost/value route
+        required: false
+        default: R0_ONLY
+        type: choice
+        options: [R0_ONLY, CALIBRATION_FULL, SELECTIVE]
 
 permissions:
   contents: write
@@ -71,21 +77,23 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_TARGET: ${{ inputs.target_session }}
           INPUT_DRY: ${{ inputs.dry_run }}
+          INPUT_MODE: ${{ inputs.mode }}
         run: |
           python - <<'PY'
           import json,os,subprocess,sys
           from pathlib import Path
           if os.environ['EVENT_NAME']=='push':
               t=json.load(open('docs/runtime/DSA_DAILY_FORMAL_TRIGGER.json'))
-              target=t['target_session'];dry=bool(t.get('dry_run',False));enabled=bool(t.get('O_enabled',True))
+              target=t['target_session'];dry=bool(t.get('dry_run',False));enabled=bool(t.get('O_enabled',True));mode=str(t.get('O_mode') or 'R0_ONLY')
           else:
               target=os.environ['INPUT_TARGET'];dry=str(os.environ.get('INPUT_DRY','true')).lower()=='true';enabled=True
-              t={'schema_version':1,'arm_token':'DSA_DAILY_FORMAL_v1','armed':True,'target_session':target,'nonce':'manual-'+target}
+              mode=os.environ.get('INPUT_MODE') or 'R0_ONLY'
+              t={'schema_version':1,'arm_token':'DSA_DAILY_FORMAL_v1','armed':True,'target_session':target,'nonce':'manual-'+target,'O_mode':mode}
           Path('/tmp/trigger.json').write_text(json.dumps(t))
           if enabled:
               subprocess.check_call([sys.executable,'scripts/dsa_daily_formal_trigger_v1.py','--trigger','/tmp/trigger.json','--out','/tmp/trigger-validated.json'])
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              f.write('target='+target+'\n');f.write('dry='+str(dry).lower()+'\n');f.write('enabled='+str(enabled).lower()+'\n')
+              f.write('target='+target+'\n');f.write('dry='+str(dry).lower()+'\n');f.write('enabled='+str(enabled).lower()+'\n');f.write('mode='+mode+'\n')
           PY
       - name: Build current official snapshot
         if: steps.trigger.outputs.enabled == 'true'
@@ -97,7 +105,7 @@ jobs:
         run: |
           DRY=""
           if [ "${{ steps.trigger.outputs.dry }}" = "true" ]; then DRY="--dry-run"; fi
-          python scripts/dsa_daily_o_production_v1.py --research-root . --original-root ../original --target-session "${{ steps.trigger.outputs.target }}" --snapshot-dir /tmp/daily-snapshot --out /tmp/daily-o $DRY
+          python scripts/dsa_daily_o_production_v1.py --research-root . --original-root ../original --target-session "${{ steps.trigger.outputs.target }}" --snapshot-dir /tmp/daily-snapshot --out /tmp/daily-o --mode "${{ steps.trigger.outputs.mode }}" $DRY
       - name: Persist sanitized O status/formal receipt
         if: always() && steps.trigger.outputs.enabled == 'true'
         working-directory: research

@@ -5,9 +5,11 @@ on:
     paths:
       - scripts/dsa_daily_formal_generation_guard_v1.py
       - scripts/dsa_daily_formal_packet_v1.py
+      - scripts/dsa_o_cost_value_router_v1.py
+      - tests/test_dsa_o_cost_value_router_v1.py
       - scripts/u_daily_risk_evidence_v1.py
       - scripts/dsa_daily_formal_trigger_v1.py
-      - tests/test_u_daily_risk_evidence_v1.py
+      - tests/test_u_daily_risk_evidence_v1.py tests/test_dsa_o_cost_value_router_v1.py
       - tests/test_dsa_daily_formal_packet_v1.py tests/test_u_daily_risk_evidence_v1.py
       - tests/test_dsa_daily_formal_generation_repair_v1.py
       - docs/runtime/DSA_DAILY_FORMAL_GENERATION_REPAIR_V1.json

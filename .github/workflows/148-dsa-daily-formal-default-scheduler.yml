@@ -72,7 +72,7 @@ jobs:
           import json
           from pathlib import Path
           target='${{ steps.gate.outputs.target }}';dry='${{ steps.gate.outputs.dry }}'=='true'
-          d={'schema_version':1,'arm_token':'DSA_DAILY_FORMAL_v1','armed':True,'target_session':target,'nonce':'TRI-DSA-DAILY-'+target.replace('-','')+'-001','O_enabled':True,'U_enabled':True,'dry_run':dry,'note':'Default-branch scheduler trigger; simulation/research only, no real orders.'}
+          d={'schema_version':1,'arm_token':'DSA_DAILY_FORMAL_v1','armed':True,'target_session':target,'nonce':'TRI-DSA-DAILY-'+target.replace('-','')+'-001','O_enabled':True,'U_enabled':True,'O_mode':'R0_ONLY','dry_run':dry,'note':'Default-branch scheduler trigger; simulation/research only, no real orders.'}
           Path('docs/runtime/DSA_DAILY_FORMAL_TRIGGER.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
           PY
           git add docs/runtime/DSA_DAILY_FORMAL_TRIGGER.json

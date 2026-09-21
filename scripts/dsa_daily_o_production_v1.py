@@ -8,6 +8,7 @@ import httpx
 from dsa_daily_formal_packet_v1 import build_o
 from aggregate_o_formal_ranking_v3 import aggregate
 from finalize_o_formal_acceptance_v3 import finalize
+from dsa_o_cost_value_router_v1 import decide as decide_cost_route
 
 UPSTREAM='089d9d26d68f8b839ea5a74a3784e4402925f8b7'
 DAILY_MAX=Decimal('65.70')
@@ -29,6 +30,8 @@ def main():
     ap.add_argument('--research-root',type=Path,required=True);ap.add_argument('--original-root',type=Path,required=True)
     ap.add_argument('--target-session',required=True);ap.add_argument('--snapshot-dir',type=Path,required=True)
     ap.add_argument('--out',type=Path,required=True);ap.add_argument('--dry-run',action='store_true')
+    ap.add_argument('--mode',choices=['R0_ONLY','CALIBRATION_FULL','SELECTIVE'],default='R0_ONLY')
+    ap.add_argument('--calibration',type=Path)
     a=ap.parse_args();root=a.research_root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
     od=a.snapshot_dir/'O_UNIVERSE.json'
     data=out/'market'
@@ -36,10 +39,17 @@ def main():
     universe=json.loads(od.read_text());coverage=json.loads((data/'coverage.json').read_text())
     packet=build_o(universe,coverage,__import__('hashlib').sha256(od.read_bytes()).hexdigest(),__import__('hashlib').sha256((data/'market-history.json').read_bytes()).hexdigest(),a.target_session)
     for name in ('policy','ledger','scope'):(out/(name+'.json')).write_text(json.dumps(packet[name],ensure_ascii=False,indent=2)+'\n')
-    status={'schema_version':1,'target_session':a.target_session,'state':'DRY_RUN_PREFLIGHT' if a.dry_run else 'PREFLIGHT_READY','official_denominator':packet['official_denominator'],'operational_denominator':packet['operational_denominator'],'excluded_count':packet['excluded_count'],'daily_budget_ceiling_cny':str(DAILY_MAX),'per_member_cap_cny':str(PER_MEMBER),'real_orders':0}
-    if a.dry_run:
+    cal=json.loads(a.calibration.read_text()) if a.calibration and a.calibration.exists() else None
+    route=decide_cost_route(a.mode,packet['operational_denominator'],cal)
+    status={'schema_version':1,'target_session':a.target_session,'state':'DRY_RUN_PREFLIGHT' if a.dry_run else 'PREFLIGHT_READY','official_denominator':packet['official_denominator'],'operational_denominator':packet['operational_denominator'],'excluded_count':packet['excluded_count'],'cost_route':route,'real_orders':0}
+    if a.dry_run or not route['paid_model_permitted']:
+        status['state']='DRY_RUN_PREFLIGHT' if a.dry_run else route['reason']
         (out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
-    capacity=provider_capacity();op=packet['operational_denominator']
+    op=packet['operational_denominator']
+    if a.mode=='SELECTIVE':
+        status.update(state='SELECTIVE_EXECUTION_NOT_IMPLEMENTED_UNTIL_CALIBRATION_SELECTOR_ACCEPTED')
+        (out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
+    capacity=provider_capacity()
     if capacity<op:
         status.update(state='WAIT_BUDGET_CAPACITY',affordable_calls=capacity)
         (out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
