@@ -94,11 +94,26 @@ def _u_candidates(receipt:dict)->list[dict]:
 
 def classify_o(receipt:dict,target_session:str)->dict:
     blockers=[]
-    if receipt.get("status")!="ACCEPTED_O_FORMAL_TOP3":
-        blockers.append("O_FORMAL_ACCEPTANCE_NOT_PASS")
+    status=str(receipt.get("status") or "")
     if receipt.get("target_session")!=target_session:
         return {"track":"O","state":"STALE","session":receipt.get("target_session"),
                 "target_session":target_session,"qualified_buy":0,"candidates":[],"blockers":["STALE_SESSION"]}
+    if status.startswith("PASS_FORMAL_O_DECISION_WAIT"):
+        if int(receipt.get("official_O_denominator",-1))!=660:
+            blockers.append("O_OFFICIAL_DENOMINATOR_NOT_660")
+        if int(receipt.get("operational_O_denominator",-1))!=657:
+            blockers.append("O_OPERATIONAL_DENOMINATOR_NOT_657")
+        if int(receipt.get("current_session_formal_signals",-1))!=0:
+            blockers.append("O_CURRENT_SESSION_FORMAL_SIGNAL_NONZERO")
+        if int(receipt.get("qualified_buy_in_Top3",-1))!=0:
+            blockers.append("O_WAIT_QUALIFIED_BUY_NONZERO")
+        if receipt.get("Top3") not in ([],None):
+            blockers.append("O_WAIT_TOP3_NOT_EMPTY")
+        return {"track":"O","state":"BLOCKED" if blockers else "WAIT","session":target_session,
+                "target_session":target_session,"qualified_buy":0,"candidates":[],
+                "blockers":sorted(set(blockers))}
+    if status!="ACCEPTED_O_FORMAL_TOP3":
+        blockers.append("O_FORMAL_ACCEPTANCE_NOT_PASS")
     if int(receipt.get("missing_count",-1))!=0:
         blockers.append("O_MISSING_NOT_ZERO")
     candidates=_o_candidates(receipt)
@@ -135,7 +150,10 @@ def classify_u(receipt:dict,target_session:str)->dict:
     if int(receipt.get("denominator",-1))!=45:
         blockers.append("U_DENOMINATOR_NOT_45")
     if int(receipt.get("formal_valid_rows",-1))<1:
-        blockers.append("U_NO_FORMAL_ROWS")
+        if state_value=="PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED" and int(receipt.get("qualified_BUY",0) or 0)==0:
+            pass
+        else:
+            blockers.append("U_NO_FORMAL_ROWS")
     candidates=_u_candidates(receipt)
     claimed=int(receipt.get("qualified_BUY",0) or 0)
     buys=[x for x in candidates if x["action"]=="BUY"]

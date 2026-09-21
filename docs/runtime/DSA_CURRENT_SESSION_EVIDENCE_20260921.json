@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "evidence_id": "DSA-CURRENT-SESSION-EVIDENCE-20260921",
+  "target_session": "2026-09-21",
+  "source": {
+    "repository": "Rupheal/TRIDENT-Foundation",
+    "branch": "runtime/dsa-shadow-journal-v1",
+    "journal_path": "control_room/dsa/runtime/authority/DSA_DUAL_ACCOUNT_JOURNAL.json",
+    "journal_blob_sha": "2713601dda0fba0942823aa35d3df774909eddf3"
+  },
+  "O": {
+    "preopen": {
+      "command_id": "DSA-PREOPEN-20260921-0900-HKT:O:SIGNAL",
+      "wrapper_hash": "8af662597950c12f4dac5f35c3faa4e477482ba0f6073a07cb0207da40ca27fc",
+      "at": "2026-09-21T09:01:46+08:00",
+      "current_session_formal_signals": 0,
+      "reason": "O_latest_formal_ranking_is_prior_session_and_Top3_all_HOLD_no_same_day_native_BUY_at_report_time",
+      "latest_accepted_target_session": "2026-09-18",
+      "latest_qualified_BUY": 0,
+      "official_denominator": 660,
+      "operational_denominator": 657
+    },
+    "close": {
+      "command_id": "DSA-CLOSE-20260921-1630-HKT:O:SIGNAL",
+      "wrapper_hash": "34e29d4e2ecfbb0924954fc966aff1e1764bef796630ee2be1aec2d29ac36ffe",
+      "at": "2026-09-21T16:32:37+08:00",
+      "current_session_formal_signals": 0,
+      "reason": "O_no_same_day_native_BUY_latest_formal_Top3_prior_session_all_HOLD_close_cannot_create_entry",
+      "latest_accepted_target_session": "2026-09-18",
+      "latest_qualified_BUY": 0,
+      "official_denominator": 660,
+      "operational_denominator": 657
+    },
+    "prior_reference": {
+      "path": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+      "blob_sha": "e5e2080c478be94a784b115dbba01f981e8ec1c2",
+      "target_session": "2026-09-18"
+    }
+  },
+  "U": {
+    "preopen": {
+      "command_id": "DSA-PREOPEN-20260921-0900-HKT:U:SIGNAL",
+      "wrapper_hash": "a5a7c50d5db3c0275b09c0db00bc34e926ada695d2c32051d626526cc2e1bae4",
+      "at": "2026-09-21T09:01:46+08:00",
+      "current_session_formal_signals": 0,
+      "reason": "U_no_current_session_complete_native_BUY_or_executor_validated_Top3_at_report_time",
+      "latest_accepted_target_session": "2026-09-18",
+      "latest_qualified_BUY": 0,
+      "denominator": 45,
+      "current_session_blockers": [
+        "U_CURRENT_SESSION_MACRO_CAP_MISSING",
+        "U_CURRENT_SESSION_RISK_EVIDENCE_MISSING",
+        "U_CURRENT_SESSION_ZONE_CONTRACT_MISSING"
+      ]
+    },
+    "close": {
+      "command_id": "DSA-CLOSE-20260921-1630-HKT:U:SIGNAL",
+      "wrapper_hash": "f20d82d3b580cfbed33894cbbb7876a828820cc5bfcbb6c88b930cd072901b43",
+      "at": "2026-09-21T16:32:37+08:00",
+      "current_session_formal_signals": 0,
+      "reason": "U_no_current_session_complete_native_BUY_or_executor_validated_Top3_close_cannot_create_entry",
+      "latest_accepted_target_session": "2026-09-18",
+      "latest_qualified_BUY": 0,
+      "denominator": 45
+    },
+    "prior_reference": {
+      "path": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+      "blob_sha": "14edae8b62bd1ee3ba22eacf3feaa1db165e1a5f",
+      "target_session": "2026-09-18"
+    }
+  },
+  "safety": {
+    "model_http_requests_confirmed": 0,
+    "real_orders": 0,
+    "simulation_writes": 0,
+    "auto_recharge": false
+  }
+}
