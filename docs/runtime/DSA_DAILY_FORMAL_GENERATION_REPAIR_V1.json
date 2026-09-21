@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "contract_id": "DSA_DAILY_FORMAL_GENERATION_REPAIR_v1",
+  "status": "ENGINEERING_CANDIDATE",
+  "objective": "Every XHKG decision session must distinguish GENERATED formal ranking/decision from fallback WAIT. O and U generation are independent; Entry-v1 may evaluate only generated formal receipts.",
+  "timing": {
+    "postclose_generation_target_hkt": "16:45+",
+    "entry_evaluation_hkt": "09:35 next XHKG session",
+    "rule": "Post-close target-session formal generation must complete before next-session Entry-v1."
+  },
+  "O": {
+    "required_state": "ACCEPTED_O_FORMAL_TOP3",
+    "generated_proof": [
+      "target_session exact",
+      "missing_count=0",
+      "ranking_eligible_count>=1"
+    ],
+    "fallback_state": "PASS_FORMAL_O_DECISION_WAIT_NO_CURRENT_SESSION_RANKING",
+    "fallback_semantics": "AUTHORITATIVE_DO_NOT_TRADE_BUT_NOT_GENERATION_COMPLETE"
+  },
+  "U": {
+    "required_state_prefix": "PASS_FORMAL_U_DECISION",
+    "generated_proof": [
+      "target_session exact",
+      "formal_valid_rows>=1",
+      "provider_skipped=false"
+    ],
+    "fallback_state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED",
+    "fallback_semantics": "AUTHORITATIVE_DO_NOT_TRADE_BUT_NOT_GENERATION_COMPLETE"
+  },
+  "entry_gate": {
+    "require_both_tracks_generated": false,
+    "note": "O/U remain independent. Each track may be evaluated independently once its own generation_complete=true; pair-level dashboard may still show partial.",
+    "independent_tracks": true,
+    "states": [
+      "READY_BOTH_TRACKS",
+      "PARTIAL_GENERATION",
+      "WAIT_DAILY_FORMAL_GENERATION"
+    ]
+  },
+  "safety": {
+    "real_orders": 0,
+    "main_merge": false,
+    "runtime_pointer_switch": false,
+    "auto_recharge": false
+  }
+}
