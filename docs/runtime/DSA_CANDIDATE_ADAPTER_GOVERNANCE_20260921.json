@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "pointer_id": "DSA_CANDIDATE_ADAPTER_GOVERNANCE_20260921",
+  "authority": "NONE_READ_ONLY_SNAPSHOT",
+  "target_session": "2026-09-18",
+  "foundation_source": {
+    "repository": "Rupheal/TRIDENT-Foundation",
+    "commit": "8bc5165d949702811ab0b4b867772ac606a25a39",
+    "task_id": "TRI-TASK-DSA-RUNTIME-P0",
+    "run_id": "TRI-DSA-CODEX-CANDIDATE-ADAPTER-20260921-001",
+    "checkpoint": "control_room/task_bus/receipts/P0_C_CANDIDATE_ADAPTER_IMPLEMENTATION_PACKET_20260920.md",
+    "worker_start_receipt": "control_room/task_bus/receipts/P0_C_CHAT_R3_START_20260921.md"
+  },
+  "sources": {
+    "O": {
+      "path": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+      "git_blob_sha1": "e5e2080c478be94a784b115dbba01f981e8ec1c2",
+      "expected_acceptance": "ACCEPTED_O_FORMAL_TOP3",
+      "official_denominator": 660,
+      "operational_denominator": 657
+    },
+    "U": {
+      "path": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+      "git_blob_sha1": "14edae8b62bd1ee3ba22eacf3feaa1db165e1a5f",
+      "expected_state_prefix": "PASS_FORMAL_U_DECISION",
+      "denominator": 45
+    },
+    "orchestrator_module": {
+      "path": "scripts/dsa_production_orchestrator_v1.py",
+      "git_blob_sha1": "f32980b1cd1ee9021e6ad3d5f5c4c8541f3a15c6"
+    },
+    "orchestrator_acceptance": {
+      "path": "docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json",
+      "git_blob_sha1": "388ddac095c829dca2e198e45267804c6569994c"
+    },
+    "simulation_journal_readiness": {
+      "path": "docs/runtime/DSA_SIMULATION_JOURNAL_READINESS.json",
+      "git_blob_sha1": "c11603e4af4ed069091fdd8936aae4e1a25d4913"
+    }
+  },
+  "boundaries": {
+    "second_authority_ledger": false,
+    "model_logic_changes": false,
+    "strategy_parameter_changes": false,
+    "new_buy_creation": false,
+    "production_pointer_switch": false,
+    "production_promotion": false,
+    "real_trading": false
+  }
+}
