@@ -57,11 +57,15 @@ def test_generated_no_buy_is_distinct_from_missing_generation():
     assert r["generation_complete"] is True
     assert r["state"]=="READY_FOR_ENTRY_EVALUATION"
 
-def test_o_valid_buy_fixture_reaches_entry_gate():
+def test_o_valid_buy_fixture_reaches_entry_gate(tmp_path):
     o=o_buy()
     t=orch.classify_o(o,TARGET)
     assert t["state"]=="QUALIFIED_BUY" and t["qualified_buy"]==1
-    sig=orch.build_signal(t,Path("/tmp/o-fixture.json"),"2026-09-22T09:35:00+08:00","2026-09-22","2026-09-26T09:35:00+08:00")
+    p=tmp_path/"o.json";p.write_text(json.dumps(o))
+    sig=orch.build_signal(t,p,"2026-09-22T09:35:00+08:00","2026-09-22","2026-09-26T09:35:00+08:00")
+    entries,blocks=orch.build_entry(t,sig,entry("00700"))
+    assert blocks==[]
+    assert len(entries)==1 and entries[0]["code"]=="00700"
 
 def test_u_valid_buy_fixture_reaches_entry_gate(tmp_path):
     u=u_buy()
