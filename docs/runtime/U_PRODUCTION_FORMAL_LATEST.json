@@ -1,24 +1,41 @@
 {
   "schema_version": 1,
-  "run_id": "DSA-U-PROD-20260918-PREREQ-WAIT",
-  "target_session": "2026-09-18",
+  "run_id": "DSA-U-PROD-20260921-CURRENT-WAIT",
+  "target_session": "2026-09-21",
   "track": "U",
   "state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED",
   "denominator": 45,
   "eligible": null,
   "formal_valid_rows": 0,
+  "current_session_formal_signals": 0,
   "qualified_BUY": 0,
   "Top3": [],
   "Top10": [],
   "rows": [],
   "prerequisite_blockers": [
-    "U_MACRO_CAP_NOT_CURRENT",
-    "U_RISK_EVIDENCE_NOT_CURRENT",
-    "U_ZONE_CONTRACT_NOT_CURRENT"
+    "U_CURRENT_SESSION_MACRO_CAP_MISSING",
+    "U_CURRENT_SESSION_RISK_EVIDENCE_MISSING",
+    "U_CURRENT_SESSION_ZONE_CONTRACT_MISSING"
   ],
   "provider_skipped": true,
   "buyable_verified_count": 0,
   "entry_v1_handoff": false,
+  "prior_reference": {
+    "path": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+    "blob_sha": "14edae8b62bd1ee3ba22eacf3feaa1db165e1a5f",
+    "target_session": "2026-09-18"
+  },
+  "evidence": {
+    "repository": "Rupheal/TRIDENT-Foundation",
+    "branch": "runtime/dsa-shadow-journal-v1",
+    "journal_path": "control_room/dsa/runtime/authority/DSA_DUAL_ACCOUNT_JOURNAL.json",
+    "journal_blob_sha": "2713601dda0fba0942823aa35d3df774909eddf3",
+    "preopen_command_id": "DSA-PREOPEN-20260921-0900-HKT:U:SIGNAL",
+    "preopen_wrapper_hash": "a5a7c50d5db3c0275b09c0db00bc34e926ada695d2c32051d626526cc2e1bae4",
+    "close_command_id": "DSA-CLOSE-20260921-1630-HKT:U:SIGNAL",
+    "close_wrapper_hash": "f20d82d3b580cfbed33894cbbb7876a828820cc5bfcbb6c88b930cd072901b43",
+    "close_available_at": "2026-09-21T16:32:37+08:00"
+  },
   "resource_accounting": {
     "model_http_requests_confirmed": 0,
     "real_orders": 0,

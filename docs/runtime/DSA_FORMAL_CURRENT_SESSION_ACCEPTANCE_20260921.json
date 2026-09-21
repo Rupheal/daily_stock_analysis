@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "acceptance_id": "DSA-FORMAL-CURRENT-SESSION-20260921-WAIT-001",
+  "target_session": "2026-09-21",
+  "status": "ACCEPTED_CURRENT_SESSION_FORMAL_WAIT",
+  "O_status": "PASS_FORMAL_O_DECISION_WAIT_NO_CURRENT_SESSION_RANKING",
+  "U_state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED",
+  "O_current_session": true,
+  "U_current_session": true,
+  "qualified_buy_total": 0,
+  "formal_wait_is_authoritative_for_target_session": true,
+  "prior_session_rankings_not_relabelled": true,
+  "source_foundation_journal": {
+    "repository": "Rupheal/TRIDENT-Foundation",
+    "branch": "runtime/dsa-shadow-journal-v1",
+    "journal_path": "control_room/dsa/runtime/authority/DSA_DUAL_ACCOUNT_JOURNAL.json",
+    "journal_blob_sha": "2713601dda0fba0942823aa35d3df774909eddf3"
+  },
+  "source_command_hashes": {
+    "O_preopen": "8af662597950c12f4dac5f35c3faa4e477482ba0f6073a07cb0207da40ca27fc",
+    "O_close": "34e29d4e2ecfbb0924954fc966aff1e1764bef796630ee2be1aec2d29ac36ffe",
+    "U_preopen": "a5a7c50d5db3c0275b09c0db00bc34e926ada695d2c32051d626526cc2e1bae4",
+    "U_close": "f20d82d3b580cfbed33894cbbb7876a828820cc5bfcbb6c88b930cd072901b43"
+  },
+  "resource_accounting": {
+    "model_http_requests_confirmed": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "simulation_writes": 0,
+    "auto_recharge": false
+  }
+}
