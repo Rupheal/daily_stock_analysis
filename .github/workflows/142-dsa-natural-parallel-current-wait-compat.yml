@@ -1,0 +1,97 @@
+name: DSA Natural Parallel current-session WAIT compatibility
+
+on:
+  push:
+    branches: [research/dsa-readonly-parallel-shadow-current-wait-20260921]
+    paths:
+      - scripts/dsa_formal_receipt_resolver_v1.py
+      - scripts/dsa_production_orchestrator_v1.py
+      - tests/test_dsa_formal_receipt_resolver_current_wait_v1.py
+      - tests/test_dsa_production_orchestrator_current_wait_v1.py
+      - .github/workflows/142-dsa-natural-parallel-current-wait-compat.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: research/dsa-readonly-parallel-shadow-current-wait-20260921
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/checkout@v5
+        with:
+          repository: Rupheal/daily_stock_analysis
+          ref: 8a78f004b94694c356583fb5693e1c84fa40bbc1
+          path: formal
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest anyio fastapi httpx starlette
+
+      - name: Run candidate regression and current-session WAIT compatibility tests
+        run: |
+          python -m pytest --noconftest -q             tests/test_dsa_readonly_candidate_adapter_v1.py             tests/test_dsa_natural_parallel_prewindow_v1.py             tests/test_dsa_natural_parallel_receipt_resolver_v1.py             tests/test_dsa_natural_parallel_audit_package_v1.py             tests/test_dsa_formal_receipt_resolver_current_wait_v1.py             tests/test_dsa_production_orchestrator_current_wait_v1.py
+
+      - name: Resolve exact 2026-09-21 formal Authority
+        run: |
+          python scripts/dsa_formal_receipt_resolver_v1.py             --root formal             --target-session 2026-09-21             --out /tmp/resolver.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/resolver.json'))
+          assert r['state']=='READY'
+          assert r['orchestrator_permitted'] is True
+          assert r['O']['receipt']['target_session']=='2026-09-21'
+          assert r['O']['receipt']['status']=='PASS_FORMAL_O_DECISION_WAIT_NO_CURRENT_SESSION_RANKING'
+          assert r['O']['receipt']['Top3']==[]
+          assert r['U']['receipt']['target_session']=='2026-09-21'
+          assert r['U']['receipt']['state']=='PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED'
+          assert r['U']['receipt']['Top3']==[]
+          assert r['real_orders']==0
+          print('FORMAL_AUTHORITY_20260921_READY')
+          PY
+
+      - name: Exercise Candidate Orchestrator against exact formal Authority
+        run: |
+          python scripts/dsa_production_orchestrator_v1.py             --o formal/docs/runtime/O_PRODUCTION_FORMAL_LATEST.json             --u formal/docs/runtime/U_PRODUCTION_FORMAL_LATEST.json             --target-session 2026-09-21             --now 2026-09-21T17:00:00+08:00             --next-session 2026-09-22             --cycle postclose             --out /tmp/orchestrator.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/orchestrator.json'))
+          assert r['state']=='WAIT_NO_BUY'
+          assert r['tracks']['O']['state']=='WAIT'
+          assert r['tracks']['U']['state']=='WAIT'
+          assert r['qualified_buy_total']==0
+          assert r['real_orders']==0
+          assert not any(x['kind']=='ENTRY' for x in r['commands'])
+          print('CANDIDATE_WAIT_NO_BUY_COMPAT_PASS')
+          PY
+
+      - name: Verify bounded compatibility diff
+        run: |
+          python - <<'PY'
+          import subprocess
+          allowed={
+            'scripts/dsa_formal_receipt_resolver_v1.py',
+            'scripts/dsa_production_orchestrator_v1.py',
+            'tests/test_dsa_formal_receipt_resolver_current_wait_v1.py',
+            'tests/test_dsa_production_orchestrator_current_wait_v1.py',
+            '.github/workflows/142-dsa-natural-parallel-current-wait-compat.yml',
+          }
+          changed=subprocess.check_output([
+            'git','diff','--name-only',
+            '8e694e0460c47fa654ce7a3c2904e520428434af...HEAD'
+          ],text=True).splitlines()
+          extra=set(changed)-allowed
+          assert not extra, {'unexpected':sorted(extra),'changed':changed}
+          print('BOUNDED_CANDIDATE_COMPAT_DIFF_PASS',changed)
+          PY
