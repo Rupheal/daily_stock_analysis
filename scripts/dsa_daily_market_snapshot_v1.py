@@ -4,6 +4,7 @@ import argparse,hashlib,json,time
 from datetime import datetime,timezone
 from pathlib import Path
 import requests
+import exchange_calendars as xcals
 from freeze_hk_connect_universe import freeze
 
 URLS={
@@ -12,6 +13,12 @@ URLS={
  'szse-list.xlsx':'https://www.szse.cn/api/report/ShowReport?SHOWTYPE=xlsx&CATALOGID=SGT_GGTBDQD&TABKEY=tab1',
  'hkex-securities.xlsx':'https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx',
 }
+def identity_sessions_for_daily_snapshot(session:str):
+    cal=xcals.get_calendar('XHKG')
+    cur=cal.date_to_session(session,direction='none')
+    prev=cal.previous_session(cur)
+    return [cur.date().isoformat(),prev.date().isoformat()]
+
 def build(session:str,u_universe:Path,out:Path):
     src=out/'sources';src.mkdir(parents=True,exist_ok=False);rows=[]
     for name,url in URLS.items():
@@ -30,10 +37,15 @@ def build(session:str,u_universe:Path,out:Path):
                 if attempt==2: raise
                 time.sleep(1+attempt)
     (src/'source-probe.json').write_text(json.dumps({'schema_version':1,'sources':rows},indent=2)+'\n')
-    o,u=freeze(src,session,u_universe)
+    allowed_identity_sessions=identity_sessions_for_daily_snapshot(session)
+    o,u=freeze(src,session,u_universe,allowed_identity_sessions=allowed_identity_sessions)
     (out/'O_UNIVERSE.json').write_text(json.dumps(o,ensure_ascii=False,indent=2)+'\n')
     (out/'U_UNIVERSE.json').write_text(json.dumps(u,ensure_ascii=False,indent=2)+'\n')
-    return {'target_session':session,'O_denominator':o['member_count'],'U_denominator':45,'U_buy_eligible':sum(bool(x.get('channels')) for x in u['members']),'model_calls':0,'paid_data_calls':0,'real_orders':0}
+    return {'target_session':session,'O_denominator':o['member_count'],'U_denominator':45,'U_buy_eligible':sum(bool(x.get('channels')) for x in u['members']),
+            'identity_master_asof_session':o['identity_master']['asof_session'],
+            'identity_master_same_session':o['identity_master']['same_session'],
+            'identity_master_allowed_sessions':allowed_identity_sessions,
+            'model_calls':0,'paid_data_calls':0,'real_orders':0}
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--session',required=True);ap.add_argument('--u-universe',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
     a.out.mkdir(parents=True,exist_ok=False);r=build(a.session,a.u_universe,a.out);print(json.dumps(r))
