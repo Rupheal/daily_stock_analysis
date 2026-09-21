@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-SNAPSHOT-R0-20260921-002",
+  "status": "ACCEPTED_R0_REPAIR_ONLY",
+  "target_session": "2026-09-21",
+  "observed_at": "2026-09-21T15:02:31.407428+00:00",
+  "tested_code_head": "436b617c96b34b6fede49c99ba12eb2fdca346b2",
+  "test_run": 35616148108,
+  "test_job": 106387249238,
+  "tests_passed": 31,
+  "tests_failed": 0,
+  "test_scope": "20 new integrity cases plus 11 existing generation/member regressions; not a claim of the entire repository test suite",
+  "evidence_artifact": {
+    "id": 10645758659,
+    "name": "dsa-snapshot-r0-proof-35616148108",
+    "sha256": "1cba8353bd227e632c068197c9877c0aa7bce583c3b36136c6e560ba4bc77c81"
+  },
+  "snapshot": {
+    "mode": "R0_SEALED_SAME_SESSION",
+    "source_run": 35605349584,
+    "source_artifact": 10641218901,
+    "source_artifact_sha256_verified": "fd8e96e45655c982d4a3c38cc1c9b5deccbe42acca21a2d83e68dd7b123003a7",
+    "source_coverage_sha256": "afc0a12c651b7e1685b6f488e83ece96e9a32a72610120f538dc3eea2eee207c",
+    "original_requested_codes_and_universe_hash_match_seal": true,
+    "formal_identity_requires_exact_session": true,
+    "previous_or_future_identity_not_promoted": true,
+    "formal_universe_available": false,
+    "identity_pending_codes": ["03223", "06727"]
+  },
+  "O": {
+    "verification_method": "Re-read and SHA256-verify the completed same-session O R0 dry-run artifact; no repeated full-pool acquisition or model inference",
+    "source_run": 35612350424,
+    "source_artifact": 10644099371,
+    "artifact_sha256_verified": "57eb85d79d52a4334161e4d4ae57eb0191a5141c6cb1a40ee3d439ed58df6c10",
+    "coverage_sha256": "168284a080ada260fa1db261c94411e7f06a756f151d892a527e1e053ea15aa1",
+    "scanned": 662,
+    "current_valid": 659,
+    "invalid_or_stale_codes": ["00853", "02172", "02252"],
+    "state": "R0_SCAN_COMPLETE_WITH_EXPLICIT_GAPS",
+    "full_formal_ranking_accepted": false
+  },
+  "U": {
+    "verification_method": "Actual public-data rerun after Yahoo symbol and scalar-column correction",
+    "current_member_count": 45,
+    "current_valid_count": 45,
+    "denominator": 45,
+    "r0_price_refresh_complete": true,
+    "missing_or_invalid_codes": [],
+    "macro_ready": false,
+    "state": "WAIT_U_MACRO_AUTHORITY",
+    "capital_verified_sources": 2,
+    "capital_cutoff_eligible_sources": 0,
+    "capital_note": "These late observations do not become evidence available at the original 17:20 HKT cutoff.",
+    "formal_generation_complete": false
+  },
+  "prior_failure_preserved": {
+    "run": 35612350752,
+    "old_workflow_conclusion": "success",
+    "actual_U_coverage": "0/45",
+    "adjudication": "Not accepted as successful data refresh; false-positive completion flag fixed without deleting the old record"
+  },
+  "boundary": {
+    "resource_route": "R0_SCRIPT_CI",
+    "model_http_requests": 0,
+    "paid_data_calls": 0,
+    "real_orders": 0,
+    "runtime_pointer_switch": false,
+    "main_merge": false,
+    "auto_recharge": false,
+    "github_actions_billing": "NOT_METERED_BY_THIS_RECEIPT"
+  },
+  "migration_readiness": "WAIT_DEPENDENCY",
+  "not_accepted_by_this_receipt": [
+    "Current-session formal identity for the two pending members",
+    "Formal O/U strategy ranking or BUY production",
+    "Current U macro Authority",
+    "Default-branch production activation",
+    "Selective-router calibration",
+    "2026-09-22 prospective Natural Parallel and independent audit",
+    "Owner Gate or Runtime Pointer Switch"
+  ]
+}
