@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "seal_id": "DSA_MIGRATION_PREWINDOW_SEAL_20260921",
+  "sealed_for_target_session": "2026-09-22",
+  "status": "PREWINDOW_READY_WAIT_NATURAL_PARALLEL",
+  "source_branch": "fix/native-private-execution-20260914",
+  "source_head_before_prewindow_prep": "ac1dd27c22e8fc5167ec51764d2faa11027a2b6e",
+  "accepted_inputs": {
+    "current_session_formal_acceptance": "docs/runtime/DSA_FORMAL_CURRENT_SESSION_ACCEPTANCE_20260921.json",
+    "r0_snapshot_repair_acceptance": "docs/runtime/DSA_SNAPSHOT_R0_REPAIR_ACCEPTANCE_20260921.json",
+    "simulation_journal_readiness": "docs/runtime/DSA_SIMULATION_JOURNAL_READINESS.json",
+    "production_orchestrator_acceptance": "docs/runtime/DSA_PRODUCTION_ORCHESTRATOR_V1_ACCEPTANCE.json"
+  },
+  "verified_preconditions": {
+    "current_session_authoritative_wait": true,
+    "O_r0_scanned": 662,
+    "O_r0_valid": 659,
+    "O_explicit_gaps": [
+      "00853",
+      "02172",
+      "02252"
+    ],
+    "U_r0_members": 45,
+    "U_r0_valid": 45,
+    "U_macro_authority_ready": false,
+    "simulation_journal_initialized": true,
+    "journal_save_read_hash_restore": true,
+    "journal_command_count": 0,
+    "remote_parent_hash_cas_present": true,
+    "same_count_idempotency_present": true,
+    "command_id_content_drift_fail_closed": true,
+    "single_writer_concurrency_group": "dsa-production-orchestrator-v1-runtime"
+  },
+  "historical_drift_carried_forward": [
+    "Candidate Adapter governance snapshot target_session remains 2026-09-18 and is historical/read-only, not current-session Authority.",
+    "Production Orchestrator engineering acceptance contains historical stale-U snapshot evidence and must not be relabelled as current."
+  ],
+  "remaining_future_evidence": [
+    "2026-09-22 Natural Parallel receipt",
+    "same-trigger Gate-D receipt",
+    "post-window comparison",
+    "independent Central Audit"
+  ],
+  "runtime_pointer_switch": false,
+  "main_merge": false,
+  "paid_full_pool_scan": false,
+  "real_orders": 0,
+  "auto_recharge": false,
+  "note": "This seal freezes only pre-window engineering readiness. It is not Natural Parallel evidence and cannot satisfy future observation gates."
+}
