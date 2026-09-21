@@ -28,7 +28,19 @@ def resolve(root:Path,target:str)->dict:
             checked.append({"path":str(p),"status":"MATCH" if session==target else "STALE","session":session})
             if session==target:
                 if track=="O":
-                    ok=d.get("status")=="ACCEPTED_O_FORMAL_TOP3" and int(d.get("missing_count",-1))==0
+                    status=str(d.get("status") or "")
+                    if status=="ACCEPTED_O_FORMAL_TOP3":
+                        ok=int(d.get("missing_count",-1))==0
+                    elif status.startswith("PASS_FORMAL_O_DECISION_WAIT"):
+                        ok=(
+                          int(d.get("official_O_denominator",-1))==660
+                          and int(d.get("operational_O_denominator",-1))==657
+                          and int(d.get("current_session_formal_signals",-1))==0
+                          and int(d.get("qualified_buy_in_Top3",-1))==0
+                          and (d.get("Top3") or [])==[]
+                        )
+                    else:
+                        ok=False
                 else:
                     ok=str(d.get("state") or "").startswith("PASS_FORMAL_U_DECISION") and int(d.get("denominator",-1))==45
                 if not ok:
