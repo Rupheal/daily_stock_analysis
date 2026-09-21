@@ -1,0 +1,106 @@
+name: DSA Daily Formal Default Scheduler
+
+on:
+  schedule:
+    - cron: '30 9 * * 1-5'   # 17:30 HKT post-close formal generation
+    - cron: '35 1 * * 1-5'   # 09:35 HKT simulation Entry-v1 evaluation
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Trigger mode
+        required: true
+        default: formal
+        type: choice
+        options: [formal, entry]
+      dry_run:
+        description: Formal producer dry-run only
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-daily-formal-default-scheduler
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Hong_Kong
+      REAL_ORDERS_AUTHORIZED: 'false'
+      CANDIDATE_BRANCH: fix/native-private-execution-20260914
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/native-private-execution-20260914
+          fetch-depth: 1
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: python -m pip install exchange-calendars
+      - name: Resolve mode and XHKG session
+        id: gate
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+          INPUT_MODE: ${{ inputs.mode }}
+          INPUT_DRY: ${{ inputs.dry_run }}
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          import exchange_calendars as xcals
+          mode=os.environ.get('INPUT_MODE') if os.environ['EVENT_NAME']=='workflow_dispatch' else ('formal' if os.environ.get('EVENT_SCHEDULE')=='30 9 * * 1-5' else 'entry')
+          dry=(str(os.environ.get('INPUT_DRY','true')).lower()=='true') if os.environ['EVENT_NAME']=='workflow_dispatch' else False
+          now=datetime.now(ZoneInfo('Asia/Hong_Kong'));today=now.date().isoformat();cal=xcals.get_calendar('XHKG')
+          is_session=cal.is_session(today)
+          target=''
+          if is_session:
+              cur=cal.date_to_session(today,direction='none')
+              target=cur.date().isoformat() if mode=='formal' else cal.previous_session(cur).date().isoformat()
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('mode='+mode+'\n');f.write('dry='+str(dry).lower()+'\n');f.write('is_session='+str(is_session).lower()+'\n');f.write('today='+today+'\n');f.write('target='+target+'\n')
+          print('SCHEDULER',mode,today,target,is_session,dry)
+          PY
+      - name: Write Daily Formal trigger
+        if: steps.gate.outputs.is_session == 'true' && steps.gate.outputs.mode == 'formal'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          target='${{ steps.gate.outputs.target }}';dry='${{ steps.gate.outputs.dry }}'=='true'
+          d={'schema_version':1,'arm_token':'DSA_DAILY_FORMAL_v1','armed':True,'target_session':target,'nonce':'TRI-DSA-DAILY-'+target.replace('-','')+'-001','O_enabled':True,'U_enabled':True,'dry_run':dry,'note':'Default-branch scheduler trigger; simulation/research only, no real orders.'}
+          Path('docs/runtime/DSA_DAILY_FORMAL_TRIGGER.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          PY
+          git add docs/runtime/DSA_DAILY_FORMAL_TRIGGER.json
+      - name: Write Entry-v1 trigger
+        if: steps.gate.outputs.is_session == 'true' && steps.gate.outputs.mode == 'entry'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          execution='${{ steps.gate.outputs.today }}'
+          d={'schema_version':1,'at_hkt':execution+'T09:35:00+08:00','target_session':'${{ steps.gate.outputs.target }}','execution_session':execution,'simulation_only':True,'real_orders':0}
+          Path('docs/runtime/DSA_PRODUCTION_ENTRY_TRIGGER.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          PY
+          git add docs/runtime/DSA_PRODUCTION_ENTRY_TRIGGER.json
+      - name: Push bounded trigger to candidate branch
+        if: steps.gate.outputs.is_session == 'true'
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then echo no-change; exit 0; fi
+          git config user.name 'dsa-default-scheduler'
+          git config user.email 'dsa-default-scheduler@users.noreply.github.com'
+          git commit -m "ops(dsa): scheduler ${{ steps.gate.outputs.mode }} ${{ steps.gate.outputs.today }}"
+          git pull --rebase origin "${CANDIDATE_BRANCH}"
+          git push origin HEAD:"${CANDIDATE_BRANCH}"
+      - name: Safety summary
+        if: always()
+        run: |
+          echo '## DSA Daily Scheduler' >> "${GITHUB_STEP_SUMMARY}"
+          echo '- real orders authorized: false' >> "${GITHUB_STEP_SUMMARY}"
+          echo '- auto recharge: false' >> "${GITHUB_STEP_SUMMARY}"
+          echo '- runtime pointer switch: false' >> "${GITHUB_STEP_SUMMARY}"

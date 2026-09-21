@@ -6,6 +6,7 @@ on:
       - .github/workflows/144-dsa-daily-o-formal-producer.yml
       - .github/workflows/145-dsa-daily-u-formal-producer.yml
       - .github/workflows/146-dsa-daily-formal-production-lint.yml
+      - .github/workflows/148-dsa-daily-formal-default-scheduler.yml
 permissions:
   contents: read
 jobs:
@@ -29,5 +30,8 @@ jobs:
               assert 'real_orders' in raw.lower()
               assert 'force: true' not in raw.lower()
           assert 'U_DAILY_MACRO_AUTHORITY_LATEST.json' in Path(fs[1]).read_text()
+          s=Path('.github/workflows/148-dsa-daily-formal-default-scheduler.yml').read_text();yaml.safe_load(s)
+          assert "cron: '30 9 * * 1-5'" in s and "cron: '35 1 * * 1-5'" in s
+          assert "REAL_ORDERS_AUTHORIZED: 'false'" in s
           print('DSA_DAILY_FORMAL_PRODUCTION_LINT_PASS')
           PY
