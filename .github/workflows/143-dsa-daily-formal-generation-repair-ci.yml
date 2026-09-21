@@ -14,9 +14,11 @@ on:
       - tests/test_u_daily_risk_evidence_v1.py
       - tests/test_dsa_daily_formal_packet_v1.py
       - tests/test_dsa_daily_formal_generation_repair_v1.py
-      - tests/test_dsa_daily_snapshot_identity_semantics_v1.py tests/test_dsa_r0_future_identity_fallback_v1.py tests/test_dsa_r0_membership_seal_v1.py
+      - tests/test_dsa_daily_snapshot_identity_semantics_v1.py tests/test_dsa_r0_future_identity_fallback_v1.py tests/test_dsa_r0_membership_seal_v1.py tests/test_u_daily_ticker_and_coverage_v1.py
       - tests/test_dsa_r0_future_identity_fallback_v1.py
       - tests/test_dsa_r0_membership_seal_v1.py
+      - tests/test_u_daily_ticker_and_coverage_v1.py
+      - scripts/u_production_daily_member_v1.py
       - scripts/run_hk_native_data_probe.py
       - scripts/dsa_daily_o_production_v1.py
       - scripts/dsa_daily_u_production_v1.py

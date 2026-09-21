@@ -12,6 +12,11 @@ from statistics import mean
 
 VERSION="U_PRODUCTION_DAILY_MEMBER_v1"
 
+def yahoo_ticker(code):
+    s=str(code or "").upper().replace("HK","")
+    if not s.isdigit(): raise ValueError("U_YAHOO_CODE_INVALID")
+    return f"{int(s):04d}.HK"
+
 def finite(x):
     try:v=float(x)
     except Exception:return None
@@ -55,7 +60,7 @@ def trend(closes):
 def get_history(code,target):
     import yfinance as yf
     from datetime import date,timedelta
-    ticker=f"{code}.HK"
+    ticker=yahoo_ticker(code)
     end=(date.fromisoformat(target)+timedelta(days=1)).isoformat()
     start=(date.fromisoformat(target)-timedelta(days=120)).isoformat()
     df=yf.download(ticker,start=start,end=end,interval="1d",auto_adjust=False,progress=False,threads=False)

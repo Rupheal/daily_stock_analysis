@@ -12,7 +12,14 @@ def main():
     run([sys.executable,str(root/'scripts/u_production_daily_member_v1.py'),'--universe',str(u),'--target-session',a.target_session,'--member-out',str(member),'--close-out',str(close)],cwd=root,timeout=3600)
     capital=out/'capital'
     run([sys.executable,str(root/'scripts/collect_hk_capital_evidence.py'),'--target-date',a.target_session,'--cutoff',a.target_session+'T17:20:00+08:00','--output',str(capital)],cwd=root,timeout=180)
-    status={'schema_version':1,'target_session':a.target_session,'macro_ready':macro_ready,'r0_refresh_complete':True,'paid_model_calls':0,'real_orders':0}
+    member_obj=json.loads(member.read_text());close_obj=json.loads(close.read_text())
+    member_ready=int(member_obj.get('current_member_count',0));close_ready=int(close_obj.get('current_valid_count',0))
+    r0_complete=(member_ready==45 and close_ready==45)
+    status={'schema_version':1,'target_session':a.target_session,'macro_ready':macro_ready,
+            'r0_refresh_complete':r0_complete,'member_ready':member_ready,'close_valid':close_ready,
+            'paid_model_calls':0,'real_orders':0}
+    if not r0_complete:
+        status['state']='R0_REFRESH_PARTIAL_DATA';(out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
     if not macro_ready:
         status['state']='R0_REFRESH_COMPLETE_WAIT_U_MACRO_AUTHORITY';(out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
     formal_u=a.snapshot_dir/'U_UNIVERSE.json'
