@@ -1,9 +1,25 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "target_session": "2026-09-21",
+  "observed_at": "2026-09-21T15:02:31.407428+00:00",
+  "verification_scope": "R0_DRY_RUN_ONLY",
+  "source_run": 35616148108,
+  "source_artifact": 10645758659,
+  "source_code_head": "436b617c96b34b6fede49c99ba12eb2fdca346b2",
   "macro_ready": false,
   "r0_refresh_complete": true,
+  "r0_price_refresh_complete": true,
+  "r0_scan_denominator": 45,
+  "current_member_count": 45,
+  "current_valid_count": 45,
+  "missing_or_invalid_codes": [],
+  "state": "WAIT_U_MACRO_AUTHORITY",
+  "formal_generation_complete": false,
+  "capital_verified_sources": 2,
+  "capital_cutoff_eligible_sources": 0,
+  "capital_cutoff_note": "Late observations are not backdated to the original decision cutoff.",
   "paid_model_calls": 0,
   "real_orders": 0,
-  "state": "R0_REFRESH_COMPLETE_WAIT_U_MACRO_AUTHORITY"
+  "supersedes_false_completion_run": 35612350752,
+  "history_note": "The earlier run remains in Git history and Actions; its workflow success did not establish actual U price coverage."
 }
