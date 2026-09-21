@@ -28,7 +28,7 @@ jobs:
         with: {ref: research/dsa-daily-formal-generation-repair-20260921, persist-credentials: false}
       - uses: actions/setup-python@v6
         with: {python-version: '3.12'}
-      - run: python -m pip install pytest openpyxl exchange-calendars
+      - run: python -m pip install pytest openpyxl exchange-calendars requests
       - name: Test generation semantics, cost routing and snapshot identity dates
         run: >
           python -m pytest --noconftest -q
