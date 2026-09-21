@@ -4,6 +4,8 @@ on:
     branches: [research/dsa-daily-formal-generation-repair-20260921]
     paths:
       - scripts/dsa_daily_formal_generation_guard_v1.py
+      - scripts/dsa_daily_formal_packet_v1.py
+      - tests/test_dsa_daily_formal_packet_v1.py
       - tests/test_dsa_daily_formal_generation_repair_v1.py
       - docs/runtime/DSA_DAILY_FORMAL_GENERATION_REPAIR_V1.json
       - .github/workflows/143-dsa-daily-formal-generation-repair-ci.yml
@@ -20,4 +22,4 @@ jobs:
         with: {python-version: '3.12'}
       - run: python -m pip install pytest
       - name: Test generation-vs-fallback semantics and independent BUY plumbing
-        run: python -m pytest --noconftest -q tests/test_dsa_daily_formal_generation_repair_v1.py
+        run: python -m pytest --noconftest -q tests/test_dsa_daily_formal_generation_repair_v1.py tests/test_dsa_daily_formal_packet_v1.py
