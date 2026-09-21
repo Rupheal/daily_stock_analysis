@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "acceptance_version": "DSA_CANDIDATE_ADAPTER_V1",
+  "status": "ACCEPTED_ENGINEERING_PARALLEL_SHADOW",
+  "task_id": "TRI-TASK-DSA-RUNTIME-P0",
+  "run_id": "TRI-DSA-CODEX-CANDIDATE-ADAPTER-20260921-001",
+  "branch": "fix/native-private-execution-20260914",
+  "source_head_before_acceptance_receipt": "a8c469d509e512cfa1417dc18627c5e6e35b0055",
+  "implementation_commit": "8c482ba376fa515ec1d1e59292e0c43570a9c6de",
+  "parallel_shadow_commit": "a8c469d509e512cfa1417dc18627c5e6e35b0055",
+  "code": {
+    "adapter": "scripts/dsa_candidate_adapter_v1.py",
+    "tests": "tests/test_dsa_candidate_adapter_v1.py",
+    "governance_pointer": "docs/runtime/DSA_CANDIDATE_ADAPTER_GOVERNANCE_20260921.json",
+    "parallel_shadow_receipt": "docs/runtime/DSA_CANDIDATE_ADAPTER_PARALLEL_SHADOW_20260921.json"
+  },
+  "tests": {
+    "type": "BOUNDED_LOCAL_MIRROR",
+    "command": "pytest -q tests/test_dsa_candidate_adapter_v1.py",
+    "passed": 8,
+    "failed": 0,
+    "duration_seconds": 0.07,
+    "github_actions_runs_for_implementation_commit": 0,
+    "note": "Container had no GitHub network clone path. Targeted unit suite passed in a bounded local mirror; real authority files were separately hash-pinned and re-compared through the GitHub connector."
+  },
+  "source_sha256": {
+    "O_formal": "b6fcdaf1a48f3e4858693b67bdb2a19af885381631ad629d94965923260fcdf3",
+    "U_formal": "d4840a27c60d37d67102763d04b8248699d4d976048b9679b0c39dd5c69df922",
+    "production_orchestrator": "2f86a8b1ffef846a62b2f596c1912a0a5de8d33f7aa1c67b1f5a96f271c6cbe1",
+    "simulation_journal_readiness": "04689604ccffc2c565a93718824c231ba409af3355126a24cdeb66a8e2b1b24a"
+  },
+  "authority_validation": {
+    "target_session": "2026-09-18",
+    "O": {
+      "status": "ACCEPTED_O_FORMAL_TOP3",
+      "state": "WAIT",
+      "official_denominator": 660,
+      "operational_denominator": 657,
+      "formal_acceptance_denominator": 356,
+      "base_exclusions": 3,
+      "operational_exclusions": 301,
+      "qualified_buy": 0
+    },
+    "U": {
+      "state": "BLOCKED",
+      "formal_state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED",
+      "denominator": 45,
+      "formal_valid_rows": 0,
+      "qualified_buy": 0
+    }
+  },
+  "parallel_shadow": {
+    "status": "PASS_WITH_MISMATCH_INVENTORY",
+    "deterministic_receipt_sha256": "865664b91bb72a44453b13af11901be4e7d1f47812e597cb09adc0110540e16c",
+    "classification_match": {
+      "O": true,
+      "U": true
+    },
+    "mismatch_inventory": [
+      {
+        "code": "PRODUCTION_SNAPSHOT_U_RECEIPT_SESSION_STALE",
+        "snapshot": "2026-09-17",
+        "current_formal_authority": "2026-09-18",
+        "disposition": "HANDOFF_TO_CENTRAL_AUDIT; do not rewrite O/U authority"
+      }
+    ]
+  },
+  "fail_closed_tests": [
+    "stale/session conflict",
+    "hash drift",
+    "missing receipt",
+    "authority conflict",
+    "denominator mismatch",
+    "acceptance state",
+    "second authority ledger prohibition",
+    "source mutation guard"
+  ],
+  "side_effects": {
+    "O_authority_writes": 0,
+    "U_authority_writes": 0,
+    "simulation_writes": 0,
+    "new_buy_created": 0,
+    "model_logic_changes": 0,
+    "strategy_parameter_changes": 0,
+    "real_orders": 0
+  },
+  "prohibited_actions_confirmed_absent": [
+    "runtime pointer switch",
+    "Production promotion",
+    "main merge",
+    "force push",
+    "paid data expansion",
+    "auto recharge",
+    "real trading"
+  ],
+  "next_gate": "CENTRAL_AUDIT",
+  "central_audit_handoff_ready": true
+}
