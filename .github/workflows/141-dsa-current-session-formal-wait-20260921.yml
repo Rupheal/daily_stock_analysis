@@ -41,7 +41,7 @@ jobs:
 
       - name: Run formal WAIT contract tests
         run: |
-          python -m pytest -q \
+          python -m pytest --noconftest -q \
             tests/test_dsa_current_session_formal_wait_v1.py \
             tests/test_dsa_formal_receipt_resolver_current_wait_v1.py \
             tests/test_dsa_production_orchestrator_current_wait_v1.py
