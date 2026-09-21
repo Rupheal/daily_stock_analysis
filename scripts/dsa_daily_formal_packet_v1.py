@@ -63,7 +63,7 @@ def build_o(universe:dict,coverage:dict,universe_sha:str,history_sha:str,target:
       "native_model_configuration":"O_DEEPSEEK_FLASH_NONTHINKING_v1",
       "current_universe_sha256":universe_sha,"history_cache_sha256":history_sha,
       "artifact_prefix":"ART-DSA-O-DAILY-"+target.replace("-",""),
-      "per_member_hard_cap_cny":"0.10","per_member_authorized_ceiling_cny":"2.00",
+      "per_member_hard_cap_cny":"0.10","per_member_authorized_ceiling_cny":"0.10",
       "balance_safety_reserve_cny":"0.50","max_shards":16,"max_parallel":4,
       "max_consecutive_provider_failures":2,"max_consecutive_infra_failures":2,
       "automatic_retry":False,"real_orders":0,"simulation_writes":0,"main_merge":False,
