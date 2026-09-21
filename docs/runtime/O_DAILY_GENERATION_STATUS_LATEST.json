@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "target_session": "2026-09-21",
+  "state": "DRY_RUN_PREFLIGHT",
+  "official_denominator": 662,
+  "operational_denominator": 659,
+  "excluded_count": 3,
+  "daily_budget_ceiling_cny": "65.70",
+  "per_member_cap_cny": "0.10",
+  "real_orders": 0
+}
