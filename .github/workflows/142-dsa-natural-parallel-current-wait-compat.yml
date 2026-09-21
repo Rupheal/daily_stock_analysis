@@ -86,6 +86,7 @@ jobs:
             'scripts/dsa_production_orchestrator_v1.py',
             'tests/test_dsa_formal_receipt_resolver_current_wait_v1.py',
             'tests/test_dsa_production_orchestrator_current_wait_v1.py',
+            'tests/test_dsa_readonly_candidate_adapter_v1.py',
             '.github/workflows/142-dsa-natural-parallel-current-wait-compat.yml',
           }
           changed=subprocess.check_output([
