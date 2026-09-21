@@ -132,7 +132,10 @@ def test_trade_action_equivalent_but_control_state_not_equivalent(tmp_path):
     op, up, jp, ap = make_inputs(tmp_path)
     result = compare_read_only(op, up, jp, ap, TARGET, NOW, NEXT)
 
-    assert result["candidate"]["control_state"] == "BLOCKED"
+    # Current-session prerequisite-blocked U is an explicit formal WAIT,
+    # not a malformed/unsafe receipt. Control state still differs from the
+    # active runtime's NO_TRADE_FAIL_CLOSED and therefore remains auditable.
+    assert result["candidate"]["control_state"] == "WAIT_NO_BUY"
     assert result["candidate"]["trade_action"] == "NO_TRADE"
     assert result["active"]["derived_control_state"] == "NO_TRADE_FAIL_CLOSED"
     assert result["comparison"]["trade_action_equivalent"] is True
