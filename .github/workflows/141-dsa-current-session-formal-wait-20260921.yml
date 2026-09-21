@@ -1,0 +1,135 @@
+name: DSA current-session Formal WAIT acceptance 2026-09-21
+
+on:
+  push:
+    branches: [research/dsa-formal-current-session-20260921]
+    paths:
+      - docs/runtime/DSA_CURRENT_SESSION_EVIDENCE_20260921.json
+      - scripts/dsa_current_session_formal_wait_v1.py
+      - scripts/dsa_formal_receipt_resolver_v1.py
+      - scripts/dsa_production_orchestrator_v1.py
+      - tests/test_dsa_current_session_formal_wait_v1.py
+      - tests/test_dsa_formal_receipt_resolver_current_wait_v1.py
+      - tests/test_dsa_production_orchestrator_current_wait_v1.py
+      - .github/workflows/141-dsa-current-session-formal-wait-20260921.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsa-current-session-formal-wait-20260921
+  cancel-in-progress: true
+
+jobs:
+  accept:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: research/dsa-formal-current-session-20260921
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest
+
+      - name: Run formal WAIT contract tests
+        run: |
+          python -m pytest -q \
+            tests/test_dsa_current_session_formal_wait_v1.py \
+            tests/test_dsa_formal_receipt_resolver_current_wait_v1.py \
+            tests/test_dsa_production_orchestrator_current_wait_v1.py
+
+      - name: Generate 2026-09-21 current-session O/U Formal WAIT receipts
+        run: |
+          mkdir -p /tmp/formal
+          python scripts/dsa_current_session_formal_wait_v1.py \
+            --evidence docs/runtime/DSA_CURRENT_SESSION_EVIDENCE_20260921.json \
+            --target-session 2026-09-21 \
+            --o-out /tmp/formal/O_PRODUCTION_FORMAL_LATEST.json \
+            --u-out /tmp/formal/U_PRODUCTION_FORMAL_LATEST.json \
+            --acceptance-out /tmp/formal/DSA_FORMAL_CURRENT_SESSION_ACCEPTANCE_20260921.json
+
+      - name: Resolve generated receipts as current-session Authority
+        run: |
+          cp /tmp/formal/O_PRODUCTION_FORMAL_LATEST.json docs/runtime/O_PRODUCTION_FORMAL_LATEST.json
+          cp /tmp/formal/U_PRODUCTION_FORMAL_LATEST.json docs/runtime/U_PRODUCTION_FORMAL_LATEST.json
+          cp /tmp/formal/DSA_FORMAL_CURRENT_SESSION_ACCEPTANCE_20260921.json docs/runtime/DSA_FORMAL_CURRENT_SESSION_ACCEPTANCE_20260921.json
+          python scripts/dsa_formal_receipt_resolver_v1.py \
+            --root . \
+            --target-session 2026-09-21 \
+            --out /tmp/formal/RESOLVER_20260921.json
+          python - <<'PY'
+          import json
+          o=json.load(open('docs/runtime/O_PRODUCTION_FORMAL_LATEST.json'))
+          u=json.load(open('docs/runtime/U_PRODUCTION_FORMAL_LATEST.json'))
+          a=json.load(open('docs/runtime/DSA_FORMAL_CURRENT_SESSION_ACCEPTANCE_20260921.json'))
+          r=json.load(open('/tmp/formal/RESOLVER_20260921.json'))
+          assert o['target_session']=='2026-09-21'
+          assert o['status']=='PASS_FORMAL_O_DECISION_WAIT_NO_CURRENT_SESSION_RANKING'
+          assert o['Top3']==[] and o['qualified_buy_in_Top3']==0
+          assert u['target_session']=='2026-09-21'
+          assert u['state']=='PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED'
+          assert u['Top3']==[] and u['qualified_BUY']==0
+          assert a['status']=='ACCEPTED_CURRENT_SESSION_FORMAL_WAIT'
+          assert a['prior_session_rankings_not_relabelled'] is True
+          assert r['state']=='READY' and r['orchestrator_permitted'] is True
+          assert a['resource_accounting']['model_http_requests_confirmed']==0
+          assert a['resource_accounting']['real_orders']==0
+          print('CURRENT_SESSION_FORMAL_WAIT_ACCEPTANCE_PASS')
+          PY
+
+      - name: Exercise Production Orchestrator with accepted WAIT receipts
+        run: |
+          python scripts/dsa_production_orchestrator_v1.py \
+            --o docs/runtime/O_PRODUCTION_FORMAL_LATEST.json \
+            --u docs/runtime/U_PRODUCTION_FORMAL_LATEST.json \
+            --target-session 2026-09-21 \
+            --now 2026-09-21T16:35:00+08:00 \
+            --next-session 2026-09-22 \
+            --cycle postclose \
+            --out /tmp/formal/ORCHESTRATOR_20260921.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/formal/ORCHESTRATOR_20260921.json'))
+          assert r['state']=='WAIT_NO_BUY'
+          assert r['tracks']['O']['state']=='WAIT'
+          assert r['tracks']['U']['state']=='WAIT'
+          assert r['qualified_buy_total']==0
+          assert r['real_orders']==0
+          print('CURRENT_SESSION_ORCHESTRATOR_WAIT_PASS')
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DSA_FORMAL_CURRENT_SESSION_20260921
+          path: /tmp/formal/
+          retention-days: 90
+
+      - name: Publish accepted current-session Formal WAIT Authority
+        run: |
+          git add \
+            docs/runtime/DSA_CURRENT_SESSION_EVIDENCE_20260921.json \
+            docs/runtime/O_PRODUCTION_FORMAL_LATEST.json \
+            docs/runtime/U_PRODUCTION_FORMAL_LATEST.json \
+            docs/runtime/DSA_FORMAL_CURRENT_SESSION_ACCEPTANCE_20260921.json \
+            scripts/dsa_current_session_formal_wait_v1.py \
+            scripts/dsa_formal_receipt_resolver_v1.py \
+            scripts/dsa_production_orchestrator_v1.py \
+            tests/test_dsa_current_session_formal_wait_v1.py \
+            tests/test_dsa_formal_receipt_resolver_current_wait_v1.py \
+            tests/test_dsa_production_orchestrator_current_wait_v1.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+Rupheal@users.noreply.github.com'
+          if git diff --cached --quiet; then
+            echo 'NO_CHANGE'
+          else
+            git commit -m 'dsa: accept 2026-09-21 current-session O/U formal WAIT authority'
+            git push origin HEAD:research/dsa-formal-current-session-20260921
+          fi
