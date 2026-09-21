@@ -1,11 +1,11 @@
 {
   "meta": {
     "schema_version": "0.19",
-    "generated_at": "2026-09-19T08:11:19.431549Z",
-    "source_commit": "1e51b8fe93abb29070c532c15a51b8374941355d",
+    "generated_at": "2026-09-21T08:51:17.187532Z",
+    "source_commit": "8a78f004b94694c356583fb5693e1c84fa40bbc1",
     "branch": "research/dsa-dashboard-v019-20260918",
     "latest_validated_run": "TRI-DSA-RESUME-20260918-060-RECOVERED",
-    "evidence_timestamp": "2026-09-19T08:11:19.431549Z"
+    "evidence_timestamp": "2026-09-21T08:51:17.187532Z"
   },
   "authority": {
     "canonical_feed_path": "DSA_DASHBOARD_LIVE_V019.json",
@@ -19,21 +19,16 @@
     "strategy_acceptance": "NONE_FORMAL_SIGNAL_GENERATED_FALSE",
     "overlay_sha256": {
       "O_formal": "b6fcdaf1a48f3e4858693b67bdb2a19af885381631ad629d94965923260fcdf3",
-      "U_formal": "d4840a27c60d37d67102763d04b8248699d4d976048b9679b0c39dd5c69df922",
-      "production_runtime": "7f91795ba33e9b4a3baf2bbd4a209136950a5fa9b7fb235b745ee85ef1beb2f1"
+      "U_formal": "8433f73d1b499c42201614d16c2ab76fa75cb76f62d4a3c8cc01d5f65715e080",
+      "production_runtime": "3a4dcf9ef7cb003db5165bab75917a25f4972b7fefec327611479661375f853c"
     },
     "O_formal": {
       "source": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
       "source_run_id": "TRI-DSA-O-FINAL-20260918-076",
       "status": "ACCEPTED_O_FORMAL_TOP3"
     },
-    "U_formal": {
-      "source": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
-      "source_run_id": "DSA-U-PROD-20260918-PREREQ-WAIT",
-      "state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED"
-    },
     "authority_branch": "fix/native-private-execution-20260914",
-    "authority_commit": "1e51b8fe93abb29070c532c15a51b8374941355d",
+    "authority_commit": "8a78f004b94694c356583fb5693e1c84fa40bbc1",
     "sync_mode": "EVENT_DRIVEN_SANITIZED_BRIDGE"
   },
   "system": {
@@ -93,7 +88,7 @@
     "top3": [],
     "signal": "WAIT",
     "qualified_buy": false,
-    "evidence_status": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED; U_MACRO_CAP_NOT_CURRENT,U_RISK_EVIDENCE_NOT_CURRENT,U_ZONE_CONTRACT_NOT_CURRENT"
+    "evidence_status": "CORE_DATA_REFRESH_PASS; FORMAL_SIGNAL_NOT_GENERATED"
   },
   "data_health": {
     "fresh_preflight": "PENDING_ZERO_MODEL_SENTINEL_PREFLIGHT",
@@ -114,7 +109,7 @@
     "save": "SOURCE_ARTIFACT_RECOVERED",
     "independent_read": "SOURCE_ARTIFACT_DIGEST_RECORDED",
     "sha_match": "SOURCE_ARTIFACT_DIGEST_RECORDED",
-    "revision_check": "1e51b8fe93ab",
+    "revision_check": "8a78f004b946",
     "restore_verified": "NOT_EVALUATED_CURRENT_CYCLE",
     "source_artifact_digest_verified": "RECORDED_FROM_WORKFLOW_ARTIFACT"
   },
