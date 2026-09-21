@@ -28,6 +28,6 @@ jobs:
               assert 'fix/native-private-execution-20260914' in raw
               assert 'real_orders' in raw.lower()
               assert 'force: true' not in raw.lower()
-          assert 'DSA_DAILY_MACRO_AUTHORITY_LATEST.json' in Path(fs[1]).read_text()
+          assert 'U_DAILY_MACRO_AUTHORITY_LATEST.json' in Path(fs[1]).read_text()
           print('DSA_DAILY_FORMAL_PRODUCTION_LINT_PASS')
           PY
