@@ -166,7 +166,7 @@ def classify_u(receipt:dict,target_session:str)->dict:
             blockers.append("U_BUYABILITY_NOT_VERIFIED")
         if not x["industry"]:
             x["industry"]="UNCLASSIFIED"
-        if x.get("zone_status") not in {"APPROVED","VERIFIED","PASS","FORMAL_APPROVED"}:
+        if x.get("zone_status") not in {"APPROVED","APPROVED_NUMERIC","VERIFIED","PASS","FORMAL_APPROVED"}:
             blockers.append("U_BUY_ZONE_NOT_APPROVED")
         if x.get("zone_lower_hkd") is None or x.get("zone_upper_hkd") is None:
             blockers.append("U_BUY_ZONE_MISSING")
