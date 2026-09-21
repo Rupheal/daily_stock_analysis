@@ -6,12 +6,15 @@ on:
       - scripts/dsa_daily_formal_generation_guard_v1.py
       - scripts/dsa_daily_formal_packet_v1.py
       - scripts/dsa_o_cost_value_router_v1.py
-      - tests/test_dsa_o_cost_value_router_v1.py
       - scripts/u_daily_risk_evidence_v1.py
       - scripts/dsa_daily_formal_trigger_v1.py
-      - tests/test_u_daily_risk_evidence_v1.py tests/test_dsa_o_cost_value_router_v1.py
-      - tests/test_dsa_daily_formal_packet_v1.py tests/test_u_daily_risk_evidence_v1.py
+      - scripts/freeze_hk_connect_universe.py
+      - scripts/dsa_daily_market_snapshot_v1.py
+      - tests/test_dsa_o_cost_value_router_v1.py
+      - tests/test_u_daily_risk_evidence_v1.py
+      - tests/test_dsa_daily_formal_packet_v1.py
       - tests/test_dsa_daily_formal_generation_repair_v1.py
+      - tests/test_dsa_daily_snapshot_identity_semantics_v1.py
       - docs/runtime/DSA_DAILY_FORMAL_GENERATION_REPAIR_V1.json
       - .github/workflows/143-dsa-daily-formal-generation-repair-ci.yml
   workflow_dispatch:
@@ -25,6 +28,12 @@ jobs:
         with: {ref: research/dsa-daily-formal-generation-repair-20260921, persist-credentials: false}
       - uses: actions/setup-python@v6
         with: {python-version: '3.12'}
-      - run: python -m pip install pytest
-      - name: Test generation-vs-fallback semantics and independent BUY plumbing
-        run: python -m pytest --noconftest -q tests/test_dsa_daily_formal_generation_repair_v1.py tests/test_dsa_daily_formal_packet_v1.py
+      - run: python -m pip install pytest openpyxl exchange-calendars
+      - name: Test generation semantics, cost routing and snapshot identity dates
+        run: >
+          python -m pytest --noconftest -q
+          tests/test_dsa_daily_formal_generation_repair_v1.py
+          tests/test_dsa_daily_formal_packet_v1.py
+          tests/test_u_daily_risk_evidence_v1.py
+          tests/test_dsa_o_cost_value_router_v1.py
+          tests/test_dsa_daily_snapshot_identity_semantics_v1.py
