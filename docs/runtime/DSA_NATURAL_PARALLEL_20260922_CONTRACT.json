@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "contract_id": "DSA_NATURAL_PARALLEL_20260922_CONTRACT_V1",
+  "target_session": "2026-09-22",
+  "status": "ARMED_CONTRACT_ONLY_NOT_EVIDENCE",
+  "objective": "Collect same-trigger Candidate versus incumbent Gate-D evidence from the real 2026-09-22 session without switching runtime Authority.",
+  "prewindow_seal": "docs/runtime/DSA_MIGRATION_PREWINDOW_SEAL_20260921.json",
+  "required_sequence": [
+    "PREWINDOW_SEAL_ALREADY_FROZEN",
+    "REAL_2026-09-22_NATURAL_PARALLEL_OBSERVATION",
+    "SAME_TRIGGER_GATE_D_RECEIPT",
+    "POSTWINDOW_COMPARISON",
+    "INDEPENDENT_CENTRAL_AUDIT",
+    "MIGRATION_READINESS_DECISION"
+  ],
+  "same_trigger_rules": {
+    "same_target_session": true,
+    "same_observation_cutoff": true,
+    "same_frozen_O_U_authority_inputs": true,
+    "candidate_read_only": true,
+    "incumbent_authority_unchanged": true,
+    "simulation_ledger_write_allowed_only_by_existing_authorized_single_writer": true,
+    "real_orders": false
+  },
+  "comparison_minimum_fields": [
+    "target_session",
+    "source_authority_hashes",
+    "O_state",
+    "U_state",
+    "qualified_buy_total",
+    "entry_command_count",
+    "simulation_write_count",
+    "journal_parent_hash",
+    "journal_result_hash",
+    "blockers",
+    "timestamp_semantics"
+  ],
+  "acceptance": {
+    "require_exact_classifier_match_or_explained_non_authority_drift": true,
+    "require_no_future_or_backdated_evidence": true,
+    "require_journal_parent_cas_if_write_occurs": true,
+    "require_zero_real_orders": true,
+    "require_independent_audit": true
+  },
+  "future_evidence_slots": {
+    "natural_parallel_receipt": null,
+    "same_trigger_gate_d_receipt": null,
+    "postwindow_comparison_receipt": null,
+    "independent_central_audit_receipt": null
+  },
+  "prohibited_before_real_window": [
+    "pre-generating any 2026-09-22 observation result",
+    "marking Migration Readiness READY_FOR_OWNER_GATE",
+    "Atomic Pointer Switch",
+    "Production promotion",
+    "main merge",
+    "paid full-pool O model scan",
+    "real trading"
+  ]
+}
