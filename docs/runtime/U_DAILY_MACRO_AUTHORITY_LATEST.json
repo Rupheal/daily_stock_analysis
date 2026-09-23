@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "authority_id": "U_DAILY_MACRO_AUTHORITY_20260922",
+  "authority_id": "U_DAILY_MACRO_AUTHORITY_20260923",
   "methodology_authority": {
     "path": "docs/dsa-macro-research-contract.json",
     "version": "HK_MACRO_INHERITED_RULES_20260912_v1",
     "sha": "15c010e38719a1d95637dafad027c10e2d1db0d8"
   },
-  "target_session": "2026-09-22",
+  "target_session": "2026-09-23",
   "calendar": "XHKG",
   "session_verification": {
     "actual_xhkg_session": true,
@@ -14,16 +14,21 @@
       {
         "source": "HKEX 2026 Hong Kong securities market holiday schedule",
         "url": "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2025/ce_SEHK_CT_075_2025.pdf",
-        "observation": "2026-09-22 is a Tuesday and is not listed as a Hong Kong securities-market holiday."
+        "observation": "2026-09-23 is a Wednesday and is not one of the 2026 Hong Kong securities-market holidays listed by HKEX."
       },
       {
-        "source": "Reuters, 2026-09-22 Hong Kong market report",
-        "url": "https://www.reuters.com/world/asia-pacific/ligent-technologies-jumps-hong-kong-debut-outpacing-key-indices-2026-09-22/",
-        "observation": "HK-listed Ligent traded on 2026-09-22 and the report quoted live HSI/HSTECH moves, confirming an active Hong Kong cash session."
+        "source": "Hong Kong Association of Banks HKD Interest Settlement Rates",
+        "url": "https://www.hkab.hk/en/rates/hibor",
+        "observation": "HKAB published same-day HIBOR fixings at 11:15 HKT on 2026-09-23, consistent with a current Hong Kong business day."
+      },
+      {
+        "source": "Xinhua via China Daily Hong Kong",
+        "url": "https://www.chinadailyhk.com/hk/article/639996",
+        "observation": "The Hang Seng Index was reported opening on 2026-09-23, providing direct cash-market evidence for the session."
       }
     ]
   },
-  "observed_at_utc": "2026-09-22T09:10:28Z",
+  "observed_at_utc": "2026-09-23T09:09:19Z",
   "numeric_weights": null,
   "quantitative_regime_thresholds": null,
   "evidence": {
@@ -31,109 +36,111 @@
       "engine": "US overnight Nasdaq/SP500/SOX/VIX/sector",
       "status": "PARTIAL",
       "observations": [
-        "For the 2026-09-21 US session, Reuters reported S&P 500 +1.49%, Nasdaq +2.26%, and PHLX Semiconductor Index +4.3%, with communications and technology among leaders.",
-        "A same-session/current-close VIX reading was not independently verified in the free evidence set used for this receipt."
+        "For the 2026-09-22 US session, Reuters reported the Nasdaq reaching a fresh intraday record while the S&P 500 was slightly lower and the Dow fell more than 290 points, showing technology leadership but mixed broad-market breadth.",
+        "Barron's reported the PHLX Semiconductor Index up about 1.1% for a sixth consecutive gain, extending AI/semiconductor leadership.",
+        "A same-session official or independently verified closing VIX observation was not obtained in the free evidence set, so the volatility leg remains incomplete."
       ],
       "sources": [
-        "https://www.reuters.com/business/wall-st-futures-rise-ai-stocks-gain-oil-prices-slide-2026-09-21/"
+        "https://www.reuters.com/business/wall-st-futures-pause-after-ai-rally-focus-mideast-tensions-2026-09-22/",
+        "https://www.barrons.com/livecoverage/stock-market-news-today-092226/card/sox-on-track-for-longest-win-streak-since-april-daLN3HTvWr0PVcibbkkI"
       ]
     },
     "B": {
       "engine": "2Y/10Y/real rates/Fed expectations",
-      "status": "PARTIAL",
+      "status": "SUFFICIENT_FOR_DESCRIPTION",
       "observations": [
-        "Tradeweb-reported US 2Y and 10Y yields were about 4.735% and 4.966% on 2026-09-21; the 10Y was again near 5% on 2026-09-22.",
-        "Reuters reported material odds of an additional Fed hike after the September rate increase.",
-        "A current-session real-yield observation was not independently verified."
+        "Barron's reported the US 2-year Treasury yield around 4.714% and the 10-year around 4.928% on 2026-09-22, with a flatter curve and continued inflation concern.",
+        "FRED reported a 2026-09-22 yield of 2.635% for the 10-year 0.5% Treasury Inflation-Indexed Note due 2028, providing a current real-rate observation for this review rather than leaving the real-rate leg empty.",
+        "Reuters reported Boston Fed President Susan Collins supported the September rate increase because of elevated inflation risk and noted the Fed had signalled a possible additional hike later in 2026."
       ],
       "sources": [
-        "https://www.barrons.com/livecoverage/stock-market-news-today-092126/card/u-s-treasury-yields-decline-as-oil-prices-ease-Vi59BvYRAULGgUH9A578",
-        "https://www.reuters.com/business/wall-st-futures-rise-ai-stocks-gain-oil-prices-slide-2026-09-21/",
-        "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-09-22/"
+        "https://www.barrons.com/livecoverage/stock-market-news-today-092226/card/treasury-yields-track-oil-moves-but-curve-flattening-signals-inflation-concerns-yoQhxFg1ZuqBl3pdysYD",
+        "https://fred.stlouisfed.org/series/DTP10J28",
+        "https://www.reuters.com/business/feds-collins-says-she-supported-rate-hike-warns-elevated-inflation-risks-2026-09-22/"
       ]
     },
     "C": {
       "engine": "Japan/Korea indices and FX, Asian opening",
-      "status": "PARTIAL",
+      "status": "SUFFICIENT_FOR_DESCRIPTION",
       "observations": [
-        "Japan cash equities were closed for an extended holiday, so no fresh Nikkei cash close existed for 2026-09-22.",
-        "South Korea and broader Asian technology shares were firmer; AP reported KOSPI +0.2% and Reuters described tech-led gains across Asia.",
-        "Reuters reported USD/JPY near 157.7 with the yen weaker as expectations for rapid BOJ tightening faded."
+        "Reuters reported South Korean stocks up about 0.9% on 2026-09-23, with Samsung nearly 1% higher, while Taiwan gained about 0.8% as AI-related risk appetite remained constructive.",
+        "Japan's cash market was closed for a holiday, so there was no fresh Nikkei cash-session print to obtain; Nikkei futures were about 1,760 points above Friday's cash close. This is a calendar-driven absence rather than an unverified missing observation.",
+        "Reuters reported USD/JPY around 157.76, with the dollar firm and the yen weak."
       ],
       "sources": [
-        "https://apnews.com/article/de8c5f9659e44556e40e661f794b48ad",
-        "https://www.reuters.com/markets/europe/global-markets-view-europe-2026-09-22/",
-        "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-09-22/"
+        "https://www.reuters.com/world/china/global-markets-global-markets-2026-09-23/"
       ]
     },
     "D": {
       "engine": "HSI/HSTECH/CSI300/CNH/HIBOR/HK flows",
       "status": "PARTIAL",
       "observations": [
-        "During the 2026-09-22 Hong Kong session Reuters reported HSI +0.3% and HSTECH +0.6%; another Reuters-sourced market snapshot had HSI +0.4%, HSTECH +1.0% and CSI300 +0.5% at midday.",
-        "Offshore yuan was near a multi-year high around 6.6946 per US dollar on 2026-09-21 after the PBOC allowed a stronger fixing path.",
-        "A same-session HIBOR observation and a fully verified post-close HSI/HSTECH/CSI300/CNH bundle were not all available in the free evidence set."
+        "Reuters reported the CSI300 down about 0.5% and the Hang Seng Index down about 0.8% by the 2026-09-23 lunch break as investors tempered expectations ahead of the US-China leaders' meeting.",
+        "HKAB published 2026-09-23 HIBOR fixings: overnight 2.34333%, 1-week 2.42030%, 1-month 2.88571%, 3-month 3.11566%, 6-month 3.47726% and 12-month 3.90833%.",
+        "Free current-session sources indicated a softer offshore yuan near 6.70 per US dollar and weaker Hong Kong technology shares, but a single independently verified post-close HSI/HSTECH/CSI300/CNH bundle was not obtained.",
+        "Southbound-flow evidence is handled separately in engine G and is not inferred from index price or turnover."
       ],
       "sources": [
-        "https://www.reuters.com/world/asia-pacific/ligent-technologies-jumps-hong-kong-debut-outpacing-key-indices-2026-09-22/",
-        "https://m.economictimes.com/markets/us-stocks/news/global-market-china-stocks-climb-on-ai-boost-us-china-talks-in-focus/amp_articleshow/134403343.cms",
-        "https://www.reuters.com/world/asia-pacific/yuan-hits-fresh-multi-year-peak-pboc-eases-curb-ahead-trump-xi-summit-2026-09-21/"
+        "https://www.brecorder.com/news/40440819",
+        "https://www.hkab.hk/en/rates/hibor",
+        "https://tradingeconomics.com/hong-kong/stock-market/news/585872"
       ]
     },
     "E": {
       "engine": "war/Brent/WTI/gold, growth vs inflation",
       "status": "SUFFICIENT_FOR_DESCRIPTION",
       "observations": [
-        "Brent rebounded above $100 to about $101.67 on 2026-09-22 and was still roughly 12% higher for September, while physical crude stress remained elevated.",
-        "Gold fell as higher-for-longer rate expectations strengthened; Reuters linked oil and commodity pressure to renewed inflation and rate-hike risk.",
-        "This combination is inflationary/rate-tightening pressure rather than clean growth-only risk-on."
+        "Reuters reported oil falling for a sixth consecutive session on 2026-09-23 as supply concerns eased and hopes for US-Iran diplomacy increased; Brent was below $100 and near two-week lows.",
+        "The same Reuters global-market report stressed that a durable restoration of Strait of Hormuz flows would matter for inflation and rates, while also warning that previous de-escalation hopes had reversed quickly.",
+        "Gold had softened as higher-for-longer rate expectations persisted, leaving the macro impulse mixed: easing oil pressure is supportive, but geopolitical and monetary-policy risk remain material."
       ],
       "sources": [
-        "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-09-22/",
-        "https://www.reuters.com/world/india/gold-muted-higher-for-longer-rate-outlook-weighs-2026-09-22/"
+        "https://www.reuters.com/world/china/global-markets-global-markets-2026-09-23/",
+        "https://live.euronext.com/en/financial-news/oil-holds-near-two-week-lows-easing-supply-concerns"
       ]
     },
     "F": {
       "engine": "policy execution, first-party business information, industry opinion, personal/social sentiment",
       "status": "PARTIAL",
       "observations": [
-        "Hong Kong's 2026 Policy Address and follow-up official meetings emphasized strengthening the financial centre, RMB business, mutual market access, and innovation/technology development.",
-        "First-party/company-specific market evidence was constructive in AI-linked Hong Kong activity, including Alibaba's expanded AI/chip roadmap and Ligent's strong IPO debut.",
-        "A broad, verified current-session personal/social-sentiment sample was not available and was not inferred from price action."
+        "The HKMA/TMA Treasury Markets Summit held in Hong Kong on 2026-09-23 provided same-session first-party policy evidence: HKMA Chief Executive Eddie Yue outlined initiatives to deepen offshore RMB liquidity, encourage bond issuance, modernise infrastructure and support digital and cross-border fixed-income activity.",
+        "The 2026 Hong Kong policy framework remains supportive of mutual market access, capital-market liquidity and innovation/technology development.",
+        "Reuters' current market reporting continued to show constructive AI-industry evidence, but a broad, verified same-session personal/social-sentiment sample was not available and was not inferred from market prices."
       ],
       "sources": [
-        "https://www.news.gov.hk/eng/2026/09/20260916/20260916_095037_238.html",
-        "https://www.info.gov.hk/gia/general/202609/22/P2026092200260.htm",
-        "https://www.reuters.com/business/retail-consumer/alibaba-plans-ai-model-with-5-trillion-10-trillion-parameters-unveils-new-chip-2026-09-22/",
-        "https://www.reuters.com/world/asia-pacific/ligent-technologies-jumps-hong-kong-debut-outpacing-key-indices-2026-09-22/"
+        "https://www.info.gov.hk/gia/general/202609/23/P2026092200566.htm",
+        "https://www.policyaddress.gov.hk/2026/en/chapter3.html",
+        "https://www.reuters.com/business/retail-consumer/alibaba-plans-ai-model-with-5-trillion-10-trillion-parameters-unveils-new-chip-2026-09-22/"
       ]
     },
     "G": {
       "engine": "Southbound, verified foreign/local/passive/retail/arbitrage sources",
       "status": "INCOMPLETE",
       "observations": [
-        "HKEX provides daily Stock Connect statistics, but the current-session 2026-09-22 values were not exposed in a directly verifiable free result during this run.",
-        "Only older weekly/through-2026-09-18 Southbound summaries were available from secondary research; these are not a substitute for current-session flow evidence.",
-        "No current-session verified decomposition for foreign/local/passive/retail/arbitrage participation was available, and no investor identity was inferred from turnover or price."
+        "HKEX remains the preferred authority for daily Stock Connect statistics, but a directly verifiable official 2026-09-23 Southbound net-flow value was not exposed in the free evidence path used for this run.",
+        "Two same-day secondary reports conflict materially: one reports Southbound net selling of HKD 6.792 billion and another reports net selling of HKD 2.754 billion. The discrepancy is not reconciled by an official current-session source, so neither figure is promoted to Authority.",
+        "No current-session source was found that can reliably decompose foreign/local/passive/retail/arbitrage participation. Investor identity is therefore not inferred from turnover, price action, or Stock Connect net turnover."
       ],
       "sources": [
-        "https://www.hkex.com.hk/Mutual-Market/Stock-Connect/Statistics/Historical-Daily?sc_lang=en"
+        "https://www.hkex.com.hk/Mutual-Market/Stock-Connect/Statistics/Historical-Daily?sc_lang=en",
+        "https://gmteight.com/flash/detail/1425794",
+        "https://gmt8press.com/flash/detail/1413301"
       ]
     }
   },
   "qualitative_read": {
-    "directional_summary": "Risk appetite was constructive in US and Asian technology/AI equities, but the macro tape remained materially conflicted by oil above $100, near-5% US 10Y yields and renewed tightening expectations.",
+    "directional_summary": "Cross-market evidence is mixed rather than cleanly risk-on or risk-off: US and Asian semiconductors/AI remain firm and oil has eased below $100, but US rates remain restrictive, Hong Kong/China equities weakened during the session, and current-session capital-flow attribution is not verified.",
     "regime_label": null,
     "position_ceiling_pct": null,
-    "reason_for_no_regime": "The accepted contract states that reference exposure bands must not be applied from incomplete engines. Engines A, B, C, D, F and especially G retain material same-session evidence gaps, so a bounded formal regime/cap is not authorized."
+    "reason_for_no_regime": "The accepted contract explicitly states that its inherited exposure bands are not fitted/validated and must not be applied from incomplete engines. Engine G is materially incomplete and engines A, D and F retain same-session evidence gaps, so a bounded formal regime label and numeric position ceiling are not authorized."
   },
   "blockers": [
-    "G_CURRENT_SESSION_SOUTHBOUND_DAILY_FLOW_NOT_VERIFIED",
+    "G_OFFICIAL_CURRENT_SESSION_SOUTHBOUND_NET_FLOW_NOT_VERIFIED",
+    "G_CONFLICTING_CURRENT_SESSION_SECONDARY_SOUTHBOUND_VALUES",
     "G_CURRENT_SESSION_INVESTOR_CLASS_DECOMPOSITION_UNAVAILABLE",
-    "B_CURRENT_REAL_YIELD_NOT_VERIFIED",
-    "A_CURRENT_VIX_CLOSE_NOT_VERIFIED",
-    "D_FULL_POST_CLOSE_HSI_HSTECH_CSI300_CNH_HIBOR_BUNDLE_INCOMPLETE",
-    "F_CURRENT_SESSION_SOCIAL_SENTIMENT_NOT_VERIFIED"
+    "A_CURRENT_SESSION_VIX_CLOSE_NOT_INDEPENDENTLY_VERIFIED",
+    "D_SINGLE_VERIFIED_POST_CLOSE_HSI_HSTECH_CSI300_CNH_BUNDLE_INCOMPLETE",
+    "F_CURRENT_SESSION_BROAD_SOCIAL_SENTIMENT_NOT_VERIFIED"
   ],
   "result": {
     "formal_macro_cap_available": false,
