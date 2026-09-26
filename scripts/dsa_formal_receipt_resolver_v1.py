@@ -7,6 +7,10 @@ historical acceptance receipts only when their target_session matches exactly.
 from __future__ import annotations
 import argparse,json
 from pathlib import Path
+if __package__:
+    from .dsa_production_orchestrator_v1 import o_denominators,SignalContractError
+else:
+    from dsa_production_orchestrator_v1 import o_denominators,SignalContractError
 
 def load(p): return json.loads(p.read_text())
 
@@ -29,13 +33,15 @@ def resolve(root:Path,target:str)->dict:
             if session==target:
                 if track=="O":
                     status=str(d.get("status") or "")
+                    try:
+                        o_denominators(d)
+                    except SignalContractError as exc:
+                        raise ValueError("O_MATCHING_RECEIPT_NOT_FORMALLY_USABLE:"+str(exc)) from exc
                     if status=="ACCEPTED_O_FORMAL_TOP3":
                         ok=int(d.get("missing_count",-1))==0
                     elif status.startswith("PASS_FORMAL_O_DECISION_WAIT"):
                         ok=(
-                          int(d.get("official_O_denominator",-1))==660
-                          and int(d.get("operational_O_denominator",-1))==657
-                          and int(d.get("current_session_formal_signals",-1))==0
+                          int(d.get("current_session_formal_signals",-1))==0
                           and int(d.get("qualified_buy_in_Top3",-1))==0
                           and (d.get("Top3") or [])==[]
                         )

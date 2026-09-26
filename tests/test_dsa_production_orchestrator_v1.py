@@ -9,6 +9,9 @@ NEXT='2026-09-21'
 
 def o_wait():
     return {'status':'ACCEPTED_O_FORMAL_TOP3','target_session':TARGET,'missing_count':0,
+      'official_O_denominator':660,'operational_O_denominator':657,
+      'signal_timing':{'cutoff':'2026-09-18T16:00:00+08:00','available_at':'2026-09-18T16:30:00+08:00',
+                       'valid_until':'2026-09-22T16:30:00+08:00','next_session':NEXT},
       'qualified_buy_in_Top3':0,'Top3':[
         {'code':'00148','rank':1,'sentiment_score':59,'action':'hold','action_family':'hold'},
         {'code':'00177','rank':2,'sentiment_score':59,'action':'hold','action_family':'hold'},
@@ -16,6 +19,8 @@ def o_wait():
 
 def u_wait(session=TARGET):
     return {'state':'PASS_FORMAL_U_DECISION_WAIT_NO_BUY','target_session':session,
+      'signal_timing':{'cutoff':'2026-09-18T16:00:00+08:00','available_at':'2026-09-18T16:30:00+08:00',
+                       'valid_until':'2026-09-22T16:30:00+08:00','next_session':NEXT},
       'denominator':45,'formal_valid_rows':44,'qualified_BUY':0,'Top3':[],'rows':[]}
 
 def write(tmp_path,name,obj):

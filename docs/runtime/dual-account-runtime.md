@@ -1,5 +1,20 @@
 # 双模型模拟运行入口 v1（2026-09-14）
 
+## 2026-09-26 隔离候选：不可变信号契约
+
+此变更仅为工程候选，不切换 Runtime、不修改历史 journal、不代表真实周期验收。
+
+- O 的 official/operational 分母必须是当前正式回执中的正整数，且 operational 不大于 official；不再把 660/657 当作永久常量。生成型正式回执且 missing_count=0 时，覆盖数使用该 operational 分母；无当期排名的 WAIT 覆盖数为 0。U 保留 45 分母，覆盖数读取 formal_valid_rows。
+- 回执必须携带不可变 `signal_timing` 对象，含带时区的 `cutoff`、`available_at`、`valid_until`，及 `next_session`。这些字段必须来自经过核验的正式生产/发布证据；本模块只校验契约，不能证明其权威性。不得由重试时钟、文件修改时间或计划时刻补造。
+- 验证顺序为 cutoff ≤ available_at ≤ valid_until；执行时刻不得早于 available_at 或晚于 valid_until，next_session 必须与已验证会话路由一致。过期信号不能通过重试延长有效期。
+- SIGNAL 的 at 固定为源 available_at；生成报告的 generated_at 仍为本次执行时刻。命令来源使用内容寻址的 sha256 引用，同一回执原始字节跨工作目录、跨重试生成完全一致的命令。
+- 缺少时间、分母、覆盖证据或输入对象与磁盘原始字节不一致时，该轨进入 BLOCKED 且不输出 SIGNAL/ENTRY。不得仅为恢复旧行为而填充元数据。
+- 现有历史正式回执没有完整 signal_timing；未在本次变更中补写或重新验收。生产者提供独立验证的完整时间证据、正式 CI 与 Alienware 验证通过、Owner 批准后，才能考虑部署此候选。
+- 原有同 ID 内容漂移拒绝保持不变。若历史 journal 已有旧构造方式的命令，同 ID 新内容仍会被拒绝；不得改写旧账本、换 ID 重复入场或静默跳过冲突，必须进入单独的迁移审查。
+- 当前仅验证纯离线编排/解析及真实账本模块的 synthetic 回归，不代表真实行情、Drive 持久化、Entry hook 部署或真实 Shadow Cycle 通过。未新增环境配置项，英文专题文档未同步，因为本次修改的是这份现有中文运行契约；代码和测试说明保持英文。
+
+回滚：部署前直接弃用候选代码；若未来获批部署，回滚代码时仍保留全部 journal 历史与原有冲突校验。
+
 ## Run013实现接续
 
 实际43号工作流已改为Drive原始字节保存；44号只作离线及合成恢复准备。OAuth缺失时不调用模型。限定授权操作见 `DRIVE_OWNER_SETUP.zh-CN.md`。既有私密GitHub脚本保留作备选；ESSD R本批无复制回执，NAS待接入；权威账本保持原ID。下列旧Run009/Run012说明按历史证据保留，不代表当前存储执行路径。

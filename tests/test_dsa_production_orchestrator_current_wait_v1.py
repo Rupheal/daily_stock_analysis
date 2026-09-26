@@ -12,6 +12,8 @@ def o_wait():
     return {
       "status":"PASS_FORMAL_O_DECISION_WAIT_NO_CURRENT_SESSION_RANKING",
       "target_session":TARGET,
+      "signal_timing":{"cutoff":"2026-09-21T16:00:00+08:00","available_at":"2026-09-21T16:32:37+08:00",
+                       "valid_until":"2026-09-25T16:32:37+08:00","next_session":NEXT},
       "official_O_denominator":660,
       "operational_O_denominator":657,
       "current_session_formal_signals":0,
@@ -24,6 +26,8 @@ def u_wait():
     return {
       "state":"PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED",
       "target_session":TARGET,
+      "signal_timing":{"cutoff":"2026-09-21T16:00:00+08:00","available_at":"2026-09-21T16:32:37+08:00",
+                       "valid_until":"2026-09-25T16:32:37+08:00","next_session":NEXT},
       "denominator":45,
       "formal_valid_rows":0,
       "qualified_BUY":0,

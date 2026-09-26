@@ -2,7 +2,10 @@ import json
 from pathlib import Path
 from scripts.dsa_formal_receipt_resolver_v1 import resolve
 
-def w(p,obj): p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(obj))
+def w(p,obj):
+    if obj.get('status')=='ACCEPTED_O_FORMAL_TOP3':
+        obj={**obj,'official_O_denominator':660,'operational_O_denominator':657}
+    p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(obj))
 def test_production_latest_wins_exact_target(tmp_path):
     w(tmp_path/'docs/runtime/O_PRODUCTION_FORMAL_LATEST.json',{'status':'ACCEPTED_O_FORMAL_TOP3','target_session':'2026-09-18','missing_count':0})
     w(tmp_path/'docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json',{'status':'ACCEPTED_O_FORMAL_TOP3','target_session':'2026-09-17','missing_count':0})
