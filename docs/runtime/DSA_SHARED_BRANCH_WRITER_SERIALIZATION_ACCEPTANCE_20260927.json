@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "receipt_id": "DSA_SHARED_BRANCH_WRITER_SERIALIZATION_ACCEPTANCE_20260927",
+  "status": "PASS_ENGINEERING_CANDIDATE_NOT_DEPLOYED",
+  "target_shared_branch": "fix/native-private-execution-20260914",
+  "candidate_branch": "fix/dsa-shared-writer-serialization-20260927",
+  "candidate_head": "33feacb012c35e0a9ac8f53900167aa5437ba267",
+  "acceptance_run_id": 36258422600,
+  "acceptance_run_conclusion": "success",
+  "acceptance_job_id": 108449975142,
+  "scanner": "tests/test_shared_branch_writer_concurrency_v1.py",
+  "discovered_writer_count": 25,
+  "initial_known_writers": 5,
+  "additional_hidden_writers_found": 20,
+  "required_concurrency": {
+    "group": "dsa-native-private-branch-writer",
+    "cancel_in_progress": false,
+    "queue": "max"
+  },
+  "assertions": [
+    "all discovered workflows with target branch + contents:write + git push share the same writer queue",
+    "no discovered shared-branch writer uses force push",
+    "repository-wide scanner is future-regression guard"
+  ],
+  "first_detection_run": {
+    "run_id": 36258269237,
+    "conclusion": "failure",
+    "reason": "scanner correctly found 20 additional unserialized shared-branch writers"
+  },
+  "boundaries": {
+    "deployed": false,
+    "production_pointer_switched": false,
+    "main_merge": false,
+    "journal_rewritten": false,
+    "real_orders": 0,
+    "paid_permissions_changed": false
+  }
+}
