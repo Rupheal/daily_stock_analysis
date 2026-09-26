@@ -17,16 +17,26 @@ def parse_hkex_identity_session(label):
  try:return datetime.strptime(label[len(prefix):],'%d/%m/%Y').date().isoformat()
  except ValueError as exc:raise ValueError('HKEX_IDENTITY_DATE_HEADER_INVALID') from exc
 
-def freeze(root,session,u_path,allowed_identity_sessions=None):
+def freeze(root,session,u_path,allowed_identity_sessions=None,effective_evidence=None):
  root=Path(root);a=json.loads((root/'sse-list.json').read_text());meta=json.loads((root/'szse-list.json').read_text())[0]['metadata'];sse=a['result'];sz=workbook_rows(root/'szse-list.xlsx');hk=workbook_rows(root/'hkex-securities.xlsx')
  if len(sse)!=int(a['pageHelp']['total']) or a['pageHelp']['pageCount']!=1:raise ValueError('SSE_INCOMPLETE_PAGINATION')
- if not sse or {r['UPDATE_DATE'] for r in sse}!={session}:raise ValueError('SSE_SESSION_UNVERIFIED')
- if meta['subname']!=session or len(sz)-1!=int(meta['recordcount']):raise ValueError('SZSE_DATE_OR_COMPLETENESS_UNVERIFIED')
+ if not sse or (effective_evidence is None and {r['UPDATE_DATE'] for r in sse}!={session}):raise ValueError('SSE_SESSION_UNVERIFIED')
+ if (effective_evidence is None and meta['subname']!=session) or len(sz)-1!=int(meta['recordcount']):raise ValueError('SZSE_DATE_OR_COMPLETENESS_UNVERIFIED')
  if tuple(sz[0][:3])!=('证券代码','中文简称','英文简称'):raise ValueError('SZSE_HEADER_CHANGED')
  identity_session=parse_hkex_identity_session(hk[1][0])
  allowed=set(allowed_identity_sessions or [session])
  if identity_session not in allowed:raise ValueError('HKEX_IDENTITY_DATE_UNVERIFIED:'+identity_session+':ALLOWED='+','.join(sorted(allowed)))
  if tuple(hk[2][:5])!=('Stock Code','Name of Securities','Category','Sub-Category','Board Lot'):raise ValueError('HKEX_HEADER_CHANGED')
+ effective_audit=None
+ if effective_evidence is not None:
+  from dsa_effective_membership_v1 import reconcile
+  proof=json.loads(Path(effective_evidence).read_bytes())
+  if {r['UPDATE_DATE'] for r in sse}!={proof['channels']['SSE']['list_update_date']} or meta['subname']!=proof['channels']['SZSE']['list_update_date']:raise ValueError('LIST_LABEL_PROOF_MISMATCH')
+  for channel,filename in [('SSE','sse-list.json'),('SZSE','szse-list.xlsx')]:
+   if proof['channels'][channel]['baseline_evidence']['sha256']!=sha(root/filename):raise ValueError('BASELINE_FILE_NOT_BOUND')
+  archive=(Path(effective_evidence).resolve().parent/proof['source_archive']).resolve()
+  if not archive.is_relative_to(Path(effective_evidence).resolve().parent):raise ValueError('AMENDMENT_ARCHIVE_OUTSIDE_PROOF_ROOT')
+  sse,sz,effective_audit=reconcile(sse,sz,archive,session,proof)
  securities={str(r[0]).zfill(5):r for r in hk[3:] if r[0] is not None}
  sbuy={r['SECURITY_CODE']:r for r in sse if r['TRADE_FLAG']=='1'}
  if any(r['TRADE_FLAG'] not in ('1','2') for r in sse):raise ValueError('UNKNOWN_TRADE_FLAG')
@@ -46,11 +56,11 @@ def freeze(root,session,u_path,allowed_identity_sessions=None):
  lookup={x['code']:x for x in members};u=json.loads(Path(u_path).read_text());assert len(u['members'])==u['member_count']==45
  ur=[]
  for m in u['members']:
-  code=m['code'];h=securities.get(code);ur.append({**m,'membership_asof':session,'official_current_membership':'buy_sell' if code in lookup else 'absent_from_both_current_buy_sell_lists','execution_eligibility':'verified_current_buy_sell' if code in lookup else 'not_in_verified_current_southbound_buy_sell_union','identity_verified':bool(h),'official_name':h[1] if h else None,'board_lot':int(str(h[4]).replace(',','')) if h else None,'currency':h[16] if h else None,'channels':lookup.get(code,{}).get('channels',[])})
- now=datetime.now(timezone.utc).isoformat();common={'schema_version':2,'effective_session':session,'observed_at_utc':now,'sources':manifest,'not_available_for_earlier_decisions':True,
+  code=m['code'];h=securities.get(code);ur.append({**m,'membership_asof':session,'official_current_membership':'buy_sell' if code in lookup else 'absent_from_both_current_buy_sell_lists','execution_eligibility':('CANDIDATE_PENDING_REVIEW' if effective_audit else 'verified_current_buy_sell') if code in lookup else 'not_in_verified_current_southbound_buy_sell_union','identity_verified':bool(h),'official_name':h[1] if h else None,'board_lot':int(str(h[4]).replace(',','')) if h else None,'currency':h[16] if h else None,'channels':lookup.get(code,{}).get('channels',[])})
+ now=datetime.now(timezone.utc).isoformat();common={'schema_version':2,'effective_session':session,'observed_at_utc':now,'sources':manifest,'not_available_for_earlier_decisions':True,'effective_membership_audit':effective_audit,
  'identity_master':{'source':'HKEX ListOfSecurities','asof_session':identity_session,'allowed_sessions':sorted(allowed),'same_session':identity_session==session,'membership_authority':False,
  'semantics':'Identity/category/board-lot reference only. SSE/SZSE exact-session lists remain the Southbound membership authority.'}}
- return ({**common,'universe_id':'O_SOUTHBOUND_BUY_SELL_'+session,'member_count':len(members),'full_union_verified':True,'members':members,'excluded_non_stocks':excluded,'sell_only_sse_codes':[r['SECURITY_CODE'] for r in sse if r['TRADE_FLAG']=='2']},{**u,**common,'members':ur})
+ return ({**common,'universe_id':'O_SOUTHBOUND_BUY_SELL_'+session,'member_count':len(members),'full_union_verified':effective_audit is None,'candidate_union_complete':True,'members':members,'excluded_non_stocks':excluded,'sell_only_sse_codes':[r['SECURITY_CODE'] for r in sse if r['TRADE_FLAG']=='2']},{**u,**common,'members':ur})
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--sources',required=True);p.add_argument('--session',required=True);p.add_argument('--u-universe',required=True);p.add_argument('--out',required=True);a=p.parse_args();o,u=freeze(a.sources,a.session,a.u_universe);out=Path(a.out);out.mkdir(parents=True,exist_ok=True)

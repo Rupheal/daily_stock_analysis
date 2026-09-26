@@ -4,8 +4,9 @@ import argparse,json,os,subprocess,sys
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from decimal import Decimal,ROUND_FLOOR
 from pathlib import Path
+from dsa_producer_generation_v1 import record_generated
 import httpx
-from dsa_daily_formal_packet_v1 import build_o
+from dsa_daily_formal_packet_v1 import build_o, market_session_for_decision
 from aggregate_o_formal_ranking_v3 import aggregate
 from finalize_o_formal_acceptance_v3 import finalize
 from dsa_o_cost_value_router_v1 import decide as decide_cost_route
@@ -28,15 +29,17 @@ def provider_capacity():
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--research-root',type=Path,required=True);ap.add_argument('--original-root',type=Path,required=True)
+    ap.add_argument('--market-data-session',help='Verified completed XHKG price session; defaults to decision session')
     ap.add_argument('--target-session',required=True);ap.add_argument('--snapshot-dir',type=Path,required=True)
+    ap.add_argument('--delivery-root',type=Path,help='Opt-in isolated file-store publication; no formal activation')
     ap.add_argument('--out',type=Path,required=True);ap.add_argument('--dry-run',action='store_true')
     ap.add_argument('--mode',choices=['R0_ONLY','CALIBRATION_FULL','SELECTIVE'],default='R0_ONLY')
     ap.add_argument('--calibration',type=Path)
-    a=ap.parse_args();root=a.research_root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
+    a=ap.parse_args();market=market_session_for_decision(a.target_session,a.market_data_session);root=a.research_root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
     if a.mode=='R0_ONLY':
         od=a.snapshot_dir/'O_R0_UNIVERSE.json'
         data=out/'market'
-        run([sys.executable,str(root/'scripts/run_hk_native_data_probe.py'),'--checkout',str(a.original_root.resolve()),'--universe',str(od),'--scope','O_r0_membership_data_only','--expected-date',a.target_session,'--decision-session',a.target_session,'--expected-commit',UPSTREAM,'--target-boundary-adapter','--timeout','1800','--output',str(data)])
+        run([sys.executable,str(root/'scripts/run_hk_native_data_probe.py'),'--checkout',str(a.original_root.resolve()),'--universe',str(od),'--scope','O_r0_membership_data_only','--expected-date',market,'--decision-session',a.target_session,'--expected-commit',UPSTREAM,'--target-boundary-adapter','--timeout','1800','--output',str(data)])
         universe=json.loads(od.read_text());coverage=json.loads((data/'coverage.json').read_text())
         status={'schema_version':1,'target_session':a.target_session,'state':'R0_ONLY_REFRESH_COMPLETE',
                 'official_membership_denominator':universe.get('raw_membership_denominator',universe.get('member_count')),
@@ -50,9 +53,9 @@ def main():
         status={'schema_version':1,'target_session':a.target_session,'state':'WAIT_EXACT_IDENTITY_MASTER_FOR_FORMAL','paid_model_calls':0,'real_orders':0}
         (out/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n');print(json.dumps(status));return
     data=out/'market'
-    run([sys.executable,str(root/'scripts/run_hk_native_data_probe.py'),'--checkout',str(a.original_root.resolve()),'--universe',str(od),'--scope','O_full_pool_data_only','--expected-date',a.target_session,'--decision-session',a.target_session,'--expected-commit',UPSTREAM,'--target-boundary-adapter','--timeout','1800','--output',str(data)])
+    run([sys.executable,str(root/'scripts/run_hk_native_data_probe.py'),'--checkout',str(a.original_root.resolve()),'--universe',str(od),'--scope','O_full_pool_data_only','--expected-date',market,'--decision-session',a.target_session,'--expected-commit',UPSTREAM,'--target-boundary-adapter','--timeout','1800','--output',str(data)])
     universe=json.loads(od.read_text());coverage=json.loads((data/'coverage.json').read_text())
-    packet=build_o(universe,coverage,__import__('hashlib').sha256(od.read_bytes()).hexdigest(),__import__('hashlib').sha256((data/'market-history.json').read_bytes()).hexdigest(),a.target_session)
+    packet=build_o(universe,coverage,__import__('hashlib').sha256(od.read_bytes()).hexdigest(),__import__('hashlib').sha256((data/'market-history.json').read_bytes()).hexdigest(),a.target_session,market)
     for name in ('policy','ledger','scope'):(out/(name+'.json')).write_text(json.dumps(packet[name],ensure_ascii=False,indent=2)+'\n')
     cal=json.loads(a.calibration.read_text()) if a.calibration and a.calibration.exists() else None
     route=decide_cost_route(a.mode,packet['operational_denominator'],cal)
@@ -92,8 +95,16 @@ def main():
         else:sources.append((f'SHARD_{sid}',{'members':[]}))
     rank=aggregate(universe,packet['policy'],sources);rank['run_id']='DSA-O-DAILY-'+a.target_session.replace('-','')
     acc=finalize(rank,packet['policy'])
+    acc['market_data_session']=market
+    acc['decision_session']=a.target_session
+    acc['morning_confirmation']='NOT_YET_ACCEPTED' if market!=a.target_session else 'NOT_APPLICABLE'
+    # Only a new provider result is emitted here; no prior receipt is relabelled.
     (out/'RANKING.json').write_text(json.dumps(rank,ensure_ascii=False,indent=2)+'\n')
     (out/'O_FORMAL.json').write_text(json.dumps(acc,ensure_ascii=False,indent=2)+'\n')
+    generation=record_generated(out/'O_FORMAL.json', 'O', a.target_session)
+    if a.delivery_root:
+        from dsa_receipt_delivery_v1 import publish
+        publish(out/'O_FORMAL.json',generation,a.delivery_root)
     status.update(state='GENERATED' if acc['status']=='ACCEPTED_O_FORMAL_TOP3' else 'NOT_ACCEPTED',formal_status=acc['status'],qualified_buy_in_Top3=acc.get('qualified_buy_in_Top3'),missing_count=acc.get('missing_count'))
     (out/'STATUS.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n');print(json.dumps(status))
 if __name__=='__main__':main()

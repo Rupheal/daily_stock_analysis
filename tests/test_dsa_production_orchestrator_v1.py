@@ -71,7 +71,7 @@ def test_qualified_buy_blocks_entry_when_evidence_missing(tmp_path):
     assert r['entry_blockers']['U']==['ENTRY_EVIDENCE_MISSING']
     assert not any(x['kind']=='ENTRY' for x in r['commands'])
 
-def test_entry_command_only_with_verified_evidence_and_journal(tmp_path):
+def test_legacy_quote_cannot_bypass_policy_binding(tmp_path):
     u=u_wait();u.update(state='PASS_FORMAL_U_DECISION_BUY',qualified_BUY=1)
     u['Top3']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY'}]
     u['rows']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY','validation':'PASS',
@@ -84,9 +84,9 @@ def test_entry_command_only_with_verified_evidence_and_journal(tmp_path):
       'session':NEXT,'tradable':True,'first_eligible_price_verified':True,'lot_verified':True,
       'mode':'daily_open','next_session_verified':True}}
     r=orchestrate(o_wait(),u,TARGET,NOW,NEXT,op,up,ev,True)
-    assert r['state']=='READY_FOR_SIMULATION_WRITE'
-    entries=[x for x in r['commands'] if x['kind']=='ENTRY']
-    assert len(entries)==1 and entries[0]['account']=='U'
+    assert r['state']=='BUY_ENTRY_BLOCKED'
+    assert r['entry_blockers']['U']==['ENTRY_POLICY_BINDING_REQUIRED']
+    assert not any(x['kind']=='ENTRY' for x in r['commands'])
     assert r['real_orders']==0
 
 
@@ -119,7 +119,7 @@ def test_u_buy_missing_industry_uses_conservative_bucket():
     assert x['state']=='QUALIFIED_BUY'
     assert x['candidates'][0]['industry']=='UNCLASSIFIED'
 
-def test_collector_v1_packet_can_create_entry(tmp_path):
+def test_collector_v1_packet_requires_morning_policy_binding(tmp_path):
     u=u_wait();u.update(state='PASS_FORMAL_U_DECISION_BUY',qualified_BUY=1)
     u['Top3']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY'}]
     u['rows']=[{'code':'00700','rank':1,'score':80,'formal_action':'BUY','validation':'PASS',
@@ -136,10 +136,9 @@ def test_collector_v1_packet_can_create_entry(tmp_path):
                'mode':'daily_open','session':NEXT,'next_session_verified':True,
                'lot_size':100,'lot_verified':True}}}
     r=orchestrate(o_wait(),u,TARGET,NOW,NEXT,op,up,{'U':packet},True)
-    assert r['state']=='READY_FOR_SIMULATION_WRITE'
-    entry=[x for x in r['commands'] if x['kind']=='ENTRY'][0]
-    assert entry['code']=='00700'
-    assert entry['fee_cny']=='120'
+    assert r['state']=='BUY_ENTRY_BLOCKED'
+    assert r['entry_blockers']['U']==['ENTRY_POLICY_BINDING_REQUIRED']
+    assert not any(x['kind']=='ENTRY' for x in r['commands'])
 
 
 def test_real_hash_linked_journal_dedupes_exact_command():

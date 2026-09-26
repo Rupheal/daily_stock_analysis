@@ -62,8 +62,13 @@ def fresh_target_check(native, independent, target):
 def build_preflight(code,target,universe,cache,policy,independent,source):
     from src.services.market_data_integrity import validate_daily_context,daily_consistency_facts
     cur=policy.get("current_session") or {}
-    if cur.get("session")!=target:
+    decision=cur.get("session")
+    from dsa_daily_formal_packet_v1 import market_session_for_decision
+    if cur.get("market_data_session",decision)!=target:
         raise ValueError("EXCLUSION_POLICY_SESSION_MISMATCH")
+    market_session_for_decision(decision,target)
+    if universe.get("effective_session")!=decision:
+        raise ValueError("OFFICIAL_UNIVERSE_DECISION_SESSION_MISMATCH")
     official_denominator=int(cur.get("official_denominator") or 0)
     if official_denominator < 1:
         raise ValueError("OFFICIAL_DENOMINATOR_INVALID")
@@ -100,6 +105,8 @@ def build_preflight(code,target,universe,cache,policy,independent,source):
       "prices_passed":True,
       "prepared_at":datetime.now(timezone.utc).isoformat(),
       "target":target,
+      "market_data_session":target,
+      "decision_session":decision,
       "today":today,
       "yesterday":yesterday,
       "facts":daily_consistency_facts(context),

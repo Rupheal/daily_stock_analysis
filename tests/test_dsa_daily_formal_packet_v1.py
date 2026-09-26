@@ -50,3 +50,21 @@ def test_u_packet_names_stale_prerequisites_instead_of_zero_buy():
     assert r["state"]=="WAIT_U_PREREQUISITES"
     assert set(r["blockers"])=={"U_MACRO_CAP_NOT_CURRENT","U_RISK_EVIDENCE_NOT_CURRENT","U_ZONE_CONTRACT_NOT_CURRENT"}
     assert r["provider_permitted"] is False
+
+
+def test_new_morning_packet_keeps_price_date_and_current_universe():
+    c=coverage();c['expected_complete_session']='2026-09-21'
+    for row in c['coverage']: row['latest_date']='2026-09-21'
+    r=p.build_o(universe(),c,'u'*64,'h'*64,TARGET,'2026-09-21')
+    assert r['scope']['decision_session']==TARGET
+    assert r['scope']['market_data_session']=='2026-09-21'
+    assert r['policy']['current_session']['session']==TARGET
+    assert r['scope']['no_orders'] is True
+
+def test_morning_rejects_old_and_falsely_labelled_bars():
+    import pytest
+    with pytest.raises(ValueError,match='MARKET_SESSION'):
+        p.build_o(universe(),coverage(),'u'*64,'h'*64,TARGET,'2026-09-18')
+    c=coverage();c['coverage'][0]['latest_date']='2026-09-21'
+    with pytest.raises(ValueError,match='BAR_DATE'):
+        p.build_o(universe(),c,'u'*64,'h'*64,TARGET)

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "contract_id": "DSA_SHADOW_REAL_CYCLE_ACCEPTANCE_V1",
+  "status": "ENGINEERING_CONTRACT_NOT_AUTHORITY",
+  "task_id": "TRI-FACTORY-DSA-SHADOW-DEPLOYMENT-AND-FIRST-REAL-CYCLE",
+  "parent_task": "TRI-TASK-DSA-RUNTIME-P0",
+  "scope": "forward_simulation_shadow_only",
+  "required_real_sessions": 5,
+  "counting_rule": {
+    "distinct_successful_real_xhkg_sessions_only": true,
+    "weekend_holiday": 0,
+    "replay_fixture_synthetic": 0,
+    "dry_run": 0,
+    "independent_factory_acceptance_required": true,
+    "worker_self_acceptance": false
+  },
+  "required_evidence": [
+    "O_decision",
+    "U_decision",
+    "adapter_result",
+    "gate_d_receipt",
+    "dashboard",
+    "runtime_binding",
+    "central_audit"
+  ],
+  "conjunctive_gates": [
+    "current XHKG target session",
+    "authorized timestamped O and U actual inputs",
+    "same target session and same trigger",
+    "frozen O and U versions",
+    "immutable evidence hashes",
+    "journal CAS, idempotent replay and single writer verified",
+    "dashboard updated",
+    "machine-readable cycle receipt written",
+    "eligible-session scheduler execution observed",
+    "recovery evidence verified",
+    "candidate authority writes = 0",
+    "real orders = 0",
+    "Production pointer switch = false",
+    "independent Central Audit accepted",
+    "independent Factory/physical acceptance after candidate validation"
+  ],
+  "allowed_track_states": ["WAIT", "QUALIFIED_BUY", "NO_ENTRY_POLICY_BLOCK"],
+  "fail_closed_on": [
+    "missing authority or input",
+    "stale or mismatched session",
+    "hash drift",
+    "trigger mismatch",
+    "journal conflict",
+    "scheduler or recovery evidence missing",
+    "budget or dependency gate",
+    "real-order activity",
+    "Production pointer change"
+  ],
+  "next_eligible_session": "2026-09-28",
+  "boundaries": {
+    "main_merge": false,
+    "production_promotion": false,
+    "real_orders": false,
+    "auto_recharge": false,
+    "historical_backfill_credit": false
+  }
+}

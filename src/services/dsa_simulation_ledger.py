@@ -96,12 +96,33 @@ def sell(a, cmd, p, qty, price, fx, reason, fees):
         del a['positions'][p['code']]
 
 
+
+def book_buy(a, cmd, s, selected, qty, lot, price, fx, fee):
+    """Shared original cost/position posting; called by legacy and versioned entry."""
+    code=selected['code']
+    industry=selected['industry']
+    cost = dec(qty)*price*fx+fee
+    trade_id = canonical_hash([cmd['account'],s['id'],code])
+    p = {'code':code,'trade_id':trade_id,'qty':qty,'original_qty':qty,
+         'lot':lot,'industry':industry,'entry_price':str(price),'cost_cny':str(cost),
+         'entry_at':cmd['at'],'entry_score':selected.get('score'),
+         'entry_rank':selected['rank'],'stage':0,'outside3':0,'outside10':0,
+         'rank_snapshots':[],'exit_pending':False,'processed_bars':[], 'alerts':[]}
+    a['positions'][code] = p
+    a['cash'] = str(dec(a['cash'])-cost)
+    record(a,cmd,'BUY',code=code,trade_id=trade_id,qty=qty,price=str(price),
+           fx=str(fx),fee_cny=str(fee),signal_id=s['id'])
+
+
 def apply_command(state, config, cmd):
     a = state[cmd['account']]
     at = stamp(cmd['at'])
     if a['last_at'] and at < stamp(a['last_at']):
         raise ValueError('out-of-order command')
     kind = cmd['kind']
+    from src.services.dsa_entry_policy import before_command, after_command
+    if before_command(state, config, cmd):
+        return
     rules = config['rules']
     if kind == 'SIGNAL':
         s = copy.deepcopy(cmd['signal'])
@@ -202,18 +223,8 @@ def apply_command(state, config, cmd):
         if qty < 3*lot:
             record(a, cmd, 'NO_TRADE', reason='less_than_three_lots_for_thirds')
             return
-        cost = dec(qty)*price*fx+fee
-        trade_id = canonical_hash([cmd['account'],s['id'],code])
-        p = {'code':code,'trade_id':trade_id,'qty':qty,'original_qty':qty,
-             'lot':lot,'industry':industry,'entry_price':str(price),'cost_cny':str(cost),
-             'entry_at':cmd['at'],'entry_score':selected.get('score'),
-             'entry_rank':selected['rank'],'stage':0,'outside3':0,'outside10':0,
-             'rank_snapshots':[],'exit_pending':False,'processed_bars':[], 'alerts':[]}
-        a['positions'][code] = p
-        a['cash'] = str(dec(a['cash'])-cost)
+        book_buy(a,cmd,s,selected,qty,lot,price,fx,fee)
         sig['filled'] = True
-        record(a,cmd,'BUY',code=code,trade_id=trade_id,qty=qty,price=str(price),
-               fx=str(fx),fee_cny=str(fee),signal_id=s['id'])
     elif kind == 'RANK':
         evidence(cmd)
         if cmd.get('complete_comparable_snapshot') is not True:
@@ -295,6 +306,7 @@ def apply_command(state, config, cmd):
         record(a,cmd,'BAR_PROCESSED',code=code,bar_id=b['id'],daily_order_policy='stop_first_then_conservative_breakeven')
     else:
         raise ValueError('unsupported command')
+    after_command(state, config, cmd)
     a['last_at']=cmd['at']
 
 

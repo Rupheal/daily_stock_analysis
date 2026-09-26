@@ -100,3 +100,118 @@ O全池原生模型输出、U完整新闻/资金/交易计划、正式未来成�
 `python -m pytest --noconftest -q tests/test_dsa_simulation_ledger.py tests/test_dsa_prediction_ledger.py`
 此入口只检验独立纯Python模块，无服务依赖；未运行全仓测试。19个测试含跳空、同日先后不明、重复事件、篡改、CAS冲突、Rank Decay、缺排名、价格重叠和O身份边界。
 本地保存采用锁、临时文件和原子替换；远端必须另用版本CAS。恢复使用最后一份已持久化journal重放，保留失败和WAIT，不删除旧记录。回滚代码提交须保留原journal配置及历史；不得把回滚代码当作重置账户资金。
+## 候选 Producer 时间证据封装（2026-09-26，未部署）
+
+O 的 `dsa_daily_o_production_v1.py` 输出 `O_FORMAL.json`，U 的
+`dsa_daily_u_production_v1.py` 输出 `formal/SANITIZED_U_FORMAL_RESULT.json`。
+两者当前未产出完整 signal_timing。新增封装入口供独立核验后的证据接入，
+不会自动生成时间、启动 Producer、修改工作流或回填历史回执：
+
+```text
+python scripts/dsa_formal_timing_seal_v1.py --receipt <producer-output.json> --timing-evidence <verified-evidence.json> --now <explicit-aware-validation-clock> --out <new-candidate.json>
+```
+
+证据 JSON 必须包含：
+- account：O 或 U，与 Producer 格式一致。
+- target_session：与原回执一致。
+- receipt_sha256：原回执的精确字节 SHA-256。
+- signal_timing：cutoff、available_at、valid_until、next_session。
+- field_evidence：上述四个字段各自的 source 和 sha256。
+
+source 引用和哈希仅提供可审计绑定，不能自行证明来源真实或规则获批。
+调用者必须独立核验原始证据、交易日、有效期规则及来源授权。
+--now 仅是验证时钟，绝不用于填写 available_at。历史回放须标为回放。
+输出为新候选文件，已有不同内容拒绝覆盖，相同内容重试保持一致；
+已封装回执禁止重新封装。保留原始文件和所有模型输出。
+结果明确 authority_verified_by_this_tool=false，不代表正式发布或策略验收。
+
+新增离线测试覆盖两个 Producer 格式经过真实 Resolver/Orchestrator、
+来源错配、跨轨错配、时间缺失/无时区/过期、输出冲突与 CLI 拒绝写入。
+测试证据全部为 synthetic，不能计入真实周期。
+现有 144/145 工作流尚未调用此入口：只有真实发布证据和有效期规则明确后
+才能接入；本变更未修改 main、Runtime、正式 journal 或任何调度。
+回滚：弃用候选分支；没有正式运行数据需要回滚。
+此说明补充现有中文运行契约，无对应英文专题副本；未新增环境变量。
+## Session Driver 时间边界修复（2026-09-26，候选）
+
+依据 Foundation `DSA-SHADOW-ENTRY-v1.0.0` 已批准的时间窗口，
+Session Driver 仅在实际 XHKG 交易日识别 PREOPEN、ENTRY、POSTCLOSE；
+ENTRY 限于香港时间 09:30（含）至 10:00（不含），替换旧 10:15 上限。
+周末和交易所假日统一为 OFF_WINDOW_NO_ACTION，不发起新入场。
+真实日历回归覆盖秒级边界、时区转换、周末及 10 月 1 日休市。
+
+这只修复候选路由，不代表 Entry-v1 完整接入。上一交易日排名仍是准备输入；
+已批准规则另要求当日早报确认、09:25 前冻结计划与政策绑定。
+现有候选的通用 ENTRY 构造不能作为这些条件已满足的证据。
+未改工作流、触发时刻、历史回执、正式账本或已批准策略。回滚为弃用候选提交。
+
+
+## Entry-v1 candidate integration (2026-09-26, not activated)
+
+The candidate Orchestrator now refuses legacy flat quote / collector-v1 packets
+for new BUY entries. They do not establish an accepted same-session morning
+report, a frozen plan or an immutable order. A candidate ready state is
+`READY_FOR_ENTRY_V1_REPLAY`, not proof of a fill or permission to publish a ledger.
+Historical unbound commands retain their original replay semantics.
+
+The executor is recovered from Foundation's accepted review generator:
+`control_room/dsa/entry_v1_review/recovery_001/fix_candidate.py`, at
+`0b25f2a7cdc24be55b38e4a5a058776b7614c958`. Its output SHA256 is
+`4ca38af58c9ecc1b1abf40025a2f923a8a1dec9e2d05c622427a61e804668a2d`.
+The approved policy bytes and original executor hook are reused. The original
+unrepaired review module is not the accepted version. No private journal,
+account configuration or raw evidence is bundled with the public candidate.
+
+Each track's entry-evidence object supplies `binding`, `signal_at`,
+`signal_recorded_at`, and ordered `events`. Binding uses the accepted executor's
+`policy_id`, `policy_sha256`, `session`, `frozen_at`, `report_session=AM`,
+`morning_report_accepted`, calendar evidence, previous-close references and native
+buy zones. Each event has an immutable id, account, at, recorded_at, kind and the
+executor's original order/quote/fill/fee evidence fields. Supported events are
+ENTRY_ORDER, ENTRY, ENTRY_CANCEL, ENTRY_CLOCK and MARK. The adapter derives the
+prospective signal identity from the source receipt and immutable binding; it
+never mutates an existing historical signal ID. U zones must match its accepted
+source rows. XHKG session and previous-session assertions are checked against the
+calendar. Assertions and hashes still require independent upstream authentication.
+
+Run the complete offline candidate route with independently read-back hashes:
+
+```bash
+PYTHONPATH=.:scripts python -m scripts.dsa_isolated_entry_replay_v1 \
+  --root <receipt-checkout> --target-session <session> \
+  --now <aware-observation-clock> --next-session <next-session> \
+  --entry-evidence <verified-packets.json> --journal <private-journal-copy.json> \
+  --expected-blob <github-blob-sha> --expected-hash <canonical-journal-sha256> \
+  --out-dir <new-isolated-directory>
+```
+
+This validates the pinned source chain, runs Resolver/Orchestrator and the real
+Entry-v1 executor, and writes only a new output directory. It never initializes a
+journal, overwrites prior output or publishes remotely. Exact command retries are
+no-ops; same-ID drift is rejected. Inspect replay.json for policy rejections and
+actual fill count. Synthetic fills, historical replay and correct WAIT carry zero
+natural-cycle credit. Keep output private: it contains a journal copy.
+
+O/U Producer completion points now append a source-hash-bound `.generation.json`
+sidecar. `generation_observed_at` records the real local post-generation observation;
+it is not cutoff, exact generation time, consumer availability or formal acceptance.
+The sidecar leaves consumer_available_at and formal_accepted_at null. Retries keep
+the first observation and reject changed bytes. R0/blocked branches never claim a
+formal generation event. The existing timing-seal CLI remains the downstream
+consumer of independently verified cutoff/publication/expiry/session evidence.
+No workflow publisher or schedule has been activated; four-field timing remains
+incomplete until those genuine source records exist. Never backfill old receipts.
+
+Binding audit: workflow139 still checks out fix/native-private-execution-20260914,
+resolves the prior formal session, and loads/saves Drive through
+scripts/dsa_simulation_journal_drive.py. The recovered canonical journal instead
+lives in Foundation runtime/dsa-shadow-journal-v1. Neither workflow nor formal
+writer was switched. Candidate execution deliberately consumes a pinned exported
+copy and has no remote save operation. A future activation must reconcile source
+selection, morning confirmation, remote version CAS, pair publication and restore
+before enabling the writer. Existing Drive hash checks are not acceptance of that
+future GitHub writer. Physical binding remains unverified when DC cannot return
+RUNTIME_BINDING.json contents.
+
+Rollback: discard the candidate commits; formal runtime and operational data were
+not changed. This topic has no separate bilingual counterpart to synchronize.

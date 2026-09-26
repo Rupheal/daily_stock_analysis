@@ -273,76 +273,14 @@ def build_signal(track:dict,receipt_path:Path,now_iso:str,next_session:str,
     return {"id":"signal-"+signal_id,"account":account,"at":available_at,"kind":"SIGNAL","signal":sig}
 
 
-def build_entry(track:dict,signal_cmd:dict,entry_evidence:dict|None)->tuple[list[dict],list[str]]:
+def build_entry(track:dict,signal_cmd:dict,entry_evidence:dict|None,now_iso:str)->tuple[list[dict],list[str]]:
     if track["state"]!="QUALIFIED_BUY":
         return [],[]
     blockers=[]
     if not isinstance(entry_evidence,dict):
         return [],["ENTRY_EVIDENCE_MISSING"]
-    # Accept the native collector-v1 shape as well as the legacy flattened shape.
-    if entry_evidence.get("status")=="PASS_ENTRY_V1_EVIDENCE" and isinstance(entry_evidence.get("evidence"),dict):
-        ev=entry_evidence["evidence"]
-        q=ev.get("quote") or {}
-        entry_evidence={
-          "code":ev.get("code"),"at":q.get("at"),"price":q.get("price"),
-          "cny_per_hkd":q.get("cny_per_hkd"),"lot_size":q.get("lot_size"),
-          "fee_cny":ev.get("fee_cny"),"source":q.get("source"),"sha256":q.get("sha256"),
-          "fx_source":(q.get("fx_evidence") or {}).get("source"),
-          "fx_sha256":(q.get("fx_evidence") or {}).get("sha256"),
-          "fx_at":(q.get("fx_evidence") or {}).get("at"),
-          "session":q.get("session"),"tradable":q.get("tradable"),
-          "first_eligible_price_verified":q.get("first_eligible_price_verified"),
-          "lot_verified":q.get("lot_verified"),"mode":q.get("mode"),
-          "next_session_verified":q.get("next_session_verified"),
-          "excluded":ev.get("excluded",{})
-        }
-    required=("code","at","price","cny_per_hkd","lot_size","fee_cny","source","sha256",
-              "fx_source","fx_sha256","session")
-    for k in required:
-        if entry_evidence.get(k) in (None,""):
-            blockers.append("ENTRY_"+k.upper()+"_MISSING")
-    if blockers:
-        return [],blockers
-    code=str(entry_evidence["code"])
-    candidates=[x for x in track["candidates"] if x["action"]=="BUY"]
-    if code not in {x["code"] for x in candidates}:
-        blockers.append("ENTRY_CODE_NOT_QUALIFIED_BUY")
-        return [],blockers
-    q={
-      "verified":True,
-      "source":entry_evidence["source"],
-      "sha256":entry_evidence["sha256"],
-      "at":iso_at(entry_evidence["at"]),
-      "price":str(entry_evidence["price"]),
-      "cny_per_hkd":str(entry_evidence["cny_per_hkd"]),
-      "fx_evidence":{
-        "verified":True,"source":entry_evidence["fx_source"],
-        "sha256":entry_evidence["fx_sha256"],"at":iso_at(entry_evidence.get("fx_at") or entry_evidence["at"]),
-      },
-      "tradable":entry_evidence.get("tradable") is True,
-      "adjustment":"raw",
-      "first_eligible_price_verified":entry_evidence.get("first_eligible_price_verified") is True,
-      "mode":entry_evidence.get("mode","tick"),
-      "session":entry_evidence["session"],
-      "next_session_verified":entry_evidence.get("next_session_verified") is True,
-      "lot_size":int(entry_evidence["lot_size"]),
-      "lot_verified":entry_evidence.get("lot_verified") is True,
-    }
-    if not q["tradable"] or not q["first_eligible_price_verified"] or not q["lot_verified"]:
-        blockers.append("ENTRY_EXECUTION_EVIDENCE_NOT_VERIFIED")
-        return [],blockers
-    entry={
-      "id":f"entry-{track['track']}-{signal_cmd['signal']['id']}-{code}",
-      "account":track["track"],
-      "at":q["at"],
-      "kind":"ENTRY",
-      "signal_id":signal_cmd["signal"]["id"],
-      "code":code,
-      "quote":q,
-      "fee_cny":str(entry_evidence["fee_cny"]),
-      "excluded":entry_evidence.get("excluded",{}),
-    }
-    return [entry],[]
+    from scripts.dsa_entry_binding_v1 import build_bound_entry
+    return build_bound_entry(track, signal_cmd, entry_evidence, now_iso)
 
 
 def filter_commands_against_journal(commands:list[dict], journal:dict|None)->tuple[list[dict],list[str]]:
@@ -405,7 +343,7 @@ def orchestrate(o:dict,u:dict,target_session:str,now_iso:str,next_session:str,
         if cycle=="postclose" and tracks[key]["state"]=="QUALIFIED_BUY":
             entries,blocks=[],["ENTRY_DEFERRED_TO_PREOPEN"]
         else:
-            entries,blocks=build_entry(tracks[key],signal,ev)
+            entries,blocks=build_entry(tracks[key],signal,ev,now_iso)
         if entries and not journal_configured:
             blocks.append("AUTHORITATIVE_SIMULATION_JOURNAL_UNCONFIGURED")
             entries=[]
@@ -419,7 +357,7 @@ def orchestrate(o:dict,u:dict,target_session:str,now_iso:str,next_session:str,
     elif q and any(entry_blockers.values()):
         state="BUY_ENTRY_BLOCKED"
     elif q:
-        state="READY_FOR_SIMULATION_WRITE"
+        state="READY_FOR_ENTRY_V1_REPLAY"
     else:
         state="WAIT_NO_BUY"
     return {

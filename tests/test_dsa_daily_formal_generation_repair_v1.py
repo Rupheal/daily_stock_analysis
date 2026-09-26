@@ -1,4 +1,5 @@
 import importlib.util, json, sys
+import pytest
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -57,25 +58,14 @@ def test_generated_no_buy_is_distinct_from_missing_generation():
     assert r["generation_complete"] is True
     assert r["state"]=="READY_BOTH_TRACKS"
 
-def test_o_valid_buy_fixture_reaches_entry_gate(tmp_path):
-    o=o_buy()
-    t=orch.classify_o(o,TARGET)
-    assert t["state"]=="QUALIFIED_BUY" and t["qualified_buy"]==1
-    p=tmp_path/"o.json";p.write_text(json.dumps(o))
-    sig=orch.build_signal(t,p,"2026-09-22T09:35:00+08:00","2026-09-22","2026-09-26T09:35:00+08:00")
-    entries,blocks=orch.build_entry(t,sig,entry("00700"))
-    assert blocks==[]
-    assert len(entries)==1 and entries[0]["code"]=="00700"
-
-def test_u_valid_buy_fixture_reaches_entry_gate(tmp_path):
-    u=u_buy()
-    t=orch.classify_u(u,TARGET)
-    assert t["state"]=="QUALIFIED_BUY" and t["qualified_buy"]==1
-    p=tmp_path/"u.json";p.write_text(json.dumps(u))
-    sig=orch.build_signal(t,p,"2026-09-22T09:35:00+08:00","2026-09-22","2026-09-26T09:35:00+08:00")
-    entries,blocks=orch.build_entry(t,sig,entry("00992"))
-    assert blocks==[]
-    assert len(entries)==1 and entries[0]["code"]=="00992"
+@pytest.mark.parametrize('account',['O','U'])
+def test_legacy_buy_fixture_cannot_bypass_timing(account,tmp_path):
+    receipt=o_buy() if account=='O' else u_buy()
+    track=(orch.classify_o if account=='O' else orch.classify_u)(receipt,TARGET)
+    assert track['state']=='QUALIFIED_BUY'
+    path=tmp_path/'receipt.json';path.write_text(json.dumps(receipt))
+    with pytest.raises(orch.SignalContractError,match='SIGNAL_TIMING_MISSING'):
+        orch.build_signal(track,path,'2026-09-22T09:35:00+08:00','2026-09-22')
 
 def test_u_approved_numeric_is_accepted_by_orchestrator():
     u=u_buy()

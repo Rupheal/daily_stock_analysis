@@ -1,5 +1,11 @@
 # Changelog
 
+- [修复] 恢复 isolated bundle 为新的 recovery implementation：复用 Resolver/Orchestrator/Entry-v1/隔离账本回放，绑定代码与输入/账本身份，支持幂等重试和中断恢复，缺任一 O/U 轨显式阻断；不切 Production、不写正式账本、所有工程输出自然周期计数为 0。
+
+- [修复] 候选 Session Driver 遵守已批准 09:30–10:00 入场窗口，阻止非交易日按钟点误判可执行；保持正式调度与账本不变。
+
+- [修复] 新增 O/U Producer 来源绑定的时间证据候选封装入口，复用编排时间校验，拒绝覆盖与历史补时；未启用自动发布或正式运行。
+
 - [修复] 隔离候选：O 编排与回执解析读取正式回执分母；SIGNAL 使用不可变源时间与内容寻址来源，缺失/未来/过期证据阻断，重试保持字节一致；保持历史 journal 冲突保护。未部署，未计入真实 Shadow Cycle。
 
 - Run032 final receipt: real native input recovery 4/4 passed (35179162716); aggregate target-day data readiness 660/660 is separate from formal model outputs 0/660. Add strict market-only historical export for subsequent runs to make model inputs reusable without exposing model/account tables.
@@ -18,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > For user-friendly release highlights, see the [GitHub Releases](https://github.com/ZhuLinsen/daily_stock_analysis/releases) page.
 
 ## [Unreleased]
+
+- [改进] 隔离候选接入 Producer 发布与 Resolver 取得证据链、官方名单生效日复算和 U 可观测输入评估；候选不自动接纳、不切换正式工作流或账本。
+
+- [修复] 隔离候选区分 O 行情截止日与早报决策日，session driver 拒绝前日正式结果冒充当天早报；未切换运行绑定。
+
+- [修复] 候选编排接入已验收 Entry-v1，拒绝未绑定早报的旧式 BUY；新增固定来源账本的只读隔离回放及 Producer 生成观测，未启用正式工作流。
 
 - [修复] Run041–048 将U事实报告、观察复核、条件交易计划和执行信号分层；保留原文40通过/4失败，单独修正版44通过，不再以0/45掩盖分析进度。
 - [修复] 原版通过原生YAML配置验证非思考完整回答；精确识别已核验原生输入的float32收盘价表示，并拒绝前日低点冒充今日、有限新闻冒充无利空。

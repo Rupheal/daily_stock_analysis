@@ -18,19 +18,34 @@ def code(v)->str:
     if s.lower().startswith("hk"): s=s[2:]
     return s.zfill(5)
 
-def build_o(universe:dict,coverage:dict,universe_sha:str,history_sha:str,target:str)->dict:
+def market_session_for_decision(target:str, market_data_session:str|None=None)->str:
+    """Keep the price date; a morning decision uses the previous XHKG close."""
+    import exchange_calendars as xcals
+    cal=xcals.get_calendar("XHKG")
+    if not cal.is_session(target):
+        raise ValueError("DECISION_SESSION_NOT_TRADING")
+    market=market_data_session or target
+    if market not in (target, cal.previous_session(target).date().isoformat()):
+        raise ValueError("MARKET_SESSION_NOT_CURRENT_OR_PREVIOUS")
+    return market
+
+def build_o(universe:dict,coverage:dict,universe_sha:str,history_sha:str,target:str,
+            market_data_session:str|None=None)->dict:
+    market=market_session_for_decision(target,market_data_session)
     members=universe.get("members") or []
     if not universe.get("full_union_verified") or universe.get("effective_session")!=target:
         raise ValueError("O_CURRENT_OFFICIAL_UNIVERSE_NOT_VERIFIED")
     if len(members)!=int(universe.get("member_count",-1)):
         raise ValueError("O_UNIVERSE_COUNT_MISMATCH")
     rows=coverage.get("coverage") or []
-    if coverage.get("expected_complete_session")!=target or len(rows)!=len(members):
+    if coverage.get("expected_complete_session")!=market or len(rows)!=len(members):
         raise ValueError("O_COVERAGE_SESSION_OR_COUNT_MISMATCH")
     by={code(x.get("code")):x for x in rows}
     member_codes=[code(x.get("code")) for x in members]
     if len(by)!=len(rows) or set(by)!=set(member_codes):
         raise ValueError("O_COVERAGE_IDENTITY_MISMATCH")
+    if any(r.get("status")=="current_valid_bar" and r.get("latest_date")!=market for r in rows):
+        raise ValueError("O_COVERAGE_BAR_DATE_MISMATCH")
     excluded=[]
     for c in member_codes:
         r=by[c]
@@ -42,7 +57,7 @@ def build_o(universe:dict,coverage:dict,universe_sha:str,history_sha:str,target:
       "schema_version":1,"policy_id":"DSA-O-DAILY-UNRESOLVED-EXCLUSION-"+target,
       "status":"DAILY_SESSION_PACKET","effective_from_session":target,
       "principle":"Preserve official denominator; exclude bounded unresolved members from only the session operational ranking pool.",
-      "current_session":{"session":target,"official_denominator":official,
+      "current_session":{"session":target,"market_data_session":market,"official_denominator":official,
         "excluded_unresolved":excluded,"excluded_count":len(excluded),
         "operational_denominator":operational,"formal_O_denominator":operational},
       "boundaries":{"modifies_original_O_prompt_or_scoring":False,"model_calls_added":0,
@@ -57,7 +72,7 @@ def build_o(universe:dict,coverage:dict,universe_sha:str,history_sha:str,target:
     }
     scope={
       "schema_version":1,"run_id":"TRI-DSA-O-DAILY-"+target.replace("-",""),
-      "target_session":target,"decision_session":target,
+      "target_session":target,"decision_session":target,"market_data_session":market,
       "official_O_denominator":official,"base_operational_O_denominator":operational,
       "frozen_upstream":FROZEN_UPSTREAM,
       "native_model_configuration":"O_DEEPSEEK_FLASH_NONTHINKING_v1",
@@ -66,11 +81,11 @@ def build_o(universe:dict,coverage:dict,universe_sha:str,history_sha:str,target:
       "per_member_hard_cap_cny":"0.10","per_member_authorized_ceiling_cny":"0.10",
       "balance_safety_reserve_cny":"0.50","max_shards":16,"max_parallel":4,
       "max_consecutive_provider_failures":2,"max_consecutive_infra_failures":2,
-      "automatic_retry":False,"real_orders":0,"simulation_writes":0,"main_merge":False,
+      "automatic_retry":False,"no_orders":True,"real_orders":0,"simulation_writes":0,"main_merge":False,
       "raw_content_public":False
     }
     return {"state":"READY_FOR_O_PROVIDER" if operational else "NO_OPERATIONAL_MEMBERS",
-            "target_session":target,"official_denominator":official,
+            "target_session":target,"market_data_session":market,"official_denominator":official,
             "operational_denominator":operational,"excluded_count":len(excluded),
             "policy":policy,"ledger":ledger,"scope":scope}
 
