@@ -144,3 +144,74 @@ ENTRY 限于香港时间 09:30（含）至 10:00（不含），替换旧 10:15 �
 已批准规则另要求当日早报确认、09:25 前冻结计划与政策绑定。
 现有候选的通用 ENTRY 构造不能作为这些条件已满足的证据。
 未改工作流、触发时刻、历史回执、正式账本或已批准策略。回滚为弃用候选提交。
+
+
+## Entry-v1 candidate integration (2026-09-26, not activated)
+
+The candidate Orchestrator now refuses legacy flat quote / collector-v1 packets
+for new BUY entries. They do not establish an accepted same-session morning
+report, a frozen plan or an immutable order. A candidate ready state is
+`READY_FOR_ENTRY_V1_REPLAY`, not proof of a fill or permission to publish a ledger.
+Historical unbound commands retain their original replay semantics.
+
+The executor is recovered from Foundation's accepted review generator:
+`control_room/dsa/entry_v1_review/recovery_001/fix_candidate.py`, at
+`0b25f2a7cdc24be55b38e4a5a058776b7614c958`. Its output SHA256 is
+`4ca38af58c9ecc1b1abf40025a2f923a8a1dec9e2d05c622427a61e804668a2d`.
+The approved policy bytes and original executor hook are reused. The original
+unrepaired review module is not the accepted version. No private journal,
+account configuration or raw evidence is bundled with the public candidate.
+
+Each track's entry-evidence object supplies `binding`, `signal_at`,
+`signal_recorded_at`, and ordered `events`. Binding uses the accepted executor's
+`policy_id`, `policy_sha256`, `session`, `frozen_at`, `report_session=AM`,
+`morning_report_accepted`, calendar evidence, previous-close references and native
+buy zones. Each event has an immutable id, account, at, recorded_at, kind and the
+executor's original order/quote/fill/fee evidence fields. Supported events are
+ENTRY_ORDER, ENTRY, ENTRY_CANCEL, ENTRY_CLOCK and MARK. The adapter derives the
+prospective signal identity from the source receipt and immutable binding; it
+never mutates an existing historical signal ID. U zones must match its accepted
+source rows. XHKG session and previous-session assertions are checked against the
+calendar. Assertions and hashes still require independent upstream authentication.
+
+Run the complete offline candidate route with independently read-back hashes:
+
+```bash
+PYTHONPATH=.:scripts python -m scripts.dsa_isolated_entry_replay_v1 \
+  --root <receipt-checkout> --target-session <session> \
+  --now <aware-observation-clock> --next-session <next-session> \
+  --entry-evidence <verified-packets.json> --journal <private-journal-copy.json> \
+  --expected-blob <github-blob-sha> --expected-hash <canonical-journal-sha256> \
+  --out-dir <new-isolated-directory>
+```
+
+This validates the pinned source chain, runs Resolver/Orchestrator and the real
+Entry-v1 executor, and writes only a new output directory. It never initializes a
+journal, overwrites prior output or publishes remotely. Exact command retries are
+no-ops; same-ID drift is rejected. Inspect replay.json for policy rejections and
+actual fill count. Synthetic fills, historical replay and correct WAIT carry zero
+natural-cycle credit. Keep output private: it contains a journal copy.
+
+O/U Producer completion points now append a source-hash-bound `.generation.json`
+sidecar. `generation_observed_at` records the real local post-generation observation;
+it is not cutoff, exact generation time, consumer availability or formal acceptance.
+The sidecar leaves consumer_available_at and formal_accepted_at null. Retries keep
+the first observation and reject changed bytes. R0/blocked branches never claim a
+formal generation event. The existing timing-seal CLI remains the downstream
+consumer of independently verified cutoff/publication/expiry/session evidence.
+No workflow publisher or schedule has been activated; four-field timing remains
+incomplete until those genuine source records exist. Never backfill old receipts.
+
+Binding audit: workflow139 still checks out fix/native-private-execution-20260914,
+resolves the prior formal session, and loads/saves Drive through
+scripts/dsa_simulation_journal_drive.py. The recovered canonical journal instead
+lives in Foundation runtime/dsa-shadow-journal-v1. Neither workflow nor formal
+writer was switched. Candidate execution deliberately consumes a pinned exported
+copy and has no remote save operation. A future activation must reconcile source
+selection, morning confirmation, remote version CAS, pair publication and restore
+before enabling the writer. Existing Drive hash checks are not acceptance of that
+future GitHub writer. Physical binding remains unverified when DC cannot return
+RUNTIME_BINDING.json contents.
+
+Rollback: discard the candidate commits; formal runtime and operational data were
+not changed. This topic has no separate bilingual counterpart to synchronize.

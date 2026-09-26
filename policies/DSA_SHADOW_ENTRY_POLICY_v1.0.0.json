@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "DSA-SHADOW-ENTRY-v1.0.0",
+  "foundation": "TRIDENT-FND-v1.0.1",
+  "approval_state": "OWNER_APPROVED_POLICY",
+  "implementation_state": "PENDING_EXECUTOR_INTEGRATION_AND_VALIDATION",
+  "runtime_activated": false,
+  "approval_basis": "Owner selected 09:25, 09:30—10:00, +1.5%, −1%; all other discussed disciplines retained.",
+  "change_from_discussion_draft": {
+    "entry_window_previous": "09:45—10:15",
+    "entry_window_approved": "09:30—10:00"
+  },
+  "scope": {
+    "accounts": ["U", "O"],
+    "purpose": "forward_simulation_new_entries_only",
+    "timezone": "Asia/Hong_Kong",
+    "does_not_limit_exit_or_risk_management_hours": true,
+    "does_not_modify_native_model_logic": true,
+    "does_not_promote_research_rankings_to_trade_signals": true,
+    "does_not_apply_to_owner_real_orders": true
+  },
+  "timing": {
+    "signal_and_plan_freeze_deadline_local": "09:25:00",
+    "entry_window_start_local": "09:30:00",
+    "entry_window_end_local": "10:00:00",
+    "boundary_interpretation": "freeze completed no later than 09:25:00; new fills permitted from 09:30:00 inclusive until 10:00:00 exclusive; cancel remaining entry quantity at 10:00:00",
+    "primary_signal": "same_actual_trading_day_accepted_morning_report",
+    "previous_1630_report": "preparation_only_requires_morning_confirmation",
+    "late_or_unaccepted_morning_signal": "NO_NEW_ENTRY_THAT_SESSION",
+    "window_missed": "NO_NEW_ENTRY_THAT_SESSION_NO_AFTERNOON_CHASE",
+    "actual_trading_session_must_be_verified": true
+  },
+  "price_band": {
+    "reference": "verified_previous_actual_trading_session_close_used_by_the_morning_report",
+    "minimum_multiplier": "0.990",
+    "maximum_multiplier": "1.015",
+    "boundaries_inclusive": true,
+    "corporate_actions": "comparable_price_basis_required_or_block",
+    "native_plan": "intersect_with_stricter_accepted_native_buy_zone; empty_intersection_means_no_entry",
+    "below_lower_bound": "NO_AUTOMATIC_DIP_BUY",
+    "above_upper_bound": "NO_CHASE"
+  },
+  "retained_disciplines": {
+    "selection": "within_each_models_own_qualified_Top3_select_first_eligible_by_rank; retain_exclusion_evidence_for_higher_ranks",
+    "native_buy_required": true,
+    "missing_higher_rank_data_is_not_exclusion_evidence": true,
+    "max_new_securities_per_account_per_actual_trading_day": 1,
+    "partial_fill_consumes_daily_new_security_slot": true,
+    "no_add_to_existing_position": true,
+    "no_same_day_reentry_in_sold_security": true,
+    "no_forced_exit_to_make_room_for_new_Top1": true,
+    "position_limits": "retain_existing_private_account_config; ticket_up_to_CNY60000_and_20_percent_of_current_NAV; up_to_3_positions; gross_exposure_up_to_60_percent; existing_industry_cap_unchanged",
+    "execution_evidence": "quote_after_signal_and_order; eligible_tradable_price_and_quantity; verified_fees_FX_board_lot_and_time; retrieval_time_is_not_price_time; no_daily_low_touch_or_last_price_equals_fill_assumption",
+    "lot_sizing": "retain_existing_minimum_three_lots_and_integer_lot_thirds_policy",
+    "exits": "retain_existing_B_plus_C_stop_TP1_TP2_breakeven_Runner_rank_decay_and_milestone_rules; no_exit_rule_changed_here",
+    "no_trade_is_valid": true
+  },
+  "inheritance_reference": {
+    "repository": "Rupheal/daily_stock_analysis",
+    "ref_read": "fix/native-private-execution-20260914",
+    "path": "docs/runtime/dual-account-runtime.md",
+    "git_blob_sha_read": "3c6b4b38ec05c4de02f785de72bee053c6b37e42",
+    "note": "This is a policy decision, not proof that the existing executor already enforces the new time window, band or daily cap. Accepted entry/fee/FX/evidence gates remain necessary."
+  },
+  "activation_gate": {
+    "forward_only": true,
+    "new_signals_must_freeze_policy_version_before_outcomes": true,
+    "original_journal_config_and_hash_chain_must_not_be_overwritten": true,
+    "versioned_prospective_integration_required": true,
+    "tests_required": [
+      "09:25 freeze cutoff and late-signal rejection",
+      "09:29:59 reject, 09:30:00 eligible, 09:59:59 eligible, 10:00:00 expired",
+      "0.990 and 1.015 reference-price boundaries and stricter native plan intersection",
+      "one new security per account per session including partial fills and repeated signals",
+      "duplicate event idempotency and no backdated fills",
+      "existing journal replay and B+C exits unchanged"
+    ],
+    "no_new_runtime_acceptance_claim": true
+  },
+  "unchanged_boundaries": {
+    "run005_and_prior_experiments": "PRESERVE_ORIGINAL_CONTRACTS_AND_RESULTS",
+    "historical_signals_and_trades": "DO_NOT_REWRITE_OR_REFILL",
+    "dashboard": "READ_ONLY_NO_BROWSER_ORDER_OR_JOURNAL_WRITE",
+    "automations": "UNCHANGED",
+    "main_merge": false,
+    "production_promotion": false,
+    "real_orders": false,
+    "paid_data_calls": false
+  }
+}

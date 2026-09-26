@@ -4,6 +4,7 @@ import argparse,json,os,subprocess,sys
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from decimal import Decimal,ROUND_FLOOR
 from pathlib import Path
+from dsa_producer_generation_v1 import record_generated
 import httpx
 from dsa_daily_formal_packet_v1 import build_o
 from aggregate_o_formal_ranking_v3 import aggregate
@@ -94,6 +95,7 @@ def main():
     acc=finalize(rank,packet['policy'])
     (out/'RANKING.json').write_text(json.dumps(rank,ensure_ascii=False,indent=2)+'\n')
     (out/'O_FORMAL.json').write_text(json.dumps(acc,ensure_ascii=False,indent=2)+'\n')
+    record_generated(out/'O_FORMAL.json', 'O', a.target_session)
     status.update(state='GENERATED' if acc['status']=='ACCEPTED_O_FORMAL_TOP3' else 'NOT_ACCEPTED',formal_status=acc['status'],qualified_buy_in_Top3=acc.get('qualified_buy_in_Top3'),missing_count=acc.get('missing_count'))
     (out/'STATUS.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n');print(json.dumps(status))
 if __name__=='__main__':main()
