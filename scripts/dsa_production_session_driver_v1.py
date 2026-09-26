@@ -30,10 +30,14 @@ def next_session_after(session:str)->str:
 
 def classify_window(at:datetime)->str:
     h=at.astimezone(HK)
+    # Clock windows cannot authorize work on a non-session date.
+    if not CAL.is_session(h.date().isoformat()):
+        return "OFF_WINDOW"
     hm=h.hour*60+h.minute
     if 8*60+45 <= hm <= 9*60+20:
         return "PREOPEN"
-    if 9*60+30 <= hm <= 10*60+15:
+    # Owner-approved Entry-v1: 09:30 inclusive, 10:00 exclusive.
+    if 9*60+30 <= hm < 10*60:
         return "ENTRY"
     if 16*60+15 <= hm <= 17*60:
         return "POSTCLOSE"
