@@ -18,8 +18,9 @@ permissions:
   contents: write
   actions: read
 concurrency:
-  group: dsa-run062-o657-v3-engineering
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 jobs:
   validate:
     runs-on: ubuntu-latest
