@@ -8,8 +8,9 @@ permissions:
   contents: write
   actions: read
 concurrency:
-  group: dsa-run072-o657-formal-full
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   plan:

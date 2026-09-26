@@ -9,8 +9,9 @@ permissions:
   contents: write
   actions: read
 concurrency:
-  group: dsa-run075-o657-proven-unsent-recovery
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   plan:

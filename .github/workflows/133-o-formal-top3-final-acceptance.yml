@@ -11,8 +11,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: dsa-o-formal-top3-final-acceptance
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   accept:

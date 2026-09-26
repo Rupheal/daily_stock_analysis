@@ -11,8 +11,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-run049-close-gate
-  cancel-in-progress: true
+  group: dsa-native-private-branch-writer
+  cancel-in-progress: false
+  queue: max
 
 jobs:
   run049:
