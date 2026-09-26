@@ -5,6 +5,10 @@ on:
     paths: [.github/workflows/o-semantic-handoff-003-publish-queue.yml]
 permissions:
   contents: write
+concurrency:
+  group: dsa-native-private-branch-writer
+  cancel-in-progress: false
+  queue: max
 jobs:
   queue-only:
     runs-on: ubuntu-latest
