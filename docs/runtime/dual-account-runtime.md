@@ -100,3 +100,35 @@ O全池原生模型输出、U完整新闻/资金/交易计划、正式未来成�
 `python -m pytest --noconftest -q tests/test_dsa_simulation_ledger.py tests/test_dsa_prediction_ledger.py`
 此入口只检验独立纯Python模块，无服务依赖；未运行全仓测试。19个测试含跳空、同日先后不明、重复事件、篡改、CAS冲突、Rank Decay、缺排名、价格重叠和O身份边界。
 本地保存采用锁、临时文件和原子替换；远端必须另用版本CAS。恢复使用最后一份已持久化journal重放，保留失败和WAIT，不删除旧记录。回滚代码提交须保留原journal配置及历史；不得把回滚代码当作重置账户资金。
+## 候选 Producer 时间证据封装（2026-09-26，未部署）
+
+O 的 `dsa_daily_o_production_v1.py` 输出 `O_FORMAL.json`，U 的
+`dsa_daily_u_production_v1.py` 输出 `formal/SANITIZED_U_FORMAL_RESULT.json`。
+两者当前未产出完整 signal_timing。新增封装入口供独立核验后的证据接入，
+不会自动生成时间、启动 Producer、修改工作流或回填历史回执：
+
+```text
+python scripts/dsa_formal_timing_seal_v1.py --receipt <producer-output.json> --timing-evidence <verified-evidence.json> --now <explicit-aware-validation-clock> --out <new-candidate.json>
+```
+
+证据 JSON 必须包含：
+- account：O 或 U，与 Producer 格式一致。
+- target_session：与原回执一致。
+- receipt_sha256：原回执的精确字节 SHA-256。
+- signal_timing：cutoff、available_at、valid_until、next_session。
+- field_evidence：上述四个字段各自的 source 和 sha256。
+
+source 引用和哈希仅提供可审计绑定，不能自行证明来源真实或规则获批。
+调用者必须独立核验原始证据、交易日、有效期规则及来源授权。
+--now 仅是验证时钟，绝不用于填写 available_at。历史回放须标为回放。
+输出为新候选文件，已有不同内容拒绝覆盖，相同内容重试保持一致；
+已封装回执禁止重新封装。保留原始文件和所有模型输出。
+结果明确 authority_verified_by_this_tool=false，不代表正式发布或策略验收。
+
+新增离线测试覆盖两个 Producer 格式经过真实 Resolver/Orchestrator、
+来源错配、跨轨错配、时间缺失/无时区/过期、输出冲突与 CLI 拒绝写入。
+测试证据全部为 synthetic，不能计入真实周期。
+现有 144/145 工作流尚未调用此入口：只有真实发布证据和有效期规则明确后
+才能接入；本变更未修改 main、Runtime、正式 journal 或任何调度。
+回滚：弃用候选分支；没有正式运行数据需要回滚。
+此说明补充现有中文运行契约，无对应英文专题副本；未新增环境变量。

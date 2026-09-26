@@ -1,5 +1,7 @@
 # Changelog
 
+- [修复] 新增 O/U Producer 来源绑定的时间证据候选封装入口，复用编排时间校验，拒绝覆盖与历史补时；未启用自动发布或正式运行。
+
 - [修复] 隔离候选：O 编排与回执解析读取正式回执分母；SIGNAL 使用不可变源时间与内容寻址来源，缺失/未来/过期证据阻断，重试保持字节一致；保持历史 journal 冲突保护。未部署，未计入真实 Shadow Cycle。
 
 - Run032 final receipt: real native input recovery 4/4 passed (35179162716); aggregate target-day data readiness 660/660 is separate from formal model outputs 0/660. Add strict market-only historical export for subsequent runs to make model inputs reusable without exposing model/account tables.
