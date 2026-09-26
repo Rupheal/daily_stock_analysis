@@ -1,0 +1,48 @@
+name: DSA Shadow real-cycle acceptance candidate
+
+on:
+  push:
+    branches: [fix/dsa-producer-timing-20260926]
+    paths:
+      - 'docs/runtime/DSA_SHADOW_REAL_CYCLE_ACCEPTANCE_V1.json'
+      - 'scripts/dsa_shadow_cycle_acceptance_v1.py'
+      - 'tests/test_dsa_shadow_cycle_acceptance_v1.py'
+      - '.github/workflows/148-dsa-shadow-real-cycle-acceptance-candidate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/dsa-producer-timing-20260926
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest exchange-calendars
+      - name: Run shadow-cycle acceptance tests
+        run: python -m pytest --noconftest -q tests/test_dsa_shadow_cycle_acceptance_v1.py
+      - name: Verify contract safety boundaries
+        run: |
+          python - <<'PY'
+          import json
+          p='docs/runtime/DSA_SHADOW_REAL_CYCLE_ACCEPTANCE_V1.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert d['required_real_sessions']==5
+          assert d['counting_rule']['worker_self_acceptance'] is False
+          assert d['boundaries']=={
+            'main_merge':False,
+            'production_promotion':False,
+            'real_orders':False,
+            'auto_recharge':False,
+            'historical_backfill_credit':False,
+          }
+          print('DSA_SHADOW_REAL_CYCLE_ACCEPTANCE_CANDIDATE_PASS')
+          PY
