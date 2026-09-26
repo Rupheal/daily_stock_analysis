@@ -11,8 +11,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-run054-u-risk-evidence
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   run054:
