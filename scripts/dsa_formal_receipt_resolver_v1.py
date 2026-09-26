@@ -14,7 +14,7 @@ else:
 
 def load(p): return json.loads(p.read_text())
 
-def resolve(root:Path,target:str)->dict:
+def resolve(root:Path,target:str,*,delivery_sources:dict|None=None)->dict:
     o_candidates=[
       root/"docs/runtime/O_PRODUCTION_FORMAL_LATEST.json",
       root/"docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
@@ -25,9 +25,23 @@ def resolve(root:Path,target:str)->dict:
     ]
     def pick(track,cands):
         checked=[]
+        delivery=(delivery_sources or {}).get(track)
+        if delivery:
+            if __package__:
+                from .dsa_receipt_delivery_v1 import consume, digest
+            else:
+                from dsa_receipt_delivery_v1 import consume, digest
+            raw,event=consume(Path(delivery['directory']),delivery['sha256'],Path(delivery['observation']))
+            cands=[Path(delivery['directory'])/'receipt.json']
+            generation=json.loads((Path(delivery['directory'])/'generation.json').read_bytes())
+            if generation['account']!=track: raise ValueError('DELIVERY_ACCOUNT_MISMATCH')
+            checked.append({'status':'CONSUMER_OBSERVED','receipt_sha256':delivery['sha256'],
+                            'observation':str(delivery['observation'])})
         for p in cands:
             if not p.exists():
                 checked.append({"path":str(p),"status":"MISSING"});continue
+            if delivery and digest(p.read_bytes())!=delivery['sha256']:
+                raise ValueError('DELIVERY_CHANGED_AFTER_CONSUMPTION')
             d=load(p);session=d.get("target_session")
             checked.append({"path":str(p),"status":"MATCH" if session==target else "STALE","session":session})
             if session==target:
@@ -66,7 +80,8 @@ def resolve(root:Path,target:str)->dict:
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--root",type=Path,default=Path("."))
     ap.add_argument("--target-session",required=True);ap.add_argument("--out",type=Path,required=True)
-    a=ap.parse_args();r=resolve(a.root,a.target_session)
+    ap.add_argument('--delivery-spec',type=Path,help='Explicit O/U isolated publications and consumer observation paths')
+    a=ap.parse_args();r=resolve(a.root,a.target_session,delivery_sources=load(a.delivery_spec) if a.delivery_spec else None)
     a.out.parent.mkdir(parents=True,exist_ok=True);a.out.write_text(json.dumps(r,ensure_ascii=False,indent=2)+"\n")
     print(json.dumps({"state":r["state"],"O":r["O"]["path"],"U":r["U"]["path"]},ensure_ascii=False))
 if __name__=="__main__":main()

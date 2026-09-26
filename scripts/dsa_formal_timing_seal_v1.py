@@ -74,10 +74,19 @@ def seal(raw: bytes, evidence: dict, now: str) -> bytes:
     return payload
 
 
-def write_candidate(source: Path, evidence_path: Path, out: Path, now: str) -> dict:
+def write_candidate(source: Path, evidence_path: Path, out: Path, now: str, *, delivery=None, consumer=None, acceptance=None, acceptance_sha=None) -> dict:
     if out.resolve() in (source.resolve(), evidence_path.resolve()):
         raise ValueError("TIMING_OUTPUT_MUST_BE_SEPARATE")
-    payload = seal(source.read_bytes(), json.loads(evidence_path.read_bytes()), now)
+    evidence=json.loads(evidence_path.read_bytes())
+    if any(x is not None for x in (delivery,consumer,acceptance,acceptance_sha)):
+        if not all(x is not None for x in (delivery,consumer,acceptance,acceptance_sha)):
+            raise ValueError("COMPLETE_DELIVERY_CHAIN_REQUIRED")
+        if __package__:
+            from .dsa_receipt_delivery_v1 import check_chain
+        else:
+            from dsa_receipt_delivery_v1 import check_chain
+        check_chain(delivery,consumer,acceptance,acceptance_sha,evidence,now)
+    payload = seal(source.read_bytes(), evidence, now)
     out.parent.mkdir(parents=True, exist_ok=True)
     # Never truncate an existing receipt. Identical retries are harmless.
     try:
@@ -88,6 +97,9 @@ def write_candidate(source: Path, evidence_path: Path, out: Path, now: str) -> d
             raise ValueError("TIMING_OUTPUT_CONFLICT") from None
     return {"state": "TIMING_CANDIDATE_SEALED",
             "sha256": hashlib.sha256(payload).hexdigest(),
+            "source_receipt_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            "timing_evidence_sha256": hashlib.sha256(evidence_path.read_bytes()).hexdigest(),
+            "sealed_bytes_publication_verified": False,
             "authority_verified_by_this_tool": False,
             "production_activated": False}
 
@@ -97,10 +109,14 @@ def main():
     ap.add_argument("--receipt", type=Path, required=True)
     ap.add_argument("--timing-evidence", type=Path, required=True)
     ap.add_argument("--now", required=True, help="Explicit validation clock, never source availability")
+    ap.add_argument("--delivery",type=Path)
+    ap.add_argument("--consumer",type=Path)
+    ap.add_argument("--acceptance",type=Path)
+    ap.add_argument("--acceptance-sha")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     try:
-        result = write_candidate(a.receipt, a.timing_evidence, a.out, a.now)
+        result = write_candidate(a.receipt, a.timing_evidence, a.out, a.now, delivery=a.delivery,consumer=a.consumer,acceptance=a.acceptance,acceptance_sha=a.acceptance_sha)
     except (ValueError, KeyError, TypeError, OSError) as exc:
         # No input payloads, credentials or private paths in diagnostic output.
         print(json.dumps({"state": "BLOCKED", "error_type": type(exc).__name__}))

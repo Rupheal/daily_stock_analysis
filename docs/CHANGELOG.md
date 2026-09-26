@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [改进] 隔离候选接入 Producer 发布与 Resolver 取得证据链、官方名单生效日复算和 U 可观测输入评估；候选不自动接纳、不切换正式工作流或账本。
+
 - [修复] 隔离候选区分 O 行情截止日与早报决策日，session driver 拒绝前日正式结果冒充当天早报；未切换运行绑定。
 
 - [修复] 候选编排接入已验收 Entry-v1，拒绝未绑定早报的旧式 BUY；新增固定来源账本的只读隔离回放及 Producer 生成观测，未启用正式工作流。

@@ -13,6 +13,7 @@ def save_status(out,status):
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--research-root',type=Path,required=True);ap.add_argument('--target-session',required=True)
     ap.add_argument('--snapshot-dir',type=Path,required=True);ap.add_argument('--macro',type=Path,required=True)
+    ap.add_argument('--delivery-root',type=Path,help='Opt-in isolated file-store publication; no formal activation')
     ap.add_argument('--out',type=Path,required=True);ap.add_argument('--dry-run',action='store_true');a=ap.parse_args()
     root=a.research_root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
     u=(a.snapshot_dir/'U_R0_UNIVERSE.json').resolve()
@@ -47,7 +48,10 @@ def main():
         status['state']='WAIT_U_PREREQUISITES';save_status(out,status);return 0
     formal=out/'formal'
     run([sys.executable,str(root/'scripts/run056_u_formal_decision_prod_v1.py'),'--target-session',a.target_session,'--run-id','DSA-U-DAILY-'+a.target_session.replace('-',''),'--scope',str(root/'docs/runtime/RUN056_SCOPE.json'),'--member',str(member),'--close',str(close),'--macro',str(a.macro.resolve()),'--risk',str(risk),'--zone',str(zone),'--out',str(formal)],cwd=root,timeout=1800)
-    record_generated(formal/'SANITIZED_U_FORMAL_RESULT.json', 'U', a.target_session)
+    generation=record_generated(formal/'SANITIZED_U_FORMAL_RESULT.json', 'U', a.target_session)
+    if a.delivery_root:
+        from dsa_receipt_delivery_v1 import publish
+        publish(formal/'SANITIZED_U_FORMAL_RESULT.json',generation,a.delivery_root)
     d=json.loads((formal/'SANITIZED_U_FORMAL_RESULT.json').read_text())
     status.update(state='GENERATED' if str(d.get('state','')).startswith('PASS_FORMAL_U_DECISION') and int(d.get('formal_valid_rows',0))>0 else 'NOT_ACCEPTED',formal_state=d.get('state'),formal_valid_rows=d.get('formal_valid_rows'),qualified_BUY=d.get('qualified_BUY'),paid_model_calls=None)
     save_status(out,status);return 0

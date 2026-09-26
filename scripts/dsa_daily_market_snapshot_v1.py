@@ -21,11 +21,12 @@ def identity_sessions_for_daily_snapshot(session:str):
 def build_from_r0_seal(session,u_universe,prior_o_identity,seal_path,out):
     return materialize_r0(session,u_universe,prior_o_identity,seal_path,out)
 
-def build(session:str,u_universe:Path,out:Path,prior_o_identity:Path|None=None,r0_seal:Path|None=None):
+def build(session:str,u_universe:Path,out:Path,prior_o_identity:Path|None=None,r0_seal:Path|None=None,effective_evidence:Path|None=None):
     identity_sessions_for_daily_snapshot(session)
-    if r0_seal is None:
+    if r0_seal is None and effective_evidence is None:
         auto=Path(__file__).resolve().parents[1]/'docs/runtime'/('DSA_R0_MEMBERSHIP_SEAL_'+session.replace('-','')+'.json')
         r0_seal=auto if auto.exists() else None
+    if r0_seal is not None and effective_evidence is not None:raise ValueError('R0_AND_EFFECTIVE_PROOF_CONFLICT')
     if r0_seal is not None and r0_seal.exists():
         if prior_o_identity is None:raise ValueError('R0_SEAL_REQUIRES_PRIOR_IDENTITY')
         return build_from_r0_seal(session,u_universe,prior_o_identity,r0_seal,out)
@@ -48,10 +49,19 @@ def build(session:str,u_universe:Path,out:Path,prior_o_identity:Path|None=None,r
     (src/'source-probe.json').write_text(json.dumps({'schema_version':1,'sources':rows},indent=2)+'\n')
     mode='FORMAL_IDENTITY_EXACT_SESSION'
     try:
-        o,u=freeze(src,session,u_universe,allowed_identity_sessions=[session])
+        o,u=freeze(src,session,u_universe,allowed_identity_sessions=[session],effective_evidence=effective_evidence)
+        if effective_evidence is not None:
+            for name,obj in [('O_UNIVERSE_CANDIDATE',o),('U_UNIVERSE_CANDIDATE',u)]:
+                (out/(name+'.json')).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
+            status={'state':'EFFECTIVE_MEMBERSHIP_CANDIDATE_ONLY','formal_universe_available':False,
+                    'target_session':session,'candidate_O_denominator':o['member_count'],
+                    'remaining':'Independent normalized-announcement/completeness review required','paid_model_calls':0}
+            (out/'SNAPSHOT_STATUS.json').write_text(json.dumps(status,indent=2)+'\n')
+            return status
         for name,obj in [('O_UNIVERSE',o),('U_UNIVERSE',u)]:(out/(name+'.json')).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
         o_r0={**o,'r0_membership_verified':True};u_r0={**u,'r0_membership_verified':True}
     except ValueError as exc:
+        if effective_evidence is not None:raise
         if not str(exc).startswith('HKEX_IDENTITY_DATE_UNVERIFIED:') or prior_o_identity is None:raise
         actual=str(exc).split(':')[1]
         if actual<=session:raise
@@ -70,6 +80,7 @@ def build(session:str,u_universe:Path,out:Path,prior_o_identity:Path|None=None,r
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--session',required=True);ap.add_argument('--u-universe',type=Path,required=True)
     ap.add_argument('--prior-o-identity',type=Path,default=Path('docs/runtime/run032_public_cache/O_UNIVERSE.json'))
+    ap.add_argument('--effective-evidence',type=Path,help='Source-bound amendment proof; emits candidate files only')
     ap.add_argument('--r0-seal',type=Path);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
-    a.out.mkdir(parents=True,exist_ok=False);print(json.dumps(build(a.session,a.u_universe,a.out,a.prior_o_identity,a.r0_seal)))
+    a.out.mkdir(parents=True,exist_ok=False);print(json.dumps(build(a.session,a.u_universe,a.out,a.prior_o_identity,a.r0_seal,a.effective_evidence)))
 if __name__=='__main__':main()

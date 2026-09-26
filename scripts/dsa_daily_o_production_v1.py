@@ -31,6 +31,7 @@ def main():
     ap.add_argument('--research-root',type=Path,required=True);ap.add_argument('--original-root',type=Path,required=True)
     ap.add_argument('--market-data-session',help='Verified completed XHKG price session; defaults to decision session')
     ap.add_argument('--target-session',required=True);ap.add_argument('--snapshot-dir',type=Path,required=True)
+    ap.add_argument('--delivery-root',type=Path,help='Opt-in isolated file-store publication; no formal activation')
     ap.add_argument('--out',type=Path,required=True);ap.add_argument('--dry-run',action='store_true')
     ap.add_argument('--mode',choices=['R0_ONLY','CALIBRATION_FULL','SELECTIVE'],default='R0_ONLY')
     ap.add_argument('--calibration',type=Path)
@@ -100,7 +101,10 @@ def main():
     # Only a new provider result is emitted here; no prior receipt is relabelled.
     (out/'RANKING.json').write_text(json.dumps(rank,ensure_ascii=False,indent=2)+'\n')
     (out/'O_FORMAL.json').write_text(json.dumps(acc,ensure_ascii=False,indent=2)+'\n')
-    record_generated(out/'O_FORMAL.json', 'O', a.target_session)
+    generation=record_generated(out/'O_FORMAL.json', 'O', a.target_session)
+    if a.delivery_root:
+        from dsa_receipt_delivery_v1 import publish
+        publish(out/'O_FORMAL.json',generation,a.delivery_root)
     status.update(state='GENERATED' if acc['status']=='ACCEPTED_O_FORMAL_TOP3' else 'NOT_ACCEPTED',formal_status=acc['status'],qualified_buy_in_Top3=acc.get('qualified_buy_in_Top3'),missing_count=acc.get('missing_count'))
     (out/'STATUS.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n');print(json.dumps(status))
 if __name__=='__main__':main()
