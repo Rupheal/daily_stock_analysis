@@ -159,7 +159,7 @@ def main():
             pre=root/"preflight"
             rc=command(
               scripts/"prepare_hk_o_operational_preflight_v3.py",
-              ["--code",code,"--target",s["target_session"],"--universe",str(a.universe.resolve()),
+              ["--code",code,"--target",s.get("market_data_session",s["target_session"]),"--universe",str(a.universe.resolve()),
                "--cache",str(a.cache.resolve()),"--policy",str(a.policy.resolve()),"--out",str(pre)],
               safe_env,root/"preflight.stdout"
             )

@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [修复] 隔离候选区分 O 行情截止日与早报决策日，session driver 拒绝前日正式结果冒充当天早报；未切换运行绑定。
+
 - [修复] 候选编排接入已验收 Entry-v1，拒绝未绑定早报的旧式 BUY；新增固定来源账本的只读隔离回放及 Producer 生成观测，未启用正式工作流。
 
 - [修复] Run041–048 将U事实报告、观察复核、条件交易计划和执行信号分层；保留原文40通过/4失败，单独修正版44通过，不再以0/45掩盖分析进度。
