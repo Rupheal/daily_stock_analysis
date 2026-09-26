@@ -1,5 +1,7 @@
 # Changelog
 
+- [修复] 恢复 isolated bundle 为新的 recovery implementation：复用 Resolver/Orchestrator/Entry-v1/隔离账本回放，绑定代码与输入/账本身份，支持幂等重试和中断恢复，缺任一 O/U 轨显式阻断；不切 Production、不写正式账本、所有工程输出自然周期计数为 0。
+
 - [修复] 候选 Session Driver 遵守已批准 09:30–10:00 入场窗口，阻止非交易日按钟点误判可执行；保持正式调度与账本不变。
 
 - [修复] 新增 O/U Producer 来源绑定的时间证据候选封装入口，复用编排时间校验，拒绝覆盖与历史补时；未启用自动发布或正式运行。
