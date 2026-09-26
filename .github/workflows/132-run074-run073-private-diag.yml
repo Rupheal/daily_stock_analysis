@@ -8,8 +8,9 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: dsa-run074-run073-private-diag
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 jobs:
   diag:
     runs-on: ubuntu-latest
