@@ -1,0 +1,19 @@
+name: Independent A-C canonical contract audit
+on:
+  push:
+    branches:
+      - audit/resource-receipt-contract-ac-20260927
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -q pytest
+      - name: A-C canonical contract
+        run: PYTHONPATH=. pytest --noconftest -q tests/test_independent_ac_contract.py
