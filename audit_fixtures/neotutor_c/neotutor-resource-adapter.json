@@ -3,21 +3,49 @@
   "authority": "FOUNDATION_SHARED_RESOURCE_BROKER",
   "adapter_only": true,
   "resources": [
-    {"id": "HOST:ALIENWARE:RUPHEAL", "kind": "host", "parent": null},
-    {"id": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME", "kind": "local_runtime", "parent": "HOST:ALIENWARE:RUPHEAL"},
-    {"id": "API:OPENAI:NEOTUTOR", "kind": "paid_quota", "parent": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME"}
+    {
+      "id": "HOST:ALIENWARE:RUPHEAL",
+      "kind": "host",
+      "parent": null
+    },
+    {
+      "id": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME",
+      "kind": "local_runtime",
+      "parent": "HOST:ALIENWARE:RUPHEAL"
+    },
+    {
+      "id": "API:OPENAI:NEOTUTOR",
+      "kind": "paid_quota",
+      "parent": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME"
+    }
   ],
   "local_children": {
     "workspace": "/home/alienware/NeoTutor-dev",
     "protected_stable_runtime": "/home/alienware/NeoTutor",
-    "backend_ports": [8000],
-    "frontend_ports": [3000],
-    "docker_container_names": ["neotutor-acceptance-backend"],
+    "backend_ports": [
+      8000
+    ],
+    "frontend_ports": [
+      3000
+    ],
+    "docker_container_names": [
+      "neotutor-acceptance-backend"
+    ],
     "pid_registry": true,
-    "temporary_data_directories": [".neotutor-resource-state/tmp"]
+    "temporary_data_directories": [
+      ".neotutor-resource-state/tmp"
+    ]
   },
   "canonical_claim_schema": "foundation.resource-claim-receipt/v1",
-  "required_claim_fields": ["resource_id", "claim_id", "holder", "fencing_epoch", "acquired_at", "expires_at", "broker_state"],
+  "required_claim_fields": [
+    "resource_id",
+    "claim_id",
+    "holder",
+    "fencing_epoch",
+    "acquired_at",
+    "expires_at",
+    "broker_state"
+  ],
   "foundation_contract": {
     "claim_resource_id": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME",
     "canonical_readback_schema": "foundation.resource-claim-readback/v1",
@@ -28,8 +56,20 @@
   "openai_quota": {
     "resource_id": "API:OPENAI:NEOTUTOR",
     "receipt_schema": "foundation.quota-reservation-receipt/v1",
-    "operations": ["consume", "settle", "release", "expire"],
-    "required_fields": ["run_id", "reservation_id", "reserved_units", "idempotency_key", "broker_state"],
-    "new_paid_calls_for_resource_governance": 0
+    "operations": [
+      "consume",
+      "settle",
+      "release",
+      "expire"
+    ],
+    "required_fields": [
+      "run_id",
+      "reservation_id",
+      "reserved_units",
+      "idempotency_key",
+      "broker_state"
+    ],
+    "new_paid_calls_for_resource_governance": 0,
+    "unit_encoding": "exact decimal string"
   }
 }
