@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "bundle_id": "CODEX_DSA_AUTHORITY_BUNDLE_20260927",
+  "status": "READY_FOR_LOCAL_CODEX_PREFLIGHT",
+  "repository": "Rupheal/daily_stock_analysis",
+  "intake_branch": "intake/codex-dsa-resource-governance-20260927",
+  "source_authorities": {
+    "pr5_head": "b79a21a2db412c9dab87116dc92dc8feeb0db718",
+    "pr6_head": "c426a174327d390d0cc9837ad2a8b0d8567427c7",
+    "pr6_accepted_tested_head": "33feacb012c35e0a9ac8f53900167aa5437ba267",
+    "pr6_acceptance_run": 36258422600
+  },
+  "required_files": [
+    {
+      "path": "docs/runtime/DSA_SHADOW_REAL_CYCLE_ACCEPTANCE_V1.json",
+      "git_blob_sha": "1d657ed984568b9f948bbb3267a3bb85bc6cd58b"
+    },
+    {
+      "path": "scripts/dsa_shadow_cycle_acceptance_v1.py",
+      "git_blob_sha": "e39c207ddfcae6a71cb238f571d03ba67b75c986"
+    },
+    {
+      "path": "scripts/dsa_isolated_bundle_v1.py",
+      "git_blob_sha": "86ba7ee28b27ee494e6d9ae8cbe43fed1054e298"
+    },
+    {
+      "path": "scripts/dsa_production_orchestrator_v1.py",
+      "git_blob_sha": "91cc2b6e5e53e49b8c22d5ee5c2a0c8c998bb3e5"
+    },
+    {
+      "path": "scripts/dsa_production_session_driver_v1.py",
+      "git_blob_sha": "fdd0a4a5a78cdddf0b2aa28a2024fefb6a6a1330"
+    },
+    {
+      "path": "scripts/dsa_receipt_delivery_v1.py",
+      "git_blob_sha": "f05a4a50e9257046ed2d6353bd090eeca5f13239"
+    },
+    {
+      "path": "src/services/dsa_simulation_ledger.py",
+      "git_blob_sha": "2f83fbc8391ae1efd9e756b493665d263926f73d"
+    },
+    {
+      "path": "tests/test_dsa_shadow_cycle_acceptance_v1.py",
+      "git_blob_sha": "30c2235983a82a70b8aad4ec159bb73196c1b662"
+    },
+    {
+      "path": "tests/test_dsa_isolated_bundle_v1.py",
+      "git_blob_sha": "d0f304b360507ee4b505b642a44b6dec573edf35"
+    },
+    {
+      "path": "tests/test_shared_branch_writer_concurrency_v1.py",
+      "git_blob_sha": "64f87100e000e54802561f96600971d17f834986"
+    },
+    {
+      "path": "docs/runtime/DSA_SHARED_BRANCH_WRITER_SERIALIZATION_ACCEPTANCE_20260927.json",
+      "git_blob_sha": "20f9e5cd42160ce1f4298618d59987e05a8fed84"
+    },
+    {
+      "path": ".github/workflows/149-dsa-shared-writer-serialization-acceptance.yml",
+      "git_blob_sha": "84ea29cf2d497d33b1516006ce8c9a132be9c504"
+    }
+  ],
+  "preflight_rule": "Verify every path exists and `git hash-object <path>` equals git_blob_sha before edits. Remote/origin/gh authentication is NOT required for this intake bundle.",
+  "fail_closed": "Any mismatch => WAIT_DEPENDENCY_AUTHORITY_BUNDLE_MISMATCH; do not implement.",
+  "boundaries": [
+    "no main merge",
+    "no Production switch",
+    "no runtime pointer switch",
+    "no real orders",
+    "no auto recharge"
+  ]
+}
