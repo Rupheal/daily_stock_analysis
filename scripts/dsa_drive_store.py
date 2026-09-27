@@ -222,6 +222,41 @@ class DriveStore:
                 'role': 'canonical_new_raw_evidence', 'verified_at': datetime.now(timezone.utc).isoformat(),
                 'idempotent_reuse': bool(found), 'save_read_hash_restore': True}
 
+    def governed_put(self, artifact_id, data, run_id, claim, state):
+        """Publish under a Foundation namespace claim and reconcile ambiguity.
+
+        Drive is not treated as a lock.  The broker claim serializes the
+        namespace; after an ambiguous POST this performs only an artifact-id
+        lookup through ``put``.  Exact content is reused, while absence or a
+        duplicate/mismatched object remains fail-closed.
+        """
+        from src.services.dsa_resource_adapter import ResourceClaim
+        parsed = claim if isinstance(claim, ResourceClaim) else ResourceClaim.from_dict(claim)
+        state.validate_claim(parsed, 'DRIVE:DSA:EVIDENCE_FOLDER')
+        if parsed.run_id != run_id:
+            raise StoreError('RESOURCE_CLAIM_RUN_MISMATCH')
+        try:
+            receipt = self.put(artifact_id, data, run_id)
+        except StoreError as exc:
+            if str(exc) != 'DRIVE_WRITE_TRANSPORT_AMBIGUOUS':
+                raise
+            # No blind resend. ``put`` first performs the authoritative lookup;
+            # if the POST did not land, its next attempted POST is deliberately
+            # stopped so the caller can quarantine/reconcile later.
+            original = self.request
+            def lookup_only(method, url, **kw):
+                if method.upper() == 'POST':
+                    raise StoreError('DRIVE_AMBIGUOUS_NOT_FOUND_QUARANTINE')
+                return original(method, url, **kw)
+            self.request = lookup_only
+            try:
+                receipt = self.put(artifact_id, data, run_id)
+            finally:
+                self.request = original
+        receipt['resource_claim_id'] = parsed.claim_id
+        receipt['fencing_epoch'] = parsed.fencing_epoch
+        return receipt
+
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)

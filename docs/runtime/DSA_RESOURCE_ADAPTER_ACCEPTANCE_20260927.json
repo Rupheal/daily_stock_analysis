@@ -1,0 +1,33 @@
+{
+  "schema": "dsa-resource-adapter-acceptance-v1",
+  "status": "READY_FOR_INDEPENDENT_CONTROL_ROOM_RETEST",
+  "authority": {
+    "checkout_head": "e2a6b20c78b2611af7edbc4dd2f09c546db2ae9b",
+    "bundle_id": "CODEX_DSA_AUTHORITY_BUNDLE_20260927",
+    "pr5_source_head": "b79a21a2db412c9dab87116dc92dc8feeb0db718",
+    "pr6_source_head": "c426a174327d390d0cc9837ad2a8b0d8567427c7",
+    "pr6_tested_head": "33feacb012c35e0a9ac8f53900167aa5437ba267",
+    "pr6_acceptance_run": 36258422600
+  },
+  "repair": {
+    "canonical_foundation_claim_contract": true,
+    "unproven_higher_epoch_rejected": true,
+    "local_sqlite_global_authority_removed": true,
+    "local_quota_global_authority_removed": true,
+    "unregistered_shadow_aliases_removed": true,
+    "schedule_global_idempotency_binding": true,
+    "fixed_foundation_trust_root": true,
+    "journal_requires_signed_foundation_readback": true
+  },
+  "preservation": {
+    "ou_model_semantics_changed": false,
+    "production_switched": false,
+    "runtime_pointer_switched": false,
+    "real_orders": 0,
+    "new_paid_spend": "0",
+    "shared_writer_queue": "dsa-native-private-branch-writer",
+    "cancel_in_progress": false,
+    "queue": "max"
+  },
+  "next_action": "Run unchanged independent B countertests plus A-B canonical contract audit. Keep PR7 Draft and unmerged."
+}

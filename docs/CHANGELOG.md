@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [新功能] 新增 Foundation 共享资源 Broker 的 DSA Adapter、机器可读资源清单及故障注入保护。
+
 - [改进] 隔离候选接入 Producer 发布与 Resolver 取得证据链、官方名单生效日复算和 U 可观测输入评估；候选不自动接纳、不切换正式工作流或账本。
 
 - [修复] 隔离候选区分 O 行情截止日与早报决策日，session driver 拒绝前日正式结果冒充当天早报；未切换运行绑定。

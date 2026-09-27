@@ -16,9 +16,24 @@ import httpx
 
 from dsa_drive_store import DriveStore, scoped_token, API, StoreError
 from src.services.dsa_prediction_ledger import canonical_hash
+from src.services.dsa_resource_adapter import DurableResourceState, ResourceClaim
 
 PREFIX="DSA-DUAL-ACCOUNT-JOURNAL"
 NAME_RE=re.compile(r"^DSA-DUAL-ACCOUNT-JOURNAL-C(\d{8})-H([0-9a-f]{12})\.bin$")
+
+
+def _validate_transition(count, ch, old_count, old_hash, expected_parent_hash):
+    # An exact retry is safe regardless of whether the caller retained the
+    # pre-append parent or learned the current hash during reconciliation.
+    if count==old_count and ch==old_hash:
+        return "IDEMPOTENT"
+    if expected_parent_hash!=old_hash:
+        raise StoreError("JOURNAL_PARENT_HASH_CONFLICT")
+    if count<old_count:
+        raise StoreError("JOURNAL_COMMAND_COUNT_REGRESSION")
+    if count==old_count:
+        raise StoreError("JOURNAL_SAME_COUNT_CONFLICT")
+    return "APPEND"
 
 
 def _client_store():
@@ -95,7 +110,16 @@ def load_latest(out:Path|None=None):
         c.close()
 
 
-def save_snapshot(journal_path:Path,run_id:str,expected_parent_hash:str|None,allow_init:bool=False):
+def save_snapshot(journal_path:Path,run_id:str,expected_parent_hash:str|None,allow_init:bool=False,
+                  resource_claim:dict|None=None,resource_state:DurableResourceState|None=None):
+    if (resource_claim is None) != (resource_state is None):
+        raise StoreError("JOURNAL_RESOURCE_GUARD_INCOMPLETE")
+    claim=None
+    if resource_claim is not None:
+        claim=resource_claim if isinstance(resource_claim,ResourceClaim) else ResourceClaim.from_dict(resource_claim)
+        resource_state.validate_claim(claim,"DRIVE:DSA:SIMULATION_JOURNAL")
+        if claim.run_id!=run_id:
+            raise StoreError("RESOURCE_CLAIM_RUN_MISMATCH")
     obj=json.loads(journal_path.read_text(encoding="utf-8"))
     if set(obj.get("config",{}).get("accounts",{}))!={"U","O"}:
         raise StoreError("JOURNAL_UO_CONFIG_REQUIRED")
@@ -118,14 +142,8 @@ def save_snapshot(journal_path:Path,run_id:str,expected_parent_hash:str|None,all
                 old=json.loads(p.read_text(encoding="utf-8"))
                 old_hash=canonical_hash(old)
                 old_count=len(old.get("commands") or [])
-            if expected_parent_hash!=old_hash:
-                raise StoreError("JOURNAL_PARENT_HASH_CONFLICT")
-            if count<old_count:
-                raise StoreError("JOURNAL_COMMAND_COUNT_REGRESSION")
-            if count==old_count:
-                if ch==old_hash:
-                    return {"status":"JOURNAL_IDEMPOTENT","command_count":count,"canonical_hash":ch}
-                raise StoreError("JOURNAL_SAME_COUNT_CONFLICT")
+            if _validate_transition(count,ch,old_count,old_hash,expected_parent_hash)=="IDEMPOTENT":
+                return {"status":"JOURNAL_IDEMPOTENT","command_count":count,"canonical_hash":ch}
         artifact=f"{PREFIX}-C{count:08d}-H{ch[:12]}"
         payload=(json.dumps(obj,ensure_ascii=False,sort_keys=True,separators=(",",":"))+"\n").encode()
         receipt=store.put(artifact,payload,run_id)
@@ -141,6 +159,7 @@ def save_snapshot(journal_path:Path,run_id:str,expected_parent_hash:str|None,all
           "status":"JOURNAL_SNAPSHOT_SAVED","command_count":count,
           "canonical_hash":ch,"artifact_id":artifact,
           "save_read_hash_restore":True,
+          **({"resource_claim_id":claim.claim_id,"fencing_epoch":claim.fencing_epoch} if claim else {}),
         }
     finally:
         c.close()
@@ -153,12 +172,24 @@ def main():
     p=sub.add_parser("save");p.add_argument("--journal",type=Path,required=True)
     p.add_argument("--run-id",required=True);p.add_argument("--expected-parent-hash")
     p.add_argument("--allow-init",action="store_true")
+    p.add_argument("--resource-claim",type=Path)
+    p.add_argument("--foundation-readback",type=Path)
+    p.add_argument("--foundation-readback-signature",type=Path)
+    p.add_argument("--resource-state",type=Path)
     a=ap.parse_args()
     try:
         if a.cmd=="load":
             print(json.dumps(load_latest(a.out),ensure_ascii=False))
         else:
-            print(json.dumps(save_snapshot(a.journal,a.run_id,a.expected_parent_hash,a.allow_init),ensure_ascii=False))
+            if bool(a.resource_claim)!=bool(a.resource_state):
+                raise StoreError("JOURNAL_RESOURCE_GUARD_INCOMPLETE")
+            if a.resource_claim and (not a.foundation_readback or not a.foundation_readback_signature):
+                raise StoreError("JOURNAL_FOUNDATION_PROOF_REQUIRED")
+            grant=(ResourceClaim.from_verified_artifacts(
+                a.resource_claim,a.foundation_readback,a.foundation_readback_signature)
+                if a.resource_claim else None)
+            state=DurableResourceState(a.resource_state) if a.resource_state else None
+            print(json.dumps(save_snapshot(a.journal,a.run_id,a.expected_parent_hash,a.allow_init,grant,state),ensure_ascii=False))
     except Exception as exc:
         reason=str(exc) if isinstance(exc,StoreError) else type(exc).__name__
         print(json.dumps({"status":"FAILED","reason":reason}))
