@@ -15,4 +15,4 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -q pytest
-      - run: PYTHONPATH=. pytest --noconftest -q tests/test_independent_pr7_foundation_contract.py
+      - run: PYTHONPATH=. pytest --noconftest -q tests/test_independent_pr7_foundation_contract.py tests/test_independent_pr40_snapshot.py
