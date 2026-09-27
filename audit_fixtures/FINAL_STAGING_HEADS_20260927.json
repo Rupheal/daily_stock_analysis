@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "audit_id": "RESOURCE_GOVERNANCE_FINAL_STAGING_ACCEPTANCE_20260927",
+  "production_effect": false,
+  "paid_spend": 0,
+  "dc_used": false,
+  "staging_heads": {
+    "foundation": "754c9c2554beea77ef69ace7d8d949a25f62a616",
+    "dsa": "75593278482f71266e74f60be42ad553d1c1cb87",
+    "neotutor": "36f699c5b0ba892761528c2151c5fb62b85cf252"
+  },
+  "foundation_fixture_blobs": {
+    "shared_resource_broker": "76e14258af017198288dd1d0a68192115aa858a1",
+    "tri_task_runtime_cli": "98b675afb80f08c70a12791abe44c16a5f7e5a10",
+    "tri_task_supervisor_v03": "8d09c50424c447ef76ff45bd98bd9bf1b8112ff7",
+    "tri_watchdog_all": "ac71d6ae70fb5da536d18e188460e8e9cd015b42",
+    "shared_resource_registry": "f1dca3001c1b5538e224e1ac451a6f8ee8b432eb",
+    "resource_receipt_contract": "fdf9b4894e0253b863259d58a9dbaaf925db4eba",
+    "resource_receipt_contract_json": "84c2e21039f305b044f9148042fe30ef947fe750"
+  },
+  "neotutor_fixture_blobs": {
+    "adapter": "84a15e6ba602bedbc157c2f627da4410d6a45f50",
+    "manifest": "9c29a9b598ab75d9b5323431c90e7c297b28e706",
+    "safety_test": "beddf2277c93f9c62ca547b6aee205a8330a1064"
+  },
+  "reused_test_blobs": {
+    "foundation_countertests": "3f7e6b2f2d3a7e295f02b47bc92de5fc8abfc100",
+    "foundation_multiprocess_cas": "a55f1e1d09a6b165321eaaaff4f39345bff3cabe",
+    "dsa_countertests": "f240e63679e75c36f6421bde31e3bf7d3f63a777",
+    "ab_contract": "6a2048e689d221919f57ce14fef19f83c52fb348",
+    "ac_contract": "32e77d3f4446596fca26afe2cd603cc021c7ce84"
+  }
+}

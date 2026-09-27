@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "contract_id": "FOUNDATION_RESOURCE_RECEIPT_CONTRACT_v1",
+  "status": "INTEGRATION_CANDIDATE_NOT_PRODUCTION",
+  "claim_receipt_schema": "foundation.resource-claim-receipt/v1",
+  "claim_readback_schema": "foundation.resource-claim-readback/v1",
+  "quota_reservation_receipt_schema": "foundation.quota-reservation-receipt/v1",
+  "quota_reservation_readback_schema": "foundation.quota-reservation-readback/v1",
+  "broker_state_proof": {
+    "version": 1,
+    "meaning": "receipt proof schema version; exact broker snapshot identity is bound by SHA-256 hash",
+    "hash": "sha256(canonical broker state JSON)",
+    "numeric_canonicalization": "Decimal values are serialized as exact decimal strings before SHA-256 hashing"
+  },
+  "claim_receipt": {
+    "required": [
+      "schema",
+      "resource_id",
+      "claim_id",
+      "holder",
+      "fencing_epoch",
+      "acquired_at",
+      "expires_at",
+      "broker_state"
+    ],
+    "holder_required": [
+      "task_id",
+      "worker_id",
+      "job_id"
+    ],
+    "internal_mapping": {
+      "resource_id": "claim.resource_id",
+      "claim_id": "claim.claim_id",
+      "holder.task_id": "claim.task_id",
+      "holder.worker_id": "claim.worker_id",
+      "holder.job_id": "claim.session_ref",
+      "fencing_epoch": "claim.epoch",
+      "acquired_at": "claim.acquired_at",
+      "expires_at": "claim.expires_at"
+    }
+  },
+  "claim_readback": {
+    "required_state": "ACTIVE",
+    "detached_signature_required": true,
+    "signature_algorithm": "Ed25519",
+    "signature_scope": "exact UTF-8 bytes of canonical readback artifact",
+    "trust_root_provisioning": "OWNER/PLATFORM GATE; not installed by this candidate"
+  },
+  "quota_reservation_receipt": {
+    "required": [
+      "schema",
+      "resource_id",
+      "run_id",
+      "reservation_id",
+      "reserved_units",
+      "idempotency_key",
+      "expires_at",
+      "broker_state"
+    ],
+    "reservation_authority": "Foundation Shared Resource Broker only",
+    "consumers_may_reserve": false,
+    "unit_encoding": "exact decimal string"
+  },
+  "boundaries": {
+    "private_key_generated_or_installed": false,
+    "live_trust_root_installed": false,
+    "production_promoted": false,
+    "main_merged": false,
+    "runtime_pointer_switched": false
+  }
+}
