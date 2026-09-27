@@ -10,6 +10,9 @@ OUTBOX_DIR=ROOT/'outbox'
 SUP_PATH=ROOT/'tri_task_supervisor_v03.py'
 DISP_PATH=ROOT/'tri_dispatcher.py'
 PROJECT_RECOVERY_PATH=ROOT/'reliability'/'project_autorecovery.py'
+BROKER_PATH=ROOT/'shared_resource_broker.py'
+BROKER_STATE=ROOT/'SHARED_RESOURCE_STATE_v1.json'
+BROKER_REGISTRY=ROOT/'SHARED_RESOURCE_REGISTRY_v1.json'
 
 spec=importlib.util.spec_from_file_location('sup3',SUP_PATH)
 sup=importlib.util.module_from_spec(spec); spec.loader.exec_module(sup)
@@ -17,6 +20,8 @@ dspec=importlib.util.spec_from_file_location('disp',DISP_PATH)
 disp=importlib.util.module_from_spec(dspec); dspec.loader.exec_module(disp)
 pspec=importlib.util.spec_from_file_location('project_recovery',PROJECT_RECOVERY_PATH)
 project_recovery=importlib.util.module_from_spec(pspec); pspec.loader.exec_module(project_recovery)
+bspec=importlib.util.spec_from_file_location('resource_broker',BROKER_PATH)
+broker=importlib.util.module_from_spec(bspec); bspec.loader.exec_module(broker)
 
 def load(p):
     with Path(p).open('r',encoding='utf-8') as f:return json.load(f)
@@ -46,6 +51,20 @@ def resource_health(state,now):
       'orphan_session_count':sum(sum(s.get('state')=='RUNNING' for s in c.get('sessions',[])) for c in claims),
       'stale_fences':sum(c.get('state')=='QUARANTINED' for c in claims),
       'paid_reservations':sum(x.get('state')=='RESERVED' for x in state.get('reservations',{}).values())}
+
+def reconcile_resources(now,max_conflicts=8):
+    store=broker.JsonCASStore(BROKER_STATE); registry=load(BROKER_REGISTRY)
+    for _ in range(max_conflicts):
+        state,version=store.read()
+        updated=broker.quarantine_expired(state,now)
+        updated,granted=broker.promote_next(registry,updated,now)
+        if updated==state: return state,[]
+        try:
+            store.commit(version,updated)
+            return updated,[x['request_id'] for x in granted]
+        except broker.CASConflict:
+            continue
+    raise RuntimeError('BROKER_STATE_CAS_RETRY_EXHAUSTED')
 
 def build_tick_payload(now, changed, runtime_rows, env=None, outbox_rows=None):
     env=env or {}; outbox_rows=outbox_rows or []
@@ -168,7 +187,10 @@ def main(argv=None):
     payload=build_tick_payload(now,changed,rows,os.environ,outbox_rows)
     payload['outbox_incident_proposals']=reconcile_outbox_records(outbox_rows)
     resource_path=ROOT/'SHARED_RESOURCE_STATE_v1.json'
-    if resource_path.exists(): payload['resources']=resource_health(load(resource_path),now)
+    if resource_path.exists():
+        resource_state,promoted=reconcile_resources(now)
+        payload['resources']=resource_health(resource_state,now)
+        payload['resources']['promoted_request_ids']=promoted
     if args.observations:
         observed=load(args.observations)
         if not isinstance(observed,list): raise ValueError('OBSERVATIONS_LIST_REQUIRED')

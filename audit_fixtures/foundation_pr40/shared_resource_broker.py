@@ -9,10 +9,17 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 from decimal import Decimal, InvalidOperation
 from datetime import datetime, timedelta, timezone
+
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
 
 TERMINAL_SESSION_STATES={"COMPLETED","FAILED","CANCELLED"}
 READ_MODES={"READ","HEALTH_READ"}
@@ -20,6 +27,23 @@ WRITE_MODES={"WRITE","SESSION","JOB"}
 
 class ResourceConflict(RuntimeError): pass
 class CASConflict(ResourceConflict): pass
+
+@contextmanager
+def _exclusive_file_lock(path):
+    path.touch(exist_ok=True)
+    with path.open("a+b") as lock:
+        if os.name == "nt":
+            lock.seek(0); lock.write(b"0"); lock.flush(); lock.seek(0)
+            msvcrt.locking(lock.fileno(),msvcrt.LK_LOCK,1)
+        else:
+            fcntl.flock(lock.fileno(),fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            if os.name == "nt":
+                lock.seek(0); msvcrt.locking(lock.fileno(),msvcrt.LK_UNLCK,1)
+            else:
+                fcntl.flock(lock.fileno(),fcntl.LOCK_UN)
 
 def canonical_hash(value)->str:
     return hashlib.sha256(json.dumps(
@@ -47,6 +71,12 @@ def active_claims(state,resource_id,now):
         rows.append(c)
     return rows
 
+def blocking_claims(state,resource_id,now):
+    """Claims that block reuse until explicit finalization/release."""
+    return [c for c in (state.get("claims") or {}).get(resource_id,[])
+            if c.get("state") in {"DRAINING","QUARANTINED"}
+            or (c.get("state")=="ACTIVE" and parse_ts(c["expires_at"])>now)]
+
 def _conflicts(policy,mode,existing):
     if not existing:return False
     if mode in READ_MODES and policy=="EXCLUSIVE_MUTATION_SHARED_READ":
@@ -62,7 +92,7 @@ def acquire(registry,state,resource_id,task_id,worker_id,mode,now,ttl_seconds=60
         raise ValueError("USE_BUDGET_RESERVATION")
     out=copy.deepcopy(state)
     out.setdefault("claims",{})
-    existing=active_claims(out,resource_id,now)
+    existing=blocking_claims(out,resource_id,now)
     if _conflicts(rd.get("policy"),mode,existing):
         raise ResourceConflict("RESOURCE_BUSY:"+resource_id)
     epoch=int(out.get("next_epoch") or 1)
@@ -96,6 +126,14 @@ def validate_fence(state,resource_id,claim_id,epoch,task_id=None,worker_id=None,
     if int(current.get("epoch",-1))!=int(epoch): raise ResourceConflict("STALE_FENCE:FENCING_EPOCH_MISMATCH")
     if task_id is not None and current.get("task_id")!=task_id: raise ResourceConflict("CLAIM_TASK_MISMATCH")
     if worker_id is not None and current.get("worker_id")!=worker_id: raise ResourceConflict("CLAIM_WORKER_MISMATCH")
+    return True
+
+def validate_finalizer_fence(state,resource_id,claim_id,epoch):
+    rows=(state.get("claims") or {}).get(resource_id,[])
+    current=next((c for c in rows if c.get("claim_id")==claim_id and
+                  c.get("state") in {"ACTIVE","DRAINING","QUARANTINED"}),None)
+    if current is None or int(current.get("epoch",-1))!=int(epoch):
+        raise ResourceConflict("STALE_FENCE:FINALIZER_CLAIM_MISMATCH")
     return True
 
 def heartbeat(state,resource_id,claim_id,epoch,now):
@@ -132,7 +170,7 @@ def finish_session(state,resource_id,claim_id,epoch,session_id,session_state,now
 
 def begin_drain(state,resource_id,claim_id,epoch,now):
     out=copy.deepcopy(state)
-    validate_fence(out,resource_id,claim_id,epoch,now=now)
+    validate_finalizer_fence(out,resource_id,claim_id,epoch)
     target=next(c for c in out["claims"][resource_id] if c["claim_id"]==claim_id)
     target["state"]="DRAINING";target["handoff_state"]="DRAINING"
     return out
@@ -141,7 +179,7 @@ def mark_drained(state,registry,resource_id,claim_id,epoch,now,readback_verified
     if readback_verified is not True: raise ValueError("HANDOFF_READBACK_REQUIRED")
     rd=resource_def(registry,resource_id)
     out=copy.deepcopy(state)
-    validate_fence(out,resource_id,claim_id,epoch,now=now)
+    validate_finalizer_fence(out,resource_id,claim_id,epoch)
     target=next(c for c in out["claims"][resource_id] if c["claim_id"]==claim_id)
     active=[x for x in target["sessions"] if x.get("state") not in TERMINAL_SESSION_STATES]
     if active: raise ResourceConflict("ACTIVE_SESSIONS_BLOCK_HANDOFF")
@@ -153,10 +191,14 @@ def mark_drained(state,registry,resource_id,claim_id,epoch,now,readback_verified
 def release(state,registry,resource_id,claim_id,epoch,now):
     rd=resource_def(registry,resource_id)
     out=copy.deepcopy(state)
-    validate_fence(out,resource_id,claim_id,epoch,now=now)
+    validate_finalizer_fence(out,resource_id,claim_id,epoch)
     target=next(c for c in out["claims"][resource_id] if c["claim_id"]==claim_id)
     if any(x.get("state") not in TERMINAL_SESSION_STATES for x in target["sessions"]):
         raise ResourceConflict("ACTIVE_SESSIONS_BLOCK_RELEASE")
+    if target.get("state")!="DRAINING":
+        raise ResourceConflict("DRAIN_BEFORE_RELEASE_REQUIRED")
+    if not target.get("readback_verified_at"):
+        raise ResourceConflict("FINALIZER_READBACK_REQUIRED")
     if rd.get("handoff_required") and target.get("handoff_state")!="DRAINED":
         raise ResourceConflict("DRAIN_BEFORE_RELEASE_REQUIRED")
     target["state"]="RELEASED";target["released_at"]=iso(now)
@@ -215,15 +257,20 @@ def enqueue_request(registry,state,task_id,worker_id,job_id,resources,priority,n
     requested=normalize_resources(resources)
     for row in requested: resource_def(registry,row["resource_id"])
     out=copy.deepcopy(state); out.setdefault("requests",{}); out.setdefault("queue",[])
+    immutable={"task_id":task_id,"worker_id":worker_id,"job_id":job_id,
+               "resources":requested,"priority":int(priority),"ttl_seconds":ttl_seconds}
+    request_hash=canonical_hash(immutable)
     for prior in out["requests"].values():
         if prior.get("idempotency_key")==idempotency_key and prior.get("state") not in {"CANCELLED","RELEASED"}:
+            if prior.get("request_hash")!=request_hash:
+                raise ResourceConflict("IDEMPOTENCY_KEY_PAYLOAD_CONFLICT")
             return out,prior
     rid=request_id or "RRQ-"+uuid.uuid4().hex
     if rid in out["requests"]: raise ResourceConflict("REQUEST_ID_CONFLICT")
     row={"request_id":rid,"task_id":task_id,"worker_id":worker_id,"job_id":job_id,
          "resources":requested,"priority":int(priority),"requested_at":iso(now),
          "idempotency_key":idempotency_key,"state":"QUEUED","ttl_seconds":ttl_seconds,
-         "claim_ids":[]}
+         "request_hash":request_hash,"claim_ids":[]}
     out["requests"][rid]=row; out["queue"].append(rid)
     return out,row
 
@@ -237,7 +284,7 @@ def grant_request(registry,state,request_id,now):
     for item in req["resources"]:
         rd=resource_def(registry,item["resource_id"])
         if rd.get("policy")=="ATOMIC_BUDGET_RESERVATION" or _conflicts(
-                rd.get("policy"),item["mode"],active_claims(state,item["resource_id"],now)):
+                rd.get("policy"),item["mode"],blocking_claims(state,item["resource_id"],now)):
             raise ResourceConflict("RESOURCE_BUSY:"+item["resource_id"])
     out=copy.deepcopy(state); claims=[]
     for item in req["resources"]:
@@ -281,11 +328,16 @@ class JsonCASStore:
     def read(self):
         value=json.loads(self.path.read_text(encoding="utf-8")); return value,canonical_hash(value)
     def commit(self,expected_version,value):
-        current,version=self.read()
-        if version!=expected_version: raise CASConflict("BROKER_STATE_CAS_CONFLICT")
-        tmp=self.path.with_suffix(self.path.suffix+".tmp")
-        tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
-        tmp.replace(self.path)
-        readback,new_version=self.read()
-        if canonical_hash(readback)!=canonical_hash(value): raise RuntimeError("CAS_READBACK_MISMATCH")
-        return new_version
+        lock_path=self.path.with_suffix(self.path.suffix+".lock")
+        with _exclusive_file_lock(lock_path):
+            current,version=self.read()
+            if version!=expected_version: raise CASConflict("BROKER_STATE_CAS_CONFLICT")
+            tmp=self.path.with_name(f".{self.path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+            try:
+                tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+                tmp.replace(self.path)
+            finally:
+                if tmp.exists(): tmp.unlink()
+            readback,new_version=self.read()
+            if canonical_hash(readback)!=canonical_hash(value): raise RuntimeError("CAS_READBACK_MISMATCH")
+            return new_version

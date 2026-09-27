@@ -96,6 +96,13 @@ def require_drain_on_yield(r):
     if r.get('active_resource_claims'):
         r['drain_state']={'state':'DRAINING','reason':'WORKER_YIELD','finalizers_pending':True}
     return r
+def begin_resource_drain(r,broker_state,broker,now):
+    state=broker_state
+    for claim in r.get('active_resource_claims') or []:
+        state=broker.begin_drain(state,claim['resource_id'],claim['claim_id'],claim['epoch'],now)
+        claim['state']='DRAINING'
+    require_drain_on_yield(r)
+    return r,state
 def complete_pulse(r,lease_id,summary,checkpoint_ref,checkpoint_hash,now,task_complete=False,worker_yield=False):
     if task_complete: raise ValueError('INDEPENDENT_ACCEPTANCE_REQUIRED; worker may only submit completion evidence')
     seq=r['heartbeat']['progress_seq']+1; heartbeat(r,lease_id,seq,summary,checkpoint_ref,checkpoint_hash,now)
