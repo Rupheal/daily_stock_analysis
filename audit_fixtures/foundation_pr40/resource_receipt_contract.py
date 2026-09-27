@@ -6,15 +6,21 @@ Production side effects are created here.
 """
 from __future__ import annotations
 import hashlib, json
-from datetime import datetime
+from decimal import Decimal
 
 CLAIM_SCHEMA="foundation.resource-claim-receipt/v1"
 CLAIM_READBACK_SCHEMA="foundation.resource-claim-readback/v1"
 QUOTA_SCHEMA="foundation.quota-reservation-receipt/v1"
 QUOTA_READBACK_SCHEMA="foundation.quota-reservation-readback/v1"
 
+def _json_default(value):
+    if isinstance(value,Decimal):
+        return str(value)
+    raise TypeError(f"UNSUPPORTED_CANONICAL_TYPE:{type(value).__name__}")
+
 def canonical_bytes(value)->bytes:
-    return (json.dumps(value,sort_keys=True,separators=(",",":"),ensure_ascii=False,allow_nan=False)+"\n").encode()
+    return (json.dumps(value,sort_keys=True,separators=(",",":"),ensure_ascii=False,
+                       allow_nan=False,default=_json_default)+"\n").encode()
 
 def canonical_hash(value)->str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
