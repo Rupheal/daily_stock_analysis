@@ -1,0 +1,20 @@
+name: Independent C adapter safety audit
+on:
+  push:
+    branches:
+      - audit/resource-receipt-contract-ac-20260927
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: C local safety suite
+        run: |
+          cd audit_fixtures/neotutor_c
+          python -m unittest -v test_resource_adapter.py
