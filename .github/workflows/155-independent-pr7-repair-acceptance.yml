@@ -1,0 +1,26 @@
+name: Independent PR7 repair acceptance
+on:
+  push:
+    branches:
+      - audit/pr7-foundation-contract-independent-20260927
+permissions:
+  contents: read
+concurrency:
+  group: independent-pr7-repair-acceptance
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -q pytest httpx
+      - name: Original unchanged B countertests
+        run: PYTHONPATH=. pytest --noconftest -q tests/test_independent_pr7_foundation_contract.py
+      - name: A-B canonical contract
+        run: PYTHONPATH=. pytest --noconftest -q tests/test_independent_ab_contract.py
+      - name: B candidate adapter regressions
+        run: PYTHONPATH=.:scripts pytest --noconftest -q tests/test_dsa_resource_adapter.py tests/test_dsa_drive_store.py tests/test_dsa_simulation_journal_drive.py
