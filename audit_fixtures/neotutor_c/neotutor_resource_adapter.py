@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import datetime as dt
+from decimal import Decimal, InvalidOperation
 import fcntl
 import json
 import os
@@ -213,6 +214,14 @@ def validate_reservation(args: argparse.Namespace) -> dict[str, Any]:
         raise ResourceError("Foundation reservation is not active")
     bindings = ("resource_id", "run_id", "reservation_id", "reserved_units", "expires_at", "broker_state")
     if any(readback.get(x) != receipt.get(x) for x in bindings): raise ResourceError("reservation/readback binding mismatch")
+    if not isinstance(receipt["reserved_units"], str):
+        raise ResourceError("Foundation reserved_units must use exact decimal-string encoding")
+    try:
+        reserved=Decimal(receipt["reserved_units"])
+    except (InvalidOperation,ValueError,TypeError) as exc:
+        raise ResourceError("invalid Foundation reservation units") from exc
+    if reserved<=0:
+        raise ResourceError("invalid Foundation reservation units")
     if parse_time(receipt["expires_at"]) <= utcnow(): raise ResourceError("Foundation reservation expired")
     return receipt
 
@@ -221,7 +230,7 @@ def quota(args: argparse.Namespace) -> dict[str, Any]:
     root = Path(args.state_dir)
     with locked_state(root) as ledger:
         q = ledger["quota"].setdefault(receipt["reservation_id"], {"resource_id": QUOTA_RESOURCE, "run_id": receipt["run_id"],
-            "reservation_id": receipt["reservation_id"], "reserved_units": receipt["reserved_units"], "consumed_units": 0,
+            "reservation_id": receipt["reservation_id"], "reserved_units": receipt["reserved_units"], "consumed_units": "0",
             "broker_state": receipt["broker_state"],
             "idempotency": {}, "state": "RESERVED"})
         if q["run_id"] != receipt["run_id"] or q["reserved_units"] != receipt["reserved_units"] or q["broker_state"] != receipt["broker_state"]:
@@ -230,8 +239,11 @@ def quota(args: argparse.Namespace) -> dict[str, Any]:
         if prior and prior != args.operation: raise ResourceError("idempotency key reused for different operation")
         if not prior:
             if args.operation == "consume":
-                if q["state"] != "RESERVED" or args.units <= 0 or q["consumed_units"] + args.units > q["reserved_units"]: raise ResourceError("QUOTA_EXCEEDED")
-                q["consumed_units"] += args.units
+                reserved=Decimal(receipt["reserved_units"])
+                consumed=Decimal(str(q["consumed_units"]))
+                amount=Decimal(str(args.units))
+                if q["state"] != "RESERVED" or amount <= 0 or consumed + amount > reserved: raise ResourceError("QUOTA_EXCEEDED")
+                q["consumed_units"] = str(consumed + amount)
             elif args.operation == "settle": q["state"] = "SETTLED"
             elif args.operation in {"release", "expire"}: q["state"] = args.operation.upper() + "D"
             q["idempotency"][args.idempotency_key] = args.operation
