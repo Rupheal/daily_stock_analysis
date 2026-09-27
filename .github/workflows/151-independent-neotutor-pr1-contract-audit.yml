@@ -1,0 +1,17 @@
+name: Independent NeoTutor PR1 contract snapshot audit
+on:
+  push:
+    branches:
+      - audit/pr7-foundation-contract-independent-20260927
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest -v tests/test_independent_neotutor_pr1_snapshot.py
