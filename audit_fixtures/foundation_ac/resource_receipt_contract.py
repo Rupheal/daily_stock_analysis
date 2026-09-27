@@ -66,7 +66,7 @@ def quota_reservation_receipt(reservation,broker_state,*,expires_at,idempotency_
       "resource_id":_require(reservation.get("resource_id"),"resource_id"),
       "run_id":_require(reservation.get("run_id"),"run_id"),
       "reservation_id":_require(reservation.get("reservation_id"),"reservation_id"),
-      "reserved_units":reservation.get("units"),
+      "reserved_units":str(_require(reservation.get("units"),"reserved_units")),
       "idempotency_key":idempotency_key,
       "expires_at":expires_at,
       "broker_state":broker_state_proof(broker_state)
