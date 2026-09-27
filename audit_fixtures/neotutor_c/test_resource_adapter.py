@@ -1,5 +1,6 @@
 import argparse
 import datetime as dt
+from decimal import Decimal
 import json
 import os
 from pathlib import Path
@@ -78,7 +79,7 @@ class AdapterTests(unittest.TestCase):
     def test_quota_is_atomic_idempotent_and_bounded(self):
         now=dt.datetime.now(dt.timezone.utc); expires=(now+dt.timedelta(hours=1)).isoformat()
         receipt={"schema":"foundation.quota-reservation-receipt/v1", "resource_id":adapter.QUOTA_RESOURCE,
-                 "run_id":"run", "reservation_id":"res", "reserved_units":1, "expires_at":expires,
+                 "run_id":"run", "reservation_id":"res", "reserved_units":"1", "expires_at":expires,
                  "broker_state":{"version":14,"hash":"broker-hash-14"}}
         readback={"schema":"foundation.quota-reservation-readback/v1", "state":"RESERVED", **{k:receipt[k] for k in
                   ("resource_id","run_id","reservation_id","reserved_units","expires_at","broker_state")}}
@@ -97,7 +98,7 @@ class AdapterTests(unittest.TestCase):
         self.assertCountEqual([x[0] for x in results],["ok","blocked"])
         successful=next(key for status,key in results if status == "ok")
         q=adapter.quota(argparse.Namespace(**base, operation="consume", idempotency_key=successful))
-        self.assertEqual(q["consumed_units"],1)
+        self.assertEqual(Decimal(q["consumed_units"]),Decimal("1"))
     def test_local_quota_reserve_without_foundation_proof_fails_closed(self):
         args=argparse.Namespace(state_dir=str(self.root/"state"), reservation_receipt=None, foundation_readback=None,
                                 foundation_readback_signature=None, units=0,
