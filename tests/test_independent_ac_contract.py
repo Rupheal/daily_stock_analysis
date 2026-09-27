@@ -56,6 +56,8 @@ def test_foundation_quota_receipt_is_consumed_by_neotutor_without_local_reserve(
     expires=(NOW+dt.timedelta(minutes=10)).isoformat()
     receipt=rc.quota_reservation_receipt(row,state,expires_at=expires,idempotency_key="reserve:run-1")
     readback=rc.quota_reservation_readback(row,state,expires_at=expires,idempotency_key="reserve:run-1")
+    assert receipt["reserved_units"]=="1"
+    assert readback["reserved_units"]=="1"
     rp=tmp_path/"reservation.json"; rbp=tmp_path/"quota-readback.json"; sig=tmp_path/"quota-readback.sig"
     rp.write_text(json.dumps(receipt)); rbp.write_text(json.dumps(readback))
     private,public=make_keys(tmp_path); sign(private,rbp,sig)
@@ -66,7 +68,7 @@ def test_foundation_quota_receipt_is_consumed_by_neotutor_without_local_reserve(
       foundation_readback_signature=str(sig),units=1,idempotency_key="consume-1")
     out=neo.quota(ns)
     assert out["reservation_id"]=="RSV-1"
-    assert out["consumed_units"]==1
+    assert out["consumed_units"]=="1"
     assert out["state"]=="RESERVED"
 
 def test_neotutor_cli_exposes_no_local_quota_reserve_operation():
