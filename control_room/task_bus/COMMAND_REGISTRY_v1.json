@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "registry_id": "TRIDENT_COMMAND_REGISTRY_v1",
+  "status": "ACTIVE",
+  "canonical_commands": [
+    "/tri",
+    "/tri help",
+    "/tri resume",
+    "/tri status",
+    "/tri now",
+    "/tri health",
+    "/tri align",
+    "/tri progress",
+    "/tri portfolio",
+    "/tri queue",
+    "/tri map",
+    "/tri away",
+    "/tri back",
+    "/tri go",
+    "/tri test"
+  ],
+  "aliases": [],
+  "natural_language_mapping": {
+    "rule": "Map clear natural-language intent to the canonical behavior. Ambiguous intent defaults to read-only.",
+    "examples": [
+      {
+        "utterance": "看看现在谁卡住了",
+        "behavior": "/tri health"
+      },
+      {
+        "utterance": "继续三个任务",
+        "behavior": "/tri go"
+      },
+      {
+        "utterance": "我要睡觉了",
+        "behavior": "/tri away"
+      },
+      {
+        "utterance": "昨晚发生什么",
+        "behavior": "/tri back"
+      }
+    ]
+  },
+  "behavior_authority": {
+    "control_manual": "control_room/task_bus/TRIDENT_CONTROL_TERMS_AND_COMMANDS_v0.1.md",
+    "supervisor_policy": "control_room/task_bus/SUPERVISOR_POLICY_v0.3.json",
+    "task_queue": "control_room/task_bus/TRI_TASK_QUEUE.json",
+    "managed_projects": "control_room/task_bus/MANAGED_PROJECT_REGISTRY_v1.json",
+    "persistence_contract": "control_room/task_bus/PERSISTENCE_CONTRACT_v1.json"
+  },
+  "fail_closed": true
+}

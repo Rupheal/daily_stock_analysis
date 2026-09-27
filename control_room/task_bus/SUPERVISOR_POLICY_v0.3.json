@@ -1,0 +1,135 @@
+{
+  "schema_version": 3,
+  "policy_id": "TRIDENT_DURABLE_SUPERVISOR_POLICY_v0.3",
+  "status": "ACTIVE",
+  "owner_presence": {
+    "default_mode": "PRESENT",
+    "modes": {
+      "PRESENT": {
+        "user_facing_escalation": true,
+        "safe_auto_retry": true,
+        "notify_on": [
+          "WAIT_OWNER",
+          "WAIT_QUOTA",
+          "DEAD_LETTER",
+          "ACCEPTED"
+        ]
+      },
+      "AWAY": {
+        "user_facing_escalation": false,
+        "safe_auto_retry": true,
+        "notify_once_on": [
+          "WAIT_OWNER",
+          "WAIT_QUOTA",
+          "DEAD_LETTER",
+          "ACCEPTED"
+        ],
+        "repeated_notifications": false,
+        "note": "Durability remains active; only user-facing escalation is suppressed."
+      }
+    }
+  },
+  "heartbeat": {
+    "worker_emit_mode": "AUTOMATIC_NOT_USER_COMMAND",
+    "target_interval_seconds": 120,
+    "stale_after_seconds": 360,
+    "emit_on": [
+      "WORKER_START",
+      "BOUNDED_MILESTONE",
+      "CHECKPOINT_WRITE",
+      "PULSE_COMPLETE",
+      "FAILURE_CLASSIFICATION",
+      "WORKER_YIELD"
+    ],
+    "eligibility_rule": "A long unattended worker is durable only if it can emit heartbeat/checkpoint or exposes an external run status that the watchdog can verify."
+  },
+  "lease": {
+    "default_seconds": 600,
+    "renew_on_heartbeat": true,
+    "single_writer": true
+  },
+  "pulse_execution": {
+    "auto_chain": true,
+    "owner_continue_required_between_pulses": false,
+    "same_worker_may_continue": true,
+    "yield_between_pulses_allowed": true,
+    "stop_only_on": [
+      "TASK_ACCEPTED",
+      "WAIT_OWNER",
+      "WAIT_QUOTA",
+      "WAIT_DEPENDENCY",
+      "DEAD_LETTER",
+      "CANCELLED",
+      "BUDGET_GATE",
+      "OWNER_DEFINED_STOP"
+    ]
+  },
+  "watchdog": {
+    "target_check_interval_seconds": 300,
+    "primary_schedule": "2-57/5 * * * *",
+    "fallback_schedule": "1,31 * * * *",
+    "freshness_warning_after_seconds": 900,
+    "observability": "Every actual run publishes a GitHub Actions step summary and trident-watchdog-tick artifact. Repository state is persisted only for material runtime/queue/status changes.",
+    "persistence_targets": [
+      "control_room/task_bus/runtime",
+      "control_room/task_bus/status",
+      "control_room/task_bus/TRI_TASK_QUEUE.json"
+    ],
+    "implementation_target": "GitHub Actions deterministic watchdog on default branch",
+    "note": "Primary target remains 5 minutes. Fallback schedule reduces silent multi-hour gaps, but GitHub schedule timing is best-effort and must be judged from observed run timestamps."
+  },
+  "retry": {
+    "transient_capacity_delays_seconds": [
+      120,
+      300,
+      600,
+      1200,
+      1800
+    ],
+    "stale_worker_delays_seconds": [
+      120,
+      300,
+      600,
+      1200,
+      1800
+    ],
+    "max_automatic_worker_attempts_per_pulse": 5,
+    "equivalent_fix_failures_before_architecture_review": 2,
+    "final_quota_auto_retry": false
+  },
+  "quota": {
+    "state": "WAIT_QUOTA",
+    "resume_condition": "known reset time reached or explicit reactivation/credit decision",
+    "auto_recharge": false,
+    "silent_model_substitution": false
+  },
+  "ui_boundary": {
+    "sidebar_presence_is_liveness": false,
+    "missing_chat_is_not_task_loss": true,
+    "blue_dot_control_available": false
+  },
+  "artifact_persistence": {
+    "contract": "control_room/task_bus/PERSISTENCE_CONTRACT_v1.json",
+    "worker_completion_state": "WORKTREE_COMPLETE",
+    "remote_missing_state": "PERSIST_PENDING",
+    "acceptance_required_state": "REMOTE_READBACK_VERIFIED",
+    "direct_commit_requires": [
+      "remote_commit_exists",
+      "exact_branch_head",
+      "exact_pr_head_when_bound",
+      "input_ancestry",
+      "tree_sha_when_pinned"
+    ],
+    "patch_reconstruction_requires": [
+      "patch_sha256",
+      "exact_changed_paths",
+      "exact_target_blob_shas",
+      "input_ancestry",
+      "exact_branch_head",
+      "exact_pr_head_when_bound"
+    ],
+    "make_pr_is_persistence": false,
+    "worker_self_report_is_persistence": false,
+    "fail_closed": true
+  }
+}

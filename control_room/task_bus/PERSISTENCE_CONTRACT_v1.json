@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "contract_id": "TRIDENT_WORKER_ARTIFACT_PERSISTENCE_CONTRACT_v1",
-  "status": "CANDIDATE",
+  "status": "ACTIVE",
   "purpose": "Prevent local worker completion, local commit SHAs, or PR metadata updates from being treated as durable Authority before independent remote readback.",
   "state_machine": [
     "WORKTREE_COMPLETE",

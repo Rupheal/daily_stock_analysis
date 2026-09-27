@@ -52,4 +52,13 @@ class PersistenceGateTests(unittest.TestCase):
         p=pg.evaluate(direct_expected(),direct_observed());sup.independent_accept(r,"CONTROL_ROOM","receipt","e"*64,p,datetime.now(timezone.utc))
         self.assertEqual("ACCEPTED",r["state"]);self.assertEqual(pg.VERIFIED,r["persistence"]["state"])
 
+    def test_15_contract_is_active(self):
+        c=__import__("json").loads((BUS/"PERSISTENCE_CONTRACT_v1.json").read_text())
+        self.assertEqual("ACTIVE",c["status"])
+        self.assertEqual("REMOTE_READBACK_VERIFIED",c["state_machine"][2])
+    def test_16_supervisor_policy_requires_remote_readback(self):
+        p=__import__("json").loads((BUS/"SUPERVISOR_POLICY_v0.3.json").read_text())
+        self.assertTrue(p["artifact_persistence"]["fail_closed"])
+        self.assertEqual("REMOTE_READBACK_VERIFIED",p["artifact_persistence"]["acceptance_required_state"])
+
 if __name__=="__main__": unittest.main()
