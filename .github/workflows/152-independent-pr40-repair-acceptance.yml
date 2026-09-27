@@ -1,0 +1,24 @@
+name: Independent PR40 repair acceptance
+on:
+  push:
+    branches:
+      - audit/pr7-foundation-contract-independent-20260927
+permissions:
+  contents: read
+concurrency:
+  group: independent-pr40-repair-acceptance
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -q pytest
+      - name: Original unchanged PR40 countertests
+        run: PYTHONPATH=. pytest --noconftest -q tests/test_independent_pr40_snapshot.py
+      - name: Independent multi-process CAS proof
+        run: PYTHONPATH=. pytest --noconftest -q tests/test_independent_pr40_multiprocess_cas.py
