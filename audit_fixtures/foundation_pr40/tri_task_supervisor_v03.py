@@ -92,6 +92,14 @@ def bind_resource_heartbeat(r,broker_state,broker,now):
         refreshed.append({**claim,'heartbeat_at':iso(now)})
     r['active_resource_claims']=refreshed;r['resource_heartbeat']={'at':iso(now)}
     return r,state
+
+def managed_resource_heartbeat(r,lease_id,progress_seq,summary,checkpoint_ref,checkpoint_hash,
+                               broker_state,broker,now,owner=None,attempt=None):
+    """One managed heartbeat path for Task lease + all held Resource leases."""
+    heartbeat(r,lease_id,progress_seq,summary,checkpoint_ref,checkpoint_hash,now,owner,attempt)
+    if r.get('active_resource_claims'):
+        return bind_resource_heartbeat(r,broker_state,broker,now)
+    return r,broker_state
 def require_drain_on_yield(r):
     if r.get('active_resource_claims'):
         r['drain_state']={'state':'DRAINING','reason':'WORKER_YIELD','finalizers_pending':True}

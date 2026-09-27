@@ -73,10 +73,15 @@ def main():
             disp.validate_resource_gate(r,packet.get('required_resources'),broker,state,t)
         sup.claim(r,a.owner,a.lease_id,t)
     elif a.cmd=='heartbeat':
-        sup.heartbeat(r,a.lease_id,a.seq,a.summary,a.checkpoint_ref,a.checkpoint_hash,t,a.owner,a.attempt)
         if r.get('active_resource_claims'):
-            def renew(state): return sup.bind_resource_heartbeat(r,state,broker,t)[1],None
+            def renew(state):
+                _,updated=sup.managed_resource_heartbeat(
+                    r,a.lease_id,a.seq,a.summary,a.checkpoint_ref,a.checkpoint_hash,
+                    state,broker,t,a.owner,a.attempt)
+                return updated,None
             broker_cas(renew)
+        else:
+            sup.heartbeat(r,a.lease_id,a.seq,a.summary,a.checkpoint_ref,a.checkpoint_hash,t,a.owner,a.attempt)
     elif a.cmd=='pulse-complete':
         sup.lease_valid(r,a.lease_id,t,a.owner,a.attempt)
         if a.yield_worker: drain_runtime_claims(r,t)
