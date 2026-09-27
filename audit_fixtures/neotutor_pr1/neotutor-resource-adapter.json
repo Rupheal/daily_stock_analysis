@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "authority": "FOUNDATION_SHARED_RESOURCE_BROKER",
+  "adapter_only": true,
+  "resources": [
+    {"id": "HOST:ALIENWARE:RUPHEAL", "kind": "host", "parent": null},
+    {"id": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME", "kind": "local_runtime", "parent": "HOST:ALIENWARE:RUPHEAL"},
+    {"id": "API:OPENAI:NEOTUTOR", "kind": "paid_quota", "parent": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME"}
+  ],
+  "local_children": {
+    "workspace": "/home/alienware/NeoTutor-dev",
+    "protected_stable_runtime": "/home/alienware/NeoTutor",
+    "backend_ports": [8000],
+    "frontend_ports": [3000],
+    "docker_container_names": ["neotutor-acceptance-backend"],
+    "pid_registry": true,
+    "temporary_data_directories": [".neotutor-resource-state/tmp"]
+  },
+  "required_claim_fields": ["job_id", "claim_id", "resource_id", "fencing_epoch", "issued_at", "expires_at"],
+  "foundation_contract": {
+    "claim_resource_id": "LOCAL:NEOTUTOR:ACCEPTANCE_RUNTIME",
+    "epoch_readback_required": true,
+    "signature_verification": "performed_by_foundation; adapter requires verified=true",
+    "release_authority": "foundation"
+  },
+  "openai_quota": {
+    "resource_id": "API:OPENAI:NEOTUTOR",
+    "operations": ["reserve", "consume", "release", "expire"],
+    "required_fields": ["run_id", "reservation_id", "requested_units", "idempotency_key"],
+    "new_paid_calls_for_resource_governance": 0
+  }
+}
