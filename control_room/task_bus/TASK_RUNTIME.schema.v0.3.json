@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trident.local/schemas/task-runtime-v0.3.json",
+  "title": "TRIDENT Task Runtime v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "state",
+    "attempt",
+    "max_attempts",
+    "updated_at",
+    "lease",
+    "heartbeat",
+    "pulse",
+    "retry",
+    "failure"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 3
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^TRI-TASK-[A-Z0-9_-]+$"
+    },
+    "state": {
+      "enum": [
+        "REGISTERED",
+        "QUEUED",
+        "RUNNING",
+        "RETRY_BACKOFF",
+        "WAIT_CAPACITY",
+        "WAIT_QUOTA",
+        "WAIT_DEPENDENCY",
+        "WAIT_OWNER",
+        "STALLED",
+        "ACCEPTED",
+        "FAILED",
+        "DEAD_LETTER",
+        "CANCELLED"
+      ]
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_attempts": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "lease_id",
+        "acquired_at",
+        "expires_at"
+      ],
+      "properties": {
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lease_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "acquired_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "duration_seconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 3600
+        }
+      }
+    },
+    "heartbeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at",
+        "timeout_seconds",
+        "progress_seq",
+        "checkpoint_ref",
+        "checkpoint_hash",
+        "summary"
+      ],
+      "properties": {
+        "at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 60
+        },
+        "progress_seq": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkpoint_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checkpoint_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "pulse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "current",
+        "completed",
+        "auto_chain",
+        "last_completed_at"
+      ],
+      "properties": {
+        "current": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "auto_chain": {
+          "type": "boolean"
+        },
+        "last_completed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "retry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retry_after",
+        "backoff_step"
+      ],
+      "properties": {
+        "retry_after": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "backoff_step": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "retryable",
+        "detail"
+      ],
+      "properties": {
+        "class": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "CONTEXT_ROLLOVER",
+            "TRANSIENT_CAPACITY",
+            "STREAM_LOST",
+            "HEARTBEAT_STALE",
+            "FINAL_QUOTA",
+            "WAIT_OWNER",
+            "WAIT_DEPENDENCY",
+            "PERMANENT_FAILURE",
+            "UNKNOWN_STALL"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "last_external_receipt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "intent"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "PREPARED",
+            "SUBMITTING",
+            "UNKNOWN",
+            "ACKNOWLEDGED"
+          ]
+        },
+        "intent": {
+          "type": "object"
+        },
+        "receipt": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "incident": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "persistence": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "state",
+        "mode",
+        "remote_head",
+        "verified_by",
+        "binding_hash"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "state": {
+          "enum": [
+            "WORKTREE_COMPLETE",
+            "PERSIST_PENDING",
+            "REMOTE_READBACK_VERIFIED",
+            "PERSISTENCE_MISSING",
+            "PERSISTENCE_CONFLICT"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "DIRECT_COMMIT",
+            "PATCH_RECONSTRUCTION"
+          ]
+        },
+        "repository": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "remote_head": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "pr_number": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "verified_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "binding_hash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "contract_id": "TRIDENT_WORKER_ARTIFACT_PERSISTENCE_CONTRACT_v1",
+  "status": "CANDIDATE",
+  "purpose": "Prevent local worker completion, local commit SHAs, or PR metadata updates from being treated as durable Authority before independent remote readback.",
+  "state_machine": [
+    "WORKTREE_COMPLETE",
+    "PERSIST_PENDING",
+    "REMOTE_READBACK_VERIFIED",
+    "INDEPENDENT_RETEST",
+    "ACCEPTED"
+  ],
+  "failure_states": [
+    "PERSISTENCE_MISSING",
+    "PERSISTENCE_CONFLICT"
+  ],
+  "authoritative_rule": "Only REMOTE_READBACK_VERIFIED persistence evidence produced from an independent Control Room remote readback may unlock independent acceptance.",
+  "never_sufficient": [
+    "worker self-report",
+    "clean working tree",
+    "local commit SHA",
+    "make_pr or PR metadata mutation",
+    "local test PASS",
+    "worker-provided remote_verified boolean"
+  ],
+  "modes": {
+    "DIRECT_COMMIT": {
+      "requirements": [
+        "remote commit exists",
+        "remote branch head equals worker output head",
+        "PR head equals remote branch head when a PR is bound",
+        "remote ancestry contains expected input head",
+        "tree SHA matches when pinned"
+      ]
+    },
+    "PATCH_RECONSTRUCTION": {
+      "requirements": [
+        "source patch SHA-256 is pinned",
+        "expected base/input head is pinned",
+        "remote ancestry contains expected input head",
+        "changed path set exactly matches the patch contract",
+        "every remote target blob SHA matches the patch target blob SHA",
+        "PR head equals remote branch head when a PR is bound"
+      ],
+      "note": "The reconstructed remote commit SHA may differ from the worker-local commit SHA; content identity, not local object identity, is authoritative."
+    }
+  },
+  "worker_handoff_rule": "Workers may end at WORKTREE_COMPLETE / PERSIST_PENDING / READY_FOR_INDEPENDENT_CONTROL_ROOM_RETEST but may never claim REMOTE_READBACK_VERIFIED or ACCEPTED.",
+  "owner_boundary": "This contract does not authorize main merge, Production promotion, runtime-pointer switch, paid spend, or irreversible deployment."
+}

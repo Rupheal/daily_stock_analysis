@@ -1,0 +1,23 @@
+name: Independent TRIDENT worker persistence gate acceptance
+on:
+  push:
+    branches:
+      - audit/worker-persistence-gate-independent-20260927
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Exact persistence-gate tests
+        run: python -m unittest -v control_room.task_bus.tests.test_artifact_persistence_gate
+      - name: Syntax and JSON contract checks
+        run: |
+          python -m py_compile control_room/task_bus/artifact_persistence_gate.py control_room/task_bus/tri_task_supervisor_v03.py control_room/task_bus/tri_task_runtime_cli.py
+          python -m json.tool control_room/task_bus/PERSISTENCE_CONTRACT_v1.json >/dev/null
+          python -m json.tool control_room/task_bus/TASK_RUNTIME.schema.v0.3.json >/dev/null
