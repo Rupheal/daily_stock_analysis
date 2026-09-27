@@ -1,0 +1,24 @@
+{
+  "schema": "dsa-foundation-resource-adapter-v1",
+  "adapter_id": "DSA_RESOURCE_ADAPTER_V1",
+  "authority_checkout": "e2a6b20c78b2611af7edbc4dd2f09c546db2ae9b",
+  "broker_owner": "TRIDENT-Foundation",
+  "production_enabled": false,
+  "real_orders_enabled": false,
+  "resources": [
+    {"id": "GIT:DSA:NATIVE_PRIVATE_BRANCH", "mode": "exclusive", "guard": "observed-base non-force push plus readback", "queue": "dsa-native-private-branch-writer"},
+    {"id": "GIT:DSA:RUNTIME_SHADOW_JOURNAL", "mode": "exclusive", "guard": "fencing epoch plus parent-hash CAS and readback"},
+    {"id": "DRIVE:DSA:EVIDENCE_FOLDER", "mode": "namespace-exclusive", "guard": "immutable artifact id and ambiguous-write lookup"},
+    {"id": "DRIVE:DSA:SIMULATION_JOURNAL", "mode": "exclusive", "guard": "fencing epoch plus append-only parent hash"},
+    {"id": "GIT:DSA:FORMAL_LATEST_POINTERS", "mode": "exclusive", "guard": "session/generation monotonic projection"},
+    {"id": "SCHEDULE:DSA:DAILY_FORMAL", "mode": "singleflight", "guard": "target_session+track+contract_hash"},
+    {"id": "API:DEEPSEEK:DSA", "mode": "decimal-reservation", "guard": "reserve/consume/release/expire", "paid_spend_this_change": "0"}
+  ],
+  "shadow_factory": {
+    "physical_execution_enabled": false,
+    "runtime_pointer_switch_enabled": false,
+    "dependencies": ["HOST:ALIENWARE:RUPHEAL", "RUNNER:DSA:SELF_HOSTED_OR_DC", "IDENTITY:DSA:CANDIDATE", "GIT:DSA:RUNTIME_SHADOW_JOURNAL"]
+  },
+  "ou_execution": {"compute": "parallel immutable artifact/outbox", "writer": "existing PR6 serialized queue", "single_reconciler_status": "ADAPTER_READY_FUTURE_OPTIMIZATION_NOT_ACTIVATED", "model_semantics_changed": false},
+  "foundation_contract": {"required_claim_fields": ["resource_id", "claim_id", "run_id", "fencing_epoch"], "claim_acquisition_implemented_here": false}
+}

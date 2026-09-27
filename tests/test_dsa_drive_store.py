@@ -8,6 +8,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from dsa_drive_store import DriveStore, StoreError, LIMIT, digest, scoped_token, SCOPE
 from dsa_drive_bundle import bundle, verify_bundle
+from src.services.dsa_resource_adapter import DurableResourceState, ResourceClaim
 
 
 class Fake:
@@ -116,6 +117,40 @@ def test_ambiguous_write_transport_is_not_retried(monkeypatch):
     with httpx.Client(transport=httpx.MockTransport(handle)) as c:
         with pytest.raises(StoreError, match='DRIVE_WRITE_TRANSPORT_AMBIGUOUS'):
             DriveStore(c, 'folder').put('ART-1', b'original', 'RUN-1')
+    assert attempts['posts'] == 1
+
+
+def test_governed_ambiguous_post_looks_up_without_resend(monkeypatch, tmp_path):
+    f = Fake(); lost = {'once': True}
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    def handle(r):
+        if r.method == 'POST' and lost['once']:
+            lost['once'] = False
+            f.handle(r)  # server committed, but its acknowledgement was lost
+            raise httpx.ConnectError('lost ack', request=r)
+        return f.handle(r)
+    state = DurableResourceState(tmp_path / 'adapter.db')
+    grant = ResourceClaim('DRIVE:DSA:EVIDENCE_FOLDER', 'claim-1', 'RUN-1', 1)
+    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+        receipt = DriveStore(c, 'folder').governed_put('ART-1', b'original', 'RUN-1', grant, state)
+    assert receipt['idempotent_reuse'] is True
+    assert receipt['resource_claim_id'] == 'claim-1'
+    assert f.posts == 1
+
+
+def test_governed_ambiguous_post_absent_is_quarantined_not_resent(monkeypatch, tmp_path):
+    f = Fake(); attempts = {'posts': 0}
+    monkeypatch.setattr('dsa_drive_store.time.sleep', lambda _: None)
+    def handle(r):
+        if r.method == 'POST':
+            attempts['posts'] += 1
+            raise httpx.ConnectError('lost before commit', request=r)
+        return f.handle(r)
+    state = DurableResourceState(tmp_path / 'adapter.db')
+    grant = ResourceClaim('DRIVE:DSA:EVIDENCE_FOLDER', 'claim-1', 'RUN-1', 1)
+    with httpx.Client(transport=httpx.MockTransport(handle)) as c:
+        with pytest.raises(StoreError, match='AMBIGUOUS_NOT_FOUND_QUARANTINE'):
+            DriveStore(c, 'folder').governed_put('ART-1', b'original', 'RUN-1', grant, state)
     assert attempts['posts'] == 1
 
 
