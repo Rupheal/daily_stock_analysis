@@ -72,6 +72,9 @@
     "detached_signature_required": true,
     "claim_acquisition_implemented_here": false,
     "global_logical_cycle_authority": "TRIDENT-Foundation",
-    "global_paid_quota_authority": "TRIDENT-Foundation"
+    "global_paid_quota_authority": "TRIDENT-Foundation",
+    "schedule_job_id_binding": "job_id == logical_cycle_key(target_session,track,contract_hash)",
+    "trust_root": "/etc/rupheal/foundation/resource-broker-public.pem",
+    "caller_selectable_trust_root": false
   }
 }

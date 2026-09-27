@@ -72,10 +72,9 @@ class ResourceClaim:
 
     @classmethod
     def from_verified_artifacts(cls, receipt_path: str | Path, readback_path: str | Path,
-                                signature_path: str | Path,
-                                trust_root: str | Path = FOUNDATION_TRUST_ROOT) -> "ResourceClaim":
+                                signature_path: str | Path) -> "ResourceClaim":
         receipt=json.loads(Path(receipt_path).read_text())
-        readback=_load_verified_readback(readback_path,signature_path,trust_root)
+        readback=_load_verified_readback(readback_path,signature_path,FOUNDATION_TRUST_ROOT)
         required={"schema","resource_id","claim_id","holder","fencing_epoch","acquired_at","expires_at","broker_state"}
         if required-receipt.keys() or receipt.get("schema")!=CLAIM_SCHEMA:
             raise ResourceConflict("FOUNDATION_CLAIM_RECEIPT_INVALID")
@@ -109,10 +108,9 @@ class FoundationReservation:
 
     @classmethod
     def from_verified_artifacts(cls, receipt_path: str | Path, readback_path: str | Path,
-                                signature_path: str | Path,
-                                trust_root: str | Path = FOUNDATION_TRUST_ROOT) -> "FoundationReservation":
+                                signature_path: str | Path) -> "FoundationReservation":
         receipt=json.loads(Path(receipt_path).read_text())
-        readback=_load_verified_readback(readback_path,signature_path,trust_root)
+        readback=_load_verified_readback(readback_path,signature_path,FOUNDATION_TRUST_ROOT)
         required={"schema","resource_id","run_id","reservation_id","reserved_units","idempotency_key","expires_at","broker_state"}
         if required-receipt.keys() or receipt.get("schema")!=QUOTA_SCHEMA:
             raise ResourceConflict("FOUNDATION_RESERVATION_RECEIPT_INVALID")
@@ -212,7 +210,10 @@ class DurableResourceState:
         if not claim.proof_verified:
             return {"action":"WAIT_FOUNDATION_GRANT","owner_run_id":None}
         self.validate_claim(claim, "SCHEDULE:DSA:DAILY_FORMAL")
-        if claim.run_id != run_id: raise ResourceConflict("RESOURCE_CLAIM_RUN_MISMATCH")
+        # Foundation request identity must be the deterministic logical-cycle key.
+        # This makes schedule/push/manual transports converge on one Broker request.
+        if claim.run_id != cycle_key or run_id != cycle_key:
+            raise ResourceConflict("FOUNDATION_LOGICAL_CYCLE_BINDING_MISMATCH")
         with self._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             row=db.execute("SELECT * FROM cycles WHERE cycle_key=?", (cycle_key,)).fetchone()

@@ -14,7 +14,10 @@
     "unproven_higher_epoch_rejected": true,
     "local_sqlite_global_authority_removed": true,
     "local_quota_global_authority_removed": true,
-    "unregistered_shadow_aliases_removed": true
+    "unregistered_shadow_aliases_removed": true,
+    "schedule_global_idempotency_binding": true,
+    "fixed_foundation_trust_root": true,
+    "journal_requires_signed_foundation_readback": true
   },
   "preservation": {
     "ou_model_semantics_changed": false,

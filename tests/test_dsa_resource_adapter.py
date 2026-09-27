@@ -20,13 +20,13 @@ def test_unproven_claim_waits_instead_of_executing(tmp_path):
 def test_proven_logical_cycle_local_idempotency(tmp_path):
     state=DurableResourceState(tmp_path/"state.db")
     key=state.logical_cycle_key("2026-09-28","O","a"*64)
-    owner_claim=claim("SCHEDULE:DSA:DAILY_FORMAL",run="logical-owner")
-    def trigger(_): return state.begin_cycle(key,"logical-owner",owner_claim)
+    owner_claim=claim("SCHEDULE:DSA:DAILY_FORMAL",run=key)
+    def trigger(_): return state.begin_cycle(key,key,owner_claim)
     with ThreadPoolExecutor(max_workers=3) as pool: results=list(pool.map(trigger,range(3)))
     assert [x["action"] for x in results].count("EXECUTE")==1
     owner=next(x["owner_run_id"] for x in results if x["action"]=="EXECUTE")
     state.complete_cycle(key,owner,{"artifact":"immutable"})
-    assert state.begin_cycle(key,"logical-owner",owner_claim)["action"]=="NOOP"
+    assert state.begin_cycle(key,key,owner_claim)["action"]=="NOOP"
 
 def test_latest_old_delayed_run_cannot_overwrite_new(tmp_path):
     state=DurableResourceState(tmp_path/"state.db"); pointer=tmp_path/"LATEST.json"
