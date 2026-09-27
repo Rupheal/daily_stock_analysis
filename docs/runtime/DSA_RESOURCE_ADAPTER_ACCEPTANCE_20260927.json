@@ -1,15 +1,23 @@
 {
   "schema": "dsa-resource-adapter-acceptance-v1",
-  "status": "READY_FOR_FOUNDATION_RESOURCE_BROKER_RECONCILIATION",
+  "status": "READY_FOR_INDEPENDENT_CONTROL_ROOM_RETEST",
   "authority": {
     "checkout_head": "e2a6b20c78b2611af7edbc4dd2f09c546db2ae9b",
     "bundle_id": "CODEX_DSA_AUTHORITY_BUNDLE_20260927",
-    "required_files_verified": 12,
-    "mismatches": 0,
     "pr5_source_head": "b79a21a2db412c9dab87116dc92dc8feeb0db718",
     "pr6_source_head": "c426a174327d390d0cc9837ad2a8b0d8567427c7",
     "pr6_tested_head": "33feacb012c35e0a9ac8f53900167aa5437ba267",
     "pr6_acceptance_run": 36258422600
+  },
+  "repair": {
+    "canonical_foundation_claim_contract": true,
+    "unproven_higher_epoch_rejected": true,
+    "local_sqlite_global_authority_removed": true,
+    "local_quota_global_authority_removed": true,
+    "unregistered_shadow_aliases_removed": true,
+    "schedule_global_idempotency_binding": true,
+    "fixed_foundation_trust_root": true,
+    "journal_requires_signed_foundation_readback": true
   },
   "preservation": {
     "ou_model_semantics_changed": false,
@@ -21,30 +29,5 @@
     "cancel_in_progress": false,
     "queue": "max"
   },
-  "fault_injection": {
-    "writer_collision": "PASS",
-    "logical_cycle_schedule_push_manual": "PASS",
-    "latest_old_after_new": "PASS",
-    "journal_exact_retry_parent_same_count_fork_stale_fence": "PASS",
-    "drive_lost_ack_lookup_no_blind_resend": "PASS",
-    "paid_quota_10_requests_7_and_4": "PASS"
-  },
-  "verification": {
-    "adapter_drive_journal_tests": {"passed": 51, "failed": 0},
-    "required_regression_selection": {"passed": 143, "failed": 1, "failure": "pre-existing signal fixture lacks accepted Entry-v1 policy binding and correctly returns ENTRY_POLICY_BINDING_REQUIRED"},
-    "ci_gate": "BLOCKED_BY_ENVIRONMENT_MISSING_TENACITY_AFTER_SYNTAX_AND_FLAKE8_CRITICAL_PASS"
-  },
-  "foundation_dependencies": [
-    "issue signed resource claims and monotonically increasing fencing epochs",
-    "provide one durable adapter SQLite path shared by writers on an adapter host",
-    "invoke governed Drive/journal entrypoints and reconcile quarantined ambiguous writes",
-    "retain PR6 GitHub native writer serialization until broker reconciliation is deployed",
-    "provide Shadow host/runner/candidate identity grants without switching runtime pointers"
-  ],
-  "platform_limitations": [
-    "Google Drive has no strong create-if-absent CAS; namespace claims plus lookup/readback are mandatory",
-    "single O/U outbox reconciler is not activated because changing producer workflows would enlarge model/research scope",
-    "external pattern web research was attempted but the browsing service returned HTTP 401"
-  ],
-  "rollback": "Revert the adapter commit, stop new Foundation claim issuance, retain immutable receipts/journal snapshots, and keep the PR6 workflow queue enabled."
+  "next_action": "Run unchanged independent B countertests plus A-B canonical contract audit. Keep PR7 Draft and unmerged."
 }

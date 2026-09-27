@@ -116,7 +116,7 @@ def save_snapshot(journal_path:Path,run_id:str,expected_parent_hash:str|None,all
         raise StoreError("JOURNAL_RESOURCE_GUARD_INCOMPLETE")
     claim=None
     if resource_claim is not None:
-        claim=ResourceClaim.from_dict(resource_claim)
+        claim=resource_claim if isinstance(resource_claim,ResourceClaim) else ResourceClaim.from_dict(resource_claim)
         resource_state.validate_claim(claim,"DRIVE:DSA:SIMULATION_JOURNAL")
         if claim.run_id!=run_id:
             raise StoreError("RESOURCE_CLAIM_RUN_MISMATCH")
@@ -173,6 +173,8 @@ def main():
     p.add_argument("--run-id",required=True);p.add_argument("--expected-parent-hash")
     p.add_argument("--allow-init",action="store_true")
     p.add_argument("--resource-claim",type=Path)
+    p.add_argument("--foundation-readback",type=Path)
+    p.add_argument("--foundation-readback-signature",type=Path)
     p.add_argument("--resource-state",type=Path)
     a=ap.parse_args()
     try:
@@ -181,7 +183,11 @@ def main():
         else:
             if bool(a.resource_claim)!=bool(a.resource_state):
                 raise StoreError("JOURNAL_RESOURCE_GUARD_INCOMPLETE")
-            grant=json.loads(a.resource_claim.read_text()) if a.resource_claim else None
+            if a.resource_claim and (not a.foundation_readback or not a.foundation_readback_signature):
+                raise StoreError("JOURNAL_FOUNDATION_PROOF_REQUIRED")
+            grant=(ResourceClaim.from_verified_artifacts(
+                a.resource_claim,a.foundation_readback,a.foundation_readback_signature)
+                if a.resource_claim else None)
             state=DurableResourceState(a.resource_state) if a.resource_state else None
             print(json.dumps(save_snapshot(a.journal,a.run_id,a.expected_parent_hash,a.allow_init,grant,state),ensure_ascii=False))
     except Exception as exc:

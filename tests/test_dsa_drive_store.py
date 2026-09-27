@@ -130,7 +130,7 @@ def test_governed_ambiguous_post_looks_up_without_resend(monkeypatch, tmp_path):
             raise httpx.ConnectError('lost ack', request=r)
         return f.handle(r)
     state = DurableResourceState(tmp_path / 'adapter.db')
-    grant = ResourceClaim('DRIVE:DSA:EVIDENCE_FOLDER', 'claim-1', 'RUN-1', 1)
+    grant = ResourceClaim('DRIVE:DSA:EVIDENCE_FOLDER', 'claim-1', 'RUN-1', 1, 'task-1', 'worker-1', 'proof-hash', True)
     with httpx.Client(transport=httpx.MockTransport(handle)) as c:
         receipt = DriveStore(c, 'folder').governed_put('ART-1', b'original', 'RUN-1', grant, state)
     assert receipt['idempotent_reuse'] is True
@@ -147,7 +147,7 @@ def test_governed_ambiguous_post_absent_is_quarantined_not_resent(monkeypatch, t
             raise httpx.ConnectError('lost before commit', request=r)
         return f.handle(r)
     state = DurableResourceState(tmp_path / 'adapter.db')
-    grant = ResourceClaim('DRIVE:DSA:EVIDENCE_FOLDER', 'claim-1', 'RUN-1', 1)
+    grant = ResourceClaim('DRIVE:DSA:EVIDENCE_FOLDER', 'claim-1', 'RUN-1', 1, 'task-1', 'worker-1', 'proof-hash', True)
     with httpx.Client(transport=httpx.MockTransport(handle)) as c:
         with pytest.raises(StoreError, match='AMBIGUOUS_NOT_FOUND_QUARANTINE'):
             DriveStore(c, 'folder').governed_put('ART-1', b'original', 'RUN-1', grant, state)

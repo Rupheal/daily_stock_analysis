@@ -6,19 +6,75 @@
   "production_enabled": false,
   "real_orders_enabled": false,
   "resources": [
-    {"id": "GIT:DSA:NATIVE_PRIVATE_BRANCH", "mode": "exclusive", "guard": "observed-base non-force push plus readback", "queue": "dsa-native-private-branch-writer"},
-    {"id": "GIT:DSA:RUNTIME_SHADOW_JOURNAL", "mode": "exclusive", "guard": "fencing epoch plus parent-hash CAS and readback"},
-    {"id": "DRIVE:DSA:EVIDENCE_FOLDER", "mode": "namespace-exclusive", "guard": "immutable artifact id and ambiguous-write lookup"},
-    {"id": "DRIVE:DSA:SIMULATION_JOURNAL", "mode": "exclusive", "guard": "fencing epoch plus append-only parent hash"},
-    {"id": "GIT:DSA:FORMAL_LATEST_POINTERS", "mode": "exclusive", "guard": "session/generation monotonic projection"},
-    {"id": "SCHEDULE:DSA:DAILY_FORMAL", "mode": "singleflight", "guard": "target_session+track+contract_hash"},
-    {"id": "API:DEEPSEEK:DSA", "mode": "decimal-reservation", "guard": "reserve/consume/release/expire", "paid_spend_this_change": "0"}
+    {
+      "id": "GIT:DSA:NATIVE_PRIVATE_BRANCH",
+      "mode": "WRITE",
+      "guard": "Foundation claim proof + observed-base non-force push + readback",
+      "queue": "dsa-native-private-branch-writer"
+    },
+    {
+      "id": "GIT:DSA:RUNTIME_SHADOW_JOURNAL",
+      "mode": "WRITE",
+      "guard": "Foundation claim proof + parent-hash CAS + readback"
+    },
+    {
+      "id": "DRIVE:DSA:EVIDENCE_FOLDER",
+      "mode": "WRITE",
+      "guard": "Foundation namespace claim + immutable artifact id + ambiguous-write lookup"
+    },
+    {
+      "id": "DRIVE:DSA:SIMULATION_JOURNAL",
+      "mode": "WRITE",
+      "guard": "Foundation claim proof + append-only parent hash"
+    },
+    {
+      "id": "GIT:DSA:FORMAL_LATEST_POINTERS",
+      "mode": "WRITE",
+      "guard": "Foundation claim proof + session/generation monotonic projection"
+    },
+    {
+      "id": "SCHEDULE:DSA:DAILY_FORMAL",
+      "mode": "JOB",
+      "guard": "Foundation global ownership; local SQLite defense-in-depth only"
+    },
+    {
+      "id": "API:DEEPSEEK:DSA",
+      "mode": "FOUNDATION_BUDGET_RESERVATION",
+      "guard": "consume/settle/release/expire Foundation reservation only",
+      "paid_spend_this_change": "0"
+    }
   ],
   "shadow_factory": {
     "physical_execution_enabled": false,
     "runtime_pointer_switch_enabled": false,
-    "dependencies": ["HOST:ALIENWARE:RUPHEAL", "RUNNER:DSA:SELF_HOSTED_OR_DC", "IDENTITY:DSA:CANDIDATE", "GIT:DSA:RUNTIME_SHADOW_JOURNAL"]
+    "dependencies": [
+      "HOST:ALIENWARE:RUPHEAL",
+      "RUNNER:GITHUB:TRIDENT-ALIENWARE",
+      "GIT:DSA:RUNTIME_SHADOW_JOURNAL"
+    ],
+    "executor_alternatives": [
+      "RUNNER:GITHUB:TRIDENT-ALIENWARE",
+      "DEVICE:REMOTE_DESKTOP_COMMANDER:RUPHEAL"
+    ],
+    "candidate_identity_binding_required": true
   },
-  "ou_execution": {"compute": "parallel immutable artifact/outbox", "writer": "existing PR6 serialized queue", "single_reconciler_status": "ADAPTER_READY_FUTURE_OPTIMIZATION_NOT_ACTIVATED", "model_semantics_changed": false},
-  "foundation_contract": {"required_claim_fields": ["resource_id", "claim_id", "run_id", "fencing_epoch"], "claim_acquisition_implemented_here": false}
+  "ou_execution": {
+    "compute": "parallel immutable artifact/outbox",
+    "writer": "existing PR6 serialized queue",
+    "single_reconciler_status": "FOUNDATION_GLOBAL_OWNERSHIP_REQUIRED_LOCAL_SQLITE_DEFENSE_ONLY",
+    "model_semantics_changed": false
+  },
+  "foundation_contract": {
+    "claim_schema": "foundation.resource-claim-receipt/v1",
+    "claim_readback_schema": "foundation.resource-claim-readback/v1",
+    "quota_schema": "foundation.quota-reservation-receipt/v1",
+    "quota_readback_schema": "foundation.quota-reservation-readback/v1",
+    "detached_signature_required": true,
+    "claim_acquisition_implemented_here": false,
+    "global_logical_cycle_authority": "TRIDENT-Foundation",
+    "global_paid_quota_authority": "TRIDENT-Foundation",
+    "schedule_job_id_binding": "job_id == logical_cycle_key(target_session,track,contract_hash)",
+    "trust_root": "/etc/rupheal/foundation/resource-broker-public.pem",
+    "caller_selectable_trust_root": false
+  }
 }
