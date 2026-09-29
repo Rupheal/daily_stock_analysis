@@ -188,3 +188,49 @@ def test_source_change_after_resolution_fails_closed(tmp_path, monkeypatch):
 
     with pytest.raises(ga.GoldenAdapterError, match="SOURCE_CHANGED_AFTER_RESOLUTION_O"):
         ga.build_golden_daily(tmp_path, TARGET)
+
+
+def test_u_top3_projects_qualified_buy_with_global_rank_above_three(tmp_path):
+    runtime = tmp_path / "docs" / "runtime"
+    write_json(runtime / "O_PRODUCTION_FORMAL_LATEST.json", o_receipt())
+    u = {
+        "state": "PASS_FORMAL_U_DECISION_BUY",
+        "target_session": TARGET,
+        "denominator": 45,
+        "formal_valid_rows": 44,
+        "qualified_BUY": 1,
+        "Top3": [
+            {
+                "code": "00700",
+                "name": "TENCENT",
+                "rank": 4,
+                "score": 80,
+                "formal_action": "BUY",
+            }
+        ],
+        "rows": [
+            {
+                "code": "00700",
+                "name": "TENCENT",
+                "rank": 4,
+                "score": 80,
+                "formal_action": "BUY",
+                "validation": "PASS",
+                "buyable_verified": True,
+                "industry": "Internet",
+                "zone_status": "APPROVED",
+                "zone_lower_hkd": 600,
+                "zone_upper_hkd": 630,
+                "macro_position_ceiling_pct": 30,
+            }
+        ],
+    }
+    write_json(runtime / "U_PRODUCTION_FORMAL_LATEST.json", u)
+
+    result = ga.build_golden_daily(tmp_path, TARGET)
+
+    assert result["decision_state"] == "QUALIFIED_BUY_PRESENT"
+    assert result["tracks"]["U"]["state"] == "QUALIFIED_BUY"
+    assert result["tracks"]["U"]["qualified_buy"] == 1
+    assert result["tracks"]["U"]["top3"][0]["rank"] == 4
+    assert result["tracks"]["U"]["top3"][0]["code"] == "00700"
