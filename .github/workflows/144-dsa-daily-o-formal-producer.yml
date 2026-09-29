@@ -33,6 +33,8 @@ concurrency:
 
 jobs:
   produce:
+    # OWNER_STOP: DSA-O-OWNER-STOP-20260929. Resume requires a new explicit Owner instruction.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
     env:
