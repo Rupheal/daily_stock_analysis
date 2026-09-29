@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "stop_id": "DSA-O-OWNER-STOP-20260929",
+  "track": "O",
+  "state": "OWNER_STOP",
+  "effective_date": "2026-09-29",
+  "owner_directive": "Stop current and future O scans, analysis, inference, ranking, signal generation, simulation trading, automatic wake and automatic continuation.",
+  "scope": {
+    "stop": [
+      "O scans",
+      "O analysis and inference",
+      "O ranking/Top3/Top10 generation",
+      "O SIGNAL / Entry-v1 handoff",
+      "O simulation-ledger mutations",
+      "O automatic wake/continuation",
+      "O paid/model-provider calls"
+    ],
+    "preserve": [
+      "historical checkpoints",
+      "historical receipts",
+      "historical predictions",
+      "historical simulation ledger/events"
+    ],
+    "unaffected": [
+      "U track",
+      "non-O DSA work that does not consume or regenerate O",
+      "historical read-only evidence needed for audit/recovery"
+    ]
+  },
+  "resume_requires": "New explicit Owner instruction",
+  "real_orders": 0,
+  "auto_recharge": false,
+  "main_merge": false,
+  "note": "This is a stop authority for the O track. Historical O evidence remains immutable and must not be rewritten."
+}
