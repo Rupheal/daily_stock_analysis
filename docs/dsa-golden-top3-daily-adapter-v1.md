@@ -64,6 +64,7 @@ The adapter never exposes private provider content.
 The adapter rejects:
 
 - missing/stale formal receipts
+- semantic source drift between resolver selection and exact-byte hashing
 - blocked/stale O or U classification
 - more than three Top3 rows
 - missing or duplicate Top3 codes
