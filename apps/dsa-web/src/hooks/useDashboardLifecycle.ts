@@ -107,6 +107,11 @@ export function useDashboardLifecycle({
     onTaskCreated: syncTaskCreated,
     onTaskStarted: syncTaskUpdated,
     onTaskProgress: syncTaskUpdated,
+    onTaskCancelRequested: syncTaskUpdated,
+    onTaskCancelled: (task) => {
+      syncTaskUpdated(task);
+      scheduleTaskRemoval(task.taskId, 5_000);
+    },
     onConnected: () => {
       void refreshActiveTasks();
     },
