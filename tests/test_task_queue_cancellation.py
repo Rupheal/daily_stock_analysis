@@ -42,6 +42,29 @@ class TaskQueueCancellationTestCase(unittest.TestCase):
             if future is not None:
                 self.queue._futures[task.task_id] = future
 
+    def test_cancellation_signal_bypasses_fail_open_exception_handlers(self) -> None:
+        swallowed = False
+        try:
+            try:
+                raise CancellationRequested("stop")
+            except Exception:
+                swallowed = True
+        except CancellationRequested:
+            pass
+
+        self.assertFalse(swallowed)
+
+    def test_cancel_requested_task_remains_inflight_for_queue_reconfiguration(self) -> None:
+        task = TaskInfo(
+            task_id="cancel-inflight",
+            stock_code="600000",
+            status=TaskStatus.CANCEL_REQUESTED,
+        )
+        self._insert_task(task)
+
+        with self.queue._data_lock:
+            self.assertTrue(self.queue._has_inflight_tasks_locked())
+
     def test_pending_task_cancels_immediately(self) -> None:
         future = Future()
         task = TaskInfo(task_id="pending-1", stock_code="600519", status=TaskStatus.PENDING)
