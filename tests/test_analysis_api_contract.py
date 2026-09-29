@@ -33,6 +33,7 @@ try:
         _load_sync_fundamental_sources,
         get_analysis_status,
         get_task_list,
+        cancel_analysis_task,
     )
 except Exception:  # pragma: no cover - optional dependency environments
     create_app = None
@@ -44,6 +45,7 @@ except Exception:  # pragma: no cover - optional dependency environments
     _load_sync_fundamental_sources = None
     get_analysis_status = None
     get_task_list = None
+    cancel_analysis_task = None
 
 from src.enums import ReportType
 from src.config import Config
@@ -272,6 +274,33 @@ class AnalysisApiContractTestCase(unittest.TestCase):
                         self.assertEqual(payload["region"], expected_region)
         finally:
             AnalysisTaskQueue._instance = original_queue_instance
+
+    def test_cancel_analysis_task_returns_cancel_requested(self) -> None:
+        if cancel_analysis_task is None:
+            self.skipTest("analysis endpoint helpers unavailable in this environment")
+
+        task = QueueTaskInfo(
+            task_id="task-cancel-1",
+            stock_code="600519",
+            stock_name="贵州茅台",
+            status=TaskStatus.CANCEL_REQUESTED,
+            progress=64,
+            message="正在停止...",
+        )
+        task_queue = MagicMock()
+        task_queue.request_cancel.return_value = task
+
+        with patch(
+            "api.v1.endpoints.analysis.get_task_queue",
+            return_value=task_queue,
+        ):
+            response = cancel_analysis_task(task.task_id)
+
+        task_queue.request_cancel.assert_called_once_with(task.task_id)
+        self.assertEqual(response.task_id, task.task_id)
+        self.assertEqual(response.status, "cancel_requested")
+        self.assertEqual(response.progress, 64)
+        self.assertEqual(response.stock_name, "贵州茅台")
 
     def test_trigger_market_review_accepts_background_task(self) -> None:
         if trigger_market_review is None or analysis_endpoint_module is None:
