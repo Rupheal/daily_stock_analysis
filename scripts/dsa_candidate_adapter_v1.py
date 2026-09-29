@@ -187,7 +187,7 @@ def _interpret_u(receipt: dict, target_session: str) -> dict:
     if claimed != len(buys):
         blockers.append("U_QUALIFIED_BUY_COUNT_MISMATCH")
     for x in buys:
-        if not x["code"] or x["rank"] not in (1, 2, 3) or x["score"] is None:
+        if not x["code"] or type(x["rank"]) is not int or x["rank"] < 1 or x["score"] is None:
             blockers.append("U_BUY_CORE_FIELDS_MISSING")
         if not x["buyable_verified"] or x.get("validation") != "PASS":
             blockers.append("U_BUYABILITY_NOT_VERIFIED")
