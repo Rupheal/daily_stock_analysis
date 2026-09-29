@@ -159,6 +159,54 @@ describe('useTaskStream', () => {
     );
   });
 
+  it('forwards cancellation lifecycle events', async () => {
+    const onTaskCancelRequested = vi.fn();
+    const onTaskCancelled = vi.fn();
+
+    renderHook(() => useTaskStream({
+      enabled: true,
+      onTaskCancelRequested,
+      onTaskCancelled,
+    }));
+    await waitFor(() => expect(eventSourceInstance.listeners.task_cancel_requested).toBeDefined());
+    await waitFor(() => expect(eventSourceInstance.listeners.task_cancelled).toBeDefined());
+
+    const basePayload = {
+      task_id: 'task-cancel-1',
+      stock_code: '600519',
+      stock_name: '贵州茅台',
+      progress: 64,
+      report_type: 'detailed',
+      created_at: '2026-09-29T08:00:00Z',
+    };
+
+    eventSourceInstance.listeners.task_cancel_requested?.(
+      new MessageEvent('task_cancel_requested', {
+        data: JSON.stringify({
+          ...basePayload,
+          status: 'cancel_requested',
+          message: '正在停止...',
+        }),
+      }),
+    );
+    eventSourceInstance.listeners.task_cancelled?.(
+      new MessageEvent('task_cancelled', {
+        data: JSON.stringify({
+          ...basePayload,
+          status: 'cancelled',
+          message: '任务已取消',
+        }),
+      }),
+    );
+
+    expect(onTaskCancelRequested).toHaveBeenCalledWith(
+      expect.objectContaining({ taskId: 'task-cancel-1', status: 'cancel_requested' }),
+    );
+    expect(onTaskCancelled).toHaveBeenCalledWith(
+      expect.objectContaining({ taskId: 'task-cancel-1', status: 'cancelled' }),
+    );
+  });
+
   it('shares one SSE connection across multiple hook instances', async () => {
     const firstConnected = vi.fn();
     const secondConnected = vi.fn();
