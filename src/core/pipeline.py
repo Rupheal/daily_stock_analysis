@@ -243,6 +243,7 @@ class StockAnalysisPipeline:
         query_source: Optional[str] = None,
         save_context_snapshot: Optional[bool] = None,
         progress_callback: Optional[Callable[[int, str], None]] = None,
+        cancel_check: Optional[Callable[[], None]] = None,
         analysis_skills: Optional[List[str]] = None,
         analysis_phase: str = "auto",
         portfolio_context: Optional[Dict[str, Any]] = None,
@@ -266,6 +267,7 @@ class StockAnalysisPipeline:
             self.config.save_context_snapshot if save_context_snapshot is None else save_context_snapshot
         )
         self.progress_callback = progress_callback
+        self.cancel_check = cancel_check
         self.analysis_skills = list(analysis_skills) if analysis_skills is not None else None
         self.analysis_phase = analysis_phase or "auto"
         self.portfolio_context = dict(portfolio_context) if isinstance(portfolio_context, dict) else None
@@ -351,8 +353,15 @@ class StockAnalysisPipeline:
             )
             self.social_sentiment_service = None
 
+    def _check_cancelled(self) -> None:
+        """Run the cooperative cancellation checkpoint without swallowing it."""
+        checker = getattr(self, "cancel_check", None)
+        if checker is not None:
+            checker()
+
     def _emit_progress(self, progress: int, message: str) -> None:
-        """Best-effort bridge from pipeline stages to task SSE progress."""
+        """Bridge pipeline stages to cancellation checkpoints and SSE progress."""
+        self._check_cancelled()
         callback = getattr(self, "progress_callback", None)
         if callback is None:
             return
