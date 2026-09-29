@@ -98,5 +98,7 @@ The retained tests exercise the public `build_golden_daily(root, target_session)
 4. duplicate Top3 fail-closed behavior
 5. deterministic source-hash-bound output
 6. no mutation of source formal receipts
+7. documented Python package import compatibility
+8. resolver-to-source semantic drift fail-closed behavior
 
 Runtime deployment and natural-cycle acceptance are explicitly outside v1 engineering acceptance.
