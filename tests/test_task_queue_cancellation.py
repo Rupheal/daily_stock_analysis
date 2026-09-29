@@ -6,6 +6,7 @@ import threading
 import types
 import unittest
 from concurrent.futures import Future
+from unittest.mock import patch
 
 # Keep this unit test on the TaskQueue seam: avoid importing the real market-data
 # package (and pandas) when cancellation behavior does not depend on it.
@@ -96,6 +97,63 @@ class TaskQueueCancellationTestCase(unittest.TestCase):
             [event for event, _ in self.events if event == "task_cancel_requested"],
             ["task_cancel_requested"],
         )
+
+    def test_processing_analysis_acknowledges_cooperative_cancel(self) -> None:
+        task = TaskInfo(task_id="analysis-1", stock_code="600519", status=TaskStatus.PENDING)
+        self._insert_task(task)
+        entered = threading.Event()
+        release = threading.Event()
+        worker_result = []
+
+        fake_module = types.ModuleType("src.services.analysis_service")
+
+        class FakeAnalysisService:
+            last_error = None
+
+            def analyze_stock(self, **kwargs):
+                entered.set()
+                self.assert_release(release)
+                kwargs["cancel_check"]()
+                return {"stock_name": "should-not-publish"}
+
+            @staticmethod
+            def assert_release(event):
+                if not event.wait(timeout=2):
+                    raise AssertionError("test worker did not receive release")
+
+        fake_module.AnalysisService = FakeAnalysisService
+
+        with patch.dict(sys.modules, {"src.services.analysis_service": fake_module}):
+            thread = threading.Thread(
+                target=lambda: worker_result.append(
+                    self.queue._execute_task(
+                        task.task_id,
+                        task.stock_code,
+                        "detailed",
+                        False,
+                        False,
+                    )
+                ),
+                daemon=True,
+            )
+            thread.start()
+            self.assertTrue(entered.wait(timeout=2))
+
+            requested = self.queue.request_cancel(task.task_id)
+            self.assertEqual(requested.status, TaskStatus.CANCEL_REQUESTED)
+            release.set()
+            thread.join(timeout=2)
+
+        self.assertFalse(thread.is_alive())
+        final = self.queue.get_task(task.task_id)
+        self.assertIsNotNone(final)
+        self.assertEqual(final.status, TaskStatus.CANCELLED)
+        self.assertIsNone(final.result)
+        self.assertEqual(worker_result, [None])
+        event_types = [event for event, _ in self.events]
+        self.assertIn("task_cancel_requested", event_types)
+        self.assertIn("task_cancelled", event_types)
+        self.assertNotIn("task_completed", event_types)
 
     def test_running_background_result_is_fenced_after_cancel(self) -> None:
         task = TaskInfo(task_id="background-1", stock_code="MARKET", status=TaskStatus.PENDING)
