@@ -1,0 +1,67 @@
+name: Golden DSA HK Top3 Adapter acceptance
+
+on:
+  push:
+    paths:
+      - 'scripts/dsa_golden_top3_daily_adapter_v1.py'
+      - 'scripts/dsa_production_orchestrator_v1.py'
+      - 'scripts/dsa_candidate_adapter_v1.py'
+      - 'tests/test_dsa_golden_top3_daily_adapter_v1.py'
+      - 'tests/test_dsa_production_orchestrator_v1.py'
+      - 'tests/test_dsa_candidate_adapter_v1.py'
+      - '.github/workflows/149-golden-dsa-top3-adapter-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: golden-dsa-top3-adapter-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic test dependency
+        run: python -m pip install pytest
+
+      - name: Compile changed seams
+        run: |
+          python -m py_compile             scripts/dsa_golden_top3_daily_adapter_v1.py             scripts/dsa_production_orchestrator_v1.py             scripts/dsa_candidate_adapter_v1.py
+
+      - name: Run Golden Adapter contract suite
+        run: python -m pytest --noconftest -q tests/test_dsa_golden_top3_daily_adapter_v1.py
+
+      - name: Run U global-rank seam regressions
+        run: |
+          python -m pytest --noconftest -q             tests/test_dsa_production_orchestrator_v1.py::test_u_top3_buy_may_keep_global_rank_above_three             tests/test_dsa_candidate_adapter_v1.py::test_u_global_rank_buy_matches_orchestrator
+
+      - name: Smoke current repository formal receipts
+        run: |
+          python scripts/dsa_golden_top3_daily_adapter_v1.py             --target-session 2026-09-21             --out /tmp/golden-dsa-top3.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/golden-dsa-top3.json'))
+          assert r['state']=='READY',r
+          assert r['decision_state']=='WAIT_NO_BUY',r
+          assert r['tracks']['O']['state']=='WAIT',r
+          assert r['tracks']['U']['state']=='WAIT',r
+          assert r['tracks']['O']['top3']==[],r
+          assert r['tracks']['U']['top3']==[],r
+          assert r['qualified_buy_total']==0,r
+          assert r['authority']=='NONE_PROJECTION_ONLY',r
+          assert all(v==0 for v in r['side_effects'].values()),r
+          print('GOLDEN_DSA_TOP3_CURRENT_RECEIPT_SMOKE_PASS',r['deterministic_receipt_sha256'])
+          PY
