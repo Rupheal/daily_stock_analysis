@@ -50,10 +50,10 @@ jobs:
 
       - name: Smoke current repository formal receipts
         run: |
-          python scripts/dsa_golden_top3_daily_adapter_v1.py             --target-session 2026-09-21             --out /tmp/golden-dsa-top3.json
+          python scripts/dsa_golden_top3_daily_adapter_v1.py             --target-session 2026-09-21             --out artifacts/ci/golden-dsa-top3.json
           python - <<'PY'
           import json
-          r=json.load(open('/tmp/golden-dsa-top3.json'))
+          r=json.load(open('artifacts/ci/golden-dsa-top3.json'))
           assert r['state']=='READY',r
           assert r['decision_state']=='WAIT_NO_BUY',r
           assert r['tracks']['O']['state']=='WAIT',r
