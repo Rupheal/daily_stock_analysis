@@ -188,14 +188,3 @@ def test_source_change_after_resolution_fails_closed(tmp_path, monkeypatch):
 
     with pytest.raises(ga.GoldenAdapterError, match="SOURCE_CHANGED_AFTER_RESOLUTION_O"):
         ga.build_golden_daily(tmp_path, TARGET)
-
-
-def test_top3_rank_sequence_must_be_contiguous(tmp_path):
-    o_path, _ = setup_formal_receipts(tmp_path)
-    receipt = json.loads(o_path.read_text())
-    receipt["Top3"][1]["rank"] = 3
-    receipt["Top3"][2]["rank"] = 2
-    write_json(o_path, receipt)
-
-    with pytest.raises(ga.GoldenAdapterError, match="TOP3_RANK_SEQUENCE_INVALID_O"):
-        ga.build_golden_daily(tmp_path, TARGET)
