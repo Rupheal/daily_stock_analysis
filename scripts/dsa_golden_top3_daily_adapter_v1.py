@@ -12,8 +12,12 @@ import hashlib
 import json
 from pathlib import Path
 
-from dsa_formal_receipt_resolver_v1 import resolve
-from dsa_production_orchestrator_v1 import classify_o, classify_u
+if __package__:
+    from .dsa_formal_receipt_resolver_v1 import resolve
+    from .dsa_production_orchestrator_v1 import classify_o, classify_u
+else:
+    from dsa_formal_receipt_resolver_v1 import resolve
+    from dsa_production_orchestrator_v1 import classify_o, classify_u
 
 VERSION = "GOLDEN_DSA_HK_TOP3_DAILY_ADAPTER_v1"
 AUTHORITY = "NONE_PROJECTION_ONLY"
