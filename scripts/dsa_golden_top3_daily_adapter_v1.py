@@ -57,6 +57,18 @@ def _inside(root: Path, path: Path) -> Path:
 def _source_meta(root: Path, path_value: str, receipt: dict, track: str) -> dict:
     path = _inside(root, Path(path_value))
     raw = path.read_bytes()
+    try:
+        current = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise GoldenAdapterError(
+            f"SOURCE_CHANGED_AFTER_RESOLUTION_{track}",
+            "current source bytes are not valid JSON",
+        ) from exc
+    if current != receipt:
+        raise GoldenAdapterError(
+            f"SOURCE_CHANGED_AFTER_RESOLUTION_{track}",
+            str(path.relative_to(root.resolve())),
+        )
     return {
         "path": str(path.relative_to(root.resolve())),
         "sha256": _sha256(raw),
