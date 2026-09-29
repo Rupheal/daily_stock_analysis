@@ -165,6 +165,18 @@ export const analysisApi = {
   },
 
   /**
+   * Request idempotent cancellation for an async task.
+   * @param taskId Task ID
+   */
+  cancelTask: async (taskId: string): Promise<TaskStatus> => {
+    const response = await apiClient.post<Record<string, unknown>>(
+      `/api/v1/analysis/tasks/${encodeURIComponent(taskId)}/cancel`
+    );
+
+    return toCamelCase<TaskStatus>(response.data);
+  },
+
+  /**
    * Get a run-flow snapshot for an active analysis task.
    * @param taskId Task ID
    */
