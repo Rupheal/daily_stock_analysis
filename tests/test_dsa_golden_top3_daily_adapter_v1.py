@@ -152,3 +152,16 @@ def test_adapter_does_not_mutate_formal_receipts(tmp_path):
     ga.build_golden_daily(tmp_path, TARGET)
 
     assert {path: path.read_bytes() for path in before} == before
+
+
+def test_documented_package_import_works():
+    import importlib
+
+    sys.path.insert(0, str(ROOT))
+    try:
+        sys.modules.pop("scripts.dsa_golden_top3_daily_adapter_v1", None)
+        module = importlib.import_module("scripts.dsa_golden_top3_daily_adapter_v1")
+        assert callable(module.build_golden_daily)
+    finally:
+        if sys.path and sys.path[0] == str(ROOT):
+            sys.path.pop(0)
