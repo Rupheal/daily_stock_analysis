@@ -1,9 +1,21 @@
 # -*- coding: utf-8 -*-
 """Regression tests for cooperative task cancellation."""
 
+import sys
 import threading
+import types
 import unittest
 from concurrent.futures import Future
+
+# Keep this unit test on the TaskQueue seam: avoid importing the real market-data
+# package (and pandas) when cancellation behavior does not depend on it.
+_data_provider = types.ModuleType("data_provider")
+_data_provider.__path__ = []
+_data_provider_base = types.ModuleType("data_provider.base")
+_data_provider_base.canonical_stock_code = lambda code: str(code)
+_data_provider_base.normalize_stock_code = lambda code: str(code)
+sys.modules.setdefault("data_provider", _data_provider)
+sys.modules.setdefault("data_provider.base", _data_provider_base)
 
 from src.services.cancellation import CancellationRequested
 from src.services.task_queue import AnalysisTaskQueue, TaskInfo, TaskStatus
