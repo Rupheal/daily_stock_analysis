@@ -280,7 +280,7 @@ class AnalysisTaskQueue:
         if self._analyzing_stocks:
             return True
         return any(
-            task.status in (TaskStatus.PENDING, TaskStatus.PROCESSING)
+            task.status in (TaskStatus.PENDING, TaskStatus.PROCESSING, TaskStatus.CANCEL_REQUESTED)
             for task in self._tasks.values()
         )
 
