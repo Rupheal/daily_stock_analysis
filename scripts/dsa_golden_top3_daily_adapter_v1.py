@@ -93,7 +93,7 @@ def _project_top3(track: str, classified: dict) -> list[dict]:
         seen.add(code)
 
         rank = row.get("rank")
-        if type(rank) is not int or rank not in (1, 2, 3):
+        if type(rank) is not int or rank < 1 or (track == "O" and rank not in (1, 2, 3)):
             raise GoldenAdapterError(f"TOP3_RANK_INVALID_{track}", f"{code}:{rank}")
 
         out.append(
