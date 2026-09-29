@@ -165,3 +165,37 @@ def test_documented_package_import_works():
     finally:
         if sys.path and sys.path[0] == str(ROOT):
             sys.path.pop(0)
+
+
+def test_source_change_after_resolution_fails_closed(tmp_path, monkeypatch):
+    o_path, u_path = setup_formal_receipts(tmp_path)
+    old_o = json.loads(o_path.read_text())
+    old_u = json.loads(u_path.read_text())
+    changed_o = dict(old_o)
+    changed_o["Top3"] = [dict(row) for row in old_o["Top3"]]
+    changed_o["Top3"][0]["sentiment_score"] = 1
+    write_json(o_path, changed_o)
+
+    monkeypatch.setattr(
+        ga,
+        "resolve",
+        lambda root, target: {
+            "state": "READY",
+            "O": {"path": str(o_path), "receipt": old_o},
+            "U": {"path": str(u_path), "receipt": old_u},
+        },
+    )
+
+    with pytest.raises(ga.GoldenAdapterError, match="SOURCE_CHANGED_AFTER_RESOLUTION_O"):
+        ga.build_golden_daily(tmp_path, TARGET)
+
+
+def test_top3_rank_sequence_must_be_contiguous(tmp_path):
+    o_path, _ = setup_formal_receipts(tmp_path)
+    receipt = json.loads(o_path.read_text())
+    receipt["Top3"][1]["rank"] = 3
+    receipt["Top3"][2]["rank"] = 2
+    write_json(o_path, receipt)
+
+    with pytest.raises(ga.GoldenAdapterError, match="TOP3_RANK_SEQUENCE_INVALID_O"):
+        ga.build_golden_daily(tmp_path, TARGET)
