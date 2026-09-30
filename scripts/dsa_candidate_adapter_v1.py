@@ -179,8 +179,12 @@ def _interpret_u(receipt: dict, target_session: str) -> dict:
     blockers = []
     if int(receipt.get("denominator", -1)) != 45:
         blockers.append("U_DENOMINATOR_NOT_45")
+    state_value = str(receipt.get("state") or "")
     if int(receipt.get("formal_valid_rows", -1)) < 1:
-        blockers.append("U_NO_FORMAL_ROWS")
+        if state_value == "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED" and int(receipt.get("qualified_BUY", 0) or 0) == 0:
+            pass
+        else:
+            blockers.append("U_NO_FORMAL_ROWS")
     candidates = _u_candidates(receipt)
     claimed = int(receipt.get("qualified_BUY", 0) or 0)
     buys = [x for x in candidates if x["action"] == "BUY"]
@@ -193,7 +197,7 @@ def _interpret_u(receipt: dict, target_session: str) -> dict:
             blockers.append("U_BUYABILITY_NOT_VERIFIED")
         if not x["industry"]:
             x["industry"] = "UNCLASSIFIED"
-        if x.get("zone_status") not in {"APPROVED", "VERIFIED", "PASS", "FORMAL_APPROVED"}:
+        if x.get("zone_status") not in {"APPROVED", "APPROVED_NUMERIC", "VERIFIED", "PASS", "FORMAL_APPROVED"}:
             blockers.append("U_BUY_ZONE_NOT_APPROVED")
         if x.get("zone_lower_hkd") is None or x.get("zone_upper_hkd") is None:
             blockers.append("U_BUY_ZONE_MISSING")
