@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-READONLY-ADAPTER-20260919-001",
+  "effective_at": "2026-09-19T22:04:00+08:00",
+  "status": "ACCEPTED_ENGINEERING_READ_ONLY",
+  "project": "DSA",
+  "workstream": "RUNTIME_EXECUTION",
+  "candidate": {
+    "repository": "Rupheal/daily_stock_analysis",
+    "branch": "research/dsa-readonly-parallel-shadow-20260919",
+    "tested_commit": "6fb85fc30af1b586d32918d72ba40387fc057720",
+    "base_ref": "fix/native-private-execution-20260914",
+    "base_sha": "222c23c5c84f5a8e27f8bfcfe9a68fead8ad7015",
+    "pull_request": 2,
+    "pull_request_mode": "DRAFT_NO_MERGE"
+  },
+  "implementation": {
+    "adapter": "scripts/dsa_readonly_candidate_adapter_v1.py",
+    "test": "tests/test_dsa_readonly_candidate_adapter_v1.py",
+    "workflow": ".github/workflows/140-dsa-readonly-candidate-adapter.yml",
+    "comparison_output_only": true,
+    "authoritative_journal_writer_imported": false,
+    "real_order_path": false
+  },
+  "ci_acceptance": {
+    "workflow_run_id": 35447550997,
+    "job_id": 105908995487,
+    "conclusion": "SUCCESS",
+    "tests_collected": 19,
+    "tests_passed": 19,
+    "warnings": 2,
+    "compile": "PASS",
+    "existing_orchestrator_regression": "PASS"
+  },
+  "safety_contract": {
+    "authoritative_foundation_journal_writes": 0,
+    "candidate_journal_writes": 0,
+    "broker_orders": 0,
+    "real_orders": 0,
+    "main_merge": false,
+    "runtime_pointer_switch": false,
+    "active_gate_d_changed": false,
+    "natural_parallel_requires_hash_bound_same_cutoff_attestation": true
+  },
+  "current_authority_input_pins": {
+    "O": {
+      "repository": "Rupheal/daily_stock_analysis",
+      "ref": "fix/native-private-execution-20260914",
+      "path": "docs/runtime/RUN076_O657_FORMAL_ACCEPTANCE.json",
+      "blob_sha": "e5e2080c478be94a784b115dbba01f981e8ec1c2",
+      "target_session": "2026-09-18",
+      "qualified_buy": 0
+    },
+    "U": {
+      "repository": "Rupheal/daily_stock_analysis",
+      "ref": "fix/native-private-execution-20260914",
+      "path": "docs/runtime/U_PRODUCTION_FORMAL_LATEST.json",
+      "blob_sha": "14edae8b62bd1ee3ba22eacf3feaa1db165e1a5f",
+      "target_session": "2026-09-18",
+      "state": "PASS_FORMAL_U_DECISION_WAIT_PREREQ_BLOCKED",
+      "formal_valid_rows": 0,
+      "qualified_buy": 0
+    },
+    "foundation_journal": {
+      "repository": "Rupheal/TRIDENT-Foundation",
+      "ref": "runtime/dsa-shadow-journal-v1",
+      "path": "control_room/dsa/runtime/authority/DSA_DUAL_ACCOUNT_JOURNAL.json",
+      "blob_sha": "1b7d1a9fa81ceefa8e170617142713202efc82d5",
+      "config_hash": "24c068aebdd873f9ae3d46faabbbe829f505dbaf4ea066a4e862f830c3ba594d",
+      "command_count": 20,
+      "tail_hash": "b8f3877fde54008c61aa44d9a144e04a81c7c4c740f5dc052c1e0dda948b9514"
+    },
+    "active_runtime_receipt": {
+      "repository": "Rupheal/TRIDENT-Foundation",
+      "ref": "runtime/dsa-shadow-journal-v1",
+      "path": "control_room/dsa/runtime/receipts/shadow-window-2026-09-18-35294100963-1.json",
+      "blob_sha": "ec4d395097b47934baa0e47c2666f861cada2370",
+      "session": "2026-09-18",
+      "shadow_simulation_only": true,
+      "real_orders": 0,
+      "fail_closed": true,
+      "O": {
+        "positions": 0,
+        "buy_count": 0
+      },
+      "U": {
+        "positions": 0,
+        "buy_count": 0
+      }
+    }
+  },
+  "pit_classification": {
+    "september_18_replay": "ENGINEERING_REPLAY_NOT_NATURAL_PARALLEL",
+    "reason": "Current formal receipts cannot be retroactively treated as same-cutoff natural inputs for the already completed 2026-09-18 runtime window.",
+    "central_audit_eligible_now": false
+  },
+  "acceptance_scope": "Adapter engineering only. Does not promote Production Orchestrator, does not reconcile runtime authority, and does not authorize cutover.",
+  "next_action": "Run the adapter on the next natural HK trading window with a hash-bound same-cutoff input attestation against the active Gate-D runtime; then submit the comparison receipt to Central Audit."
+}
