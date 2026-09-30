@@ -155,3 +155,18 @@ def test_real_hash_linked_journal_content_drift_blocks():
     new=dict(old);new['at']='2026-09-21T09:36:00+08:00'
     with pytest.raises(ValueError,match='COMMAND_ID_CONTENT_DRIFT'):
         filter_commands_against_journal([new],{'commands':[{'parent':'p','command':old,'hash':'h'}]})
+
+
+def test_u_top3_buy_may_keep_global_rank_above_three():
+    # Run056 defines U Top3 as the first three qualified BUY rows, while each
+    # row retains its rank in the full valid U ranking. Membership in Top3,
+    # not rank<=3, is therefore the downstream contract.
+    u=u_wait();u.update(state='PASS_FORMAL_U_DECISION_BUY',qualified_BUY=1)
+    u['Top3']=[{'code':'00700','rank':4,'score':80,'formal_action':'BUY'}]
+    u['rows']=[{'code':'00700','rank':4,'score':80,'formal_action':'BUY','validation':'PASS',
+                'buyable_verified':True,'industry':'Internet','zone_status':'APPROVED',
+                'zone_lower_hkd':600,'zone_upper_hkd':630,'macro_position_ceiling_pct':30}]
+    x=classify_u(u,TARGET)
+    assert x['state']=='QUALIFIED_BUY'
+    assert x['qualified_buy']==1
+    assert x['candidates'][0]['rank']==4

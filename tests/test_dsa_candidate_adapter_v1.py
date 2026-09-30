@@ -45,7 +45,7 @@ def test_current_case_matches_orchestrator_and_is_deterministic(tmp_path):
     b=ca.run_adapter(tmp_path,tmp_path/'pointer.json')
     assert a==b
     assert a['tracks']['O']['state']=='WAIT'
-    assert a['tracks']['U']['state']=='BLOCKED'
+    assert a['tracks']['U']['state']=='WAIT'
     assert a['comparison']['O']['match'] and a['comparison']['U']['match']
     assert a['parallel_shadow_status']=='PASS_WITH_MISMATCH_INVENTORY'
     assert a['mismatch_inventory'][0]['code']=='PRODUCTION_SNAPSHOT_U_RECEIPT_SESSION_STALE'
@@ -94,3 +94,29 @@ def test_second_authority_ledger_forbidden(tmp_path):
     pointer=setup_case(tmp_path);pointer['authority']='CANDIDATE_AUTHORITY';write(tmp_path/'pointer.json',pointer)
     with pytest.raises(ca.CandidateAdapterError,match='SECOND_AUTHORITY_LEDGER_FORBIDDEN'):
         ca.run_adapter(tmp_path,tmp_path/'pointer.json')
+
+
+def test_u_global_rank_buy_matches_orchestrator(tmp_path):
+    pointer=setup_case(tmp_path)
+    u={
+      'state':'PASS_FORMAL_U_DECISION_BUY',
+      'target_session':TARGET,
+      'denominator':45,
+      'formal_valid_rows':44,
+      'qualified_BUY':1,
+      'Top3':[{'code':'00700','name':'TENCENT','rank':4,'score':80,'formal_action':'BUY'}],
+      'rows':[{'code':'00700','name':'TENCENT','rank':4,'score':80,'formal_action':'BUY',
+               'validation':'PASS','buyable_verified':True,'industry':'Internet',
+               'zone_status':'APPROVED','zone_lower_hkd':600,'zone_upper_hkd':630,
+               'macro_position_ceiling_pct':30}],
+    }
+    write(tmp_path/'u.json',u)
+    pointer['sources']['U']['git_blob_sha1']=ca._git_blob_sha1((tmp_path/'u.json').read_bytes())
+    write(tmp_path/'pointer.json',pointer)
+    sys.modules.pop('dsa_production_orchestrator_v1',None)
+
+    result=ca.run_adapter(tmp_path,tmp_path/'pointer.json')
+
+    assert result['tracks']['U']['state']=='QUALIFIED_BUY'
+    assert result['tracks']['U']['candidates'][0]['rank']==4
+    assert result['comparison']['U']['match'] is True
