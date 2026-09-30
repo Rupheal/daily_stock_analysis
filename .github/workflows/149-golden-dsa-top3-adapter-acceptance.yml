@@ -35,7 +35,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install deterministic test dependency
-        run: python -m pip install pytest flake8
+        run: python -m pip install pytest flake8 exchange-calendars
 
       - name: Compile changed seams
         run: |
