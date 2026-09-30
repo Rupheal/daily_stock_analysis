@@ -45,7 +45,7 @@ def test_current_case_matches_orchestrator_and_is_deterministic(tmp_path):
     b=ca.run_adapter(tmp_path,tmp_path/'pointer.json')
     assert a==b
     assert a['tracks']['O']['state']=='WAIT'
-    assert a['tracks']['U']['state']=='BLOCKED'
+    assert a['tracks']['U']['state']=='WAIT'
     assert a['comparison']['O']['match'] and a['comparison']['U']['match']
     assert a['parallel_shadow_status']=='PASS_WITH_MISMATCH_INVENTORY'
     assert a['mismatch_inventory'][0]['code']=='PRODUCTION_SNAPSHOT_U_RECEIPT_SESSION_STALE'
