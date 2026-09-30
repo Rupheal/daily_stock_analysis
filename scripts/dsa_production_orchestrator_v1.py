@@ -18,7 +18,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
 
 O_UPSTREAM="089d9d26d68f8b839ea5a74a3784e4402925f8b7"
@@ -39,6 +39,20 @@ def iso_at(value:str)->str:
 
 def norm_action(value)->str:
     return str(value or "").strip().upper()
+
+
+class SignalContractError(ValueError):
+    """Source metadata is insufficient to emit an immutable command."""
+
+
+def o_denominators(receipt:dict)->tuple[int,int]:
+    values=[receipt.get(k) for k in ("official_O_denominator", "operational_O_denominator")]
+    if any(type(v) is not int for v in values):
+        raise SignalContractError("O_DENOMINATOR_MISSING_OR_INVALID")
+    official,operational=values
+    if not 0 < operational <= official:
+        raise SignalContractError("O_DENOMINATOR_OUT_OF_RANGE")
+    return official,operational
 
 
 def evidence(path:Path)->dict:
@@ -98,11 +112,11 @@ def classify_o(receipt:dict,target_session:str)->dict:
     if receipt.get("target_session")!=target_session:
         return {"track":"O","state":"STALE","session":receipt.get("target_session"),
                 "target_session":target_session,"qualified_buy":0,"candidates":[],"blockers":["STALE_SESSION"]}
+    try:
+        o_denominators(receipt)
+    except SignalContractError as exc:
+        blockers.append(str(exc))
     if status.startswith("PASS_FORMAL_O_DECISION_WAIT"):
-        if int(receipt.get("official_O_denominator",-1))!=660:
-            blockers.append("O_OFFICIAL_DENOMINATOR_NOT_660")
-        if int(receipt.get("operational_O_denominator",-1))!=657:
-            blockers.append("O_OPERATIONAL_DENOMINATOR_NOT_657")
         if int(receipt.get("current_session_formal_signals",-1))!=0:
             blockers.append("O_CURRENT_SESSION_FORMAL_SIGNAL_NONZERO")
         if int(receipt.get("qualified_buy_in_Top3",-1))!=0:
@@ -183,9 +197,46 @@ def classify_u(receipt:dict,target_session:str)->dict:
             "candidates":candidates,"blockers":sorted(set(blockers))}
 
 
-def build_signal(track:dict,receipt_path:Path,now_iso:str,next_session:str,valid_until:str)->dict:
+def build_signal(track:dict,receipt_path:Path,now_iso:str,next_session:str,
+                 valid_until:str|None=None,*,receipt:dict|None=None)->dict:
+    # Read once: classification and command provenance must refer to the same bytes.
+    raw=receipt_path.read_bytes()
+    source=json.loads(raw)
+    if receipt is not None and source!=receipt:
+        raise SignalContractError("SIGNAL_RECEIPT_CONTENT_MISMATCH")
+    if source.get("target_session")!=track["target_session"]:
+        raise SignalContractError("SIGNAL_RECEIPT_SESSION_MISMATCH")
+    timing=source.get("signal_timing")
+    if not isinstance(timing,dict):
+        raise SignalContractError("SIGNAL_TIMING_MISSING")
+    try:
+        cutoff=iso_at(timing["cutoff"])
+        available_at=iso_at(timing["available_at"])
+        expiry=iso_at(timing["valid_until"])
+        clock=iso_at(now_iso)
+    except (KeyError,TypeError,ValueError,AttributeError) as exc:
+        raise SignalContractError("SIGNAL_TIMING_INVALID") from exc
+    if not datetime.fromisoformat(cutoff)<=datetime.fromisoformat(available_at)<=datetime.fromisoformat(expiry):
+        raise SignalContractError("SIGNAL_TIMING_ORDER_INVALID")
+    if datetime.fromisoformat(available_at)>datetime.fromisoformat(clock):
+        raise SignalContractError("SIGNAL_NOT_YET_AVAILABLE")
+    if datetime.fromisoformat(clock)>datetime.fromisoformat(expiry):
+        raise SignalContractError("SIGNAL_EXPIRED")
+    if timing.get("next_session")!=next_session:
+        raise SignalContractError("SIGNAL_NEXT_SESSION_MISMATCH")
+    # Never extend a signal's lifetime on retry. A legacy caller cannot override it.
+    if valid_until is not None and iso_at(valid_until)!=expiry:
+        raise SignalContractError("SIGNAL_EXPIRY_OVERRIDE_REJECTED")
     account=track["track"]
     passed=track["state"]=="QUALIFIED_BUY"
+    if account=="O":
+        _,denominator=o_denominators(source)
+        covered=denominator if source.get("status")=="ACCEPTED_O_FORMAL_TOP3" and source.get("missing_count")==0 else 0
+    else:
+        denominator=source.get("denominator")
+        covered=source.get("formal_valid_rows")
+        if type(denominator) is not int or denominator!=45 or type(covered) is not int or not 0<=covered<=denominator:
+            raise SignalContractError("U_SIGNAL_COVERAGE_INVALID")
     top3=[]
     for x in track.get("candidates",[])[:3]:
         top3.append({
@@ -193,22 +244,23 @@ def build_signal(track:dict,receipt_path:Path,now_iso:str,next_session:str,valid
           "industry":x.get("industry"),"action":x["action"],
           "buyable_verified":bool(x.get("buyable_verified")),
         })
-    receipt_evidence=evidence(receipt_path)
-    signal_id=f"{account}-{track['target_session']}-{sha256_bytes(receipt_path.read_bytes())[:16]}"
+    digest=sha256_bytes(raw)
+    receipt_evidence={"verified":True,"source":"sha256:"+digest,"sha256":digest}
+    signal_id=f"{account}-{track['target_session']}-{digest[:16]}"
     sig={
       **receipt_evidence,
       "id":signal_id,
-      "cutoff":now_iso,
-      "available_at":now_iso,
+      "cutoff":cutoff,
+      "available_at":available_at,
       "scope":"forward_simulation",
       "passed":passed,
       "reason":"QUALIFIED_BUY" if passed else track["state"]+"_"+("|".join(track["blockers"]) if track["blockers"] else "NO_BUY"),
-      "covered":45 if account=="U" else 657,
-      "denominator":45 if account=="U" else 657,
+      "covered":covered,
+      "denominator":denominator,
       "data_news_plan_verified":passed,
       "top3":top3,
       "next_session":next_session,
-      "valid_until":valid_until,
+      "valid_until":expiry,
     }
     if account=="O":
         sig["engine"]="original_native_dsa"
@@ -218,7 +270,7 @@ def build_signal(track:dict,receipt_path:Path,now_iso:str,next_session:str,valid
         caps=[x.get("macro_position_ceiling_pct") for x in track["candidates"] if x["action"]=="BUY"]
         if caps:
             sig["total_cap"]=str(min(caps)/100)
-    return {"id":"signal-"+signal_id,"account":account,"at":now_iso,"kind":"SIGNAL","signal":sig}
+    return {"id":"signal-"+signal_id,"account":account,"at":available_at,"kind":"SIGNAL","signal":sig}
 
 
 def build_entry(track:dict,signal_cmd:dict,entry_evidence:dict|None)->tuple[list[dict],list[str]]:
@@ -333,15 +385,21 @@ def filter_commands_against_journal(commands:list[dict], journal:dict|None)->tup
 def orchestrate(o:dict,u:dict,target_session:str,now_iso:str,next_session:str,
                 o_path:Path,u_path:Path,entry:dict|None=None,journal_configured:bool=False,
                 cycle:str="preopen")->dict:
-    iso_at(now_iso); iso_at(now_iso)
+    iso_at(now_iso)
     if cycle not in {"preopen","postclose"}:
         raise ValueError("PRODUCTION_CYCLE_INVALID")
-    valid_until=(datetime.fromisoformat(now_iso)+timedelta(days=4)).isoformat()
     tracks={"O":classify_o(o,target_session),"U":classify_u(u,target_session)}
     commands=[]
     entry_blockers={}
     for key,path in (("O",o_path),("U",u_path)):
-        signal=build_signal(tracks[key],path,now_iso,next_session,valid_until)
+        try:
+            signal=build_signal(tracks[key],path,now_iso,next_session,receipt=o if key=="O" else u)
+        except SignalContractError as exc:
+            entry_blockers[key]=[str(exc)]
+            tracks[key]["blockers"]=sorted(set(tracks[key]["blockers"]+[str(exc)]))
+            if tracks[key]["state"]!="STALE":
+                tracks[key]["state"]="BLOCKED"
+            continue
         commands.append(signal)
         ev=(entry or {}).get(key) if isinstance(entry,dict) else None
         if cycle=="postclose" and tracks[key]["state"]=="QUALIFIED_BUY":
