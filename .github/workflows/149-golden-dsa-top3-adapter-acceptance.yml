@@ -35,18 +35,29 @@ jobs:
           python-version: '3.12'
 
       - name: Install deterministic test dependency
-        run: python -m pip install pytest
+        run: python -m pip install pytest flake8
 
       - name: Compile changed seams
         run: |
           python -m py_compile             scripts/dsa_golden_top3_daily_adapter_v1.py             scripts/dsa_production_orchestrator_v1.py             scripts/dsa_candidate_adapter_v1.py
 
-      - name: Run Golden Adapter contract suite
-        run: python -m pytest --noconftest -q tests/test_dsa_golden_top3_daily_adapter_v1.py
-
-      - name: Run U global-rank seam regressions
+      - name: Run full affected regression suites
         run: |
-          python -m pytest --noconftest -q             tests/test_dsa_production_orchestrator_v1.py::test_u_top3_buy_may_keep_global_rank_above_three             tests/test_dsa_candidate_adapter_v1.py::test_u_global_rank_buy_matches_orchestrator
+          python -m pytest --noconftest -q \
+            tests/test_dsa_golden_top3_daily_adapter_v1.py \
+            tests/test_dsa_production_orchestrator_v1.py \
+            tests/test_dsa_candidate_adapter_v1.py
+
+      - name: Run critical flake8 checks on changed seams
+        run: |
+          flake8 \
+            scripts/dsa_golden_top3_daily_adapter_v1.py \
+            scripts/dsa_production_orchestrator_v1.py \
+            scripts/dsa_candidate_adapter_v1.py \
+            tests/test_dsa_golden_top3_daily_adapter_v1.py \
+            tests/test_dsa_production_orchestrator_v1.py \
+            tests/test_dsa_candidate_adapter_v1.py \
+            --count --select=E9,F63,F7,F82 --show-source --statistics
 
       - name: Smoke current repository formal receipts
         run: |
