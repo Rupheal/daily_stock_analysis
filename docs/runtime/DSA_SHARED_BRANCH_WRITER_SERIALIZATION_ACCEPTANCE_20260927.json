@@ -1,15 +1,15 @@
 {
   "schema_version": 2,
   "receipt_id": "DSA_SHARED_BRANCH_WRITER_SERIALIZATION_ACCEPTANCE_20260927",
-  "status": "REPAIR_CANDIDATE_PENDING_EXACT_HEAD_CI",
+  "status": "PASS_ENGINEERING_CANDIDATE_NOT_DEPLOYED",
   "target_shared_branch": "fix/native-private-execution-20260914",
   "shared_target_sha_at_identity_fence": "ce4bff9a0fcf32d4bd5eff43b8b5cb824a806c54",
   "candidate_branch": "fix/dsa-shared-writer-serialization-20260927",
   "previous_candidate_head": "c426a174327d390d0cc9837ad2a8b0d8567427c7",
-  "repair_implementation_head": null,
-  "acceptance_run_id": null,
-  "acceptance_run_conclusion": null,
-  "acceptance_job_id": null,
+  "repair_implementation_head": "c50baa563ac0d6be5bbf85feed8174cc6dde6543",
+  "acceptance_run_id": 37317341367,
+  "acceptance_run_conclusion": "success",
+  "acceptance_job_id": 111787296980,
   "scanner": "tests/test_shared_branch_writer_concurrency_v1.py",
   "total_workflow_files": 187,
   "shared_target_writer_count": 26,
@@ -422,5 +422,29 @@
     "journal_rewritten": false,
     "real_orders": 0,
     "paid_permissions_changed": false
+  },
+  "acceptance_run_attempt": 1,
+  "acceptance_run_event": "push",
+  "acceptance_workflow": ".github/workflows/149-dsa-shared-writer-serialization-acceptance.yml",
+  "acceptance_job_name": "validate",
+  "acceptance_run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/37317341367",
+  "force_push_invariant": "PASS: no shared-target writer performs history-rewriting push; --force, -f and --force-with-lease regressions passed.",
+  "test_harness_repair": {
+    "pre_repair_head": "09419b004fa92dad7a64ea08f0c23415c31a8ecd",
+    "repair_head": "c50baa563ac0d6be5bbf85feed8174cc6dde6543",
+    "changed_path": "tests/test_shared_branch_writer_concurrency_v1.py",
+    "tested_blob_sha": "6e54a4e39606d7d9ae20253a7ea51f328f368978",
+    "root_cause": "__import__(__name__) returns top-level tests package under package import; the test attempted to monkeypatch tests.WF rather than the loaded test module's WF.",
+    "local_red": "Full checkout with tests/__init__.py: 7 failed, 13 passed; all seven failures reproduced the tests.WF AttributeError.",
+    "local_green": "Python 3.12.14 / pytest 9.1.1: 20 passed; py_compile passed; unchanged derived inventory 187/26/161/0 and hash verified.",
+    "natural_ci": {
+      "run_id": 37317341367,
+      "job_id": 111787296980,
+      "attempt": 1,
+      "event": "push",
+      "conclusion": "success",
+      "tests": "20 passed",
+      "workflow": ".github/workflows/149-dsa-shared-writer-serialization-acceptance.yml"
+    }
   }
 }
