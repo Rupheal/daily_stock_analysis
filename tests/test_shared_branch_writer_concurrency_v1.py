@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 import shlex
+import sys
 
 import pytest
 import yaml
@@ -211,6 +212,10 @@ def writer_workflows():
             if result.kind == 'SHARED_TARGET_WRITER']
 
 
+def _patch_workflow_root(monkeypatch, path):
+    monkeypatch.setattr(sys.modules[__name__], 'WF', path)
+
+
 def _has_shared_group(group):
     if group == GROUP:
         return True
@@ -301,7 +306,7 @@ def test_dashboard_read_source_is_not_write_destination(tmp_path, monkeypatch):
         commands='git push origin HEAD:research/dsa-dashboard-v019-20260918',
     )
     (tmp_path / 'dashboard.yml').write_text(dashboard)
-    monkeypatch.setattr(__import__(__name__), 'WF', tmp_path)
+    _patch_workflow_root(monkeypatch, tmp_path)
     assert [p.name for p, _ in writer_workflows()] == []
     assert classify_workflow_text(dashboard).kind == 'NON_TARGET_WRITER'
 
@@ -349,7 +354,7 @@ def test_unknown_variable_destination_and_indirection_fail_closed(tmp_path, monk
     for i, case in enumerate(cases):
         assert classify_workflow_text(case).kind == 'UNKNOWN_WRITE_SEMANTICS', i
     (tmp_path / 'unknown.yml').write_text(cases[0])
-    monkeypatch.setattr(__import__(__name__), 'WF', tmp_path)
+    _patch_workflow_root(monkeypatch, tmp_path)
     import pytest
     with pytest.raises(AssertionError, match='UNKNOWN_WRITE_SEMANTICS'):
         test_all_native_private_branch_writers_share_one_queue()
@@ -387,14 +392,14 @@ def test_implicit_push_after_shell_branch_switch_is_unknown():
 ])
 def test_history_rewriting_forms_are_rejected(tmp_path, monkeypatch, command):
     (tmp_path / 'force.yml').write_text(_fixture(commands=command))
-    monkeypatch.setattr(__import__(__name__), 'WF', tmp_path)
+    _patch_workflow_root(monkeypatch, tmp_path)
     with pytest.raises(AssertionError, match='HISTORY_REWRITING_PUSH'):
         test_no_force_push_in_shared_writer_set()
 
 
 def test_new_shared_writer_is_discovered_repository_wide(tmp_path, monkeypatch):
     (tmp_path / 'new.yml').write_text(_fixture(commands=f'git push origin HEAD:{TARGET}'))
-    monkeypatch.setattr(__import__(__name__), 'WF', tmp_path)
+    _patch_workflow_root(monkeypatch, tmp_path)
     assert [p.name for p, _ in writer_workflows()] == ['new.yml']
 
 
