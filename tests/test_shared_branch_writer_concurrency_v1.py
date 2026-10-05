@@ -13,7 +13,7 @@ GROUP = 'dsa-native-private-branch-writer'
 PUSH = re.compile(r'\bgit\s+push\b')
 OTHER_PUSH = re.compile(r'\bgit\b(?:(?!\bgit\b)[^\n])*\bpush\b')
 VARIABLE_PUSH = re.compile(r'["\']?\$\{?[A-Za-z_][A-Za-z0-9_]*\}?["\']?\s+push\b')
-SHELL_FUNCTION = re.compile(r'(?m)^[ \t]*(?:function\s+[A-Za-z_]\w*|[A-Za-z_]\w*\s*\(\)\s*\{)')
+SHELL_FUNCTION = re.compile(r'\b(?:function\s+[A-Za-z_]\w*|[A-Za-z_]\w*\s*\(\)\s*\{)')
 INDIRECT_PUSH_CALL = re.compile(r'(?m)^[ \t]*(?:publish|push|commit|sync)[A-Za-z0-9_.-]*\s+[^\n]*\bpush\b')
 BRANCH = re.compile(r'^[A-Za-z0-9._/-]+$')
 
@@ -336,6 +336,9 @@ def test_unknown_variable_destination_and_indirection_fail_closed(tmp_path, monk
                           '"$GIT" push origin HEAD:fix/native-private-execution-20260914'),
         _fixture(commands=f'git push origin HEAD:research/other\n'
                           'function publish_it() { command git "$@"; }\n'
+                          'publish_it push origin HEAD:fix/native-private-execution-20260914'),
+        _fixture(commands=f'git push origin HEAD:research/other; '
+                          'publish_it() { "$GIT" "$@"; }; '
                           'publish_it push origin HEAD:fix/native-private-execution-20260914'),
         'name: indirect\non:\n  workflow_dispatch:\n'
         'permissions:\n  contents: write\n'
