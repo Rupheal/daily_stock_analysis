@@ -17,8 +17,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-run056-u-formal-decision
+  group: ${{ github.ref == 'refs/heads/fix/native-private-execution-20260914' && 'dsa-native-private-branch-writer' || 'dsa-run056-u-formal-decision' }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   formal-u:

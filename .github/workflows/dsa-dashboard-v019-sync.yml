@@ -15,9 +15,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: dsa-native-private-branch-writer
+  group: dsa-dashboard-v019-sanitized-sync
   cancel-in-progress: false
-  queue: max
 
 jobs:
   sync:
