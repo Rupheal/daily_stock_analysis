@@ -12,8 +12,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-run058h-o-native
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   native-child:

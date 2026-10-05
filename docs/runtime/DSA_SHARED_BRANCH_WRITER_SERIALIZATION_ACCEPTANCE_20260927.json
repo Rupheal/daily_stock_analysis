@@ -1,0 +1,450 @@
+{
+  "schema_version": 2,
+  "receipt_id": "DSA_SHARED_BRANCH_WRITER_SERIALIZATION_ACCEPTANCE_20260927",
+  "status": "PASS_ENGINEERING_CANDIDATE_NOT_DEPLOYED",
+  "target_shared_branch": "fix/native-private-execution-20260914",
+  "shared_target_sha_at_identity_fence": "ce4bff9a0fcf32d4bd5eff43b8b5cb824a806c54",
+  "candidate_branch": "fix/dsa-shared-writer-serialization-20260927",
+  "previous_candidate_head": "c426a174327d390d0cc9837ad2a8b0d8567427c7",
+  "repair_implementation_head": "c50baa563ac0d6be5bbf85feed8174cc6dde6543",
+  "acceptance_run_id": 37317341367,
+  "acceptance_run_conclusion": "success",
+  "acceptance_job_id": 111787296980,
+  "scanner": "tests/test_shared_branch_writer_concurrency_v1.py",
+  "total_workflow_files": 187,
+  "shared_target_writer_count": 26,
+  "non_target_writer_count": 161,
+  "unknown_write_semantics_count": 0,
+  "writer_inventory_hash_sha256": "481878d47254c27ff347c831ae4c5d55789374344fc15facb3e1703eafae42c1",
+  "writer_inventory_normalization": "UTF-8 JSONL; sorted keys; compact separators; one row per shared-target writer in workflow-path order",
+  "writer_inventory": [
+    {
+      "workflow_path": ".github/workflows/100-run054-u-risk-evidence.yml",
+      "trigger": "push,workflow_dispatch",
+      "write_destination": [
+        "github.ref_name (workflow_dispatch includes fix/native-private-execution-20260914)"
+      ],
+      "write_commands": [
+        "git push"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/101-run055-u-strategy-zone.yml",
+      "trigger": "push,workflow_dispatch",
+      "write_destination": [
+        "github.ref_name (workflow_dispatch includes fix/native-private-execution-20260914)"
+      ],
+      "write_commands": [
+        "git push"
+      ],
+      "concurrency_group": "${{ github.ref == 'refs/heads/fix/native-private-execution-20260914' && 'dsa-native-private-branch-writer' || 'dsa-run055-u-strategy-zone' }}",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/102-run056-u-formal-decision.yml",
+      "trigger": "push,workflow_dispatch",
+      "write_destination": [
+        "github.ref_name (workflow_dispatch includes fix/native-private-execution-20260914)"
+      ],
+      "write_commands": [
+        "git push"
+      ],
+      "concurrency_group": "${{ github.ref == 'refs/heads/fix/native-private-execution-20260914' && 'dsa-native-private-branch-writer' || 'dsa-run056-u-formal-decision' }}",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/109-run058e-o-native-selective.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/112-run058h-o-native-frozen-history.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/113-run058i-private-semantic.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/114-run058j-o-controller.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/124-run060-current-close-refresh.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/126-run061-o-core-pilot.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/127-run062-o657-v3-engineering.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/128-run071-o-v3-paid-canary.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/129-run070-o-00008-core-recovery.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/130-run072-o657-full-rollout.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/132-run074-o657-final-continuation.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/132-run074-run073-private-diag.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/133-o-formal-top3-final-acceptance.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/133-run075-o657-proven-unsent-recovery.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/135-dsa-production-orchestrator-v1-acceptance.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/136-dsa-production-orchestrator-v1-runtime.yml",
+      "trigger": "schedule,push,workflow_dispatch",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/137-dsa-simulation-journal-init.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/138-u-production-bootstrap-20260918.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/139-dsa-production-entry-v1.yml",
+      "trigger": "schedule,workflow_dispatch,push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/144-dsa-daily-o-formal-producer.yml",
+      "trigger": "push,workflow_dispatch",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/145-dsa-daily-u-formal-producer.yml",
+      "trigger": "push,workflow_dispatch",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/99-run049-close-and-gate.yml",
+      "trigger": "push,workflow_dispatch",
+      "write_destination": [
+        "github.ref_name (workflow_dispatch includes fix/native-private-execution-20260914)"
+      ],
+      "write_commands": [
+        "git push"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    },
+    {
+      "workflow_path": ".github/workflows/o-semantic-handoff-003-publish-queue.yml",
+      "trigger": "push",
+      "write_destination": [
+        "fix/native-private-execution-20260914"
+      ],
+      "write_commands": [
+        "git push origin HEAD:fix/native-private-execution-20260914"
+      ],
+      "concurrency_group": "dsa-native-private-branch-writer",
+      "cancel_in_progress": false,
+      "queue": "max",
+      "force_push_status": "NONE"
+    }
+  ],
+  "dashboard_classification": "NON_TARGET_WRITER; reads authority with persist-credentials false; writes only research/dsa-dashboard-v019-20260918",
+  "additional_implicit_manual_dispatch_writers": [
+    ".github/workflows/101-run055-u-strategy-zone.yml",
+    ".github/workflows/102-run056-u-formal-decision.yml"
+  ],
+  "red_regression_evidence": {
+    "environment": "isolated local copy of c426a174 candidate",
+    "result": "10 failed, 4 passed before classifier repair",
+    "key_failures": [
+      "Dashboard false positive",
+      "reordered --force-with-lease not rejected",
+      "semantic classifier absent"
+    ]
+  },
+  "historical_ci_only": {
+    "red_run_id": 36258269237,
+    "green_run_id": 36258422600,
+    "green_head": "33feacb012c35e0a9ac8f53900167aa5437ba267",
+    "green_job_id": 108449975142
+  },
+  "required_concurrency": {
+    "group": "dsa-native-private-branch-writer",
+    "cancel_in_progress": false,
+    "queue": "max"
+  },
+  "force_push_coverage": [
+    "--force",
+    "-f",
+    "--force-with-lease",
+    "reordered flags",
+    "plus-refspec and --mirror fail closed"
+  ],
+  "boundaries": {
+    "deployed": false,
+    "production_pointer_switched": false,
+    "main_merge": false,
+    "journal_rewritten": false,
+    "real_orders": 0,
+    "paid_permissions_changed": false
+  },
+  "acceptance_run_attempt": 1,
+  "acceptance_run_event": "push",
+  "acceptance_workflow": ".github/workflows/149-dsa-shared-writer-serialization-acceptance.yml",
+  "acceptance_job_name": "validate",
+  "acceptance_run_url": "https://github.com/Rupheal/daily_stock_analysis/actions/runs/37317341367",
+  "force_push_invariant": "PASS: no shared-target writer performs history-rewriting push; --force, -f and --force-with-lease regressions passed.",
+  "test_harness_repair": {
+    "pre_repair_head": "09419b004fa92dad7a64ea08f0c23415c31a8ecd",
+    "repair_head": "c50baa563ac0d6be5bbf85feed8174cc6dde6543",
+    "changed_path": "tests/test_shared_branch_writer_concurrency_v1.py",
+    "tested_blob_sha": "6e54a4e39606d7d9ae20253a7ea51f328f368978",
+    "root_cause": "__import__(__name__) returns top-level tests package under package import; the test attempted to monkeypatch tests.WF rather than the loaded test module's WF.",
+    "local_red": "Full checkout with tests/__init__.py: 7 failed, 13 passed; all seven failures reproduced the tests.WF AttributeError.",
+    "local_green": "Python 3.12.14 / pytest 9.1.1: 20 passed; py_compile passed; unchanged derived inventory 187/26/161/0 and hash verified.",
+    "natural_ci": {
+      "run_id": 37317341367,
+      "job_id": 111787296980,
+      "attempt": 1,
+      "event": "push",
+      "conclusion": "success",
+      "tests": "20 passed",
+      "workflow": ".github/workflows/149-dsa-shared-writer-serialization-acceptance.yml"
+    }
+  }
+}

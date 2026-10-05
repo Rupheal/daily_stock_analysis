@@ -11,8 +11,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: dsa-production-orchestrator-v1-runtime
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   init-or-verify:

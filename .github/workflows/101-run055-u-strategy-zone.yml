@@ -15,8 +15,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-run055-u-strategy-zone
+  group: ${{ github.ref == 'refs/heads/fix/native-private-execution-20260914' && 'dsa-native-private-branch-writer' || 'dsa-run055-u-strategy-zone' }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   run055:
