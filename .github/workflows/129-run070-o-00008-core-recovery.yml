@@ -8,8 +8,9 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: dsa-run070-o-00008-core-recovery
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 jobs:
   recover:
     runs-on: ubuntu-latest

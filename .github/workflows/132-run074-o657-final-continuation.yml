@@ -10,8 +10,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-run074-o657-final-continuation
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   plan:

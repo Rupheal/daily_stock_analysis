@@ -10,8 +10,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-run060-current-close-refresh
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   refresh:

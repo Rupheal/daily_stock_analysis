@@ -16,8 +16,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: dsa-u-production-bootstrap-20260918
-  cancel-in-progress: true
+  group: dsa-native-private-branch-writer
+  cancel-in-progress: false
+  queue: max
 
 jobs:
   bootstrap:
