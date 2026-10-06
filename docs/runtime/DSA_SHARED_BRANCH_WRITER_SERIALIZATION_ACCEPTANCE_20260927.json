@@ -446,5 +446,35 @@
       "tests": "20 passed",
       "workflow": ".github/workflows/149-dsa-shared-writer-serialization-acceptance.yml"
     }
+  },
+  "integration_candidate": {
+    "source_pr6_final_head": "f20d341e54c176cb2f94fe7c6928325326df75b9",
+    "shared_base_sha": "ce4bff9a0fcf32d4bd5eff43b8b5cb824a806c54",
+    "integration_branch": "integration/dsa-shared-writer-serialization-20261005",
+    "integration_implementation_head": "444d725e87fd30c0cafd547b0a9b66a940b12084",
+    "integration_tree_sha": "52e37c56218fffa5f116378a61d5203ca32df5c1",
+    "source_pr6_workflow_count": 187,
+    "shared_base_workflow_count": 185,
+    "integration_workflow_count": 186,
+    "excluded_base_only_workflow": "148-dsa-shadow-real-cycle-acceptance-candidate.yml",
+    "added_acceptance_workflow": "149-dsa-shared-writer-serialization-acceptance.yml",
+    "shared_target_writer_count": 26,
+    "non_target_writer_count": 160,
+    "unknown_write_semantics_count": 0,
+    "writer_inventory_hash_sha256": "481878d47254c27ff347c831ae4c5d55789374344fc15facb3e1703eafae42c1",
+    "owner_stop_144": "PASS: if=${{ false }} preserved with shared writer queue",
+    "dashboard_classification": "NON_TARGET_WRITER",
+    "natural_ci": {
+      "run_id": 37404440299,
+      "job_id": 112078739107,
+      "attempt": 1,
+      "event": "push",
+      "conclusion": "success",
+      "tests": "20 passed",
+      "head_sha": "444d725e87fd30c0cafd547b0a9b66a940b12084"
+    },
+    "deployed": false,
+    "production_pointer_switched": false,
+    "main_merge": false
   }
 }
