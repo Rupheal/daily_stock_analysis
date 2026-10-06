@@ -9,8 +9,9 @@ permissions:
   contents: write
   actions: read
 concurrency:
-  group: dsa-run071-o-v3-paid-canary
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 jobs:
   canary:
     runs-on: ubuntu-latest

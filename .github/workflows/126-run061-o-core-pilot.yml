@@ -10,8 +10,9 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: dsa-run061-o-core-pilot
+  group: dsa-native-private-branch-writer
   cancel-in-progress: false
+  queue: max
 jobs:
   pilot:
     runs-on: ubuntu-latest

@@ -4,7 +4,10 @@ on:
     branches: [fix/native-private-execution-20260914]
     paths: [docs/runtime/RUN058I_SCOPE.json]
 permissions: {contents: write}
-concurrency: {group: dsa-run058i-private-review, cancel-in-progress: false}
+concurrency:
+  group: dsa-native-private-branch-writer
+  cancel-in-progress: false
+  queue: max
 jobs:
   review:
     runs-on: ubuntu-latest
