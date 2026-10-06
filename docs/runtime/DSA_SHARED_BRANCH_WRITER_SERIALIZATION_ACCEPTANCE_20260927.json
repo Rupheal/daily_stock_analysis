@@ -476,5 +476,43 @@
     "deployed": false,
     "production_pointer_switched": false,
     "main_merge": false
+  },
+  "post_merge_controlled_integration": {
+    "pre_merge_target_sha": "ce4bff9a0fcf32d4bd5eff43b8b5cb824a806c54",
+    "pr_number": 10,
+    "pr_final_head": "71c5c50e51e7569676ae64d0dd3c07217c0d490e",
+    "merge_sha": "e02aa25863395e9fa7c6fcbc6af831268b936a60",
+    "merge_tree": "e78b69627c30ccab4a353a5e2798b2432636cca1",
+    "merge_parents": [
+      "ce4bff9a0fcf32d4bd5eff43b8b5cb824a806c54",
+      "71c5c50e51e7569676ae64d0dd3c07217c0d490e"
+    ],
+    "safe_merge_skip_ci": true,
+    "unexpected_merge_run_count": 0,
+    "candidate_ci_run": 37404440299,
+    "candidate_ci_job": 112078739107,
+    "candidate_ci_attempt": 1,
+    "candidate_ci_conclusion": "success",
+    "candidate_ci_event": "push",
+    "candidate_ci_implementation_head": "444d725e87fd30c0cafd547b0a9b66a940b12084",
+    "merged_ref_local_py_compile": "PASS",
+    "merged_ref_local_pytest": "20 passed",
+    "total_workflow_files": 186,
+    "shared_target_writer_count": 26,
+    "non_target_writer_count": 160,
+    "unknown_write_semantics_count": 0,
+    "writer_inventory_hash_sha256": "481878d47254c27ff347c831ae4c5d55789374344fc15facb3e1703eafae42c1",
+    "owner_stop_144": "PASS: if=${{ false }} preserved with shared writer queue",
+    "dashboard_classification": "NON_TARGET_WRITER",
+    "serialization_invariant": "PASS: 26 shared-target writers use the approved non-cancelling queue",
+    "force_push_invariant": "PASS: zero history-rewriting writer commands",
+    "candidate_ci_evidence": "REUSED_VALIDLY",
+    "merged_ref_deterministic_readback": "PASS",
+    "controlled_integrated": true,
+    "post_merge_github_actions_validation": "NOT_REQUIRED",
+    "production_accepted": false,
+    "natural_cycle_accepted": false,
+    "main_merge": false,
+    "O_enabled": false
   }
 }
