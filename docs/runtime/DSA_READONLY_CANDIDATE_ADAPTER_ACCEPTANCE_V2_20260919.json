@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "run_id": "TRI-DSA-READONLY-ADAPTER-20260919-002",
+  "effective_at": "2026-09-19T22:18:00+08:00",
+  "status": "ACCEPTED_ENGINEERING_READ_ONLY_HARDENED",
+  "project": "DSA",
+  "workstream": "RUNTIME_EXECUTION",
+  "candidate": {
+    "repository": "Rupheal/daily_stock_analysis",
+    "branch": "research/dsa-readonly-parallel-shadow-20260919",
+    "tested_head_commit": "966fb501b7687f7a6ac46a40d81ebe6cac6967ce",
+    "draft_pr": 2,
+    "pull_request_mode": "DRAFT_NO_MERGE",
+    "runtime_authority": false,
+    "strategy_authority": false
+  },
+  "implementation": {
+    "adapter": "scripts/dsa_readonly_candidate_adapter_v1.py",
+    "prewindow_sealer": "scripts/dsa_natural_parallel_prewindow_v1.py",
+    "adapter_test": "tests/test_dsa_readonly_candidate_adapter_v1.py",
+    "prewindow_test": "tests/test_dsa_natural_parallel_prewindow_v1.py",
+    "acceptance_workflow": ".github/workflows/140-dsa-readonly-candidate-adapter.yml",
+    "comparison_output_only": true,
+    "authoritative_journal_writer_imported": false,
+    "real_order_path": false
+  },
+  "ci_acceptance": {
+    "workflow_run_id": 35448231627,
+    "job_id": 105910784488,
+    "conclusion": "SUCCESS",
+    "tests_collected": 28,
+    "tests_passed": 28,
+    "warnings": 2,
+    "compile": "PASS",
+    "existing_orchestrator_regression": "PASS"
+  },
+  "pit_hardening": {
+    "hash_bound_same_cutoff_required": true,
+    "timezone_aware_cutoff_required": true,
+    "timezone_aware_seal_required": true,
+    "input_available_at_required": true,
+    "seal_after_cutoff_rejected": true,
+    "input_available_after_seal_rejected": true,
+    "independent_provenance_rule": "Central Audit must verify that the prewindow attestation existed in an immutable workflow/commit record no later than cutoff_at; JSON self-assertion alone is insufficient.",
+    "retroactive_reclassification_forbidden": true
+  },
+  "comparison_semantics": {
+    "trade_action_equivalence_required_for_migration_progress": true,
+    "control_state_equivalence_reported_separately": true,
+    "natural_action_equal_control_equal": "ELIGIBLE_FOR_CENTRAL_AUDIT",
+    "natural_action_equal_control_divergent": "CENTRAL_AUDIT_REQUIRED_CONTROL_STATE_DIVERGENCE",
+    "natural_action_divergent": "BLOCKED_ACTION_DIVERGENCE"
+  },
+  "safety_contract": {
+    "authoritative_foundation_journal_writes": 0,
+    "candidate_journal_writes": 0,
+    "broker_orders": 0,
+    "real_orders": 0,
+    "main_merge": false,
+    "runtime_pointer_switch": false,
+    "active_gate_d_changed": false
+  },
+  "acceptance_scope": "Engineering hardening only. Does not constitute a natural parallel run, Central Audit acceptance, Owner Gate approval, or runtime cutover.",
+  "next_action": "Seal the next natural HK trading-window inputs before Gate-D cutoff, then run read-only natural comparison against the completed active runtime receipt and submit only the comparison evidence to Central Audit."
+}

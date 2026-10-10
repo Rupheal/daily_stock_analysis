@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": "TRI-DSA-CANDIDATE-DIVERGENCE-RECONCILIATION-20260919-001",
+  "effective_at": "2026-09-19T22:15:00+08:00",
+  "status": "ACCEPTED_RECONCILIATION",
+  "repository": "Rupheal/daily_stock_analysis",
+  "prior_divergence": {
+    "primary_ref": "fix/native-private-execution-20260914",
+    "named_candidate_ref": "research/dsa-production-orchestrator-v1-20260919",
+    "primary_unique_commits": 77,
+    "named_candidate_unique_commits": 5
+  },
+  "named_candidate_unique_files": [
+    {
+      "path": "scripts/dsa_formal_signal_envelope_v1.py",
+      "blob_sha": "fbb293a6d339d9b894314375743675ae81e5dc3e",
+      "disposition": "REJECTED_SUPERSEDED_SAFETY_REGRESSION",
+      "reasons": [
+        "O buyable_verified is inferred from action==BUY instead of requiring independently verified buyability.",
+        "U accepted-state contract excludes the current prerequisite-blocked formal state.",
+        "Uses static close/availability assumptions rather than current fail-closed orchestrator classification."
+      ]
+    },
+    {
+      "path": "scripts/dsa_qualified_buy_gate_v1.py",
+      "blob_sha": "5f8641d6e2043e683a18e961ab4a86860939d252",
+      "disposition": "REJECTED_SUPERSEDED",
+      "reasons": [
+        "Marks simulation_write_required without binding to the authoritative Foundation journal.",
+        "Superseded by current Production Orchestrator entry and journal-configured gates."
+      ]
+    },
+    {
+      "path": "scripts/dsa_build_simulation_commands_v1.py",
+      "blob_sha": "af34d56589403c0877babec4e7d499b3654f962e",
+      "disposition": "REJECTED_SUPERSEDED",
+      "reasons": [
+        "Can emit ENTRY from a PASS receipt without the current authoritative-journal configured gate and richer Entry-v1 validation.",
+        "Superseded by dsa_production_orchestrator_v1.py."
+      ]
+    },
+    {
+      "path": "docs/runtime/HKEX_SESSION_CALENDAR_BOOTSTRAP.json",
+      "blob_sha": "dde01a226a55c0e1dd846f3535a00068139a73c4",
+      "disposition": "NOT_PROMOTED_TEST_BOOTSTRAP_ONLY",
+      "reasons": [
+        "File itself declares authoritative=false and production must replace/verify it."
+      ]
+    },
+    {
+      "path": "tests/test_dsa_production_orchestrator_v1.py",
+      "blob_sha": "d748609642be562bbe3b3c4dabf8cd7dbc83c613",
+      "disposition": "REJECTED_SUPERSEDED_TEST_SET",
+      "reasons": [
+        "Tests the older three-module prototype rather than the current orchestrator contract.",
+        "Current branch regression suite plus read-only adapter suite passed 19/19."
+      ]
+    }
+  ],
+  "canonical_candidate_identity": {
+    "branch": "research/dsa-readonly-parallel-shadow-20260919",
+    "code_tested_commit": "6fb85fc30af1b586d32918d72ba40387fc057720",
+    "engineering_acceptance_receipt_commit": "3c53764bc321ad2ddfb67eea5e6d2180aed24fe4",
+    "production_orchestrator_path": "scripts/dsa_production_orchestrator_v1.py",
+    "readonly_adapter_path": "scripts/dsa_readonly_candidate_adapter_v1.py",
+    "runtime_authority": false,
+    "strategy_authority": false
+  },
+  "rule": "Do not cherry-pick the five unique prototype commits into the cutover candidate. Preserve them as historical evidence only.",
+  "owner_gate": false,
+  "main_merge": false,
+  "runtime_pointer_switch": false
+}
