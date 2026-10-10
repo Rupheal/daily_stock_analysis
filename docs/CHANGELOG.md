@@ -1,5 +1,7 @@
 # Changelog
 
+- [修复] 隔离候选：O 编排与回执解析读取正式回执分母；SIGNAL 使用不可变源时间与内容寻址来源，缺失/未来/过期证据阻断，重试保持字节一致；保持历史 journal 冲突保护。未部署，未计入真实 Shadow Cycle。
+
 - Run032 final receipt: real native input recovery 4/4 passed (35179162716); aggregate target-day data readiness 660/660 is separate from formal model outputs 0/660. Add strict market-only historical export for subsequent runs to make model inputs reusable without exposing model/account tables.
 
 - Run032 recovery4: verified Tencent/HKEX target-date evidence for four native data gaps; external cached-input adapter exercises unchanged upstream CLI for only failed symbols, preserves full 660 denominator, and never claims formal model acceptance. Excludes intraday partial bars and leaves unknown turnover unset.
