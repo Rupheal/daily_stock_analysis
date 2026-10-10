@@ -245,13 +245,56 @@
         }
       }
     },
+    "/api/v1/analysis/tasks/{task_id}/cancel": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "summary": "取消分析任务",
+        "description": "幂等请求取消 pending/processing 分析任务。pending 任务可立即进入 cancelled；processing 任务先进入 cancel_requested，并在 cooperative cancellation checkpoint 进入 cancelled。已终态任务重复请求保持原终态。",
+        "operationId": "cancelAnalysisTask",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "description": "任务 ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取消请求已记录或任务已处于终态",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "任务不存在或已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/analysis/tasks/stream": {
       "get": {
         "tags": [
           "Analysis"
         ],
         "summary": "任务状态 SSE 流",
-        "description": "通过 Server-Sent Events 实时推送任务状态变化。\n\n## 事件类型\n- `connected`: 连接成功\n- `task_created`: 新任务创建\n- `task_started`: 任务开始执行\n- `task_completed`: 任务完成\n- `task_failed`: 任务失败\n- `heartbeat`: 心跳（每 30 秒）",
+        "description": "通过 Server-Sent Events 实时推送任务状态变化。\n\n## 事件类型\n- `connected`: 连接成功\n- `task_created`: 新任务创建\n- `task_started`: 任务开始执行\n- `task_progress`: 任务进度更新\n- `task_cancel_requested`: 任务已请求取消\n- `task_cancelled`: 任务已取消\n- `task_completed`: 任务完成\n- `task_failed`: 任务失败\n- `heartbeat`: 心跳（每 30 秒）",
         "operationId": "taskStream",
         "responses": {
           "200": {

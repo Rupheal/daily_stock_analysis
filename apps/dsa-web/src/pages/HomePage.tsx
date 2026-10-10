@@ -446,6 +446,15 @@ const HomePage: React.FC = () => {
     writeTaskPanelCollapsedPreference(collapsed);
   }, []);
 
+  const handleCancelTask = useCallback((task: TaskInfo) => {
+    void analysisApi.cancelTask(task.taskId)
+      .then(() => refreshActiveTasks())
+      .catch((error) => {
+        console.error('Failed to cancel analysis task', task.taskId, error);
+        void refreshActiveTasks();
+      });
+  }, [refreshActiveTasks]);
+
   useEffect(() => {
     document.title = t('home.pageTitle');
   }, [t]);
@@ -1449,6 +1458,7 @@ const HomePage: React.FC = () => {
         <TaskPanel
           tasks={activeTasks}
           onOpenRunFlow={openTaskRunFlow}
+          onCancelTask={handleCancelTask}
           collapsed={isTaskPanelCollapsed}
           onCollapsedChange={handleTaskPanelCollapsedChange}
         />
@@ -1489,6 +1499,7 @@ const HomePage: React.FC = () => {
       handleHistoryItemClick,
       handleRefreshWatchlist,
       handleTaskPanelCollapsedChange,
+      handleCancelTask,
       isBatchAnalyzingWatchlist,
       isDeletingStock,
       isLoadingStockBar,

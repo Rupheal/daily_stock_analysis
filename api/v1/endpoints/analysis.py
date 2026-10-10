@@ -794,6 +794,43 @@ def get_task_list(
 
 
 # ============================================================
+# POST /tasks/{task_id}/cancel - 请求取消任务
+# ============================================================
+
+@router.post(
+    "/tasks/{task_id}/cancel",
+    response_model=TaskStatus,
+    responses={
+        200: {"description": "取消请求已记录或任务已处于终态"},
+        404: {"description": "任务不存在或已过期"},
+    },
+    summary="取消分析任务",
+    description="幂等请求取消 pending/processing 任务；运行中的任务在 cooperative checkpoint 进入 cancelled"
+)
+def cancel_analysis_task(task_id: str) -> TaskStatus:
+    task = get_task_queue().request_cancel(task_id)
+    if task is None:
+        raise api_error(404, "not_found", f"任务 {task_id} 不存在或已过期")
+
+    return TaskStatus(
+        task_id=task.task_id,
+        trace_id=_get_task_trace_id(task),
+        status=task.status.value,
+        progress=task.progress,
+        result=None,
+        market_review_report=None,
+        market_review_payload=None,
+        region=task.region,
+        error=task.error,
+        stock_name=task.stock_name,
+        original_query=task.original_query,
+        selection_source=task.selection_source,
+        analysis_phase=task.analysis_phase,
+        skills=getattr(task, "skills", None),
+    )
+
+
+# ============================================================
 # GET /tasks/stream - SSE 实时推送
 # ============================================================
 
@@ -814,6 +851,8 @@ async def task_stream():
     - task_created: 新任务创建
     - task_started: 任务开始执行
     - task_progress: 任务阶段进度更新
+    - task_cancel_requested: 任务已请求取消
+    - task_cancelled: 任务已取消
     - task_completed: 任务完成
     - task_failed: 任务失败
     - heartbeat: 心跳（每 30 秒）

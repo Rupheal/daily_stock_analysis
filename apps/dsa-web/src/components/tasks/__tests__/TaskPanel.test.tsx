@@ -156,6 +156,39 @@ describe('TaskPanel', () => {
     expect(onOpenRunFlow).toHaveBeenCalledWith(baseTask);
   });
 
+  it('invokes Stop for an active task', () => {
+    const onCancelTask = vi.fn();
+    render(
+      <TaskPanel
+        tasks={[baseTask]}
+        onCancelTask={onCancelTask}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '停止 贵州茅台 分析任务' }));
+
+    expect(onCancelTask).toHaveBeenCalledWith(baseTask);
+  });
+
+  it('disables Stop after cancellation has already been requested', () => {
+    const onCancelTask = vi.fn();
+    render(
+      <TaskPanel
+        tasks={[{
+          ...baseTask,
+          status: 'cancel_requested',
+          message: '正在停止...',
+        }]}
+        onCancelTask={onCancelTask}
+      />,
+    );
+
+    const stopButton = screen.getByRole('button', { name: '停止 贵州茅台 分析任务' });
+    expect(stopButton).toBeDisabled();
+    fireEvent.click(stopButton);
+    expect(onCancelTask).not.toHaveBeenCalled();
+  });
+
   it('keeps cancel-requested tasks visible without rendering them as failed', () => {
     render(
       <TaskPanel

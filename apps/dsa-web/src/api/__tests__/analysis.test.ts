@@ -56,3 +56,28 @@ describe('analysisApi.triggerMarketReview', () => {
     );
   });
 });
+
+
+describe('analysisApi.cancelTask', () => {
+  beforeEach(() => {
+    post.mockReset();
+    post.mockResolvedValue({
+      status: 200,
+      data: {
+        task_id: 'task-cancel-1',
+        status: 'cancel_requested',
+        progress: 64,
+      },
+    });
+  });
+
+  it('posts to the idempotent task-cancel endpoint', async () => {
+    const result = await analysisApi.cancelTask('task/cancel 1');
+
+    expect(post).toHaveBeenCalledWith(
+      '/api/v1/analysis/tasks/task%2Fcancel%201/cancel',
+    );
+    expect(result.taskId).toBe('task-cancel-1');
+    expect(result.status).toBe('cancel_requested');
+  });
+});

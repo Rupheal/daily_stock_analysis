@@ -32,6 +32,7 @@ from src.services.run_diagnostics import (
     reset_run_diagnostic_context,
 )
 from src.services.empty_news import empty_news_disclosure
+from src.services.cancellation import CancellationRequested
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +84,7 @@ class AnalysisService:
         trace_id: Optional[str] = None,
         send_notification: bool = True,
         progress_callback: Optional[Callable[[int, str], None]] = None,
+        cancel_check: Optional[Callable[[], None]] = None,
         skills: Optional[List[str]] = None,
         analysis_phase: str = "auto",
         query_source: str = "api",
@@ -143,6 +145,7 @@ class AnalysisService:
                 trace_id=effective_trace_id,
                 query_source=query_source or "api",
                 progress_callback=progress_callback,
+                cancel_check=cancel_check,
                 analysis_skills=skills,
                 analysis_phase=analysis_phase,
                 portfolio_context=portfolio_context,
@@ -173,6 +176,8 @@ class AnalysisService:
             # 构建响应
             return self._build_analysis_response(result, query_id, report_type=rt.value)
             
+        except CancellationRequested:
+            raise
         except Exception as e:
             self.last_error = str(e)
             logger.error(f"分析股票 {stock_code} 失败: {e}", exc_info=True)

@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [修复] Web 分析任务新增幂等 Stop/Cancel：pending 可直接取消，processing 采用 cooperative cancellation；API/SSE 同步 `cancel_requested`/`cancelled`，并阻止取消后的迟到结果回写为 completed；O/U Dashboard Authority 与模型逻辑不变。
+
 - [修复] Run041–048 将U事实报告、观察复核、条件交易计划和执行信号分层；保留原文40通过/4失败，单独修正版44通过，不再以0/45掩盖分析进度。
 - [修复] 原版通过原生YAML配置验证非思考完整回答；精确识别已核验原生输入的float32收盘价表示，并拒绝前日低点冒充今日、有限新闻冒充无利空。
 - [改进] 第三来源与已有原始缓存免费回放恢复10只输入，冻结原版数据CLI实际接收608/660；52只失败、原始预测与main保持不动。
